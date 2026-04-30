@@ -5,6 +5,8 @@ import {
   RouterProvider,
 } from 'react-router-dom';
 
+import { AppNavigation } from '@/components/layout/app-navigation';
+import { PromptPlaygroundPage } from '@/features/prompt-playground/pages/prompt-playground-page';
 import { PromptTemplateCreatePage } from '@/features/prompt-templates/pages/prompt-template-create-page';
 import { PromptTemplateDetailPage } from '@/features/prompt-templates/pages/prompt-template-detail-page';
 import { PromptTemplateEditPage } from '@/features/prompt-templates/pages/prompt-template-edit-page';
@@ -16,6 +18,7 @@ function RootLayout() {
     <PromptTemplatesProvider>
       <main className="app-shell">
         <div className="page-frame">
+          <AppNavigation />
           <Outlet />
         </div>
       </main>
@@ -30,7 +33,11 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Navigate to="/prompts" replace />,
+        element: <Navigate to="/playground" replace />,
+      },
+      {
+        path: 'playground',
+        element: <PromptPlaygroundPage />,
       },
       {
         path: 'prompts',

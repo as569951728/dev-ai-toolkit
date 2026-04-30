@@ -1,3 +1,5 @@
+**Languages:** English | [简体中文](./README.zh-CN.md)
+
 # dev-ai-toolkit
 
 A practical open-source AI toolkit for developers, built with React, Vite, and TypeScript.
@@ -131,6 +133,8 @@ Planned next steps include:
 - Search and tag filtering
 - More AI developer tools beyond prompt management
 - Better open-source documentation and examples
+
+See the longer-term product direction in [docs/roadmap.md](./docs/roadmap.md).
 
 ## Contributing
 
