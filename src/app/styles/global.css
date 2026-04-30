@@ -143,6 +143,13 @@ pre {
   margin-bottom: 32px;
 }
 
+.panel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
 .panel__header--stacked {
   align-items: center;
 }
@@ -163,6 +170,16 @@ pre {
 .prompt-list {
   display: grid;
   gap: 16px;
+}
+
+.status-banner {
+  margin: 0 0 20px;
+  padding: 14px 16px;
+  border: 1px solid rgba(31, 111, 235, 0.14);
+  border-radius: 16px;
+  background: rgba(31, 111, 235, 0.08);
+  color: var(--primary-dark);
+  font-weight: 600;
 }
 
 .prompt-card {
@@ -557,7 +574,8 @@ pre {
   }
 
   .detail-actions,
-  .prompt-card__actions {
+  .prompt-card__actions,
+  .panel__actions {
     flex-direction: column;
   }
 

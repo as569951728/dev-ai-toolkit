@@ -9,20 +9,26 @@ interface PromptTemplateListProps {
   templates: PromptTemplate[];
   tags: string[];
   filters: PromptTemplateFiltersValue;
+  statusMessage: string | null;
   onCreate: () => void;
   onView: (id: string) => void;
   onEdit: (id: string) => void;
   onFiltersChange: (nextFilters: PromptTemplateFiltersValue) => void;
+  onExport: () => void;
+  onImport: () => void;
 }
 
 export function PromptTemplateList({
   templates,
   tags,
   filters,
+  statusMessage,
   onCreate,
   onView,
   onEdit,
   onFiltersChange,
+  onExport,
+  onImport,
 }: PromptTemplateListProps) {
   return (
     <section className="panel">
@@ -36,10 +42,20 @@ export function PromptTemplateList({
           </p>
         </div>
 
-        <button className="primary-button" type="button" onClick={onCreate}>
-          New template
-        </button>
+        <div className="panel__actions">
+          <button className="ghost-button" type="button" onClick={onImport}>
+            Import JSON
+          </button>
+          <button className="secondary-button" type="button" onClick={onExport}>
+            Export JSON
+          </button>
+          <button className="primary-button" type="button" onClick={onCreate}>
+            New template
+          </button>
+        </div>
       </div>
+
+      {statusMessage ? <p className="status-banner">{statusMessage}</p> : null}
 
       <PromptTemplateFilters
         filters={filters}

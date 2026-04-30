@@ -2,6 +2,7 @@ import { createContext } from 'react';
 
 import type {
   PromptTemplate,
+  PromptTemplateImportSummary,
   PromptTemplateInput,
 } from '@/types/prompt-template';
 
@@ -16,6 +17,10 @@ export interface PromptTemplatesContextValue {
   deleteTemplate: (id: string) => void;
   duplicateTemplate: (id: string) => PromptTemplate | null;
   getTemplateById: (id: string) => PromptTemplate | null;
+  importTemplates: (
+    importedTemplates: PromptTemplate[],
+    summary: PromptTemplateImportSummary,
+  ) => PromptTemplateImportSummary;
 }
 
 export const PromptTemplatesContext =

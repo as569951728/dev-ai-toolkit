@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import type { PropsWithChildren } from 'react';
 
 import { createTemplateId } from '@/features/prompt-templates/lib/prompt-template-utils';
+import { mergePromptTemplates } from '@/features/prompt-templates/lib/prompt-template-transfer';
 import { mockPromptTemplates } from '@/features/prompt-templates/mock/prompts';
 import {
   PromptTemplatesContext,
@@ -9,6 +10,7 @@ import {
 } from '@/features/prompt-templates/providers/prompt-templates-context';
 import type {
   PromptTemplate,
+  PromptTemplateImportSummary,
   PromptTemplateInput,
 } from '@/types/prompt-template';
 
@@ -152,6 +154,26 @@ export function PromptTemplatesProvider({ children }: PropsWithChildren) {
     [templates],
   );
 
+  const importTemplates = useCallback(
+    (
+      importedTemplates: PromptTemplate[],
+      summary: PromptTemplateImportSummary,
+    ) => {
+      setTemplates((currentTemplates) => {
+        const nextTemplates = mergePromptTemplates(
+          currentTemplates,
+          importedTemplates,
+        );
+        persistPromptTemplates(nextTemplates);
+
+        return nextTemplates;
+      });
+
+      return summary;
+    },
+    [],
+  );
+
   const value = useMemo<PromptTemplatesContextValue>(
     () => ({
       tags,
@@ -161,6 +183,7 @@ export function PromptTemplatesProvider({ children }: PropsWithChildren) {
       deleteTemplate,
       duplicateTemplate,
       getTemplateById,
+      importTemplates,
     }),
     [
       tags,
@@ -170,6 +193,7 @@ export function PromptTemplatesProvider({ children }: PropsWithChildren) {
       deleteTemplate,
       duplicateTemplate,
       getTemplateById,
+      importTemplates,
     ],
   );
 

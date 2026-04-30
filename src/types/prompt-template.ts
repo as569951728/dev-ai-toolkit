@@ -20,3 +20,9 @@ export interface PromptTemplateFilters {
   search: string;
   tag: string;
 }
+
+export interface PromptTemplateImportSummary {
+  created: number;
+  updated: number;
+  total: number;
+}
