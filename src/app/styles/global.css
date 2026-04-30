@@ -183,7 +183,7 @@ pre {
 }
 
 .module-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .roadmap-grid {
@@ -639,6 +639,11 @@ pre {
   gap: 20px;
 }
 
+.json-tools-layout {
+  display: grid;
+  gap: 20px;
+}
+
 .playground-hero {
   padding: 32px 36px;
 }
@@ -648,6 +653,97 @@ pre {
   grid-template-columns: minmax(260px, 0.9fr) minmax(300px, 1fr) minmax(320px, 1.1fr);
   gap: 20px;
   align-items: start;
+}
+
+.json-tools-shell {
+  padding: 28px;
+}
+
+.json-tools-shell__header {
+  margin-bottom: 18px;
+}
+
+.json-tools-shell__header h2 {
+  margin: 0;
+  font-size: 1.55rem;
+}
+
+.json-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.json-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.json-panel {
+  padding: 28px;
+}
+
+.json-panel__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.json-panel__header h2 {
+  margin: 0;
+  font-size: 1.45rem;
+}
+
+.json-textarea {
+  min-height: 420px;
+  resize: vertical;
+  font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
+}
+
+.json-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.json-status--valid {
+  background: rgba(46, 160, 67, 0.12);
+  color: #1f7a32;
+}
+
+.json-status--invalid {
+  background: rgba(195, 49, 79, 0.12);
+  color: #a53049;
+}
+
+.json-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.metric-card--compact {
+  padding: 18px;
+}
+
+.json-output {
+  min-height: 420px;
+  overflow: auto;
+  font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
+}
+
+.status-banner--error {
+  border-color: rgba(195, 49, 79, 0.18);
+  background: rgba(195, 49, 79, 0.1);
+  color: #a53049;
 }
 
 .playground-panel {
@@ -753,7 +849,8 @@ pre {
   .prompt-form,
   .detail-grid,
   .toolbar,
-  .playground-grid {
+  .playground-grid,
+  .json-grid {
     grid-template-columns: 1fr;
   }
 
@@ -778,6 +875,8 @@ pre {
 
   .playground-hero,
   .playground-panel,
+  .json-tools-shell,
+  .json-panel,
   .home-hero__content,
   .home-section {
     padding: 24px;

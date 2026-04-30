@@ -14,6 +14,10 @@ const navigationItems = [
     to: '/prompts',
     label: 'Prompt Templates',
   },
+  {
+    to: '/json-tools',
+    label: 'JSON Tools',
+  },
 ];
 
 export function AppNavigation() {

@@ -6,6 +6,7 @@ import {
 
 import { AppNavigation } from '@/components/layout/app-navigation';
 import { HomePage } from '@/features/home/pages/home-page';
+import { JsonToolsPage } from '@/features/json-tools/pages/json-tools-page';
 import { PromptPlaygroundPage } from '@/features/prompt-playground/pages/prompt-playground-page';
 import { PromptTemplateCreatePage } from '@/features/prompt-templates/pages/prompt-template-create-page';
 import { PromptTemplateDetailPage } from '@/features/prompt-templates/pages/prompt-template-detail-page';
@@ -54,6 +55,10 @@ const router = createBrowserRouter([
       {
         path: 'prompts/:promptId/edit',
         element: <PromptTemplateEditPage />,
+      },
+      {
+        path: 'json-tools',
+        element: <JsonToolsPage />,
       },
     ],
   },

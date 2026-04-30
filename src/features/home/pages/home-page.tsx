@@ -17,6 +17,13 @@ const moduleCards = [
     href: '/playground',
     meta: 'Turn templates into output',
   },
+  {
+    title: 'JSON Tools',
+    description:
+      'Format, validate, minify, and clean JSON payloads for fast debugging and AI-related developer tasks.',
+    href: '/json-tools',
+    meta: 'Inspect structured data',
+  },
 ];
 
 const valuePoints = [
@@ -51,6 +58,7 @@ const useCases = [
   'API design assistance',
   'Bug triage and debugging',
   'Team prompt standardization',
+  'JSON payload validation',
 ];
 
 const roadmapPhases = [
