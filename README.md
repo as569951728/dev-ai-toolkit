@@ -20,11 +20,15 @@ Developers often use AI across repeated workflows:
 
 The current version includes:
 
-- Prompt template list page
-- Create prompt template
-- Edit prompt template
+- Overview landing page
+- Prompt template list, create, edit, detail, duplicate, and delete flows
+- Prompt template search and tag filtering
+- Prompt template import and export via JSON
+- Prompt Playground with variable detection and live prompt preview
+- Recent template history in the playground
 - Local mock data with browser persistence via `localStorage`
 - Feature-based code organization with reusable hooks and components
+- ESLint and GitHub Actions CI
 
 ## Tech Stack
 
@@ -37,6 +41,7 @@ The current version includes:
 
 ```txt
 dev-ai-toolkit/
+├── docs/
 ├── public/
 ├── src/
 │   ├── app/
@@ -48,6 +53,8 @@ dev-ai-toolkit/
 │   │   ├── layout/
 │   │   └── ui/
 │   ├── features/
+│   │   ├── home/
+│   │   ├── prompt-playground/
 │   │   └── prompt-templates/
 │   ├── hooks/
 │   ├── lib/
@@ -56,9 +63,11 @@ dev-ai-toolkit/
 │   ├── assets/
 │   ├── App.tsx
 │   └── main.tsx
+├── .github/
 ├── CONTRIBUTING.md
 ├── LICENSE
 ├── README.md
+├── README.zh-CN.md
 └── package.json
 ```
 
@@ -93,27 +102,64 @@ http://localhost:5173
 npm run build
 ```
 
+### Lint The Codebase
+
+```bash
+npm run lint
+```
+
 ### Preview The Production Build
 
 ```bash
 npm run preview
 ```
 
-## Prompt Template Module
+## Current Modules
 
-The first module in the project is `Prompt Templates`.
+### Overview
+
+The home page explains the product value, current workflow, module entry points, and roadmap rhythm so first-time users can understand the project quickly.
+
+### Prompt Templates
 
 It currently supports:
 
 - Viewing all prompt templates
 - Creating a new template
 - Editing an existing template
+- Searching by keywords
+- Filtering by tags
+- Previewing template details
+- Duplicating and deleting templates
+- Importing and exporting templates as JSON
 
 The data source is intentionally local for the first iteration:
 
 - Initial data comes from a mock dataset
 - User changes are persisted in `localStorage`
 - The hook and page structure are designed so the data layer can later be replaced by a real API
+
+### Prompt Playground
+
+The playground turns stored templates into ready-to-use prompt output.
+
+It currently supports:
+
+- Selecting a stored prompt template
+- Detecting template variables like `{{repository_name}}`
+- Filling variable inputs
+- Previewing the final `system prompt` and `user prompt`
+- Copying generated prompt output
+- Saving recent template usage locally
+
+## How It Works
+
+The core workflow is intentionally simple:
+
+1. Create or import a reusable prompt template
+2. Open the template in the playground
+3. Fill task-specific variables
+4. Preview and copy the final prompt output into your AI workflow
 
 ## Development Principles
 
@@ -128,9 +174,8 @@ This project follows a few practical rules:
 
 Planned next steps include:
 
-- Prompt detail preview
-- Template deletion and duplication
-- Search and tag filtering
+- Landing page polish and project screenshots
+- More prompt workflow refinements
 - More AI developer tools beyond prompt management
 - Better open-source documentation and examples
 

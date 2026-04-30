@@ -2,6 +2,11 @@ import { NavLink } from 'react-router-dom';
 
 const navigationItems = [
   {
+    to: '/',
+    label: 'Overview',
+    end: true,
+  },
+  {
     to: '/playground',
     label: 'Prompt Playground',
   },
@@ -24,6 +29,7 @@ export function AppNavigation() {
           <NavLink
             key={item.to}
             to={item.to}
+            end={item.end}
             className={({ isActive }) =>
               isActive ? 'app-nav__link app-nav__link--active' : 'app-nav__link'
             }

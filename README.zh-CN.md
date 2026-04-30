@@ -20,17 +20,20 @@
 
 当前版本已经包含：
 
+- 首页 Overview 展示页
 - Prompt 模板列表页
 - 新建 Prompt 模板
 - 编辑 Prompt 模板
 - Prompt 模板搜索与标签筛选
 - Prompt 模板详情预览
 - Prompt 模板复制与删除
+- Prompt 模板导入 / 导出 JSON
 - Prompt Playground
 - 变量填充与实时预览
 - 最近使用模板记录
 - 使用 `localStorage` 的本地 mock 数据持久化
 - 基于 feature 的模块化代码组织
+- ESLint 与 GitHub Actions CI
 
 ## 技术栈
 
@@ -57,6 +60,7 @@ dev-ai-toolkit/
 │   │   ├── layout/
 │   │   └── ui/
 │   ├── features/
+│   │   ├── home/
 │   │   ├── prompt-playground/
 │   │   └── prompt-templates/
 │   ├── hooks/
@@ -119,6 +123,10 @@ npm run preview
 
 ## 主要模块
 
+### Overview
+
+首页会先解释项目价值、当前核心工作流、主要模块以及路线节奏，让第一次进入项目的人能快速理解这个工具的定位。
+
 ### Prompt Templates
 
 当前支持：
@@ -141,6 +149,15 @@ npm run preview
 - 实时预览最终 `system prompt` 和 `user prompt`
 - 复制生成后的 prompt
 - 保存最近使用模板
+
+## 如何使用
+
+当前推荐的使用路径非常直接：
+
+1. 创建或导入一个可复用的 Prompt 模板
+2. 在 Playground 中选择模板
+3. 填写任务相关变量
+4. 预览并复制最终 prompt，带入你的 AI 工作流
 
 ## 开发原则
 

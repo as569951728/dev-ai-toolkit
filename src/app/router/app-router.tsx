@@ -1,11 +1,11 @@
 import {
   createBrowserRouter,
-  Navigate,
   Outlet,
   RouterProvider,
 } from 'react-router-dom';
 
 import { AppNavigation } from '@/components/layout/app-navigation';
+import { HomePage } from '@/features/home/pages/home-page';
 import { PromptPlaygroundPage } from '@/features/prompt-playground/pages/prompt-playground-page';
 import { PromptTemplateCreatePage } from '@/features/prompt-templates/pages/prompt-template-create-page';
 import { PromptTemplateDetailPage } from '@/features/prompt-templates/pages/prompt-template-detail-page';
@@ -33,7 +33,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Navigate to="/playground" replace />,
+        element: <HomePage />,
       },
       {
         path: 'playground',
