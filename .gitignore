@@ -1,0 +1,14 @@
+node_modules
+dist
+.DS_Store
+coverage
+*.local
+*.log
+
+.vite
+
+tsconfig.app.tsbuildinfo
+tsconfig.node.tsbuildinfo
+
+.idea
+.vscode

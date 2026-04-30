@@ -1,0 +1,17 @@
+export interface PromptTemplate {
+  id: string;
+  name: string;
+  description: string;
+  systemPrompt: string;
+  userPrompt: string;
+  tags: string[];
+  updatedAt: string;
+}
+
+export interface PromptTemplateInput {
+  name: string;
+  description: string;
+  systemPrompt: string;
+  userPrompt: string;
+  tags: string[];
+}
