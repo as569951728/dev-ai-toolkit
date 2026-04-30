@@ -1,17 +1,28 @@
+import { PromptTemplateEmptyState } from '@/features/prompt-templates/components/prompt-template-empty-state';
+import { PromptTemplateFilters } from '@/features/prompt-templates/components/prompt-template-filters';
 import type { PromptTemplate } from '@/types/prompt-template';
+import type { PromptTemplateFilters as PromptTemplateFiltersValue } from '@/types/prompt-template';
 
 import { PromptTemplateCard } from './prompt-template-card';
 
 interface PromptTemplateListProps {
   templates: PromptTemplate[];
+  tags: string[];
+  filters: PromptTemplateFiltersValue;
   onCreate: () => void;
+  onView: (id: string) => void;
   onEdit: (id: string) => void;
+  onFiltersChange: (nextFilters: PromptTemplateFiltersValue) => void;
 }
 
 export function PromptTemplateList({
   templates,
+  tags,
+  filters,
   onCreate,
+  onView,
   onEdit,
+  onFiltersChange,
 }: PromptTemplateListProps) {
   return (
     <section className="panel">
@@ -30,15 +41,26 @@ export function PromptTemplateList({
         </button>
       </div>
 
-      <div className="prompt-list">
-        {templates.map((template) => (
-          <PromptTemplateCard
-            key={template.id}
-            template={template}
-            onEdit={onEdit}
-          />
-        ))}
-      </div>
+      <PromptTemplateFilters
+        filters={filters}
+        tags={tags}
+        onFiltersChange={onFiltersChange}
+      />
+
+      {templates.length > 0 ? (
+        <div className="prompt-list">
+          {templates.map((template) => (
+            <PromptTemplateCard
+              key={template.id}
+              template={template}
+              onView={onView}
+              onEdit={onEdit}
+            />
+          ))}
+        </div>
+      ) : (
+        <PromptTemplateEmptyState onCreate={onCreate} />
+      )}
     </section>
   );
 }

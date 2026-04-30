@@ -2,6 +2,7 @@ import type { PromptTemplate } from '@/types/prompt-template';
 
 interface PromptTemplateCardProps {
   template: PromptTemplate;
+  onView: (id: string) => void;
   onEdit: (id: string) => void;
 }
 
@@ -15,6 +16,7 @@ function formatUpdatedAt(updatedAt: string) {
 
 export function PromptTemplateCard({
   template,
+  onView,
   onEdit,
 }: PromptTemplateCardProps) {
   return (
@@ -24,13 +26,22 @@ export function PromptTemplateCard({
           <h3>{template.name}</h3>
           <p>{template.description}</p>
         </div>
-        <button
-          className="secondary-button"
-          type="button"
-          onClick={() => onEdit(template.id)}
-        >
-          Edit
-        </button>
+        <div className="prompt-card__actions">
+          <button
+            className="ghost-button"
+            type="button"
+            onClick={() => onView(template.id)}
+          >
+            Preview
+          </button>
+          <button
+            className="secondary-button"
+            type="button"
+            onClick={() => onEdit(template.id)}
+          >
+            Edit
+          </button>
+        </div>
       </div>
 
       <div className="prompt-card__meta">

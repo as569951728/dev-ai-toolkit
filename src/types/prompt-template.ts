@@ -15,3 +15,8 @@ export interface PromptTemplateInput {
   userPrompt: string;
   tags: string[];
 }
+
+export interface PromptTemplateFilters {
+  search: string;
+  tag: string;
+}
