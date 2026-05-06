@@ -1,3 +1,4 @@
+import { afterEach } from 'vitest';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
@@ -54,6 +55,10 @@ function PlaygroundWorkflowProbe() {
   );
 }
 
+afterEach(() => {
+  cleanup();
+});
+
 describe('Prompt playground workflow', () => {
   it('saves a run snapshot and exposes it in template history', async () => {
     const templateRepository = createTemplateRepository();
@@ -101,5 +106,73 @@ describe('Prompt playground workflow', () => {
 
     expect(await screen.findByText('Recent run history')).toBeInTheDocument();
     expect(await screen.findByText('Run from v1')).toBeInTheDocument();
+  });
+
+  it('clears the save status when the active template changes', async () => {
+    const templateRepository = createTemplateRepository();
+    const runRepository = createRunRepository();
+    const templateId = mockPromptTemplates[0]!.id;
+
+    render(
+      <MemoryRouter initialEntries={[`/playground?templateId=${templateId}`]}>
+        <PromptTemplatesProvider repository={templateRepository}>
+          <PromptRunsProvider repository={runRepository}>
+            <PlaygroundWorkflowProbe />
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Save run snapshot' }));
+
+    expect(
+      await screen.findByText(
+        'Saved a run snapshot for Code Review Assistant v1.',
+      ),
+    ).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText('Active template'), {
+      target: { value: mockPromptTemplates[1]!.id },
+    });
+
+    expect(
+      screen.queryByText('Saved a run snapshot for Code Review Assistant v1.'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('clears the save status when the preview content changes', async () => {
+    const templateRepository = createTemplateRepository();
+    const runRepository = createRunRepository();
+    const templateId = mockPromptTemplates[0]!.id;
+
+    render(
+      <MemoryRouter initialEntries={[`/playground?templateId=${templateId}`]}>
+        <PromptTemplatesProvider repository={templateRepository}>
+          <PromptRunsProvider repository={runRepository}>
+            <PlaygroundWorkflowProbe />
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.change(screen.getByLabelText('Repository Name'), {
+      target: { value: 'dev-ai-toolkit' },
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Save run snapshot' }));
+
+    expect(
+      await screen.findByText(
+        'Saved a run snapshot for Code Review Assistant v1.',
+      ),
+    ).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText('Repository Name'), {
+      target: { value: 'different-repo' },
+    });
+
+    expect(
+      screen.queryByText('Saved a run snapshot for Code Review Assistant v1.'),
+    ).not.toBeInTheDocument();
   });
 });

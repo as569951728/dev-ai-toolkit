@@ -12,12 +12,31 @@ type PromptPlaygroundWorkspaceProps = {
   initialTemplateId?: string;
 };
 
+type SaveStatus = {
+  contextKey: string;
+  message: string;
+};
+
+function buildPreviewContextKey(
+  templateId: string,
+  templateVersion: number,
+  systemPrompt: string,
+  userPrompt: string,
+) {
+  return JSON.stringify({
+    templateId,
+    templateVersion,
+    systemPrompt,
+    userPrompt,
+  });
+}
+
 function PromptPlaygroundWorkspace({
   initialTemplateId,
 }: PromptPlaygroundWorkspaceProps) {
   const navigate = useNavigate();
   const { createRun } = usePromptRuns();
-  const [saveStatusMessage, setSaveStatusMessage] = useState<string | null>(null);
+  const [saveStatus, setSaveStatus] = useState<SaveStatus | null>(null);
   const {
     selectedTemplate,
     selectedTemplateId,
@@ -48,6 +67,24 @@ function PromptPlaygroundWorkspace({
 
     return formatPromptSections(preview);
   }, [preview]);
+
+  const currentPreviewContextKey = useMemo(() => {
+    if (!selectedTemplate || !preview) {
+      return null;
+    }
+
+    return buildPreviewContextKey(
+      selectedTemplate.id,
+      selectedTemplate.version,
+      preview.systemPrompt,
+      preview.userPrompt,
+    );
+  }, [preview, selectedTemplate]);
+
+  const saveStatusMessage =
+    saveStatus && saveStatus.contextKey === currentPreviewContextKey
+      ? saveStatus.message
+      : null;
 
   return (
     <section className="playground-layout">
@@ -93,9 +130,15 @@ function PromptPlaygroundWorkspace({
               userPrompt: preview.userPrompt,
             });
 
-            setSaveStatusMessage(
-              `Saved a run snapshot for ${selectedTemplate.name} v${selectedTemplate.version}.`,
-            );
+            setSaveStatus({
+              contextKey: buildPreviewContextKey(
+                selectedTemplate.id,
+                selectedTemplate.version,
+                preview.systemPrompt,
+                preview.userPrompt,
+              ),
+              message: `Saved a run snapshot for ${selectedTemplate.name} v${selectedTemplate.version}.`,
+            });
           }}
           onReviewInPromptDiff={() => {
             const params = new URLSearchParams({
