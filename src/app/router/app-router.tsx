@@ -6,8 +6,10 @@ import {
 
 import { AppNavigation } from '@/components/layout/app-navigation';
 import { ApiBuilderPage } from '@/features/api-builder/pages/api-builder-page';
+import { CodeViewerPage } from '@/features/code-viewer/pages/code-viewer-page';
 import { HomePage } from '@/features/home/pages/home-page';
 import { JsonToolsPage } from '@/features/json-tools/pages/json-tools-page';
+import { PromptDiffPage } from '@/features/prompt-diff/pages/prompt-diff-page';
 import { PromptPlaygroundPage } from '@/features/prompt-playground/pages/prompt-playground-page';
 import { PromptTemplateCreatePage } from '@/features/prompt-templates/pages/prompt-template-create-page';
 import { PromptTemplateDetailPage } from '@/features/prompt-templates/pages/prompt-template-detail-page';
@@ -64,6 +66,14 @@ const router = createBrowserRouter([
       {
         path: 'api-builder',
         element: <ApiBuilderPage />,
+      },
+      {
+        path: 'code-viewer',
+        element: <CodeViewerPage />,
+      },
+      {
+        path: 'prompt-diff',
+        element: <PromptDiffPage />,
       },
     ],
   },

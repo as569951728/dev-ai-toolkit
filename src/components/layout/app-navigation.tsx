@@ -22,6 +22,14 @@ const navigationItems = [
     to: '/api-builder',
     label: 'API Builder',
   },
+  {
+    to: '/code-viewer',
+    label: 'Code Viewer',
+  },
+  {
+    to: '/prompt-diff',
+    label: 'Prompt Diff',
+  },
 ];
 
 export function AppNavigation() {

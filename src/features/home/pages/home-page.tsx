@@ -31,6 +31,20 @@ const moduleCards = [
     href: '/api-builder',
     meta: 'Draft request configurations',
   },
+  {
+    title: 'Code Output Viewer',
+    description:
+      'Inspect code, text output, or generated responses in single or compare mode with line-aware reading.',
+    href: '/code-viewer',
+    meta: 'Review generated output',
+  },
+  {
+    title: 'Prompt Diff',
+    description:
+      'Compare prompt revisions, spot variable drift, and inspect wording changes before templates spread across the team.',
+    href: '/prompt-diff',
+    meta: 'Review prompt revisions',
+  },
 ];
 
 const valuePoints = [
@@ -67,6 +81,8 @@ const useCases = [
   'Team prompt standardization',
   'JSON payload validation',
   'Request scaffolding for frontend and backend work',
+  'Comparing generated code or rewritten output',
+  'Checking prompt revisions before sharing a template',
 ];
 
 const roadmapPhases = [
