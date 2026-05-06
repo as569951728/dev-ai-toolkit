@@ -4,7 +4,7 @@
 
 A practical open-source AI toolkit for developers, built with React, Vite, and TypeScript.
 
-This project is being developed as a real, structured, and extensible front-end application rather than a one-off demo. The goal is to provide a clean **AI developer toolbox** for common AI-assisted workflows such as prompt authoring, payload inspection, request scaffolding, and output review.
+This project is a local-first **AI developer toolbox** for a small set of practical workflows such as prompt authoring, payload inspection, request scaffolding, and output review.
 
 ## Why This Project
 
@@ -14,7 +14,7 @@ Developers often use AI across repeated workflows:
 - Organizing AI inputs, request data, and output review in a clearer way
 - Building lightweight internal tooling without a heavy backend at the start
 
-`dev-ai-toolkit` aims to turn those workflows into a focused, open-source product with a clear architecture, a practical user experience, and a path toward stronger team workflows later.
+`dev-ai-toolkit` is an attempt to keep those workflows in one place without introducing a backend too early.
 
 ## Current Features
 
@@ -30,9 +30,9 @@ The current version includes:
 - API Builder for drafting request configurations and fetch snippets
 - Code Viewer for reading code or generated output in single or compare mode
 - Recent template history in the playground
-- Local mock data with browser persistence via `localStorage`
-- Feature-based code organization with reusable hooks and components
-- ESLint and GitHub Actions CI
+- Local browser persistence via `localStorage`
+- Feature-based code organization
+- ESLint, tests, and GitHub Actions CI
 
 ## Tech Stack
 
@@ -122,13 +122,17 @@ npm run lint
 npm run preview
 ```
 
+### Deploy To Vercel
+
+See [docs/deployment/vercel.md](./docs/deployment/vercel.md) for the current Vercel deployment notes and limitations.
+
 ## Current Modules
 
 The toolbox is currently organized around two capability groups.
 
 ### Overview
 
-The home page explains the product value, module groups, workflow direction, and roadmap rhythm so first-time users can understand the project quickly.
+The home page introduces the current modules, the main workflow, and the short-term direction of the project.
 
 ### Prompt Workflows
 
@@ -145,15 +149,15 @@ It currently supports:
 - Duplicating and deleting templates
 - Importing and exporting templates as JSON
 
-The data source is intentionally local for the first iteration:
+The current storage model is intentionally local-first:
 
 - Initial data comes from a mock dataset
 - User changes are persisted in `localStorage`
-- The hook and page structure are designed so the data layer can later be replaced by a real API
+- The current repository and provider structure is meant to keep a future API option open
 
 #### Prompt Playground
 
-The playground turns stored templates into ready-to-use prompt output.
+The playground turns stored templates into runnable prompt output.
 
 It currently supports:
 
@@ -166,7 +170,7 @@ It currently supports:
 
 #### Prompt Diff
 
-The prompt diff workspace helps compare prompt revisions before they become shared team habits.
+The prompt diff workspace compares prompt revisions side by side.
 
 It currently supports:
 
@@ -207,29 +211,31 @@ This module supports:
 
 ## How It Works
 
-The current toolbox offers a few simple starting paths:
+The most complete workflow in the current version looks like this:
 
 1. Start in `Prompt Templates` and move into `Prompt Playground`
-2. Review prompt revisions in `Prompt Diff`
-3. Use `JSON Tools` or `API Builder` when working with payloads and request scaffolds
-4. Use `Code Viewer` to inspect generated output or rewritten content
+2. Save a prompt run from the playground
+3. Review revisions in `Prompt Diff`
+4. Inspect related output in `Code Viewer`
 
-## Development Principles
+Other modules such as `JSON Tools` and `API Builder` are available as supporting utilities.
 
-This project follows a few practical rules:
+## Development Notes
 
-- Keep the codebase simple, readable, and easy to extend
-- Prefer feature-based structure over flat page-level files
-- Start from working prototypes, then evolve into production-ready modules
-- Avoid fake complexity and keep each feature independently maintainable
+Current maintenance priorities:
+
+- Keep the codebase small and easy to review
+- Prefer incremental improvements over large rewrites
+- Improve connected workflows before adding many new standalone pages
+- Keep persistence and testing credible as the local data model grows
 
 ## Roadmap
 
-Planned next steps include:
+Current next steps include:
 
 - Better connections across existing modules
 - Stronger data boundaries for future API-backed growth
-- A minimal automated testing baseline
+- More workflow-level test coverage
 - Better open-source documentation and examples
 
 See the longer-term product direction in [docs/roadmap.md](./docs/roadmap.md).
