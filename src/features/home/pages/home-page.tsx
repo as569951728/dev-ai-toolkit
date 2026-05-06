@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 
+import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
 
 const moduleGroups = [
@@ -121,6 +122,8 @@ const roadmapPhases = [
 
 export function HomePage() {
   const { templates } = usePromptTemplates();
+  const { runs } = usePromptRuns();
+  const recentRuns = runs.slice(0, 3);
 
   return (
     <section className="home-layout">
@@ -155,7 +158,46 @@ export function HomePage() {
             <strong>Prompts to Payloads to Output</strong>
             <p>Six local-first modules for common AI-assisted developer work.</p>
           </div>
+          <div className="metric-card">
+            <span className="metric-card__label">Saved prompt runs</span>
+            <strong>{runs.length}</strong>
+            <p>Recent outputs can now be captured as reusable local activity history.</p>
+          </div>
         </aside>
+      </section>
+
+      <section className="home-section">
+        <div className="home-section__heading">
+          <p className="eyebrow">Start here</p>
+          <h2>Follow one clear path from reusable prompt asset to saved output.</h2>
+        </div>
+
+        <div className="workflow-grid">
+          <article className="workflow-card">
+            <span className="workflow-card__step">01</span>
+            <h3>Choose or create a template</h3>
+            <p>Start in Prompt Templates and define the reusable instructions you want to keep refining over time.</p>
+            <Link className="ghost-button" to="/prompts">
+              Open Prompt Templates
+            </Link>
+          </article>
+          <article className="workflow-card">
+            <span className="workflow-card__step">02</span>
+            <h3>Run it in the playground</h3>
+            <p>Fill variables, preview the final prompt, and review the generated output before you reuse it.</p>
+            <Link className="ghost-button" to="/playground">
+              Open Prompt Playground
+            </Link>
+          </article>
+          <article className="workflow-card">
+            <span className="workflow-card__step">03</span>
+            <h3>Save the output trail</h3>
+            <p>Capture a run snapshot, then inspect version history and recent activity as your prompt knowledge grows.</p>
+            <Link className="ghost-button" to="/prompts">
+              View Template History
+            </Link>
+          </article>
+        </div>
       </section>
 
       <section className="home-section">
@@ -232,6 +274,36 @@ export function HomePage() {
             </span>
           ))}
         </div>
+      </section>
+
+      <section className="home-section">
+        <div className="home-section__heading">
+          <p className="eyebrow">Recent activity</p>
+          <h2>Saved prompt runs now start forming a real activity trail.</h2>
+        </div>
+
+        {recentRuns.length > 0 ? (
+          <div className="module-grid">
+            {recentRuns.map((run) => (
+              <article className="module-card" key={run.id}>
+                <span className="module-card__meta">Prompt Run</span>
+                <h3>{run.templateName}</h3>
+                <p>
+                  Saved from template version v{run.templateVersion} with{' '}
+                  {Object.keys(run.variables).length} captured variables.
+                </p>
+                <Link className="ghost-button" to={`/prompts/${run.templateId}`}>
+                  Open template history
+                </Link>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div className="empty-state empty-state--compact">
+            <h2>No activity yet</h2>
+            <p>Save a run in the playground and it will appear here as part of the toolbox history.</p>
+          </div>
+        )}
       </section>
 
       <section className="home-section">

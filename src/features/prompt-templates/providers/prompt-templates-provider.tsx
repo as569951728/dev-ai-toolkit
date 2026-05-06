@@ -13,6 +13,7 @@ import {
   deletePromptTemplate,
   duplicatePromptTemplate,
   importPromptTemplates,
+  restorePromptTemplateRevision,
   sortPromptTemplates,
   updatePromptTemplate,
 } from '@/features/prompt-templates/services/prompt-template-service';
@@ -89,6 +90,20 @@ export function PromptTemplatesProvider({
     [repository, templates],
   );
 
+  const restoreTemplateRevisionAction = useCallback(
+    (templateId: string, revisionVersion: number) => {
+      const result = restorePromptTemplateRevision(
+        repository,
+        templates,
+        templateId,
+        revisionVersion,
+      );
+      setTemplates(result.templates);
+      return result.template;
+    },
+    [repository, templates],
+  );
+
   const value = useMemo<PromptTemplatesContextValue>(
     () => ({
       tags,
@@ -99,6 +114,7 @@ export function PromptTemplatesProvider({
       duplicateTemplate,
       getTemplateById,
       importTemplates,
+      restoreTemplateRevision: restoreTemplateRevisionAction,
     }),
     [
       tags,
@@ -109,6 +125,7 @@ export function PromptTemplatesProvider({
       duplicateTemplate,
       getTemplateById,
       importTemplates,
+      restoreTemplateRevisionAction,
     ],
   );
 

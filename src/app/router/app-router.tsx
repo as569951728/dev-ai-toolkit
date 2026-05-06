@@ -11,6 +11,7 @@ import { HomePage } from '@/features/home/pages/home-page';
 import { JsonToolsPage } from '@/features/json-tools/pages/json-tools-page';
 import { PromptDiffPage } from '@/features/prompt-diff/pages/prompt-diff-page';
 import { PromptPlaygroundPage } from '@/features/prompt-playground/pages/prompt-playground-page';
+import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs-provider';
 import { PromptTemplateCreatePage } from '@/features/prompt-templates/pages/prompt-template-create-page';
 import { PromptTemplateDetailPage } from '@/features/prompt-templates/pages/prompt-template-detail-page';
 import { PromptTemplateEditPage } from '@/features/prompt-templates/pages/prompt-template-edit-page';
@@ -20,12 +21,14 @@ import { PromptTemplatesProvider } from '@/features/prompt-templates/providers/p
 function RootLayout() {
   return (
     <PromptTemplatesProvider>
-      <main className="app-shell">
-        <div className="page-frame">
-          <AppNavigation />
-          <Outlet />
-        </div>
-      </main>
+      <PromptRunsProvider>
+        <main className="app-shell">
+          <div className="page-frame">
+            <AppNavigation />
+            <Outlet />
+          </div>
+        </main>
+      </PromptRunsProvider>
     </PromptTemplatesProvider>
   );
 }

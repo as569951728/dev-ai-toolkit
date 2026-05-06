@@ -1,9 +1,15 @@
 import { createTemplateId } from '@/features/prompt-templates/lib/prompt-template-utils';
+import {
+  buildPromptTemplateFromInput,
+  createPromptTemplateRevision,
+  toPromptTemplateInput,
+} from '@/features/prompt-templates/lib/prompt-template-versioning';
 import { mergePromptTemplates } from '@/features/prompt-templates/lib/prompt-template-transfer';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
 import type {
   PromptTemplate,
   PromptTemplateImportSummary,
+  PromptTemplateRevision,
   PromptTemplateInput,
 } from '@/types/prompt-template';
 
@@ -31,11 +37,13 @@ export function createPromptTemplate(
   templates: PromptTemplate[],
   input: PromptTemplateInput,
 ) {
-  const template: PromptTemplate = {
-    ...input,
+  const updatedAt = new Date().toISOString();
+  const template = buildPromptTemplateFromInput({
     id: createTemplateId(input.name),
-    updatedAt: new Date().toISOString(),
-  };
+    input,
+    version: 1,
+    updatedAt,
+  });
 
   const nextTemplates = persistTemplates(repository, [template, ...templates]);
 
@@ -60,11 +68,19 @@ export function updatePromptTemplate(
         return template;
       }
 
-      updatedTemplate = {
-        ...template,
-        ...input,
-        updatedAt: new Date().toISOString(),
-      };
+      const updatedAt = new Date().toISOString();
+      const version = template.version + 1;
+
+      updatedTemplate = buildPromptTemplateFromInput({
+        id: template.id,
+        input,
+        version,
+        updatedAt,
+        revisions: [
+          ...template.revisions,
+          createPromptTemplateRevision(input, version, updatedAt),
+        ],
+      });
 
       return updatedTemplate;
     }),
@@ -101,12 +117,16 @@ export function duplicatePromptTemplate(
     };
   }
 
-  const duplicatedTemplate: PromptTemplate = {
-    ...sourceTemplate,
+  const updatedAt = new Date().toISOString();
+  const duplicatedTemplate = buildPromptTemplateFromInput({
     id: createTemplateId(`${sourceTemplate.name} copy`),
-    name: `${sourceTemplate.name} Copy`,
-    updatedAt: new Date().toISOString(),
-  };
+    input: {
+      ...toPromptTemplateInput(sourceTemplate),
+      name: `${sourceTemplate.name} Copy`,
+    },
+    version: 1,
+    updatedAt,
+  });
 
   const nextTemplates = persistTemplates(repository, [
     duplicatedTemplate,
@@ -132,6 +152,62 @@ export function importPromptTemplates(
 
   return {
     summary,
+    templates: nextTemplates,
+  };
+}
+
+export function restorePromptTemplateRevision(
+  repository: PromptTemplateRepository,
+  templates: PromptTemplate[],
+  templateId: string,
+  revisionVersion: number,
+) {
+  let restoredTemplate: PromptTemplate | null = null;
+
+  const nextTemplates = persistTemplates(
+    repository,
+    templates.map((template) => {
+      if (template.id !== templateId) {
+        return template;
+      }
+
+      const sourceRevision =
+        template.revisions.find((revision) => revision.version === revisionVersion) ??
+        null;
+
+      if (!sourceRevision) {
+        return template;
+      }
+
+      const nextVersion = template.version + 1;
+      const updatedAt = new Date().toISOString();
+      const nextInput: PromptTemplateInput = {
+        name: sourceRevision.name,
+        description: sourceRevision.description,
+        systemPrompt: sourceRevision.systemPrompt,
+        userPrompt: sourceRevision.userPrompt,
+        tags: sourceRevision.tags,
+      };
+      const nextRevision: PromptTemplateRevision = createPromptTemplateRevision(
+        nextInput,
+        nextVersion,
+        updatedAt,
+      );
+
+      restoredTemplate = buildPromptTemplateFromInput({
+        id: template.id,
+        input: nextInput,
+        version: nextVersion,
+        updatedAt,
+        revisions: [...template.revisions, nextRevision],
+      });
+
+      return restoredTemplate;
+    }),
+  );
+
+  return {
+    template: restoredTemplate,
     templates: nextTemplates,
   };
 }

@@ -4,6 +4,7 @@ import type {
   PromptTemplate,
   PromptTemplateImportSummary,
   PromptTemplateInput,
+  PromptTemplateRevision,
 } from '@/types/prompt-template';
 
 export interface PromptTemplatesContextValue {
@@ -21,6 +22,10 @@ export interface PromptTemplatesContextValue {
     importedTemplates: PromptTemplate[],
     summary: PromptTemplateImportSummary,
   ) => PromptTemplateImportSummary;
+  restoreTemplateRevision: (
+    templateId: string,
+    revisionVersion: PromptTemplateRevision['version'],
+  ) => PromptTemplate | null;
 }
 
 export const PromptTemplatesContext =

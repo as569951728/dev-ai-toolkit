@@ -1,3 +1,13 @@
+export interface PromptTemplateRevision {
+  version: number;
+  updatedAt: string;
+  name: string;
+  description: string;
+  systemPrompt: string;
+  userPrompt: string;
+  tags: string[];
+}
+
 export interface PromptTemplate {
   id: string;
   name: string;
@@ -5,6 +15,8 @@ export interface PromptTemplate {
   systemPrompt: string;
   userPrompt: string;
   tags: string[];
+  version: number;
+  revisions: PromptTemplateRevision[];
   updatedAt: string;
 }
 

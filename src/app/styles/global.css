@@ -272,7 +272,7 @@ pre {
   display: flex;
   justify-content: space-between;
   gap: 24px;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 24px;
   padding: 22px 24px;
   border: 1px solid rgba(19, 34, 56, 0.08);
@@ -294,6 +294,25 @@ pre {
 .app-nav__title {
   margin: 0;
   font-size: 1.5rem;
+}
+
+.app-nav__groups {
+  display: grid;
+  gap: 14px;
+}
+
+.app-nav__group {
+  display: grid;
+  gap: 8px;
+}
+
+.app-nav__group-label {
+  margin: 0;
+  color: #6b7f95;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .app-nav__links {
@@ -586,6 +605,10 @@ pre {
   color: var(--text-muted);
 }
 
+.empty-state--compact {
+  padding: 28px 24px;
+}
+
 .detail-actions {
   display: flex;
   flex-wrap: wrap;
@@ -639,6 +662,56 @@ pre {
   background: #f3f7fb;
   color: #1b2c40;
   line-height: 1.7;
+}
+
+.detail-card__version {
+  margin: 0 0 16px;
+  color: var(--primary-dark);
+  font-weight: 700;
+}
+
+.revision-list {
+  display: grid;
+  gap: 14px;
+}
+
+.revision-card {
+  padding: 18px;
+  border: 1px solid rgba(19, 34, 56, 0.08);
+  border-radius: 18px;
+  background: rgba(248, 250, 252, 0.9);
+}
+
+.revision-card__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.revision-card__header h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.revision-card__header p {
+  margin: 8px 0 0;
+  color: var(--text-muted);
+}
+
+.revision-card__description {
+  margin: 14px 0 0;
+  color: var(--text-muted);
+}
+
+.revision-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(31, 142, 110, 0.12);
+  color: #146a56;
+  font-weight: 700;
 }
 
 .sr-only {

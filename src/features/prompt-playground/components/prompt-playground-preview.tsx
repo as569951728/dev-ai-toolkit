@@ -12,6 +12,8 @@ interface PromptPlaygroundPreviewProps {
     | null;
   onReviewInPromptDiff: () => void;
   onOpenInCodeViewer: () => void;
+  onSaveRun: () => void;
+  saveStatusMessage: string | null;
 }
 
 async function copyToClipboard(value: string) {
@@ -27,6 +29,8 @@ export function PromptPlaygroundPreview({
   preview,
   onReviewInPromptDiff,
   onOpenInCodeViewer,
+  onSaveRun,
+  saveStatusMessage,
 }: PromptPlaygroundPreviewProps) {
   const [copiedSection, setCopiedSection] = useState<'system' | 'user' | null>(
     null,
@@ -61,6 +65,9 @@ export function PromptPlaygroundPreview({
 
         {selectedTemplate && preview ? (
           <div className="panel__actions">
+            <button className="primary-button" type="button" onClick={onSaveRun}>
+              Save run snapshot
+            </button>
             <button
               className="secondary-button"
               type="button"
@@ -78,6 +85,10 @@ export function PromptPlaygroundPreview({
           </div>
         ) : null}
       </div>
+
+      {saveStatusMessage ? (
+        <p className="status-banner">{saveStatusMessage}</p>
+      ) : null}
 
       {selectedTemplate && preview ? (
         <div className="preview-stack">

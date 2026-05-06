@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { PromptPlaygroundPreview } from '@/features/prompt-playground/components/prompt-playground-preview';
@@ -6,6 +6,7 @@ import { PromptPlaygroundTemplatePicker } from '@/features/prompt-playground/com
 import { PromptPlaygroundVariableForm } from '@/features/prompt-playground/components/prompt-playground-variable-form';
 import { formatPromptSections } from '@/features/prompt-playground/lib/prompt-playground-utils';
 import { usePromptPlayground } from '@/features/prompt-playground/hooks/use-prompt-playground';
+import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 
 type PromptPlaygroundWorkspaceProps = {
   initialTemplateId?: string;
@@ -15,6 +16,8 @@ function PromptPlaygroundWorkspace({
   initialTemplateId,
 }: PromptPlaygroundWorkspaceProps) {
   const navigate = useNavigate();
+  const { createRun } = usePromptRuns();
+  const [saveStatusMessage, setSaveStatusMessage] = useState<string | null>(null);
   const {
     selectedTemplate,
     selectedTemplateId,
@@ -75,6 +78,25 @@ function PromptPlaygroundWorkspace({
         <PromptPlaygroundPreview
           selectedTemplate={selectedTemplate}
           preview={preview}
+          saveStatusMessage={saveStatusMessage}
+          onSaveRun={() => {
+            if (!selectedTemplate || !preview) {
+              return;
+            }
+
+            createRun({
+              templateId: selectedTemplate.id,
+              templateName: selectedTemplate.name,
+              templateVersion: selectedTemplate.version,
+              variables: variableValues,
+              systemPrompt: preview.systemPrompt,
+              userPrompt: preview.userPrompt,
+            });
+
+            setSaveStatusMessage(
+              `Saved a run snapshot for ${selectedTemplate.name} v${selectedTemplate.version}.`,
+            );
+          }}
           onReviewInPromptDiff={() => {
             const params = new URLSearchParams({
               left: originalPromptText,

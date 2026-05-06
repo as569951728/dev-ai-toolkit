@@ -1,7 +1,9 @@
 import { createTemplateId } from '@/features/prompt-templates/lib/prompt-template-utils';
+import { ensurePromptTemplateVersioning } from '@/features/prompt-templates/lib/prompt-template-versioning';
 import type {
   PromptTemplate,
   PromptTemplateImportSummary,
+  PromptTemplateRevision,
   PromptTemplateInput,
 } from '@/types/prompt-template';
 
@@ -53,18 +55,26 @@ function normalizePromptTemplate(
 
   const providedId = normalizeString(value.id);
   const updatedAtValue = normalizeString(value.updatedAt);
+  const providedVersion =
+    isRecord(value) && typeof value.version === 'number' ? value.version : undefined;
+  const providedRevisions =
+    isRecord(value) && Array.isArray(value.revisions)
+      ? (value.revisions as PromptTemplateRevision[])
+      : undefined;
 
-  return {
+  return ensurePromptTemplateVersioning({
     id: providedId || existingTemplate?.id || createTemplateId(name),
     name,
     description,
     systemPrompt,
     userPrompt,
     tags,
+    version: providedVersion ?? existingTemplate?.version,
+    revisions: providedRevisions ?? existingTemplate?.revisions,
     updatedAt: isValidIsoDate(updatedAtValue)
       ? updatedAtValue
       : existingTemplate?.updatedAt || new Date().toISOString(),
-  };
+  });
 }
 
 export function buildPromptTemplateExport(

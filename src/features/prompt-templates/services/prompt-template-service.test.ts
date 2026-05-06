@@ -8,6 +8,7 @@ import {
   deletePromptTemplate,
   duplicatePromptTemplate,
   importPromptTemplates,
+  restorePromptTemplateRevision,
   sortPromptTemplates,
   updatePromptTemplate,
 } from '@/features/prompt-templates/services/prompt-template-service';
@@ -51,6 +52,8 @@ describe('prompt-template-service', () => {
     });
 
     expect(createResult.template.id).toContain('release-note-writer');
+    expect(createResult.template.version).toBe(1);
+    expect(createResult.template.revisions).toHaveLength(1);
     expect(repository.snapshot()).toHaveLength(mockPromptTemplates.length + 1);
 
     const updateResult = updatePromptTemplate(
@@ -73,6 +76,11 @@ describe('prompt-template-service', () => {
         .find((template) => template.id === createResult.template.id)
         ?.description,
     ).toBe('Updated release note prompt');
+    expect(
+      repository
+        .snapshot()
+        .find((template) => template.id === createResult.template.id)?.version,
+    ).toBe(2);
 
     const duplicateResult = duplicatePromptTemplate(
       repository,
@@ -81,6 +89,33 @@ describe('prompt-template-service', () => {
     );
 
     expect(duplicateResult.template?.name).toContain('Copy');
+    expect(duplicateResult.template?.version).toBe(1);
+
+    const restoreResult = restorePromptTemplateRevision(
+      repository,
+      repository.loadAll(),
+      createResult.template.id,
+      1,
+    );
+
+    expect(restoreResult.template).not.toBeNull();
+    expect(
+      repository
+        .snapshot()
+        .find((template) => template.id === createResult.template.id)?.version,
+    ).toBe(3);
+    expect(
+      repository
+        .snapshot()
+        .find((template) => template.id === createResult.template.id)
+        ?.description,
+    ).toBe('Turn engineering changes into release notes.');
+    expect(
+      repository
+        .snapshot()
+        .find((template) => template.id === createResult.template.id)?.revisions
+        .length,
+    ).toBe(3);
 
     const importedTemplate = {
       ...mockPromptTemplates[0]!,

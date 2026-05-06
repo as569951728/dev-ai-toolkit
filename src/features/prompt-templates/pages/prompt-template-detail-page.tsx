@@ -2,12 +2,18 @@ import { Navigate, useNavigate, useParams } from 'react-router-dom';
 
 import { PromptTemplateDetail } from '@/features/prompt-templates/components/prompt-template-detail';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
+import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 
 export function PromptTemplateDetailPage() {
   const navigate = useNavigate();
   const { promptId } = useParams();
-  const { deleteTemplate, duplicateTemplate, getTemplateById } =
-    usePromptTemplates();
+  const { getRunsByTemplateId } = usePromptRuns();
+  const {
+    deleteTemplate,
+    duplicateTemplate,
+    getTemplateById,
+    restoreTemplateRevision,
+  } = usePromptTemplates();
 
   const template = promptId ? getTemplateById(promptId) : null;
 
@@ -15,9 +21,12 @@ export function PromptTemplateDetailPage() {
     return <Navigate to="/prompts" replace />;
   }
 
+  const recentRuns = getRunsByTemplateId(template.id, 5);
+
   return (
     <PromptTemplateDetail
       template={template}
+      recentRuns={recentRuns}
       onBack={() => navigate('/prompts')}
       onOpenInPlayground={(id) => navigate(`/playground?templateId=${id}`)}
       onEdit={(id) => navigate(`/prompts/${id}/edit`)}
@@ -31,6 +40,9 @@ export function PromptTemplateDetailPage() {
       onDelete={(id) => {
         deleteTemplate(id);
         navigate('/prompts');
+      }}
+      onRestoreRevision={(id, revisionVersion) => {
+        restoreTemplateRevision(id, revisionVersion);
       }}
     />
   );

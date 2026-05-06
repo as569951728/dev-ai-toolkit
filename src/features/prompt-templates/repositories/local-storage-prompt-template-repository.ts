@@ -1,3 +1,4 @@
+import { ensurePromptTemplateVersioning } from '@/features/prompt-templates/lib/prompt-template-versioning';
 import { mockPromptTemplates } from '@/features/prompt-templates/mock/prompts';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
 import type { PromptTemplate } from '@/types/prompt-template';
@@ -6,7 +7,9 @@ const STORAGE_KEY = 'dev-ai-toolkit.prompt-templates';
 
 function normalizeStoredTemplates(value: unknown) {
   return Array.isArray(value) && value.length > 0
-    ? (value as PromptTemplate[])
+    ? (value as PromptTemplate[]).map((template) =>
+        ensurePromptTemplateVersioning(template),
+      )
     : mockPromptTemplates;
 }
 
