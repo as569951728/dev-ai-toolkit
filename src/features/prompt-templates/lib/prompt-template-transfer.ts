@@ -25,14 +25,67 @@ function normalizeString(value: unknown) {
 
 function normalizeTags(value: unknown) {
   return Array.isArray(value)
-    ? value
-        .map((tag) => (typeof tag === 'string' ? tag.trim() : ''))
-        .filter(Boolean)
+    ? [...new Set(
+        value
+          .map((tag) => (typeof tag === 'string' ? tag.trim() : ''))
+          .filter(Boolean),
+      )]
     : [];
 }
 
 function isValidIsoDate(value: string) {
   return !Number.isNaN(new Date(value).getTime());
+}
+
+function normalizeRevision(
+  value: unknown,
+): PromptTemplateRevision | null {
+  if (!isRecord(value)) {
+    return null;
+  }
+
+  const version = typeof value.version === 'number' ? value.version : NaN;
+  const updatedAt = normalizeString(value.updatedAt);
+  const name = normalizeString(value.name);
+  const description = normalizeString(value.description);
+  const systemPrompt = normalizeString(value.systemPrompt);
+  const userPrompt = normalizeString(value.userPrompt);
+
+  if (
+    !Number.isInteger(version) ||
+    version <= 0 ||
+    !isValidIsoDate(updatedAt) ||
+    !name ||
+    !description ||
+    !systemPrompt ||
+    !userPrompt
+  ) {
+    return null;
+  }
+
+  return {
+    version,
+    updatedAt,
+    name,
+    description,
+    systemPrompt,
+    userPrompt,
+    tags: normalizeTags(value.tags),
+  };
+}
+
+function normalizeRevisions(
+  value: unknown,
+): PromptTemplateRevision[] | undefined {
+  if (!Array.isArray(value)) {
+    return undefined;
+  }
+
+  const revisions = value
+    .map((revision) => normalizeRevision(revision))
+    .filter((revision): revision is PromptTemplateRevision => revision !== null);
+
+  return revisions.length > 0 ? revisions : undefined;
 }
 
 function normalizePromptTemplate(
@@ -57,10 +110,7 @@ function normalizePromptTemplate(
   const updatedAtValue = normalizeString(value.updatedAt);
   const providedVersion =
     isRecord(value) && typeof value.version === 'number' ? value.version : undefined;
-  const providedRevisions =
-    isRecord(value) && Array.isArray(value.revisions)
-      ? (value.revisions as PromptTemplateRevision[])
-      : undefined;
+  const providedRevisions = normalizeRevisions(value.revisions);
 
   return ensurePromptTemplateVersioning({
     id: providedId || existingTemplate?.id || createTemplateId(name),
@@ -112,7 +162,9 @@ export function parsePromptTemplateImport(
     existingTemplates.map((template) => [template.id, template]),
   );
 
-  const importedTemplates: PromptTemplate[] = [];
+  const importedTemplatesById = new Map<string, PromptTemplate>();
+  const createdTemplateIds = new Set<string>();
+  const updatedTemplateIds = new Set<string>();
   let updated = 0;
   let created = 0;
 
@@ -128,20 +180,29 @@ export function parsePromptTemplateImport(
       continue;
     }
 
-    if (existingTemplate) {
-      updated += 1;
-    } else {
-      created += 1;
+    const alreadyImported = importedTemplatesById.has(normalizedTemplate.id);
+
+    if (!alreadyImported) {
+      if (existingTemplate) {
+        updatedTemplateIds.add(normalizedTemplate.id);
+      } else {
+        createdTemplateIds.add(normalizedTemplate.id);
+      }
     }
 
-    importedTemplates.push(normalizedTemplate);
+    importedTemplatesById.set(normalizedTemplate.id, normalizedTemplate);
   }
+
+  const importedTemplates = [...importedTemplatesById.values()];
 
   if (importedTemplates.length === 0) {
     throw new Error(
       'No valid templates were found in the selected JSON file.',
     );
   }
+
+  created = createdTemplateIds.size;
+  updated = updatedTemplateIds.size;
 
   const summary: PromptTemplateImportSummary = {
     created,

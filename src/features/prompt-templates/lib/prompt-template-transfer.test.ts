@@ -63,4 +63,88 @@ describe('prompt-template-transfer', () => {
       'Updated API Design Partner',
     );
   });
+
+  it('normalizes malformed revision payloads and falls back to a safe current revision', () => {
+    const rawValue = JSON.stringify([
+      {
+        id: 'legacy-template',
+        name: 'Legacy Template',
+        description: 'Imported from an older file',
+        systemPrompt: 'Inspect {{repo}}.',
+        userPrompt: 'Summarize {{task}}.',
+        updatedAt: 'not-a-date',
+        version: 3,
+        revisions: [
+          null,
+          {
+            version: 2,
+            updatedAt: '2026-05-01T00:00:00.000Z',
+            name: 'Legacy Template',
+            description: 'Older revision',
+            systemPrompt: 'Inspect {{repo}}.',
+            userPrompt: 'Summarize {{task}}.',
+            tags: ['legacy', '', 'legacy'],
+          },
+          {
+            version: 0,
+            updatedAt: 'bad-date',
+            name: '',
+            description: '',
+            systemPrompt: '',
+            userPrompt: '',
+            tags: [],
+          },
+        ],
+      },
+    ]);
+
+    const result = parsePromptTemplateImport(rawValue, mockPromptTemplates);
+    const importedTemplate = result.importedTemplates[0]!;
+
+    expect(result.summary).toEqual({
+      created: 1,
+      updated: 0,
+      total: 1,
+    });
+    expect(importedTemplate.version).toBe(3);
+    expect(importedTemplate.revisions).toHaveLength(2);
+    expect(importedTemplate.revisions[0]).toMatchObject({
+      version: 2,
+      tags: ['legacy'],
+    });
+    expect(importedTemplate.revisions[1]?.version).toBe(3);
+  });
+
+  it('deduplicates repeated template ids inside the same import file', () => {
+    const rawValue = JSON.stringify([
+      {
+        id: 'duplicate-template',
+        name: 'Duplicate Template',
+        description: 'First revision',
+        systemPrompt: 'Draft {{task}}.',
+        userPrompt: 'Explain {{task}}.',
+        tags: ['draft'],
+        updatedAt: '2026-05-01T00:00:00.000Z',
+      },
+      {
+        id: 'duplicate-template',
+        name: 'Duplicate Template',
+        description: 'Second revision wins',
+        systemPrompt: 'Draft {{task}} carefully.',
+        userPrompt: 'Explain {{task}} carefully.',
+        tags: ['draft', 'final'],
+        updatedAt: '2026-05-02T00:00:00.000Z',
+      },
+    ]);
+
+    const result = parsePromptTemplateImport(rawValue, mockPromptTemplates);
+
+    expect(result.summary).toEqual({
+      created: 1,
+      updated: 0,
+      total: 1,
+    });
+    expect(result.importedTemplates).toHaveLength(1);
+    expect(result.importedTemplates[0]?.description).toBe('Second revision wins');
+  });
 });
