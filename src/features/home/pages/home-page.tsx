@@ -24,6 +24,13 @@ const moduleCards = [
     href: '/json-tools',
     meta: 'Inspect structured data',
   },
+  {
+    title: 'API Builder',
+    description:
+      'Compose request URLs, headers, query params, and payloads, then generate a ready-to-use fetch snippet.',
+    href: '/api-builder',
+    meta: 'Draft request configurations',
+  },
 ];
 
 const valuePoints = [
@@ -59,6 +66,7 @@ const useCases = [
   'Bug triage and debugging',
   'Team prompt standardization',
   'JSON payload validation',
+  'Request scaffolding for frontend and backend work',
 ];
 
 const roadmapPhases = [

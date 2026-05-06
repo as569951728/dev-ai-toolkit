@@ -5,6 +5,7 @@ import {
 } from 'react-router-dom';
 
 import { AppNavigation } from '@/components/layout/app-navigation';
+import { ApiBuilderPage } from '@/features/api-builder/pages/api-builder-page';
 import { HomePage } from '@/features/home/pages/home-page';
 import { JsonToolsPage } from '@/features/json-tools/pages/json-tools-page';
 import { PromptPlaygroundPage } from '@/features/prompt-playground/pages/prompt-playground-page';
@@ -59,6 +60,10 @@ const router = createBrowserRouter([
       {
         path: 'json-tools',
         element: <JsonToolsPage />,
+      },
+      {
+        path: 'api-builder',
+        element: <ApiBuilderPage />,
       },
     ],
   },

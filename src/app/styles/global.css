@@ -183,7 +183,7 @@ pre {
 }
 
 .module-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .roadmap-grid {
@@ -644,6 +644,11 @@ pre {
   gap: 20px;
 }
 
+.api-builder-layout {
+  display: grid;
+  gap: 20px;
+}
+
 .playground-hero {
   padding: 32px 36px;
 }
@@ -681,7 +686,18 @@ pre {
   gap: 20px;
 }
 
+.api-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+  gap: 20px;
+  align-items: start;
+}
+
 .json-panel {
+  padding: 28px;
+}
+
+.api-panel {
   padding: 28px;
 }
 
@@ -693,7 +709,20 @@ pre {
   margin-bottom: 18px;
 }
 
+.api-panel__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
 .json-panel__header h2 {
+  margin: 0;
+  font-size: 1.45rem;
+}
+
+.api-panel__header h2 {
   margin: 0;
   font-size: 1.45rem;
 }
@@ -736,6 +765,62 @@ pre {
 
 .json-output {
   min-height: 420px;
+  overflow: auto;
+  font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
+}
+
+.api-form {
+  display: grid;
+  gap: 18px;
+}
+
+.api-textarea {
+  min-height: 320px;
+  resize: vertical;
+  font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
+}
+
+.api-pairs-editor {
+  display: grid;
+  gap: 14px;
+}
+
+.api-pairs-editor__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.api-pairs-editor__header h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.api-pairs-editor__header p {
+  margin: 8px 0 0;
+  color: var(--text-muted);
+}
+
+.api-pairs-editor__rows {
+  display: grid;
+  gap: 10px;
+}
+
+.api-pairs-editor__row {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr) auto;
+  gap: 10px;
+}
+
+.api-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.api-output {
   overflow: auto;
   font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
 }
@@ -850,7 +935,9 @@ pre {
   .detail-grid,
   .toolbar,
   .playground-grid,
-  .json-grid {
+  .json-grid,
+  .api-grid,
+  .api-preview-grid {
     grid-template-columns: 1fr;
   }
 
@@ -869,7 +956,9 @@ pre {
 
   .detail-actions,
   .prompt-card__actions,
-  .panel__actions {
+  .panel__actions,
+  .api-pairs-editor__header,
+  .api-panel__header {
     flex-direction: column;
   }
 
@@ -877,9 +966,14 @@ pre {
   .playground-panel,
   .json-tools-shell,
   .json-panel,
+  .api-panel,
   .home-hero__content,
   .home-section {
     padding: 24px;
+  }
+
+  .api-pairs-editor__row {
+    grid-template-columns: 1fr;
   }
 
   .home-hero__content h1,

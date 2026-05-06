@@ -18,6 +18,10 @@ const navigationItems = [
     to: '/json-tools',
     label: 'JSON Tools',
   },
+  {
+    to: '/api-builder',
+    label: 'API Builder',
+  },
 ];
 
 export function AppNavigation() {
