@@ -1,0 +1,46 @@
+name: Feature request
+description: Propose a focused product improvement that fits the current toolbox direction
+title: "feature: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please keep feature requests grounded in the current project scope.
+        Clear problem statements are more helpful than solution-first ideas.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: What user or maintainer problem does this address?
+      placeholder: Describe the real problem first.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What change do you want to see?
+      placeholder: Describe the proposed feature.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Suggested scope
+      description: Keep the requested scope realistic for the project size.
+      placeholder: A focused first version of the feature.
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Mention simpler or smaller alternatives if relevant.
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: What would make this issue complete?
+      placeholder: |
+        - [ ] ...
+        - [ ] ...

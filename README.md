@@ -234,6 +234,11 @@ Planned next steps include:
 
 See the longer-term product direction in [docs/roadmap.md](./docs/roadmap.md).
 
+## Releases
+
+- [Changelog](./CHANGELOG.md)
+- [v0.1.0 release notes](./docs/releases/v0.1.0.md)
+
 ## Contributing
 
 Contributions are welcome. Please read [CONTRIBUTING.md](./CONTRIBUTING.md) before opening a pull request.

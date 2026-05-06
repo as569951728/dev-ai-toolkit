@@ -225,6 +225,11 @@ npm run preview
 
 更长期的产品规划见：[docs/roadmap.md](./docs/roadmap.md)
 
+## 发布记录
+
+- [Changelog](./CHANGELOG.md)
+- [v0.1.0 release notes](./docs/releases/v0.1.0.md)
+
 ## 贡献
 
 欢迎贡献。提交 PR 前请先阅读 [CONTRIBUTING.md](./CONTRIBUTING.md)。

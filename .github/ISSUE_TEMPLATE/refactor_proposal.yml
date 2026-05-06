@@ -1,0 +1,35 @@
+name: Refactor proposal
+description: Suggest a structural improvement to code organization, persistence, or maintainability
+title: "refactor: "
+labels:
+  - refactor
+body:
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Why is this refactor needed?
+      description: Explain the current pain point or maintenance risk.
+      placeholder: Describe the current technical problem.
+    validations:
+      required: true
+  - type: textarea
+    id: current_state
+    attributes:
+      label: Current state
+      description: Which files or patterns are affected today?
+      placeholder: Mention the current code path or structure.
+    validations:
+      required: true
+  - type: textarea
+    id: proposed_change
+    attributes:
+      label: Proposed change
+      description: What should be reorganized or improved?
+      placeholder: Describe the refactor direction.
+    validations:
+      required: true
+  - type: textarea
+    id: risk
+    attributes:
+      label: Risks and rollout notes
+      description: What could break, and how should the refactor be introduced safely?

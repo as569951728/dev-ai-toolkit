@@ -1,0 +1,32 @@
+name: Documentation request
+description: Report missing, unclear, or outdated documentation
+title: "docs: "
+labels:
+  - documentation
+body:
+  - type: textarea
+    id: gap
+    attributes:
+      label: Documentation gap
+      description: What is missing or unclear?
+      placeholder: Describe the documentation issue.
+    validations:
+      required: true
+  - type: textarea
+    id: audience
+    attributes:
+      label: Who is affected?
+      description: New users, contributors, maintainers, or another audience?
+    validations:
+      required: true
+  - type: textarea
+    id: location
+    attributes:
+      label: Affected files or pages
+      description: Mention the current docs location if relevant.
+      placeholder: README.md, CONTRIBUTING.md, docs/...
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested improvement
+      description: What would make the documentation clearer or more complete?
