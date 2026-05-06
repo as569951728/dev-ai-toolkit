@@ -48,24 +48,28 @@ function createInitialValues(template: PromptTemplate | null) {
   );
 }
 
-export function usePromptPlayground() {
+export function usePromptPlayground(initialTemplateId?: string) {
   const { templates, getTemplateById } = usePromptTemplates();
   const defaultTemplate = templates[0] ?? null;
+  const initialTemplate = initialTemplateId
+    ? getTemplateById(initialTemplateId)
+    : defaultTemplate;
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>(
-    defaultTemplate?.id ?? '',
+    initialTemplate?.id ?? defaultTemplate?.id ?? '',
   );
   const [variableValues, setVariableValues] = useState<Record<string, string>>(
-    () => createInitialValues(defaultTemplate),
+    () => createInitialValues(initialTemplate ?? defaultTemplate),
   );
   const [recentTemplateIds, setRecentTemplateIds] = useState<string[]>(() =>
     loadRecentTemplateIds(),
   );
 
-  const activeTemplateId = selectedTemplateId || defaultTemplate?.id || '';
+  const activeTemplateId =
+    selectedTemplateId || initialTemplate?.id || defaultTemplate?.id || '';
 
   const selectedTemplate = useMemo(
-    () => getTemplateById(activeTemplateId) ?? defaultTemplate,
-    [activeTemplateId, defaultTemplate, getTemplateById],
+    () => getTemplateById(activeTemplateId) ?? initialTemplate ?? defaultTemplate,
+    [activeTemplateId, defaultTemplate, getTemplateById, initialTemplate],
   );
 
   const variables = useMemo(

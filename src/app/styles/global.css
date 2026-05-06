@@ -186,6 +186,25 @@ pre {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.home-module-group + .home-module-group {
+  margin-top: 28px;
+}
+
+.home-module-group__header {
+  margin-bottom: 16px;
+}
+
+.home-module-group__header h3 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.home-module-group__header p {
+  margin: 8px 0 0;
+  color: var(--text-muted);
+  max-width: 64ch;
+}
+
 .roadmap-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }

@@ -10,6 +10,8 @@ interface PromptPlaygroundPreviewProps {
         userPrompt: string;
       }
     | null;
+  onReviewInPromptDiff: () => void;
+  onOpenInCodeViewer: () => void;
 }
 
 async function copyToClipboard(value: string) {
@@ -23,6 +25,8 @@ async function copyToClipboard(value: string) {
 export function PromptPlaygroundPreview({
   selectedTemplate,
   preview,
+  onReviewInPromptDiff,
+  onOpenInCodeViewer,
 }: PromptPlaygroundPreviewProps) {
   const [copiedSection, setCopiedSection] = useState<'system' | 'user' | null>(
     null,
@@ -54,6 +58,25 @@ export function PromptPlaygroundPreview({
             workflow.
           </p>
         </div>
+
+        {selectedTemplate && preview ? (
+          <div className="panel__actions">
+            <button
+              className="secondary-button"
+              type="button"
+              onClick={onReviewInPromptDiff}
+            >
+              Review in Prompt Diff
+            </button>
+            <button
+              className="ghost-button"
+              type="button"
+              onClick={onOpenInCodeViewer}
+            >
+              Open in Code Viewer
+            </button>
+          </div>
+        ) : null}
       </div>
 
       {selectedTemplate && preview ? (

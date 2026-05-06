@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import { CodeEditorPanel } from '@/features/code-viewer/components/code-editor-panel';
 import { CodePreviewPanel } from '@/features/code-viewer/components/code-preview-panel';
@@ -17,11 +18,23 @@ async function copyToClipboard(value: string) {
   await navigator.clipboard.writeText(value);
 }
 
-export function CodeViewerPage() {
-  const [mode, setMode] = useState<CodeViewerMode>('compare');
-  const [language, setLanguage] = useState('typescript');
-  const [leftValue, setLeftValue] = useState(codeViewerSampleLeft);
-  const [rightValue, setRightValue] = useState(codeViewerSampleRight);
+type CodeViewerWorkspaceProps = {
+  initialMode: CodeViewerMode;
+  initialLanguage: string;
+  initialLeftValue: string;
+  initialRightValue: string;
+};
+
+function CodeViewerWorkspace({
+  initialMode,
+  initialLanguage,
+  initialLeftValue,
+  initialRightValue,
+}: CodeViewerWorkspaceProps) {
+  const [mode, setMode] = useState<CodeViewerMode>(initialMode);
+  const [language, setLanguage] = useState(initialLanguage);
+  const [leftValue, setLeftValue] = useState(initialLeftValue);
+  const [rightValue, setRightValue] = useState(initialRightValue);
 
   return (
     <section className="code-viewer-layout">
@@ -89,5 +102,27 @@ export function CodeViewerPage() {
         />
       </section>
     </section>
+  );
+}
+
+export function CodeViewerPage() {
+  const [searchParams] = useSearchParams();
+  const initialMode = useMemo<CodeViewerMode>(
+    () => (searchParams.get('mode') === 'single' ? 'single' : 'compare'),
+    [searchParams],
+  );
+  const initialLanguage = searchParams.get('language') ?? 'typescript';
+  const initialLeftValue = searchParams.get('left') ?? codeViewerSampleLeft;
+  const initialRightValue = searchParams.get('right') ?? codeViewerSampleRight;
+  const workspaceKey = searchParams.toString() || 'default-code-viewer';
+
+  return (
+    <CodeViewerWorkspace
+      key={workspaceKey}
+      initialMode={initialMode}
+      initialLanguage={initialLanguage}
+      initialLeftValue={initialLeftValue}
+      initialRightValue={initialRightValue}
+    />
   );
 }

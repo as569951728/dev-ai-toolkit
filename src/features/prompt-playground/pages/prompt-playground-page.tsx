@@ -1,9 +1,20 @@
+import { useMemo } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+
 import { PromptPlaygroundPreview } from '@/features/prompt-playground/components/prompt-playground-preview';
 import { PromptPlaygroundTemplatePicker } from '@/features/prompt-playground/components/prompt-playground-template-picker';
 import { PromptPlaygroundVariableForm } from '@/features/prompt-playground/components/prompt-playground-variable-form';
+import { formatPromptSections } from '@/features/prompt-playground/lib/prompt-playground-utils';
 import { usePromptPlayground } from '@/features/prompt-playground/hooks/use-prompt-playground';
 
-export function PromptPlaygroundPage() {
+type PromptPlaygroundWorkspaceProps = {
+  initialTemplateId?: string;
+};
+
+function PromptPlaygroundWorkspace({
+  initialTemplateId,
+}: PromptPlaygroundWorkspaceProps) {
+  const navigate = useNavigate();
   const {
     selectedTemplate,
     selectedTemplateId,
@@ -14,7 +25,26 @@ export function PromptPlaygroundPage() {
     recentTemplates,
     setSelectedTemplateId,
     updateVariableValue,
-  } = usePromptPlayground();
+  } = usePromptPlayground(initialTemplateId);
+
+  const originalPromptText = useMemo(() => {
+    if (!selectedTemplate) {
+      return '';
+    }
+
+    return formatPromptSections({
+      systemPrompt: selectedTemplate.systemPrompt,
+      userPrompt: selectedTemplate.userPrompt,
+    });
+  }, [selectedTemplate]);
+
+  const generatedPromptText = useMemo(() => {
+    if (!preview) {
+      return '';
+    }
+
+    return formatPromptSections(preview);
+  }, [preview]);
 
   return (
     <section className="playground-layout">
@@ -45,8 +75,37 @@ export function PromptPlaygroundPage() {
         <PromptPlaygroundPreview
           selectedTemplate={selectedTemplate}
           preview={preview}
+          onReviewInPromptDiff={() => {
+            const params = new URLSearchParams({
+              left: originalPromptText,
+              right: generatedPromptText,
+            });
+            navigate(`/prompt-diff?${params.toString()}`);
+          }}
+          onOpenInCodeViewer={() => {
+            const params = new URLSearchParams({
+              left: originalPromptText,
+              right: generatedPromptText,
+              mode: 'compare',
+              language: 'markdown',
+            });
+            navigate(`/code-viewer?${params.toString()}`);
+          }}
         />
       </div>
     </section>
+  );
+}
+
+export function PromptPlaygroundPage() {
+  const [searchParams] = useSearchParams();
+  const initialTemplateId = searchParams.get('templateId') ?? undefined;
+  const workspaceKey = initialTemplateId ?? 'default-playground';
+
+  return (
+    <PromptPlaygroundWorkspace
+      key={workspaceKey}
+      initialTemplateId={initialTemplateId}
+    />
   );
 }

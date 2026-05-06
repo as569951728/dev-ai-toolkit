@@ -85,6 +85,7 @@ export function PromptTemplateListPage() {
         onCreate={() => navigate('/prompts/new')}
         onView={(id) => navigate(`/prompts/${id}`)}
         onEdit={(id) => navigate(`/prompts/${id}/edit`)}
+        onOpenInPlayground={(id) => navigate(`/playground?templateId=${id}`)}
         onFiltersChange={setFilters}
         onExport={handleExport}
         onImport={() => fileInputRef.current?.click()}

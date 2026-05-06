@@ -4,6 +4,7 @@ interface PromptTemplateCardProps {
   template: PromptTemplate;
   onView: (id: string) => void;
   onEdit: (id: string) => void;
+  onOpenInPlayground: (id: string) => void;
 }
 
 function formatUpdatedAt(updatedAt: string) {
@@ -18,6 +19,7 @@ export function PromptTemplateCard({
   template,
   onView,
   onEdit,
+  onOpenInPlayground,
 }: PromptTemplateCardProps) {
   return (
     <article className="prompt-card">
@@ -33,6 +35,13 @@ export function PromptTemplateCard({
             onClick={() => onView(template.id)}
           >
             Preview
+          </button>
+          <button
+            className="secondary-button"
+            type="button"
+            onClick={() => onOpenInPlayground(template.id)}
+          >
+            Open in Playground
           </button>
           <button
             className="secondary-button"

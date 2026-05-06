@@ -4,17 +4,17 @@
 
 A practical open-source AI toolkit for developers, built with React, Vite, and TypeScript.
 
-This project is being developed as a real, structured, and extensible front-end application rather than a one-off demo. The goal is to provide a clean workspace for common AI-assisted development workflows such as prompt management, developer utilities, and future tooling modules.
+This project is being developed as a real, structured, and extensible front-end application rather than a one-off demo. The goal is to provide a clean **AI developer toolbox** for common AI-assisted workflows such as prompt authoring, payload inspection, request scaffolding, and output review.
 
 ## Why This Project
 
 Developers often use AI across repeated workflows:
 
 - Reusing prompt templates for debugging, code review, and API design
-- Organizing AI inputs in a clearer and more maintainable way
+- Organizing AI inputs, request data, and output review in a clearer way
 - Building lightweight internal tooling without a heavy backend at the start
 
-`dev-ai-toolkit` aims to turn those workflows into a focused, open-source product with a clear architecture and a practical user experience.
+`dev-ai-toolkit` aims to turn those workflows into a focused, open-source product with a clear architecture, a practical user experience, and a path toward stronger team workflows later.
 
 ## Current Features
 
@@ -25,6 +25,10 @@ The current version includes:
 - Prompt template search and tag filtering
 - Prompt template import and export via JSON
 - Prompt Playground with variable detection and live prompt preview
+- Prompt Diff for comparing prompt revisions and variable drift
+- JSON Tools for formatting, validating, and minifying payloads
+- API Builder for drafting request configurations and fetch snippets
+- Code Viewer for reading code or generated output in single or compare mode
 - Recent template history in the playground
 - Local mock data with browser persistence via `localStorage`
 - Feature-based code organization with reusable hooks and components
@@ -54,7 +58,11 @@ dev-ai-toolkit/
 │   │   └── ui/
 │   ├── features/
 │   │   ├── home/
+│   │   ├── api-builder/
+│   │   ├── code-viewer/
+│   │   ├── json-tools/
 │   │   ├── prompt-playground/
+│   │   ├── prompt-diff/
 │   │   └── prompt-templates/
 │   ├── hooks/
 │   ├── lib/
@@ -116,11 +124,15 @@ npm run preview
 
 ## Current Modules
 
+The toolbox is currently organized around two capability groups.
+
 ### Overview
 
-The home page explains the product value, current workflow, module entry points, and roadmap rhythm so first-time users can understand the project quickly.
+The home page explains the product value, module groups, workflow direction, and roadmap rhythm so first-time users can understand the project quickly.
 
-### Prompt Templates
+### Prompt Workflows
+
+#### Prompt Templates
 
 It currently supports:
 
@@ -139,7 +151,7 @@ The data source is intentionally local for the first iteration:
 - User changes are persisted in `localStorage`
 - The hook and page structure are designed so the data layer can later be replaced by a real API
 
-### Prompt Playground
+#### Prompt Playground
 
 The playground turns stored templates into ready-to-use prompt output.
 
@@ -152,14 +164,55 @@ It currently supports:
 - Copying generated prompt output
 - Saving recent template usage locally
 
+#### Prompt Diff
+
+The prompt diff workspace helps compare prompt revisions before they become shared team habits.
+
+It currently supports:
+
+- Comparing two prompt versions side by side
+- Detecting added and removed variables
+- Highlighting added and removed lines
+- Copying either side for reuse
+
+### Developer Utilities
+
+#### JSON Tools
+
+This module supports:
+
+- Formatting JSON
+- Minifying JSON
+- Validating JSON
+- Copying processed output
+- Loading sample payloads quickly
+
+#### API Builder
+
+This module supports:
+
+- Drafting request URLs with query params
+- Managing headers and JSON body input
+- Generating a ready-to-use `fetch` snippet
+- Copying request output for reuse
+
+#### Code Viewer
+
+This module supports:
+
+- Reading code or text output in a clearer layout
+- Single-pane and compare modes
+- Line-aware inspection
+- Copy actions for each input side
+
 ## How It Works
 
-The core workflow is intentionally simple:
+The current toolbox offers a few simple starting paths:
 
-1. Create or import a reusable prompt template
-2. Open the template in the playground
-3. Fill task-specific variables
-4. Preview and copy the final prompt output into your AI workflow
+1. Start in `Prompt Templates` and move into `Prompt Playground`
+2. Review prompt revisions in `Prompt Diff`
+3. Use `JSON Tools` or `API Builder` when working with payloads and request scaffolds
+4. Use `Code Viewer` to inspect generated output or rewritten content
 
 ## Development Principles
 
@@ -174,9 +227,9 @@ This project follows a few practical rules:
 
 Planned next steps include:
 
-- Landing page polish and project screenshots
-- More prompt workflow refinements
-- More AI developer tools beyond prompt management
+- Better connections across existing modules
+- Stronger data boundaries for future API-backed growth
+- A minimal automated testing baseline
 - Better open-source documentation and examples
 
 See the longer-term product direction in [docs/roadmap.md](./docs/roadmap.md).

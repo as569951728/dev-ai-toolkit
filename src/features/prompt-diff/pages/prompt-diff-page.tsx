@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import { PromptDiffEditorPanel } from '@/features/prompt-diff/components/prompt-diff-editor-panel';
 import { PromptDiffSummary } from '@/features/prompt-diff/components/prompt-diff-summary';
@@ -16,9 +17,17 @@ async function copyToClipboard(value: string) {
   await navigator.clipboard.writeText(value);
 }
 
-export function PromptDiffPage() {
-  const [leftValue, setLeftValue] = useState(promptDiffSampleLeft);
-  const [rightValue, setRightValue] = useState(promptDiffSampleRight);
+type PromptDiffWorkspaceProps = {
+  initialLeftValue: string;
+  initialRightValue: string;
+};
+
+function PromptDiffWorkspace({
+  initialLeftValue,
+  initialRightValue,
+}: PromptDiffWorkspaceProps) {
+  const [leftValue, setLeftValue] = useState(initialLeftValue);
+  const [rightValue, setRightValue] = useState(initialRightValue);
 
   return (
     <section className="prompt-diff-layout">
@@ -78,5 +87,20 @@ export function PromptDiffPage() {
         <PromptDiffSummary leftValue={leftValue} rightValue={rightValue} />
       </section>
     </section>
+  );
+}
+
+export function PromptDiffPage() {
+  const [searchParams] = useSearchParams();
+  const initialLeftValue = searchParams.get('left') ?? promptDiffSampleLeft;
+  const initialRightValue = searchParams.get('right') ?? promptDiffSampleRight;
+  const workspaceKey = searchParams.toString() || 'default-prompt-diff';
+
+  return (
+    <PromptDiffWorkspace
+      key={workspaceKey}
+      initialLeftValue={initialLeftValue}
+      initialRightValue={initialRightValue}
+    />
   );
 }

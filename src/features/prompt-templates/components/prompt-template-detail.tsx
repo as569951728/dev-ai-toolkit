@@ -6,6 +6,7 @@ interface PromptTemplateDetailProps {
   onEdit: (id: string) => void;
   onDuplicate: (id: string) => void;
   onDelete: (id: string) => void;
+  onOpenInPlayground: (id: string) => void;
 }
 
 function formatUpdatedAt(updatedAt: string) {
@@ -24,6 +25,7 @@ export function PromptTemplateDetail({
   onEdit,
   onDuplicate,
   onDelete,
+  onOpenInPlayground,
 }: PromptTemplateDetailProps) {
   return (
     <section className="panel">
@@ -37,6 +39,13 @@ export function PromptTemplateDetail({
         <div className="detail-actions">
           <button className="ghost-button" type="button" onClick={onBack}>
             Back to list
+          </button>
+          <button
+            className="secondary-button"
+            type="button"
+            onClick={() => onOpenInPlayground(template.id)}
+          >
+            Open in Playground
           </button>
           <button
             className="secondary-button"

@@ -49,3 +49,10 @@ export function buildPromptPreview(
     userPrompt: applyVariables(template.userPrompt, values),
   };
 }
+
+export function formatPromptSections(preview: {
+  systemPrompt: string;
+  userPrompt: string;
+}) {
+  return `System prompt\n${preview.systemPrompt}\n\nUser prompt\n${preview.userPrompt}`;
+}

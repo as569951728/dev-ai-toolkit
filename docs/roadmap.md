@@ -2,19 +2,19 @@
 
 ## Vision
 
-`dev-ai-toolkit` is designed to become a practical open-source AI workspace for developers.
+`dev-ai-toolkit` is designed to become a practical open-source AI developer toolbox.
 
-Its value is not only in helping users write prompts faster, but in turning repeated AI workflows into reusable, structured assets:
+Its value is not only in helping users write prompts faster, but in turning repeated AI-assisted development tasks into reusable, structured workflows:
 
 - Prompt templates that can be reused across coding, review, debugging, and API design tasks
 - A playground that turns templates plus variables into ready-to-run prompts
-- A future toolchain for common AI-assisted developer workflows
+- A growing toolchain for payload work, request drafting, and output review
 - A foundation that can grow from personal productivity into shared team knowledge
 
 In short:
 
-- Current value: help developers organize and reuse AI prompt workflows more efficiently
-- Future value: evolve into a real developer-facing AI workbench that supports repeatable, collaborative, and extensible workflows
+- Current value: help developers manage prompt workflows and adjacent developer tasks in one local-first toolbox
+- Future value: evolve into a real developer-facing AI toolbox that supports repeatable, collaborative, and extensible workflows
 
 ## Value Today
 
@@ -22,14 +22,14 @@ At the current stage, the project already provides practical value in a few ways
 
 - Reduces repeated prompt writing by making templates reusable
 - Improves prompt consistency across similar engineering tasks
-- Makes prompt usage more structured through selection, variables, and preview
+- Gives developers local-first tools for payload inspection and output review
 - Keeps everything local-first, simple, and easy to understand
 
 ## Long-Term Value
 
 Over time, the project should create value in three larger dimensions:
 
-### 1. From Prompt Utility to AI Workspace
+### 1. From Prompt Utility to AI Toolbox
 
 The project should evolve beyond template management into a broader AI development toolbox:
 
@@ -60,51 +60,50 @@ The project should become a strong open-source foundation that others can use di
 
 The roadmap is split into four stages so the product grows in a focused and believable way.
 
-### Stage 1: Product Foundation
+### Stage 1: Toolbox Framing
 
 Goal:
-Turn the project from "runnable" into "useful enough to keep using".
+Turn the project from "runnable" into a clearly framed AI developer toolbox.
 
 Focus:
 
-- Complete `Prompt Templates`
-- Complete `Prompt Playground`
-- Add import and export support
+- Unify the homepage, README, and roadmap around toolbox positioning
+- Group modules into prompt workflows and developer utilities
 - Improve information architecture and basic navigation
+- Keep the current modules believable and easy to understand
 - Improve README, screenshots, and project documentation
 
 Expected value:
 
 - New users can understand the product quickly
-- The first real workflow is complete
+- The product story matches the actual feature surface
 - The open-source project feels intentional rather than experimental
 
 Suggested versions:
 
-- `v0.2.x`
+- `v0.3.x`
 
-### Stage 2: AI Developer Toolbox
+### Stage 2: Workflow Connections
 
 Goal:
-Expand from prompt tooling into a broader AI developer toolkit.
+Connect existing modules so the toolbox feels like one system instead of isolated pages.
 
 Focus:
 
-- `JSON Tools`
-- `API Builder`
-- `Code Output Viewer`
-- Diff-oriented utilities for prompt and code output inspection
+- Cross-module paths from prompt workflows into review tools
+- Payload and request workflows that can feed each other
+- Better workflow-oriented actions and “continue in...” entry points
 - More curated prompt presets for common engineering scenarios
 
 Expected value:
 
-- The product becomes useful for more than a single workflow
 - The project identity becomes much clearer
-- Developers can solve more AI-adjacent tasks in one place
+- Developers can solve more related tasks in one place
+- Modules feel less like isolated utilities
 
 Suggested versions:
 
-- `v0.3.x` to `v0.5.x`
+- `v0.4.x` to `v0.5.x`
 
 ### Stage 3: Collaboration and Knowledge Capture
 
@@ -113,6 +112,7 @@ Move from individual productivity toward reusable team workflows.
 
 Focus:
 
+- Template repository or service abstraction
 - Template versioning
 - Archiving and organization
 - Better usage history and recommendations
@@ -155,14 +155,14 @@ Suggested versions:
 
 ## Near-Term Priority
 
-The most important next step is to land a strong `v0.2.0`.
+The most important next step is to land a strong toolbox transition phase.
 
 Recommended focus:
 
-1. Polish `Prompt Playground`
-2. Add prompt template import and export
-3. Improve the landing experience and screenshots
-4. Keep engineering quality high with lint, build, and CI checks
+1. Unify product framing across home, README, and roadmap
+2. Connect existing modules with clearer workflow paths
+3. Prepare a cleaner data boundary for the prompt workflow
+4. Add automated tests for the most important user behavior
 
 ## Decision Filter
 
