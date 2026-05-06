@@ -22,6 +22,11 @@ Initial public release of `dev-ai-toolkit`.
 - GitHub Actions CI running `lint`, `test`, and `build`
 - Initial automated tests for services, providers, and one workflow-level smoke path
 
+### Product direction
+
+- Prompt workflows are now grouped separately from developer utilities
+- The toolbox has a clearer `Start here` path for the core template -> playground -> history flow
+
 ### Notes
 
 - This release is intentionally local-first and browser-based.
