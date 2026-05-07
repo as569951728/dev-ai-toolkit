@@ -41,6 +41,7 @@ export function PromptRunHistoryPage() {
       ? null
       : availableTemplates.find((template) => template.id === selectedTemplateId)
           ?.name ?? null;
+  const normalizedSearchValue = searchValue.trim();
 
   const filteredRuns = useMemo(() => {
     const normalizedSearchValue = searchValue.trim().toLowerCase();
@@ -62,8 +63,6 @@ export function PromptRunHistoryPage() {
     if (selectedTemplateId !== 'all') {
       nextSearchParams.set('templateId', selectedTemplateId);
     }
-
-    const normalizedSearchValue = searchValue.trim();
 
     if (normalizedSearchValue) {
       nextSearchParams.set('q', normalizedSearchValue);
@@ -142,6 +141,21 @@ export function PromptRunHistoryPage() {
                 ? `Showing ${filteredRuns.length} of ${runs.length} saved runs for ${selectedTemplateName}.`
                 : `Showing ${filteredRuns.length} of ${runs.length} saved runs.`}
             </p>
+
+            {hasActiveFilters ? (
+              <div className="run-history-filter-list">
+                {selectedTemplateName ? (
+                  <span className="run-history-filter-chip">
+                    Template: {selectedTemplateName}
+                  </span>
+                ) : null}
+                {normalizedSearchValue ? (
+                  <span className="run-history-filter-chip">
+                    Search: {normalizedSearchValue}
+                  </span>
+                ) : null}
+              </div>
+            ) : null}
 
             {filteredRuns.length > 0 ? (
               <div className="revision-list">

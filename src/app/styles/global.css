@@ -1245,6 +1245,24 @@ pre {
   word-break: break-word;
 }
 
+.run-history-filter-list {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.run-history-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(19, 34, 56, 0.06);
+  color: #1b2c40;
+  font-size: 0.92rem;
+  word-break: break-word;
+}
+
 .prompt-diff-chip--added {
   background: rgba(31, 142, 110, 0.12);
   color: #146a56;

@@ -155,6 +155,7 @@ describe('PromptRunHistoryPage', () => {
     expect(
       screen.queryByRole('heading', { name: 'API Design Partner' }),
     ).not.toBeInTheDocument();
+    expect(screen.getByText('Search: code review')).toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText('Search runs'), {
       target: { value: '' },
@@ -169,6 +170,9 @@ describe('PromptRunHistoryPage', () => {
     expect(
       screen.queryByRole('heading', { name: 'Code Review Assistant' }),
     ).not.toBeInTheDocument();
+    expect(
+      screen.getByText('Template: API Design Partner'),
+    ).toBeInTheDocument();
   });
 
   it('preselects the template filter from the route query', () => {
@@ -211,6 +215,9 @@ describe('PromptRunHistoryPage', () => {
     );
     expect(
       screen.getByText('Showing 1 of 2 saved runs for API Design Partner.'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('Template: API Design Partner'),
     ).toBeInTheDocument();
     expect(
       screen.getByRole('heading', { name: 'API Design Partner' }),
@@ -256,6 +263,7 @@ describe('PromptRunHistoryPage', () => {
     );
 
     expect(screen.getByLabelText('Search runs')).toHaveValue('code review');
+    expect(screen.getByText('Search: code review')).toBeInTheDocument();
     expect(
       screen.getByRole('heading', { name: 'Code Review Assistant' }),
     ).toBeInTheDocument();
@@ -310,6 +318,9 @@ describe('PromptRunHistoryPage', () => {
     expect(
       screen.getByText('Showing 2 of 2 saved runs.'),
     ).toBeInTheDocument();
+    expect(
+      screen.queryByText('Template: API Design Partner'),
+    ).not.toBeInTheDocument();
     expect(
       screen.getByRole('heading', { name: 'API Design Partner' }),
     ).toBeInTheDocument();
