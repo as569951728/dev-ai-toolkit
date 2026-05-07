@@ -26,7 +26,7 @@ The current version includes:
 - Prompt template import and export via JSON
 - Prompt Playground with variable detection and live prompt preview
 - Prompt Diff for comparing prompt revisions and variable drift
-- Prompt Run History for browsing saved prompt runs
+- Prompt Run History for browsing, filtering, and reusing saved prompt runs
 - JSON Tools for formatting, validating, and minifying payloads
 - API Builder for drafting request configurations and fetch snippets
 - Code Viewer for reading code or generated output in single or compare mode
@@ -140,10 +140,10 @@ The toolbox is currently organized around two capability groups.
 | Group | Module | Current capabilities | Notes |
 | --- | --- | --- | --- |
 | Core | Overview | Introduces the module groups, main workflow, and near-term direction | Landing page for first-time users |
-| Prompt Workflows | Prompt Templates | Create, edit, duplicate, archive, restore, delete, filter, import, and export templates | Local-first storage backed by repository and provider layers |
+| Prompt Workflows | Prompt Templates | Create, edit, duplicate, archive, restore, delete, filter, import, and export templates | Can open a template directly in the playground or filtered run history |
 | Prompt Workflows | Prompt Playground | Select templates, fill variables, preview output, save run snapshots, and keep recent template usage | Main path for generating reusable prompt output |
 | Prompt Workflows | Prompt Diff | Compare prompt revisions, detect variable drift, and inspect line-level wording changes | Best used after editing or templating changes |
-| Prompt Workflows | Prompt Run History | Browse saved runs, inspect template versions, and reopen output in downstream tools | Dedicated history view for saved prompt output |
+| Prompt Workflows | Prompt Run History | Browse saved runs, filter by template, search by template name, and reopen output in downstream tools | Dedicated history view for saved prompt output |
 | Developer Utilities | JSON Tools | Format, validate, minify, copy, and sample JSON payloads | Useful for debugging and payload cleanup |
 | Developer Utilities | API Builder | Draft request URLs, headers, query params, JSON bodies, and `fetch` snippets | Local request scaffolding only |
 | Developer Utilities | Code Viewer | Inspect generated text or code in single or compare mode | Supports prompt and output review workflows |
@@ -160,8 +160,9 @@ The most complete workflow in the current version looks like this:
 
 1. Start in `Prompt Templates` and move into `Prompt Playground`
 2. Save a prompt run from the playground
-3. Review revisions in `Prompt Diff`
-4. Inspect related output in `Code Viewer`
+3. Open filtered `Prompt Run History` for the active template
+4. Review revisions in `Prompt Diff`
+5. Inspect related output in `Code Viewer`
 
 Other modules such as `JSON Tools` and `API Builder` are available as supporting utilities.
 
