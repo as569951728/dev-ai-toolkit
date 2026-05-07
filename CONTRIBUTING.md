@@ -92,6 +92,8 @@ When opening an issue, please include:
 - Reproduction steps
 - Screenshots if the issue is UI-related
 
+The GitHub Issues tab is the current source of truth for planned work. If an older planning note in `docs/` conflicts with the open issues, follow the issue tracker.
+
 ## Questions and Proposals
 
 If you want to propose a larger feature or structural change, please open an issue first so we can align on scope before implementation.
