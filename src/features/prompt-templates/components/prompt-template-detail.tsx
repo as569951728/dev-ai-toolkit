@@ -9,6 +9,8 @@ interface PromptTemplateDetailProps {
   onBack: () => void;
   onEdit: (id: string) => void;
   onDuplicate: (id: string) => void;
+  onArchive: (id: string) => void;
+  onRestoreArchive: (id: string) => void;
   onDelete: (id: string) => void;
   onOpenInPlayground: (id: string) => void;
   onRestoreRevision: (
@@ -33,6 +35,8 @@ export function PromptTemplateDetail({
   onBack,
   onEdit,
   onDuplicate,
+  onArchive,
+  onRestoreArchive,
   onDelete,
   onOpenInPlayground,
   onRestoreRevision,
@@ -76,6 +80,23 @@ export function PromptTemplateDetail({
           >
             Duplicate
           </button>
+          {template.archivedAt ? (
+            <button
+              className="secondary-button"
+              type="button"
+              onClick={() => onRestoreArchive(template.id)}
+            >
+              Restore
+            </button>
+          ) : (
+            <button
+              className="secondary-button"
+              type="button"
+              onClick={() => onArchive(template.id)}
+            >
+              Archive
+            </button>
+          )}
           <button
             className="danger-button"
             type="button"
@@ -94,6 +115,11 @@ export function PromptTemplateDetail({
           </div>
 
           <p className="detail-card__version">Current version v{template.version}</p>
+          {template.archivedAt ? (
+            <p className="detail-card__version">
+              Archived {formatUpdatedAt(template.archivedAt)}
+            </p>
+          ) : null}
 
           <div className="tag-list" aria-label="Prompt tags">
             {template.tags.map((tag) => (

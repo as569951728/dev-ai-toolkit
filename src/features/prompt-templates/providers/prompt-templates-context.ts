@@ -15,6 +15,8 @@ export interface PromptTemplatesContextValue {
     id: string,
     input: PromptTemplateInput,
   ) => PromptTemplate | null;
+  archiveTemplate: (id: string) => PromptTemplate | null;
+  restoreArchivedTemplate: (id: string) => PromptTemplate | null;
   deleteTemplate: (id: string) => void;
   duplicateTemplate: (id: string) => PromptTemplate | null;
   getTemplateById: (id: string) => PromptTemplate | null;

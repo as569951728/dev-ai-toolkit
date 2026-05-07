@@ -3,11 +3,13 @@ import { describe, expect, it } from 'vitest';
 import { mockPromptTemplates } from '@/features/prompt-templates/mock/prompts';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
 import {
+  archivePromptTemplate,
   collectPromptTemplateTags,
   createPromptTemplate,
   deletePromptTemplate,
   duplicatePromptTemplate,
   importPromptTemplates,
+  restoreArchivedPromptTemplate,
   restorePromptTemplateRevision,
   sortPromptTemplates,
   updatePromptTemplate,
@@ -149,5 +151,38 @@ describe('prompt-template-service', () => {
     expect(
       afterDelete.some((template) => template.id === createResult.template.id),
     ).toBe(false);
+  });
+
+  it('archives and restores templates without deleting their history', () => {
+    const repository = createMemoryRepository();
+    const templateId = mockPromptTemplates[0]!.id;
+
+    const archiveResult = archivePromptTemplate(
+      repository,
+      repository.loadAll(),
+      templateId,
+    );
+
+    expect(archiveResult.template?.archivedAt).not.toBeNull();
+    expect(
+      repository.snapshot().find((template) => template.id === templateId)
+        ?.archivedAt,
+    ).not.toBeNull();
+
+    const restoreResult = restoreArchivedPromptTemplate(
+      repository,
+      repository.loadAll(),
+      templateId,
+    );
+
+    expect(restoreResult.template?.archivedAt).toBeNull();
+    expect(
+      repository.snapshot().find((template) => template.id === templateId)
+        ?.archivedAt,
+    ).toBeNull();
+    expect(
+      repository.snapshot().find((template) => template.id === templateId)
+        ?.revisions.length,
+    ).toBe(mockPromptTemplates[0]!.revisions.length);
   });
 });

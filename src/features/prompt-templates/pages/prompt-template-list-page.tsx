@@ -18,9 +18,14 @@ export function PromptTemplateListPage() {
     search: '',
     tag: 'all',
   });
+  const [showArchived, setShowArchived] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
-  const filteredTemplates = filterPromptTemplates(templates, filters);
+  const visibleTemplates = showArchived
+    ? templates
+    : templates.filter((template) => !template.archivedAt);
+  const archivedCount = templates.filter((template) => template.archivedAt).length;
+  const filteredTemplates = filterPromptTemplates(visibleTemplates, filters);
 
   const handleExport = () => {
     const json = stringifyPromptTemplateExport(templates);
@@ -82,11 +87,14 @@ export function PromptTemplateListPage() {
         tags={tags}
         filters={filters}
         statusMessage={statusMessage}
+        archivedCount={archivedCount}
+        showArchived={showArchived}
         onCreate={() => navigate('/prompts/new')}
         onView={(id) => navigate(`/prompts/${id}`)}
         onEdit={(id) => navigate(`/prompts/${id}/edit`)}
         onOpenInPlayground={(id) => navigate(`/playground?templateId=${id}`)}
         onFiltersChange={setFilters}
+        onToggleArchived={() => setShowArchived((currentValue) => !currentValue)}
         onExport={handleExport}
         onImport={() => fileInputRef.current?.click()}
       />

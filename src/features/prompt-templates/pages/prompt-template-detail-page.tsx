@@ -9,9 +9,11 @@ export function PromptTemplateDetailPage() {
   const { promptId } = useParams();
   const { getRunsByTemplateId } = usePromptRuns();
   const {
+    archiveTemplate,
     deleteTemplate,
     duplicateTemplate,
     getTemplateById,
+    restoreArchivedTemplate,
     restoreTemplateRevision,
   } = usePromptTemplates();
 
@@ -40,6 +42,12 @@ export function PromptTemplateDetailPage() {
       onDelete={(id) => {
         deleteTemplate(id);
         navigate('/prompts');
+      }}
+      onArchive={(id) => {
+        archiveTemplate(id);
+      }}
+      onRestoreArchive={(id) => {
+        restoreArchivedTemplate(id);
       }}
       onRestoreRevision={(id, revisionVersion) => {
         restoreTemplateRevision(id, revisionVersion);

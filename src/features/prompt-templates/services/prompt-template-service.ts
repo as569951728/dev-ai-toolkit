@@ -76,6 +76,7 @@ export function updatePromptTemplate(
         input,
         version,
         updatedAt,
+        archivedAt: template.archivedAt,
         revisions: [
           ...template.revisions,
           createPromptTemplateRevision(input, version, updatedAt),
@@ -126,6 +127,7 @@ export function duplicatePromptTemplate(
     },
     version: 1,
     updatedAt,
+    archivedAt: null,
   });
 
   const nextTemplates = persistTemplates(repository, [
@@ -135,6 +137,70 @@ export function duplicatePromptTemplate(
 
   return {
     template: duplicatedTemplate,
+    templates: nextTemplates,
+  };
+}
+
+export function archivePromptTemplate(
+  repository: PromptTemplateRepository,
+  templates: PromptTemplate[],
+  id: string,
+): {
+  template: PromptTemplate | null;
+  templates: PromptTemplate[];
+} {
+  let archivedTemplate: PromptTemplate | null = null;
+
+  const nextTemplates = persistTemplates(
+    repository,
+    templates.map((template) => {
+      if (template.id !== id || template.archivedAt) {
+        return template;
+      }
+
+      archivedTemplate = {
+        ...template,
+        archivedAt: new Date().toISOString(),
+      };
+
+      return archivedTemplate;
+    }),
+  );
+
+  return {
+    template: archivedTemplate,
+    templates: nextTemplates,
+  };
+}
+
+export function restoreArchivedPromptTemplate(
+  repository: PromptTemplateRepository,
+  templates: PromptTemplate[],
+  id: string,
+): {
+  template: PromptTemplate | null;
+  templates: PromptTemplate[];
+} {
+  let restoredTemplate: PromptTemplate | null = null;
+
+  const nextTemplates = persistTemplates(
+    repository,
+    templates.map((template) => {
+      if (template.id !== id || !template.archivedAt) {
+        return template;
+      }
+
+      restoredTemplate = {
+        ...template,
+        archivedAt: null,
+      };
+
+      return restoredTemplate;
+    }),
+  );
+
+  return {
+    template: restoredTemplate,
     templates: nextTemplates,
   };
 }
@@ -199,6 +265,7 @@ export function restorePromptTemplateRevision(
         input: nextInput,
         version: nextVersion,
         updatedAt,
+        archivedAt: template.archivedAt,
         revisions: [...template.revisions, nextRevision],
       });
 

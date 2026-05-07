@@ -1,0 +1,52 @@
+import { fireEvent, render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import { describe, expect, it } from 'vitest';
+
+import { PromptTemplateListPage } from '@/features/prompt-templates/pages/prompt-template-list-page';
+import { PromptTemplatesProvider } from '@/features/prompt-templates/providers/prompt-templates-provider';
+import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
+import { mockPromptTemplates } from '@/features/prompt-templates/mock/prompts';
+
+function createMemoryRepository(
+  initialTemplates = mockPromptTemplates,
+): PromptTemplateRepository {
+  let templates = [...initialTemplates];
+
+  return {
+    loadAll: () => [...templates],
+    saveAll: (nextTemplates) => {
+      templates = [...nextTemplates];
+    },
+  };
+}
+
+describe('PromptTemplateListPage', () => {
+  it('hides archived templates by default and reveals them on demand', () => {
+    const repository = createMemoryRepository([
+      mockPromptTemplates[0]!,
+      {
+        ...mockPromptTemplates[1]!,
+        archivedAt: '2026-05-07T08:00:00.000Z',
+      },
+      mockPromptTemplates[2]!,
+    ]);
+
+    render(
+      <MemoryRouter>
+        <PromptTemplatesProvider repository={repository}>
+          <PromptTemplateListPage />
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText('Code Review Assistant')).toBeInTheDocument();
+    expect(screen.queryByText('API Design Partner')).not.toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Show archived templates (1)' }),
+    );
+
+    expect(screen.getByText('API Design Partner')).toBeInTheDocument();
+    expect(screen.getByText('Archived May 7, 2026')).toBeInTheDocument();
+  });
+});

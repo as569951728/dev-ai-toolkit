@@ -21,7 +21,13 @@ function createMemoryRepository(
 }
 
 function TestConsumer() {
-  const { templates, createTemplate, duplicateTemplate } = usePromptTemplates();
+  const {
+    templates,
+    createTemplate,
+    duplicateTemplate,
+    archiveTemplate,
+    restoreArchivedTemplate,
+  } = usePromptTemplates();
   const firstTemplate = templates[0];
 
   return (
@@ -49,6 +55,22 @@ function TestConsumer() {
         }}
       >
         Duplicate
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          archiveTemplate(mockPromptTemplates[0]!.id);
+        }}
+      >
+        Archive
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          restoreArchivedTemplate(mockPromptTemplates[0]!.id);
+        }}
+      >
+        Restore
       </button>
     </div>
   );
@@ -78,5 +100,19 @@ describe('PromptTemplatesProvider', () => {
 
     expect(screen.getByTestId('count')).toHaveTextContent('5');
     expect(repository.snapshot()[0]?.name).toContain('Copy');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Archive' }));
+
+    expect(
+      repository.snapshot().find((template) => template.id === mockPromptTemplates[0]!.id)
+        ?.archivedAt,
+    ).not.toBeNull();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Restore' }));
+
+    expect(
+      repository.snapshot().find((template) => template.id === mockPromptTemplates[0]!.id)
+        ?.archivedAt,
+    ).toBeNull();
   });
 });

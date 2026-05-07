@@ -17,6 +17,7 @@ export interface PromptTemplate {
   tags: string[];
   version: number;
   revisions: PromptTemplateRevision[];
+  archivedAt: string | null;
   updatedAt: string;
 }
 

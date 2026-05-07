@@ -108,6 +108,7 @@ function normalizePromptTemplate(
 
   const providedId = normalizeString(value.id);
   const updatedAtValue = normalizeString(value.updatedAt);
+  const archivedAtValue = normalizeString(value.archivedAt);
   const providedVersion =
     isRecord(value) && typeof value.version === 'number' ? value.version : undefined;
   const providedRevisions = normalizeRevisions(value.revisions);
@@ -121,6 +122,9 @@ function normalizePromptTemplate(
     tags,
     version: providedVersion ?? existingTemplate?.version,
     revisions: providedRevisions ?? existingTemplate?.revisions,
+    archivedAt: isValidIsoDate(archivedAtValue)
+      ? archivedAtValue
+      : existingTemplate?.archivedAt ?? null,
     updatedAt: isValidIsoDate(updatedAtValue)
       ? updatedAtValue
       : existingTemplate?.updatedAt || new Date().toISOString(),
@@ -235,6 +239,7 @@ export function toPromptTemplateFromInput(input: PromptTemplateInput) {
   return {
     ...input,
     id: createTemplateId(input.name),
+    archivedAt: null,
     updatedAt: new Date().toISOString(),
   };
 }

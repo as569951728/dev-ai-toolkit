@@ -10,11 +10,14 @@ interface PromptTemplateListProps {
   tags: string[];
   filters: PromptTemplateFiltersValue;
   statusMessage: string | null;
+  archivedCount: number;
+  showArchived: boolean;
   onCreate: () => void;
   onView: (id: string) => void;
   onEdit: (id: string) => void;
   onOpenInPlayground: (id: string) => void;
   onFiltersChange: (nextFilters: PromptTemplateFiltersValue) => void;
+  onToggleArchived: () => void;
   onExport: () => void;
   onImport: () => void;
 }
@@ -24,11 +27,14 @@ export function PromptTemplateList({
   tags,
   filters,
   statusMessage,
+  archivedCount,
+  showArchived,
   onCreate,
   onView,
   onEdit,
   onOpenInPlayground,
   onFiltersChange,
+  onToggleArchived,
   onExport,
   onImport,
 }: PromptTemplateListProps) {
@@ -64,6 +70,20 @@ export function PromptTemplateList({
         tags={tags}
         onFiltersChange={onFiltersChange}
       />
+
+      {archivedCount > 0 ? (
+        <div className="list-toolbar">
+          <button
+            className="ghost-button"
+            type="button"
+            onClick={onToggleArchived}
+          >
+            {showArchived
+              ? 'Hide archived templates'
+              : `Show archived templates (${archivedCount})`}
+          </button>
+        </div>
+      ) : null}
 
       {templates.length > 0 ? (
         <div className="prompt-list">

@@ -15,6 +15,14 @@ function formatUpdatedAt(updatedAt: string) {
   }).format(new Date(updatedAt));
 }
 
+function formatArchivedAt(archivedAt: string) {
+  return new Intl.DateTimeFormat('en', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(new Date(archivedAt));
+}
+
 export function PromptTemplateCard({
   template,
   onView,
@@ -54,7 +62,14 @@ export function PromptTemplateCard({
       </div>
 
       <div className="prompt-card__meta">
-        <span>Updated {formatUpdatedAt(template.updatedAt)}</span>
+        <div className="prompt-card__status">
+          <span>Updated {formatUpdatedAt(template.updatedAt)}</span>
+          {template.archivedAt ? (
+            <span className="tag tag--muted">
+              Archived {formatArchivedAt(template.archivedAt)}
+            </span>
+          ) : null}
+        </div>
         <div className="tag-list" aria-label="Prompt tags">
           {template.tags.map((tag) => (
             <span className="tag" key={tag}>

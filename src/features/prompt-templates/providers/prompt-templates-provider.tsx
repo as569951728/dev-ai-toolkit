@@ -8,11 +8,13 @@ import {
 import { createLocalStoragePromptTemplateRepository } from '@/features/prompt-templates/repositories/local-storage-prompt-template-repository';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
 import {
+  archivePromptTemplate,
   collectPromptTemplateTags,
   createPromptTemplate,
   deletePromptTemplate,
   duplicatePromptTemplate,
   importPromptTemplates,
+  restoreArchivedPromptTemplate,
   restorePromptTemplateRevision,
   sortPromptTemplates,
   updatePromptTemplate,
@@ -51,6 +53,18 @@ export function PromptTemplatesProvider({
 
   const updateTemplate = useCallback((id: string, input: PromptTemplateInput) => {
     const result = updatePromptTemplate(repository, templates, id, input);
+    setTemplates(result.templates);
+    return result.template;
+  }, [repository, templates]);
+
+  const archiveTemplate = useCallback((id: string) => {
+    const result = archivePromptTemplate(repository, templates, id);
+    setTemplates(result.templates);
+    return result.template;
+  }, [repository, templates]);
+
+  const restoreArchivedTemplate = useCallback((id: string) => {
+    const result = restoreArchivedPromptTemplate(repository, templates, id);
     setTemplates(result.templates);
     return result.template;
   }, [repository, templates]);
@@ -110,6 +124,8 @@ export function PromptTemplatesProvider({
       templates: sortedTemplates,
       createTemplate,
       updateTemplate,
+      archiveTemplate,
+      restoreArchivedTemplate,
       deleteTemplate,
       duplicateTemplate,
       getTemplateById,
@@ -121,6 +137,8 @@ export function PromptTemplatesProvider({
       sortedTemplates,
       createTemplate,
       updateTemplate,
+      archiveTemplate,
+      restoreArchivedTemplate,
       deleteTemplate,
       duplicateTemplate,
       getTemplateById,

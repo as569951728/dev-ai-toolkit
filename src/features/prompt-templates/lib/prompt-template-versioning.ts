@@ -7,6 +7,7 @@ import type {
 type PromptTemplateVersionedShape = PromptTemplateInput & {
   id: string;
   updatedAt: string;
+  archivedAt?: string | null;
   version?: number;
   revisions?: PromptTemplateRevision[];
 };
@@ -51,12 +52,14 @@ export function buildPromptTemplateFromInput({
   input,
   version,
   updatedAt,
+  archivedAt,
   revisions,
 }: {
   id: string;
   input: PromptTemplateInput;
   version: number;
   updatedAt: string;
+  archivedAt?: string | null;
   revisions?: PromptTemplateRevision[];
 }): PromptTemplate {
   const nextRevisions =
@@ -67,6 +70,7 @@ export function buildPromptTemplateFromInput({
     ...input,
     version,
     updatedAt,
+    archivedAt: archivedAt ?? null,
     revisions: nextRevisions,
   };
 }
@@ -97,6 +101,10 @@ export function ensurePromptTemplateVersioning(
   const updatedAt = isValidIsoDate(template.updatedAt)
     ? template.updatedAt
     : new Date().toISOString();
+  const archivedAt =
+    typeof template.archivedAt === 'string' && isValidIsoDate(template.archivedAt)
+      ? template.archivedAt
+      : null;
   const normalizedRevisions = (template.revisions ?? [])
     .map((revision) => normalizeRevision(revision))
     .filter((revision): revision is PromptTemplateRevision => revision !== null)
@@ -116,6 +124,7 @@ export function ensurePromptTemplateVersioning(
     ...input,
     version,
     updatedAt,
+    archivedAt,
     revisions,
   };
 }

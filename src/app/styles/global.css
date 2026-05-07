@@ -448,6 +448,13 @@ pre {
   font-size: 0.95rem;
 }
 
+.prompt-card__status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .tag-list {
   display: flex;
   flex-wrap: wrap;
@@ -462,6 +469,17 @@ pre {
   color: var(--primary-dark);
   font-size: 0.875rem;
   font-weight: 600;
+}
+
+.tag--muted {
+  background: rgba(19, 34, 56, 0.08);
+  color: var(--text-muted);
+}
+
+.list-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0 0 20px;
 }
 
 .prompt-form {
