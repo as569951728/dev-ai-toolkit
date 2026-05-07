@@ -22,6 +22,8 @@ export function PromptRunHistoryPage() {
     searchParams.get('templateId') ?? 'all',
   );
   const [searchValue, setSearchValue] = useState('');
+  const hasActiveFilters =
+    selectedTemplateId !== 'all' || searchValue.trim().length > 0;
 
   const availableTemplates = useMemo(
     () =>
@@ -98,6 +100,19 @@ export function PromptRunHistoryPage() {
                   ))}
                 </select>
               </label>
+
+              {hasActiveFilters ? (
+                <button
+                  className="ghost-button"
+                  type="button"
+                  onClick={() => {
+                    setSearchValue('');
+                    setSelectedTemplateId('all');
+                  }}
+                >
+                  Clear filters
+                </button>
+              ) : null}
             </div>
 
             {filteredRuns.length > 0 ? (
