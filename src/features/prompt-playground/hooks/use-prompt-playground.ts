@@ -4,39 +4,14 @@ import {
   buildPromptPreview,
   extractVariables,
 } from '@/features/prompt-playground/lib/prompt-playground-utils';
+import {
+  loadRecentTemplateIds,
+  saveRecentTemplateIds,
+} from '@/features/prompt-playground/repositories/local-storage-recent-template-repository';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
 import type { PromptTemplate } from '@/types/prompt-template';
 
-const STORAGE_KEY = 'dev-ai-toolkit.playground-recent-template-ids';
 const MAX_RECENT_ITEMS = 5;
-
-function loadRecentTemplateIds() {
-  if (typeof window === 'undefined') {
-    return [] as string[];
-  }
-
-  try {
-    const storedValue = window.localStorage.getItem(STORAGE_KEY);
-
-    if (!storedValue) {
-      return [];
-    }
-
-    const parsed = JSON.parse(storedValue) as string[];
-
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
-
-function persistRecentTemplateIds(templateIds: string[]) {
-  if (typeof window === 'undefined') {
-    return;
-  }
-
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(templateIds));
-}
 
 function createInitialValues(template: PromptTemplate | null) {
   if (!template) {
@@ -123,7 +98,7 @@ export function usePromptPlayground(initialTemplateId?: string) {
           ...currentIds.filter((id) => id !== nextTemplateId),
         ].slice(0, MAX_RECENT_ITEMS);
 
-        persistRecentTemplateIds(nextIds);
+        saveRecentTemplateIds(nextIds);
 
         return nextIds;
       });
