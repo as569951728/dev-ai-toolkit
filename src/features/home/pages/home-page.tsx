@@ -7,33 +7,33 @@ const moduleGroups = [
   {
     title: 'Prompt Workflows',
     description:
-      'Create reusable prompt assets, turn them into task-ready instructions, and inspect revisions before sharing them.',
+      'Manage reusable prompts, run them with variables, and compare changes when the wording evolves.',
     cards: [
       {
         title: 'Prompt Templates',
         description:
-          'Create, organize, search, duplicate, and share reusable prompt assets for repeat engineering workflows.',
+          'Create, organize, search, and reuse prompt templates for recurring development tasks.',
         href: '/prompts',
         meta: 'Manage template inventory',
       },
       {
         title: 'Prompt Playground',
         description:
-          'Take a template, fill variables, preview the final output, and copy production-ready prompts into your AI workflow.',
+          'Fill variables, preview the final prompt, and save a reusable output snapshot.',
         href: '/playground',
         meta: 'Turn templates into output',
       },
       {
         title: 'Prompt Diff',
         description:
-          'Compare prompt revisions, spot variable drift, and inspect wording changes before templates spread across the team.',
+          'Compare prompt revisions, check variable drift, and review wording changes.',
         href: '/prompt-diff',
         meta: 'Review prompt revisions',
       },
       {
         title: 'Run History',
         description:
-          'Review saved prompt runs, trace them back to template versions, and reopen the output in downstream tools.',
+          'Review saved prompt runs, trace them back to template versions, and reopen output later.',
         href: '/runs',
         meta: 'Browse saved prompt output',
       },
@@ -42,26 +42,26 @@ const moduleGroups = [
   {
     title: 'Developer Utilities',
     description:
-      'Inspect JSON payloads, draft API requests, and review generated output without leaving the same toolbox.',
+      'Handle JSON payloads, draft API requests, and inspect output alongside the prompt workflow.',
     cards: [
       {
         title: 'JSON Tools',
         description:
-          'Format, validate, minify, and clean JSON payloads for fast debugging and AI-related developer tasks.',
+          'Format, validate, minify, and clean JSON payloads.',
         href: '/json-tools',
         meta: 'Inspect structured data',
       },
       {
         title: 'API Builder',
         description:
-          'Compose request URLs, headers, query params, and payloads, then generate a ready-to-use fetch snippet.',
+          'Compose request URLs, headers, query params, and payloads, then generate a fetch snippet.',
         href: '/api-builder',
         meta: 'Draft request configurations',
       },
       {
         title: 'Code Output Viewer',
         description:
-          'Inspect code, text output, or generated responses in single or compare mode with line-aware reading.',
+          'Inspect code or text output in single or compare mode.',
         href: '/code-viewer',
         meta: 'Review generated output',
       },
@@ -70,9 +70,9 @@ const moduleGroups = [
 ];
 
 const valuePoints = [
-  'Keep repeat AI development tasks in one local-first workspace instead of scattering them across tabs and chats.',
-  'Turn prompts, request scaffolds, payload checks, and output reviews into reusable workflows.',
-  'Create a toolbox that is practical today and extensible toward shared team knowledge tomorrow.',
+  'Keep prompt templates, payload helpers, and output review in one local app.',
+  'Make repeated prompt work easier to reuse and check over time.',
+  'Stay lightweight while the project is still browser-only and local-first.',
 ];
 
 const workflowSteps = [
@@ -80,19 +80,19 @@ const workflowSteps = [
     step: '01',
     title: 'Start from a workflow module',
     description:
-      'Choose the part of your task you want to move faster, from prompt authoring to payload checks and output review.',
+      'Start with the part of the job you are actually trying to finish.',
   },
   {
     step: '02',
     title: 'Prepare the task-specific details',
     description:
-      'Fill prompt variables, compose request data, or clean structured payloads depending on the workflow.',
+      'Fill prompt variables, compose request data, or clean structured payloads.',
   },
   {
     step: '03',
     title: 'Review the result and continue the job',
     description:
-      'Inspect the generated output, compare revisions, and move the result into the next step of your development workflow.',
+      'Review the output, compare revisions, and continue in the next tool when needed.',
   },
 ];
 
@@ -136,12 +136,12 @@ export function HomePage() {
     <section className="home-layout">
       <section className="home-hero">
         <div className="home-hero__content">
-          <p className="eyebrow">Open Source AI Developer Toolbox</p>
-          <h1>One toolbox for prompt workflows, payload work, and output review.</h1>
+          <p className="eyebrow">Open Source Developer Tool</p>
+          <h1>A local-first workspace for prompt work and small developer utilities.</h1>
           <p className="home-hero__summary">
-            dev-ai-toolkit helps developers manage prompts, inspect payloads,
-            draft API requests, and review generated output in a local-first
-            toolbox built for repeat engineering work.
+            dev-ai-toolkit is a small React app for managing prompt templates,
+            saving prompt runs, and handling adjacent tasks like JSON cleanup,
+            request drafting, and output review.
           </p>
 
           <div className="home-hero__actions">
@@ -163,7 +163,7 @@ export function HomePage() {
           <div className="metric-card">
             <span className="metric-card__label">Toolbox coverage</span>
             <strong>Prompts to Payloads to Output</strong>
-            <p>Six local-first modules for common AI-assisted developer work.</p>
+            <p>A few connected modules for everyday prompt and debugging work.</p>
           </div>
           <div className="metric-card">
             <span className="metric-card__label">Saved prompt runs</span>
@@ -176,14 +176,14 @@ export function HomePage() {
       <section className="home-section">
         <div className="home-section__heading">
           <p className="eyebrow">Start here</p>
-          <h2>Follow one clear path from reusable prompt asset to saved output.</h2>
+          <h2>Start with templates, then save and review prompt output.</h2>
         </div>
 
         <div className="workflow-grid">
           <article className="workflow-card">
             <span className="workflow-card__step">01</span>
             <h3>Choose or create a template</h3>
-            <p>Start in Prompt Templates and define the reusable instructions you want to keep refining over time.</p>
+            <p>Start in Prompt Templates and keep the prompts you expect to reuse.</p>
             <Link className="ghost-button" to="/prompts">
               Open Prompt Templates
             </Link>
@@ -191,7 +191,7 @@ export function HomePage() {
           <article className="workflow-card">
             <span className="workflow-card__step">02</span>
             <h3>Run it in the playground</h3>
-            <p>Fill variables, preview the final prompt, and review the generated output before you reuse it.</p>
+            <p>Fill variables and preview the final prompt before you save the run.</p>
             <Link className="ghost-button" to="/playground">
               Open Prompt Playground
             </Link>
@@ -199,7 +199,7 @@ export function HomePage() {
           <article className="workflow-card">
             <span className="workflow-card__step">03</span>
             <h3>Save the output trail</h3>
-            <p>Capture a run snapshot, then inspect version history and recent activity as your prompt knowledge grows.</p>
+            <p>Save a run snapshot, then come back to it from history when you need it again.</p>
             <Link className="ghost-button" to="/runs">
               Open Run History
             </Link>
@@ -209,8 +209,8 @@ export function HomePage() {
 
       <section className="home-section">
         <div className="home-section__heading">
-          <p className="eyebrow">Why it matters</p>
-          <h2>Designed for repeat developer workflows, not one-off AI sessions.</h2>
+          <p className="eyebrow">Why this app exists</p>
+          <h2>Built for repeated prompt work, not just one-off chat sessions.</h2>
         </div>
 
         <div className="value-grid">
@@ -225,7 +225,7 @@ export function HomePage() {
       <section className="home-section">
         <div className="home-section__heading">
           <p className="eyebrow">Current modules</p>
-          <h2>Organized as prompt workflows plus developer utilities.</h2>
+          <h2>The current app is split between prompt work and supporting utilities.</h2>
         </div>
 
         {moduleGroups.map((group) => (
@@ -253,8 +253,8 @@ export function HomePage() {
 
       <section className="home-section">
         <div className="home-section__heading">
-          <p className="eyebrow">How it works</p>
-          <h2>Move from raw task input to cleaner AI-assisted output in three steps.</h2>
+          <p className="eyebrow">Working pattern</p>
+          <h2>The app stays simple: prepare input, review output, and keep useful history.</h2>
         </div>
 
         <div className="workflow-grid">
@@ -270,8 +270,8 @@ export function HomePage() {
 
       <section className="home-section home-section--accent">
         <div className="home-section__heading">
-          <p className="eyebrow">Who it helps</p>
-          <h2>Built for developers who repeat AI-assisted engineering tasks every week.</h2>
+          <p className="eyebrow">Common use cases</p>
+          <h2>These are the kinds of small development tasks the current app already supports.</h2>
         </div>
 
         <div className="use-case-list" aria-label="Common use cases">
@@ -286,7 +286,7 @@ export function HomePage() {
       <section className="home-section">
         <div className="home-section__heading">
           <p className="eyebrow">Recent activity</p>
-          <h2>Saved prompt runs now start forming a real activity trail.</h2>
+          <h2>Saved runs are visible on the homepage so the project feels more like a working tool.</h2>
         </div>
 
         {recentRuns.length > 0 ? (
@@ -315,8 +315,8 @@ export function HomePage() {
 
       <section className="home-section">
         <div className="home-section__heading">
-          <p className="eyebrow">Roadmap rhythm</p>
-          <h2>Shifting from prototype pages to a more connected toolbox.</h2>
+          <p className="eyebrow">Current direction</p>
+          <h2>The focus is still on connecting the existing modules before adding many more.</h2>
         </div>
 
         <div className="roadmap-grid">
