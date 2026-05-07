@@ -220,6 +220,50 @@ describe('PromptRunHistoryPage', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('preloads the search value from the route query', () => {
+    const templateRepository = createTemplateRepository();
+    const runRepository = createRunRepository([
+      {
+        id: 'run-2',
+        templateId: mockPromptTemplates[1]!.id,
+        templateName: mockPromptTemplates[1]!.name,
+        templateVersion: 2,
+        variables: {},
+        systemPrompt: 'System B',
+        userPrompt: 'User B',
+        createdAt: '2026-05-07T09:10:00.000Z',
+      },
+      {
+        id: 'run-1',
+        templateId: mockPromptTemplates[0]!.id,
+        templateName: mockPromptTemplates[0]!.name,
+        templateVersion: 1,
+        variables: {},
+        systemPrompt: 'System A',
+        userPrompt: 'User A',
+        createdAt: '2026-05-07T09:00:00.000Z',
+      },
+    ]);
+
+    render(
+      <MemoryRouter initialEntries={['/runs?q=code%20review']}>
+        <PromptTemplatesProvider repository={templateRepository}>
+          <PromptRunsProvider repository={runRepository}>
+            <PromptRunHistoryPage />
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByLabelText('Search runs')).toHaveValue('code review');
+    expect(
+      screen.getByRole('heading', { name: 'Code Review Assistant' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: 'API Design Partner' }),
+    ).not.toBeInTheDocument();
+  });
+
   it('clears active filters and restores the full run list', () => {
     const templateRepository = createTemplateRepository();
     const runRepository = createRunRepository([

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
@@ -15,13 +15,13 @@ function formatCreatedAt(createdAt: string) {
 }
 
 export function PromptRunHistoryPage() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { runs } = usePromptRuns();
   const { getTemplateById } = usePromptTemplates();
   const [selectedTemplateId, setSelectedTemplateId] = useState(
     searchParams.get('templateId') ?? 'all',
   );
-  const [searchValue, setSearchValue] = useState('');
+  const [searchValue, setSearchValue] = useState(searchParams.get('q') ?? '');
   const hasActiveFilters =
     selectedTemplateId !== 'all' || searchValue.trim().length > 0;
 
@@ -55,6 +55,22 @@ export function PromptRunHistoryPage() {
       return matchesTemplate && matchesSearch;
     });
   }, [runs, searchValue, selectedTemplateId]);
+
+  useEffect(() => {
+    const nextSearchParams = new URLSearchParams();
+
+    if (selectedTemplateId !== 'all') {
+      nextSearchParams.set('templateId', selectedTemplateId);
+    }
+
+    const normalizedSearchValue = searchValue.trim();
+
+    if (normalizedSearchValue) {
+      nextSearchParams.set('q', normalizedSearchValue);
+    }
+
+    setSearchParams(nextSearchParams, { replace: true });
+  }, [searchValue, selectedTemplateId, setSearchParams]);
 
   return (
     <section className="playground-layout">
