@@ -18,8 +18,12 @@
     "vite",
     "typescript"
   ],
-  "author": "",
+  "author": "Chenzhaowen",
   "license": "MIT",
+  "homepage": "https://github.com/as569951728/dev-ai-toolkit",
+  "bugs": {
+    "url": "https://github.com/as569951728/dev-ai-toolkit/issues"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/as569951728/dev-ai-toolkit.git"
