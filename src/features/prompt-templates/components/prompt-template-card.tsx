@@ -5,6 +5,7 @@ interface PromptTemplateCardProps {
   onView: (id: string) => void;
   onEdit: (id: string) => void;
   onOpenInPlayground: (id: string) => void;
+  onOpenRunHistory: (id: string) => void;
 }
 
 function formatUpdatedAt(updatedAt: string) {
@@ -28,6 +29,7 @@ export function PromptTemplateCard({
   onView,
   onEdit,
   onOpenInPlayground,
+  onOpenRunHistory,
 }: PromptTemplateCardProps) {
   return (
     <article className="prompt-card">
@@ -50,6 +52,13 @@ export function PromptTemplateCard({
             onClick={() => onOpenInPlayground(template.id)}
           >
             Open in Playground
+          </button>
+          <button
+            className="secondary-button"
+            type="button"
+            onClick={() => onOpenRunHistory(template.id)}
+          >
+            View run history
           </button>
           <button
             className="secondary-button"

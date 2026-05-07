@@ -16,6 +16,7 @@ interface PromptTemplateListProps {
   onView: (id: string) => void;
   onEdit: (id: string) => void;
   onOpenInPlayground: (id: string) => void;
+  onOpenRunHistory: (id: string) => void;
   onFiltersChange: (nextFilters: PromptTemplateFiltersValue) => void;
   onToggleArchived: () => void;
   onExport: () => void;
@@ -33,6 +34,7 @@ export function PromptTemplateList({
   onView,
   onEdit,
   onOpenInPlayground,
+  onOpenRunHistory,
   onFiltersChange,
   onToggleArchived,
   onExport,
@@ -94,6 +96,7 @@ export function PromptTemplateList({
               onView={onView}
               onEdit={onEdit}
               onOpenInPlayground={onOpenInPlayground}
+              onOpenRunHistory={onOpenRunHistory}
             />
           ))}
         </div>

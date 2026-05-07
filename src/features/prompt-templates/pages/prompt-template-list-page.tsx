@@ -93,6 +93,7 @@ export function PromptTemplateListPage() {
         onView={(id) => navigate(`/prompts/${id}`)}
         onEdit={(id) => navigate(`/prompts/${id}/edit`)}
         onOpenInPlayground={(id) => navigate(`/playground?templateId=${id}`)}
+        onOpenRunHistory={(id) => navigate(`/runs?templateId=${id}`)}
         onFiltersChange={setFilters}
         onToggleArchived={() => setShowArchived((currentValue) => !currentValue)}
         onExport={handleExport}
