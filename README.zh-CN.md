@@ -1,39 +1,55 @@
-**语言版本：** [English](./README.md) | 简体中文
-
 # dev-ai-toolkit
 
-一个面向开发者的实用型开源 AI 工具箱，基于 React、Vite 和 TypeScript 构建。
+**语言版本：** [English](./README.md) | 简体中文
 
-这个项目不是一次性的 demo，而是按照真实、清晰、可扩展的前端产品方式持续开发。它的目标是为开发者提供一个结构化的 **AI developer toolbox**，用来承载常见的 AI 辅助开发流程，例如 prompt 编排、数据载荷检查、请求草拟和输出审阅。
+`dev-ai-toolkit` 是一个本地优先的开发者 AI 工具箱，基于 React、Vite 和 TypeScript 构建。
 
-## 为什么做这个项目
+当前项目主要围绕几类日常开发场景展开：
 
-开发者在使用 AI 时，经常会重复遇到这些问题：
+- 维护和复用 prompt 模板
+- 预览带变量的 prompt 输出
+- 保存 prompt 运行记录并回看历史
+- 处理 JSON、接口草稿和文本输出
 
-- 相似场景下反复重写 prompt
-- prompt、请求数据和输出结果分散在不同工具里
-- 缺少一个清晰的工具入口来组织 AI 开发工作流
+## 适合做什么
 
-`dev-ai-toolkit` 希望把这些重复场景沉淀成一个聚焦、清晰、可扩展的开源产品，并为后续团队协作能力预留空间。
+这个仓库更适合下面这些场景：
+
+- 为代码审查、接口设计、问题排查等重复任务维护 prompt 模板
+- 在本地整理 prompt 输入、变量和输出结果
+- 用 JSON Tools、API Builder、Code Viewer 处理相邻的开发辅助工作
+
+目前它还是一个纯前端、本地优先的工具，没有后端和账号系统。
 
 ## 当前功能
 
-当前版本已经包含：
-
-- 首页 Overview 展示页
-- Prompt 模板列表页
-- Prompt 模板的新建、编辑、详情、复制、删除
-- Prompt 模板搜索、标签筛选、导入 / 导出 JSON
+- Overview 首页
+- Prompt Templates
+  - 列表、详情、新建、编辑、复制、归档、恢复、删除
+  - 搜索、标签筛选
+  - JSON 导入 / 导出
 - Prompt Playground
+  - 选择模板
+  - 识别 `{{variable}}`
+  - 填写变量并实时预览
+  - 保存最近使用模板
+  - 保存 run snapshot
 - Prompt Diff
+  - 比较 prompt 文本
+  - 检查变量占位符变化
+- Prompt Run History
+  - 浏览已保存 runs
+  - 按模板过滤
+  - 按模板名搜索
+  - 跳回模板详情或继续在下游工具中查看输出
 - JSON Tools
+  - 格式化、压缩、校验、复制
 - API Builder
+  - 组织 URL、Query、Headers、JSON Body
+  - 生成 `fetch` 示例代码
 - Code Viewer
-- 变量填充与实时预览
-- 最近使用模板记录
-- 使用 `localStorage` 的本地 mock 数据持久化
-- 基于 feature 的模块化代码组织
-- ESLint 与 GitHub Actions CI
+  - 单栏 / 双栏查看文本和代码输出
+  - 复制内容
 
 ## 技术栈
 
@@ -41,8 +57,8 @@
 - Vite
 - TypeScript
 - React Router
+- Vitest
 - ESLint
-- GitHub Actions
 
 ## 项目结构
 
@@ -52,26 +68,10 @@ dev-ai-toolkit/
 ├── public/
 ├── src/
 │   ├── app/
-│   │   ├── router/
-│   │   ├── providers/
-│   │   └── styles/
 │   ├── components/
-│   │   ├── common/
-│   │   ├── layout/
-│   │   └── ui/
 │   ├── features/
-│   │   ├── home/
-│   │   ├── api-builder/
-│   │   ├── code-viewer/
-│   │   ├── json-tools/
-│   │   ├── prompt-playground/
-│   │   ├── prompt-diff/
-│   │   └── prompt-templates/
-│   ├── hooks/
 │   ├── lib/
 │   ├── types/
-│   ├── constants/
-│   ├── assets/
 │   ├── App.tsx
 │   └── main.tsx
 ├── .github/
@@ -95,22 +95,28 @@ dev-ai-toolkit/
 npm install
 ```
 
-### 启动开发环境
+### 本地开发
 
 ```bash
 npm run dev
 ```
 
-然后打开 Vite 在终端输出的本地地址，通常是：
+默认会启动在 Vite 输出的本地地址，通常是：
 
 ```txt
 http://localhost:5173
 ```
 
-### 构建生产版本
+### 构建
 
 ```bash
 npm run build
+```
+
+### 测试
+
+```bash
+npm run test
 ```
 
 ### 代码检查
@@ -119,111 +125,57 @@ npm run build
 npm run lint
 ```
 
-### 预览生产构建
+## Live Demo
 
-```bash
-npm run preview
-```
+当前仓库还没有公开的演示地址。
 
-## 主要模块
+如果后续部署到 Vercel，请把正式地址更新到这里，并同步维护部署说明。
 
-当前工具箱按两类能力组织。
+### 部署说明
 
-### Overview
+见 [docs/deployment.md](./docs/deployment.md)。
 
-首页会先解释项目价值、模块分组、工作流方向和路线节奏，让第一次进入项目的人能快速理解这个工具箱的定位。
+## 模块概览
 
-### Prompt Workflows
+| 分组 | 模块 | 当前能力 | 备注 |
+| --- | --- | --- | --- |
+| Core | Overview | 介绍模块分组、主路径和当前阶段方向 | 首页入口 |
+| Prompt Workflows | Prompt Templates | 创建、编辑、复制、归档、恢复、删除、筛选、导入、导出模板 | 可以直接进入 Playground 或过滤后的 Run History |
+| Prompt Workflows | Prompt Playground | 选择模板、填变量、预览输出、保存 run、保留最近使用模板 | 当前主工作流入口 |
+| Prompt Workflows | Prompt Diff | 比较 prompt 文本、变量变化和行级差异 | 适合做模板改写后的复核 |
+| Prompt Workflows | Prompt Run History | 浏览 runs、按模板过滤、按模板名搜索、继续在下游工具查看输出 | 已保存 prompt 输出的历史视图 |
+| Developer Utilities | JSON Tools | 格式化、校验、压缩、复制、加载示例 | 适合调试 JSON 载荷 |
+| Developer Utilities | API Builder | 组织请求参数并生成 `fetch` 代码 | 本地请求草稿工具 |
+| Developer Utilities | Code Viewer | 单栏 / 双栏查看文本和代码输出 | 适合审阅 prompt 或生成结果 |
 
-#### Prompt Templates
+## 典型使用路径
 
-当前支持：
+当前比较完整的一条路径是：
 
-- 浏览所有模板
-- 创建模板
-- 编辑模板
-- 搜索与标签筛选
-- 查看模板详情
-- 复制模板
-- 删除模板
-- 导入 / 导出 JSON
+1. 在 `Prompt Templates` 中创建或整理模板
+2. 进入 `Prompt Playground` 填变量并预览输出
+3. 保存 run snapshot
+4. 在 `Prompt Run History` 里回看某个模板的输出历史
+5. 在 `Prompt Diff` 或 `Code Viewer` 里继续检查结果
 
-#### Prompt Playground
+## 当前限制
 
-当前支持：
-
-- 从已有模板中选择 prompt
-- 自动识别 `{{variable}}` 变量占位符
-- 填写变量值
-- 实时预览最终 `system prompt` 和 `user prompt`
-- 复制生成后的 prompt
-- 保存最近使用模板
-
-#### Prompt Diff
-
-当前支持：
-
-- 左右两侧比较不同 prompt 版本
-- 检查新增 / 删除的变量占位符
-- 检查新增 / 删除的文本行
-- 分别复制左右两边内容
-
-### Developer Utilities
-
-#### JSON Tools
-
-当前支持：
-
-- JSON 格式化
-- JSON 压缩
-- JSON 校验
-- 复制处理结果
-
-#### API Builder
-
-当前支持：
-
-- 组织 URL、Query、Headers、JSON Body
-- 生成可复用的 `fetch` 示例代码
-- 快速加载示例请求
-
-#### Code Viewer
-
-当前支持：
-
-- 单栏 / 双栏查看代码与文本输出
-- 行级阅读
-- 比较不同输出版本
-- 快速复制内容
-
-## 如何使用
-
-当前推荐有几条典型使用路径：
-
-1. 在 `Prompt Templates` 中创建或导入模板，再进入 `Prompt Playground`
-2. 在 `Prompt Diff` 中比较 prompt 的改写前后差异
-3. 在 `JSON Tools` 和 `API Builder` 中处理请求载荷与接口草稿
-4. 在 `Code Viewer` 中审阅 AI 生成的输出结果
-
-## 开发原则
-
-这个项目遵循几个核心原则：
-
-- 保持代码简单、可读、易扩展
-- 优先采用按功能拆分的结构，而不是把所有页面堆平
-- 先做能用的原型，再逐步演化成完整产品
-- 避免“假复杂度”，保证每个模块都能独立维护
+- 所有数据都存放在浏览器 `localStorage`
+- 没有后端、账号系统和跨设备同步
+- 运行记录只保存在当前浏览器环境
+- 一些开发辅助模块目前还是轻量工具页，和 prompt 主链路相比更独立
 
 ## 路线图
 
-后续方向包括：
+后续会继续做这些方向：
 
-- 模块之间更清晰的工作流连接
-- 更稳的 prompt 数据层边界
-- 最小可行的自动化测试体系
-- 更完善的开源文档与展示素材
+- 把现有模块连接得更顺
+- 继续补运行历史和模板资产链
+- 让本地持久化和测试更稳
+- 保持文档和实际功能状态一致
 
-更长期的产品规划见：[docs/roadmap.md](./docs/roadmap.md)
+更长期的规划见 [docs/roadmap.md](./docs/roadmap.md)。  
+代码结构说明见 [docs/architecture.md](./docs/architecture.md)。
 
 ## 发布记录
 
@@ -232,8 +184,8 @@ npm run preview
 
 ## 贡献
 
-欢迎贡献。提交 PR 前请先阅读 [CONTRIBUTING.md](./CONTRIBUTING.md)。
+欢迎提交 issue 或 pull request。开始之前请先阅读 [CONTRIBUTING.md](./CONTRIBUTING.md)。
 
 ## License
 
-本项目采用 [MIT License](./LICENSE)。
+本项目使用 [MIT License](./LICENSE)。
