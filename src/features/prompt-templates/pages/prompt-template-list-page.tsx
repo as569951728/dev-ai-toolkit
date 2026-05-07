@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { filterPromptTemplates } from '@/features/prompt-templates/lib/prompt-template-utils';
 import {
@@ -12,13 +12,14 @@ import type { PromptTemplateFilters } from '@/types/prompt-template';
 
 export function PromptTemplateListPage() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const { importTemplates, tags, templates } = usePromptTemplates();
-  const [filters, setFilters] = useState<PromptTemplateFilters>({
-    search: '',
-    tag: 'all',
-  });
-  const [showArchived, setShowArchived] = useState(false);
+  const filters: PromptTemplateFilters = {
+    search: searchParams.get('search') ?? '',
+    tag: searchParams.get('tag') ?? 'all',
+  };
+  const showArchived = searchParams.get('archived') === '1';
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   const visibleTemplates = showArchived
@@ -26,6 +27,28 @@ export function PromptTemplateListPage() {
     : templates.filter((template) => !template.archivedAt);
   const archivedCount = templates.filter((template) => template.archivedAt).length;
   const filteredTemplates = filterPromptTemplates(visibleTemplates, filters);
+
+  const updateListSearchParams = (
+    nextFilters: PromptTemplateFilters,
+    nextShowArchived: boolean,
+  ) => {
+    const nextSearchParams = new URLSearchParams();
+    const normalizedSearchValue = nextFilters.search.trim();
+
+    if (normalizedSearchValue) {
+      nextSearchParams.set('search', normalizedSearchValue);
+    }
+
+    if (nextFilters.tag !== 'all') {
+      nextSearchParams.set('tag', nextFilters.tag);
+    }
+
+    if (nextShowArchived) {
+      nextSearchParams.set('archived', '1');
+    }
+
+    setSearchParams(nextSearchParams, { replace: true });
+  };
 
   const handleExport = () => {
     const json = stringifyPromptTemplateExport(templates);
@@ -94,8 +117,12 @@ export function PromptTemplateListPage() {
         onEdit={(id) => navigate(`/prompts/${id}/edit`)}
         onOpenInPlayground={(id) => navigate(`/playground?templateId=${id}`)}
         onOpenRunHistory={(id) => navigate(`/runs?templateId=${id}`)}
-        onFiltersChange={setFilters}
-        onToggleArchived={() => setShowArchived((currentValue) => !currentValue)}
+        onFiltersChange={(nextFilters) =>
+          updateListSearchParams(nextFilters, showArchived)
+        }
+        onToggleArchived={() =>
+          updateListSearchParams(filters, !showArchived)
+        }
         onExport={handleExport}
         onImport={() => fileInputRef.current?.click()}
       />

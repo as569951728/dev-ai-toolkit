@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { afterEach } from 'vitest';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -32,6 +33,10 @@ function createMemoryRepository(
     },
   };
 }
+
+afterEach(() => {
+  cleanup();
+});
 
 describe('PromptTemplateListPage', () => {
   it('hides archived templates by default and reveals them on demand', () => {
@@ -82,5 +87,40 @@ describe('PromptTemplateListPage', () => {
     expect(mockNavigate).toHaveBeenCalledWith(
       `/runs?templateId=${mockPromptTemplates[0]!.id}`,
     );
+  });
+
+  it('preloads list filters and archived visibility from the route query', () => {
+    const repository = createMemoryRepository([
+      mockPromptTemplates[0]!,
+      {
+        ...mockPromptTemplates[1]!,
+        archivedAt: '2026-05-07T08:00:00.000Z',
+      },
+      mockPromptTemplates[2]!,
+    ]);
+
+    render(
+        <MemoryRouter
+          initialEntries={[
+          '/prompts?archived=1&tag=api&search=api',
+        ]}
+      >
+        <PromptTemplatesProvider repository={repository}>
+          <PromptTemplateListPage />
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    expect(
+      screen.getAllByRole('button', { name: 'Hide archived templates' }).length,
+    ).toBeGreaterThan(0);
+    expect(
+      screen.getByPlaceholderText('Search by name, tag, or prompt content'),
+    ).toHaveValue('api');
+    expect(screen.getByLabelText('Tag')).toHaveValue('api');
+    expect(screen.getByText('API Design Partner')).toBeInTheDocument();
+    expect(
+      screen.queryByText('Code Review Assistant'),
+    ).not.toBeInTheDocument();
   });
 });
