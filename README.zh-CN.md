@@ -127,9 +127,9 @@ npm run lint
 
 ## Live Demo
 
-当前仓库还没有公开的演示地址。
+当前可访问的演示地址：
 
-如果后续部署到 Vercel，请把正式地址更新到这里，并同步维护部署说明。
+- [https://dev-ai-toolkit.vercel.app](https://dev-ai-toolkit.vercel.app)
 
 ### 部署说明
 

@@ -125,9 +125,9 @@ npm run preview
 
 ## Live Demo
 
-There is no public demo URL attached to this repository yet.
+The current public demo is available at:
 
-If you deploy the app to Vercel, add the production URL here and keep the deployment notes in sync.
+- [https://dev-ai-toolkit.vercel.app](https://dev-ai-toolkit.vercel.app)
 
 ### Deploy To Vercel
 

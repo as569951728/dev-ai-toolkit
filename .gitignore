@@ -12,3 +12,4 @@ tsconfig.node.tsbuildinfo
 
 .idea
 .vscode
+.vercel
