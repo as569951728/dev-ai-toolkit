@@ -123,9 +123,15 @@ npm run lint
 npm run preview
 ```
 
+## Live Demo
+
+There is no public demo URL attached to this repository yet.
+
+If you deploy the app to Vercel, add the production URL here and keep the deployment notes in sync.
+
 ### Deploy To Vercel
 
-See [docs/deployment/vercel.md](./docs/deployment/vercel.md) for the current Vercel deployment notes and limitations.
+See [docs/deployment.md](./docs/deployment.md) for the current deployment notes.
 
 ## Current Modules
 
