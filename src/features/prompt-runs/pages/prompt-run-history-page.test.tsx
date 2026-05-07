@@ -85,6 +85,9 @@ describe('PromptRunHistoryPage', () => {
     expect(
       screen.getAllByRole('link', { name: 'Open output in Code Viewer' }),
     ).toHaveLength(2);
+    expect(
+      screen.getByText('Showing 2 of 2 saved runs.'),
+    ).toBeInTheDocument();
   });
 
   it('shows an empty state when no runs have been saved yet', () => {
@@ -207,6 +210,9 @@ describe('PromptRunHistoryPage', () => {
       mockPromptTemplates[1]!.id,
     );
     expect(
+      screen.getByText('Showing 1 of 2 saved runs for API Design Partner.'),
+    ).toBeInTheDocument();
+    expect(
       screen.getByRole('heading', { name: 'API Design Partner' }),
     ).toBeInTheDocument();
     expect(
@@ -257,6 +263,9 @@ describe('PromptRunHistoryPage', () => {
 
     expect(screen.getByLabelText('Template')).toHaveValue('all');
     expect(screen.queryByRole('button', { name: 'Clear filters' })).not.toBeInTheDocument();
+    expect(
+      screen.getByText('Showing 2 of 2 saved runs.'),
+    ).toBeInTheDocument();
     expect(
       screen.getByRole('heading', { name: 'API Design Partner' }),
     ).toBeInTheDocument();

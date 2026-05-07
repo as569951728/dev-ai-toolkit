@@ -36,6 +36,12 @@ export function PromptRunHistoryPage() {
     [runs],
   );
 
+  const selectedTemplateName =
+    selectedTemplateId === 'all'
+      ? null
+      : availableTemplates.find((template) => template.id === selectedTemplateId)
+          ?.name ?? null;
+
   const filteredRuns = useMemo(() => {
     const normalizedSearchValue = searchValue.trim().toLowerCase();
 
@@ -114,6 +120,12 @@ export function PromptRunHistoryPage() {
                 </button>
               ) : null}
             </div>
+
+            <p className="panel__summary">
+              {selectedTemplateName
+                ? `Showing ${filteredRuns.length} of ${runs.length} saved runs for ${selectedTemplateName}.`
+                : `Showing ${filteredRuns.length} of ${runs.length} saved runs.`}
+            </p>
 
             {filteredRuns.length > 0 ? (
               <div className="revision-list">
