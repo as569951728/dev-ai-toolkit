@@ -634,6 +634,11 @@ pre {
   gap: 12px;
 }
 
+.detail-actions--inline {
+  justify-content: flex-start;
+  margin-top: 16px;
+}
+
 .detail-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -720,6 +725,13 @@ pre {
 .revision-card__description {
   margin: 14px 0 0;
   color: var(--text-muted);
+}
+
+.run-history-note {
+  display: inline-flex;
+  align-items: center;
+  color: var(--text-muted);
+  font-size: 0.95rem;
 }
 
 .revision-badge {

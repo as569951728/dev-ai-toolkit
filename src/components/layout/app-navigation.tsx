@@ -34,6 +34,10 @@ const navigationGroups: NavigationGroup[] = [
         label: 'Prompt Playground',
       },
       {
+        to: '/runs',
+        label: 'Run History',
+      },
+      {
         to: '/prompt-diff',
         label: 'Prompt Diff',
       },

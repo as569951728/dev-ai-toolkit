@@ -30,6 +30,13 @@ const moduleGroups = [
         href: '/prompt-diff',
         meta: 'Review prompt revisions',
       },
+      {
+        title: 'Run History',
+        description:
+          'Review saved prompt runs, trace them back to template versions, and reopen the output in downstream tools.',
+        href: '/runs',
+        meta: 'Browse saved prompt output',
+      },
     ],
   },
   {
@@ -193,8 +200,8 @@ export function HomePage() {
             <span className="workflow-card__step">03</span>
             <h3>Save the output trail</h3>
             <p>Capture a run snapshot, then inspect version history and recent activity as your prompt knowledge grows.</p>
-            <Link className="ghost-button" to="/prompts">
-              View Template History
+            <Link className="ghost-button" to="/runs">
+              Open Run History
             </Link>
           </article>
         </div>

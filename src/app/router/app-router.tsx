@@ -11,6 +11,7 @@ import { HomePage } from '@/features/home/pages/home-page';
 import { JsonToolsPage } from '@/features/json-tools/pages/json-tools-page';
 import { PromptDiffPage } from '@/features/prompt-diff/pages/prompt-diff-page';
 import { PromptPlaygroundPage } from '@/features/prompt-playground/pages/prompt-playground-page';
+import { PromptRunHistoryPage } from '@/features/prompt-runs/pages/prompt-run-history-page';
 import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs-provider';
 import { PromptTemplateCreatePage } from '@/features/prompt-templates/pages/prompt-template-create-page';
 import { PromptTemplateDetailPage } from '@/features/prompt-templates/pages/prompt-template-detail-page';
@@ -45,6 +46,10 @@ const router = createBrowserRouter([
       {
         path: 'playground',
         element: <PromptPlaygroundPage />,
+      },
+      {
+        path: 'runs',
+        element: <PromptRunHistoryPage />,
       },
       {
         path: 'prompts',
