@@ -88,11 +88,41 @@ That has a few practical consequences:
 - all persisted data is local to the current browser environment
 - backward compatibility of stored data matters as models evolve
 
-This is why the project now has open issues around:
+This is why the project now pays extra attention to:
 
 - schema versioning
 - legacy import handling
 - shared local persistence patterns
+
+### Persisted data shape
+
+The current browser-stored collections use a lightweight versioned payload shape:
+
+- legacy format: a raw array
+- current format: `{ version: 1, data: [...] }`
+
+This is handled in `src/lib/local-storage-schema.ts`.
+
+Repositories for prompt templates, prompt runs, and recent prompt usage follow the same basic rules:
+
+- read legacy raw arrays when they already exist
+- read versioned payloads when the schema matches the current version
+- write back using the current versioned payload shape
+
+### Migration assumptions
+
+The current migration strategy is intentionally simple:
+
+- compatibility is handled at the repository boundary
+- providers and UI components should not know about storage schema versions
+- invalid or unreadable payloads fall back to a safe local default
+- new schema versions should be introduced only when the stored shape actually changes
+
+In practice that means:
+
+- prompt templates fall back to the seeded mock template set
+- prompt runs fall back to an empty collection
+- future schema changes should first extend the shared storage helper and repository tests before changing feature code
 
 ## Testing approach
 
@@ -103,7 +133,8 @@ Current coverage focuses on:
 - utility functions
 - service-layer behavior
 - provider behavior
-- one workflow-level smoke path for the prompt workflow
+- repository compatibility for persisted local data
+- workflow-level smoke paths for the prompt workflow
 
 The short-term goal is not broad test volume. It is credible coverage around the parts of the app that manage persisted state and workflow handoffs.
 
