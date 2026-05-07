@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react';
+import { afterEach } from 'vitest';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 
@@ -33,6 +34,10 @@ function createRunRepository(initialRuns: PromptRunRecord[]): PromptRunRepositor
     },
   };
 }
+
+afterEach(() => {
+  cleanup();
+});
 
 describe('PromptRunHistoryPage', () => {
   it('lists saved runs and links back to the source template', () => {
@@ -100,5 +105,66 @@ describe('PromptRunHistoryPage', () => {
     expect(
       screen.getByRole('link', { name: 'Open Prompt Playground' }),
     ).toHaveAttribute('href', '/playground');
+  });
+
+  it('filters runs by template and template name search', () => {
+    const templateRepository = createTemplateRepository();
+    const runRepository = createRunRepository([
+      {
+        id: 'run-2',
+        templateId: mockPromptTemplates[1]!.id,
+        templateName: mockPromptTemplates[1]!.name,
+        templateVersion: 2,
+        variables: {},
+        systemPrompt: 'System B',
+        userPrompt: 'User B',
+        createdAt: '2026-05-07T09:10:00.000Z',
+      },
+      {
+        id: 'run-1',
+        templateId: mockPromptTemplates[0]!.id,
+        templateName: mockPromptTemplates[0]!.name,
+        templateVersion: 1,
+        variables: {},
+        systemPrompt: 'System A',
+        userPrompt: 'User A',
+        createdAt: '2026-05-07T09:00:00.000Z',
+      },
+    ]);
+
+    render(
+      <MemoryRouter>
+        <PromptTemplatesProvider repository={templateRepository}>
+          <PromptRunsProvider repository={runRepository}>
+            <PromptRunHistoryPage />
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.change(screen.getByLabelText('Search runs'), {
+      target: { value: 'code review' },
+    });
+
+    expect(
+      screen.getByRole('heading', { name: 'Code Review Assistant' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: 'API Design Partner' }),
+    ).not.toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText('Search runs'), {
+      target: { value: '' },
+    });
+    fireEvent.change(screen.getByLabelText('Template'), {
+      target: { value: mockPromptTemplates[1]!.id },
+    });
+
+    expect(
+      screen.getByRole('heading', { name: 'API Design Partner' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: 'Code Review Assistant' }),
+    ).not.toBeInTheDocument();
   });
 });

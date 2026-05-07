@@ -1,3 +1,4 @@
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
@@ -16,6 +17,33 @@ function formatCreatedAt(createdAt: string) {
 export function PromptRunHistoryPage() {
   const { runs } = usePromptRuns();
   const { getTemplateById } = usePromptTemplates();
+  const [selectedTemplateId, setSelectedTemplateId] = useState('all');
+  const [searchValue, setSearchValue] = useState('');
+
+  const availableTemplates = useMemo(
+    () =>
+      [...new Set(runs.map((run) => `${run.templateId}:::${run.templateName}`))].map(
+        (value) => {
+          const [id, name] = value.split(':::');
+          return { id, name };
+        },
+      ),
+    [runs],
+  );
+
+  const filteredRuns = useMemo(() => {
+    const normalizedSearchValue = searchValue.trim().toLowerCase();
+
+    return runs.filter((run) => {
+      const matchesTemplate =
+        selectedTemplateId === 'all' || run.templateId === selectedTemplateId;
+      const matchesSearch =
+        !normalizedSearchValue ||
+        run.templateName.toLowerCase().includes(normalizedSearchValue);
+
+      return matchesTemplate && matchesSearch;
+    });
+  }, [runs, searchValue, selectedTemplateId]);
 
   return (
     <section className="playground-layout">
@@ -41,54 +69,90 @@ export function PromptRunHistoryPage() {
         </div>
 
         {runs.length > 0 ? (
-          <div className="revision-list">
-            {runs.map((run) => {
-              const sourceTemplate = getTemplateById(run.templateId);
-              const variableCount = Object.keys(run.variables).length;
+          <>
+            <div className="toolbar">
+              <label className="toolbar__search">
+                <span>Search runs</span>
+                <input
+                  type="search"
+                  value={searchValue}
+                  placeholder="Search by template name"
+                  onChange={(event) => setSearchValue(event.target.value)}
+                />
+              </label>
 
-              return (
-                <article className="revision-card" key={run.id}>
-                  <div className="revision-card__header">
-                    <div>
-                      <h3>{run.templateName}</h3>
-                      <p>{formatCreatedAt(run.createdAt)}</p>
-                    </div>
+              <label className="toolbar__filter">
+                <span>Template</span>
+                <select
+                  value={selectedTemplateId}
+                  onChange={(event) => setSelectedTemplateId(event.target.value)}
+                >
+                  <option value="all">All templates</option>
+                  {availableTemplates.map((template) => (
+                    <option key={template.id} value={template.id}>
+                      {template.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
 
-                    <span className="revision-badge">
-                      Template v{run.templateVersion}
-                    </span>
-                  </div>
+            {filteredRuns.length > 0 ? (
+              <div className="revision-list">
+                {filteredRuns.map((run) => {
+                  const sourceTemplate = getTemplateById(run.templateId);
+                  const variableCount = Object.keys(run.variables).length;
 
-                  <p className="revision-card__description">
-                    {variableCount > 0
-                      ? `${variableCount} template variables were captured in this run.`
-                      : 'No template variables were captured in this run.'}
-                  </p>
+                  return (
+                    <article className="revision-card" key={run.id}>
+                      <div className="revision-card__header">
+                        <div>
+                          <h3>{run.templateName}</h3>
+                          <p>{formatCreatedAt(run.createdAt)}</p>
+                        </div>
 
-                  <div className="detail-actions detail-actions--inline">
-                    {sourceTemplate ? (
-                      <Link
-                        className="ghost-button"
-                        to={`/prompts/${run.templateId}`}
-                      >
-                        View source template
-                      </Link>
-                    ) : (
-                      <span className="run-history-note">
-                        Source template is no longer available.
-                      </span>
-                    )}
-                    <Link
-                      className="ghost-button"
-                      to={`/code-viewer?left=${encodeURIComponent(run.systemPrompt)}&right=${encodeURIComponent(run.userPrompt)}&mode=compare&language=markdown`}
-                    >
-                      Open output in Code Viewer
-                    </Link>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
+                        <span className="revision-badge">
+                          Template v{run.templateVersion}
+                        </span>
+                      </div>
+
+                      <p className="revision-card__description">
+                        {variableCount > 0
+                          ? `${variableCount} template variables were captured in this run.`
+                          : 'No template variables were captured in this run.'}
+                      </p>
+
+                      <div className="detail-actions detail-actions--inline">
+                        {sourceTemplate ? (
+                          <Link
+                            className="ghost-button"
+                            to={`/prompts/${run.templateId}`}
+                          >
+                            View source template
+                          </Link>
+                        ) : (
+                          <span className="run-history-note">
+                            Source template is no longer available.
+                          </span>
+                        )}
+                        <Link
+                          className="ghost-button"
+                          to={`/code-viewer?left=${encodeURIComponent(run.systemPrompt)}&right=${encodeURIComponent(run.userPrompt)}&mode=compare&language=markdown`}
+                        >
+                          Open output in Code Viewer
+                        </Link>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="empty-state empty-state--compact">
+                <h2>No runs match the current filters</h2>
+                <p>Try a different search value or switch back to all templates.</p>
+              </div>
+            )}
+          </>
         ) : (
           <div className="empty-state">
             <h2>No saved runs yet</h2>
