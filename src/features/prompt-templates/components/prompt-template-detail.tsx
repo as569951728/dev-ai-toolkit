@@ -13,6 +13,7 @@ interface PromptTemplateDetailProps {
   onRestoreArchive: (id: string) => void;
   onDelete: (id: string) => void;
   onOpenInPlayground: (id: string) => void;
+  onOpenRunHistory: (id: string) => void;
   onRestoreRevision: (
     templateId: string,
     revisionVersion: PromptTemplateRevision['version'],
@@ -39,6 +40,7 @@ export function PromptTemplateDetail({
   onRestoreArchive,
   onDelete,
   onOpenInPlayground,
+  onOpenRunHistory,
   onRestoreRevision,
   recentRuns,
 }: PromptTemplateDetailProps) {
@@ -65,6 +67,13 @@ export function PromptTemplateDetail({
             onClick={() => onOpenInPlayground(template.id)}
           >
             Open in Playground
+          </button>
+          <button
+            className="secondary-button"
+            type="button"
+            onClick={() => onOpenRunHistory(template.id)}
+          >
+            View run history
           </button>
           <button
             className="secondary-button"

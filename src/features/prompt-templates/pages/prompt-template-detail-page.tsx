@@ -31,6 +31,7 @@ export function PromptTemplateDetailPage() {
       recentRuns={recentRuns}
       onBack={() => navigate('/prompts')}
       onOpenInPlayground={(id) => navigate(`/playground?templateId=${id}`)}
+      onOpenRunHistory={(id) => navigate(`/runs?templateId=${id}`)}
       onEdit={(id) => navigate(`/prompts/${id}/edit`)}
       onDuplicate={(id) => {
         const duplicatedTemplate = duplicateTemplate(id);

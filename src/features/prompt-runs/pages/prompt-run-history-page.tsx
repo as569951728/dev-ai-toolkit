@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
@@ -15,9 +15,12 @@ function formatCreatedAt(createdAt: string) {
 }
 
 export function PromptRunHistoryPage() {
+  const [searchParams] = useSearchParams();
   const { runs } = usePromptRuns();
   const { getTemplateById } = usePromptTemplates();
-  const [selectedTemplateId, setSelectedTemplateId] = useState('all');
+  const [selectedTemplateId, setSelectedTemplateId] = useState(
+    searchParams.get('templateId') ?? 'all',
+  );
   const [searchValue, setSearchValue] = useState('');
 
   const availableTemplates = useMemo(
