@@ -21,11 +21,12 @@ Developers often use AI across repeated workflows:
 The current version includes:
 
 - Overview landing page
-- Prompt template list, create, edit, detail, duplicate, and delete flows
+- Prompt template list, create, edit, detail, duplicate, archive, restore, and delete flows
 - Prompt template search and tag filtering
 - Prompt template import and export via JSON
 - Prompt Playground with variable detection and live prompt preview
 - Prompt Diff for comparing prompt revisions and variable drift
+- Prompt Run History for browsing saved prompt runs
 - JSON Tools for formatting, validating, and minifying payloads
 - API Builder for drafting request configurations and fetch snippets
 - Code Viewer for reading code or generated output in single or compare mode
@@ -130,84 +131,22 @@ See [docs/deployment/vercel.md](./docs/deployment/vercel.md) for the current Ver
 
 The toolbox is currently organized around two capability groups.
 
-### Overview
-
-The home page introduces the current modules, the main workflow, and the short-term direction of the project.
-
-### Prompt Workflows
-
-#### Prompt Templates
-
-It currently supports:
-
-- Viewing all prompt templates
-- Creating a new template
-- Editing an existing template
-- Searching by keywords
-- Filtering by tags
-- Previewing template details
-- Duplicating and deleting templates
-- Importing and exporting templates as JSON
+| Group | Module | Current capabilities | Notes |
+| --- | --- | --- | --- |
+| Core | Overview | Introduces the module groups, main workflow, and near-term direction | Landing page for first-time users |
+| Prompt Workflows | Prompt Templates | Create, edit, duplicate, archive, restore, delete, filter, import, and export templates | Local-first storage backed by repository and provider layers |
+| Prompt Workflows | Prompt Playground | Select templates, fill variables, preview output, save run snapshots, and keep recent template usage | Main path for generating reusable prompt output |
+| Prompt Workflows | Prompt Diff | Compare prompt revisions, detect variable drift, and inspect line-level wording changes | Best used after editing or templating changes |
+| Prompt Workflows | Prompt Run History | Browse saved runs, inspect template versions, and reopen output in downstream tools | Dedicated history view for saved prompt output |
+| Developer Utilities | JSON Tools | Format, validate, minify, copy, and sample JSON payloads | Useful for debugging and payload cleanup |
+| Developer Utilities | API Builder | Draft request URLs, headers, query params, JSON bodies, and `fetch` snippets | Local request scaffolding only |
+| Developer Utilities | Code Viewer | Inspect generated text or code in single or compare mode | Supports prompt and output review workflows |
 
 The current storage model is intentionally local-first:
 
-- Initial data comes from a mock dataset
-- User changes are persisted in `localStorage`
-- The current repository and provider structure is meant to keep a future API option open
-
-#### Prompt Playground
-
-The playground turns stored templates into runnable prompt output.
-
-It currently supports:
-
-- Selecting a stored prompt template
-- Detecting template variables like `{{repository_name}}`
-- Filling variable inputs
-- Previewing the final `system prompt` and `user prompt`
-- Copying generated prompt output
-- Saving recent template usage locally
-
-#### Prompt Diff
-
-The prompt diff workspace compares prompt revisions side by side.
-
-It currently supports:
-
-- Comparing two prompt versions side by side
-- Detecting added and removed variables
-- Highlighting added and removed lines
-- Copying either side for reuse
-
-### Developer Utilities
-
-#### JSON Tools
-
-This module supports:
-
-- Formatting JSON
-- Minifying JSON
-- Validating JSON
-- Copying processed output
-- Loading sample payloads quickly
-
-#### API Builder
-
-This module supports:
-
-- Drafting request URLs with query params
-- Managing headers and JSON body input
-- Generating a ready-to-use `fetch` snippet
-- Copying request output for reuse
-
-#### Code Viewer
-
-This module supports:
-
-- Reading code or text output in a clearer layout
-- Single-pane and compare modes
-- Line-aware inspection
-- Copy actions for each input side
+- Initial template data comes from a mock dataset
+- User changes and saved runs are persisted in `localStorage`
+- Repository boundaries are in place so future API-backed work does not require rewriting page structure first
 
 ## How It Works
 
