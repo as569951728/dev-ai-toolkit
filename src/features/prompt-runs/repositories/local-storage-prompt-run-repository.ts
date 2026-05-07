@@ -1,15 +1,22 @@
 import type { PromptRunRepository } from '@/features/prompt-runs/repositories/prompt-run-repository';
 import type { PromptRunRecord } from '@/types/prompt-run';
+import {
+  readVersionedCollection,
+  writeVersionedCollection,
+} from '@/lib/local-storage-schema';
 
 const STORAGE_KEY = 'dev-ai-toolkit.prompt-runs';
 
+type StorageLike = Pick<Storage, 'getItem' | 'setItem'>;
+
 function normalizeRuns(value: unknown) {
-  return Array.isArray(value) ? (value as PromptRunRecord[]) : [];
+  return readVersionedCollection<PromptRunRecord>(value) ?? [];
 }
 
 export function createLocalStoragePromptRunRepository(
   storageKey = STORAGE_KEY,
-  storage = typeof window !== 'undefined' ? window.localStorage : null,
+  storage: StorageLike | null =
+    typeof window !== 'undefined' ? window.localStorage : null,
 ): PromptRunRepository {
   return {
     loadAll() {
@@ -34,7 +41,7 @@ export function createLocalStoragePromptRunRepository(
         return;
       }
 
-      storage.setItem(storageKey, JSON.stringify(runs));
+      storage.setItem(storageKey, JSON.stringify(writeVersionedCollection(runs)));
     },
   };
 }

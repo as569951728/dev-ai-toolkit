@@ -2,20 +2,27 @@ import { ensurePromptTemplateVersioning } from '@/features/prompt-templates/lib/
 import { mockPromptTemplates } from '@/features/prompt-templates/mock/prompts';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
 import type { PromptTemplate } from '@/types/prompt-template';
+import {
+  readVersionedCollection,
+  writeVersionedCollection,
+} from '@/lib/local-storage-schema';
 
 const STORAGE_KEY = 'dev-ai-toolkit.prompt-templates';
 
+type StorageLike = Pick<Storage, 'getItem' | 'setItem'>;
+
 function normalizeStoredTemplates(value: unknown) {
-  return Array.isArray(value) && value.length > 0
-    ? (value as PromptTemplate[]).map((template) =>
-        ensurePromptTemplateVersioning(template),
-      )
+  const templates = readVersionedCollection<PromptTemplate>(value);
+
+  return templates && templates.length > 0
+    ? templates.map((template) => ensurePromptTemplateVersioning(template))
     : mockPromptTemplates;
 }
 
 export function createLocalStoragePromptTemplateRepository(
   storageKey = STORAGE_KEY,
-  storage = typeof window !== 'undefined' ? window.localStorage : null,
+  storage: StorageLike | null =
+    typeof window !== 'undefined' ? window.localStorage : null,
 ): PromptTemplateRepository {
   return {
     loadAll() {
@@ -40,7 +47,10 @@ export function createLocalStoragePromptTemplateRepository(
         return;
       }
 
-      storage.setItem(storageKey, JSON.stringify(templates));
+      storage.setItem(
+        storageKey,
+        JSON.stringify(writeVersionedCollection(templates)),
+      );
     },
   };
 }
