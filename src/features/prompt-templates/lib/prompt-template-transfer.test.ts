@@ -147,4 +147,64 @@ describe('prompt-template-transfer', () => {
     expect(result.importedTemplates).toHaveLength(1);
     expect(result.importedTemplates[0]?.description).toBe('Second revision wins');
   });
+
+  it('normalizes archived template state from imported payloads', () => {
+    const archivedTemplate = {
+      ...existingApiTemplate,
+      archivedAt: '2026-05-03T08:00:00.000Z',
+    };
+
+    const rawValue = JSON.stringify([
+      {
+        id: archivedTemplate.id,
+        name: archivedTemplate.name,
+        description: 'Imported update keeps the archived state stable',
+        systemPrompt: archivedTemplate.systemPrompt,
+        userPrompt: archivedTemplate.userPrompt,
+        tags: archivedTemplate.tags,
+        updatedAt: '2026-05-05T00:00:00.000Z',
+        archivedAt: 'not-a-date',
+      },
+      {
+        id: 'fresh-archived-template',
+        name: 'Fresh Archived Template',
+        description: 'Imported as archived from another browser session',
+        systemPrompt: 'Review {{repo}}.',
+        userPrompt: 'List the most important changes.',
+        tags: ['archived'],
+        updatedAt: '2026-05-05T00:00:00.000Z',
+        archivedAt: '2026-05-04T12:00:00.000Z',
+      },
+      {
+        id: 'fresh-active-template',
+        name: 'Fresh Active Template',
+        description: 'Malformed archivedAt should not archive a new template',
+        systemPrompt: 'Audit {{repo}}.',
+        userPrompt: 'Summarize {{task}}.',
+        tags: ['active'],
+        updatedAt: '2026-05-05T00:00:00.000Z',
+        archivedAt: 'definitely-not-a-date',
+      },
+    ]);
+
+    const result = parsePromptTemplateImport(rawValue, [
+      existingReviewTemplate,
+      archivedTemplate,
+    ]);
+
+    expect(
+      result.importedTemplates.find((template) => template.id === archivedTemplate.id)
+        ?.archivedAt,
+    ).toBe(archivedTemplate.archivedAt);
+    expect(
+      result.importedTemplates.find(
+        (template) => template.id === 'fresh-archived-template',
+      )?.archivedAt,
+    ).toBe('2026-05-04T12:00:00.000Z');
+    expect(
+      result.importedTemplates.find(
+        (template) => template.id === 'fresh-active-template',
+      )?.archivedAt,
+    ).toBeNull();
+  });
 });

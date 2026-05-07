@@ -37,6 +37,14 @@ function isValidIsoDate(value: string) {
   return !Number.isNaN(new Date(value).getTime());
 }
 
+function normalizeOptionalIsoDate(value: unknown) {
+  const normalizedValue = normalizeString(value);
+
+  return normalizedValue && isValidIsoDate(normalizedValue)
+    ? normalizedValue
+    : null;
+}
+
 function normalizeRevision(
   value: unknown,
 ): PromptTemplateRevision | null {
@@ -107,8 +115,8 @@ function normalizePromptTemplate(
   }
 
   const providedId = normalizeString(value.id);
-  const updatedAtValue = normalizeString(value.updatedAt);
-  const archivedAtValue = normalizeString(value.archivedAt);
+  const updatedAtValue = normalizeOptionalIsoDate(value.updatedAt);
+  const archivedAtValue = normalizeOptionalIsoDate(value.archivedAt);
   const providedVersion =
     isRecord(value) && typeof value.version === 'number' ? value.version : undefined;
   const providedRevisions = normalizeRevisions(value.revisions);
@@ -122,12 +130,11 @@ function normalizePromptTemplate(
     tags,
     version: providedVersion ?? existingTemplate?.version,
     revisions: providedRevisions ?? existingTemplate?.revisions,
-    archivedAt: isValidIsoDate(archivedAtValue)
-      ? archivedAtValue
-      : existingTemplate?.archivedAt ?? null,
-    updatedAt: isValidIsoDate(updatedAtValue)
-      ? updatedAtValue
-      : existingTemplate?.updatedAt || new Date().toISOString(),
+    archivedAt: archivedAtValue ?? existingTemplate?.archivedAt ?? null,
+    updatedAt:
+      updatedAtValue ??
+      existingTemplate?.updatedAt ??
+      new Date().toISOString(),
   });
 }
 
