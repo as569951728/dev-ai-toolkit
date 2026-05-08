@@ -85,6 +85,15 @@ describe('PromptRunDetailPage', () => {
     expect(
       screen.getByRole('link', { name: 'View source template' }),
     ).toHaveAttribute('href', `/prompts/${mockPromptTemplates[0]!.id}`);
+    expect(
+      screen.getByRole('link', { name: 'Open output in Code Viewer' }),
+    ).toHaveAttribute(
+      'href',
+      `/code-viewer?left=${encodeURIComponent('Review the code carefully.')}&right=${encodeURIComponent('Focus on bugs and missing tests.')}&mode=compare&language=markdown`,
+    );
+    expect(
+      screen.getByRole('link', { name: 'Compare with source' }),
+    ).toHaveAttribute('href', expect.stringContaining('/prompt-diff?left='));
   });
 
   it('shows a not-found state when the run is missing', () => {

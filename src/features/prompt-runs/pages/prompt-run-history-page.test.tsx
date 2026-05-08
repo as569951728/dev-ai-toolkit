@@ -83,6 +83,9 @@ describe('PromptRunHistoryPage', () => {
       screen.getAllByRole('link', { name: 'View source template' })[0],
     ).toHaveAttribute('href', `/prompts/${mockPromptTemplates[1]!.id}`);
     expect(
+      screen.getAllByRole('link', { name: 'View details' })[0],
+    ).toHaveAttribute('href', '/runs/run-2');
+    expect(
       screen.getAllByRole('link', { name: 'Open output in Code Viewer' }),
     ).toHaveLength(2);
     expect(

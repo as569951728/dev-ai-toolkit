@@ -183,6 +183,12 @@ export function PromptRunHistoryPage() {
                       </p>
 
                       <div className="detail-actions detail-actions--inline">
+                        <Link
+                          className="ghost-button"
+                          to={`/runs/${run.id}`}
+                        >
+                          View details
+                        </Link>
                         {sourceTemplate ? (
                           <Link
                             className="ghost-button"

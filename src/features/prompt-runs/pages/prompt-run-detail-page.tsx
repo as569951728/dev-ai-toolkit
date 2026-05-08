@@ -34,6 +34,15 @@ export function PromptRunDetailPage() {
 
   const sourceTemplate = getTemplateById(run.templateId);
   const variableEntries = Object.entries(run.variables);
+  const codeViewerUrl =
+    `/code-viewer?left=${encodeURIComponent(run.systemPrompt)}` +
+    `&right=${encodeURIComponent(run.userPrompt)}` +
+    '&mode=compare&language=markdown';
+  const promptDiffUrl = sourceTemplate
+    ? `/prompt-diff?left=${encodeURIComponent(
+        `${sourceTemplate.systemPrompt}\n\n${sourceTemplate.userPrompt}`,
+      )}&right=${encodeURIComponent(`${run.systemPrompt}\n\n${run.userPrompt}`)}`
+    : null;
 
   return (
     <section className="playground-layout">
@@ -58,6 +67,14 @@ export function PromptRunDetailPage() {
               Source template is no longer available.
             </span>
           )}
+          <Link className="ghost-button" to={codeViewerUrl}>
+            Open output in Code Viewer
+          </Link>
+          {promptDiffUrl ? (
+            <Link className="ghost-button" to={promptDiffUrl}>
+              Compare with source
+            </Link>
+          ) : null}
         </div>
       </div>
 
