@@ -127,4 +127,46 @@ describe('PromptTemplateListPage', () => {
       screen.queryByText('Code Review Assistant'),
     ).not.toBeInTheDocument();
   });
+
+  it('clears active filters from the empty state and restores the default list', () => {
+    const repository = createMemoryRepository([
+      mockPromptTemplates[0]!,
+      {
+        ...mockPromptTemplates[1]!,
+        archivedAt: '2026-05-07T08:00:00.000Z',
+      },
+      mockPromptTemplates[2]!,
+    ]);
+
+    render(
+      <MemoryRouter
+        initialEntries={[
+          '/prompts?archived=1&tag=review&search=api',
+        ]}
+      >
+        <PromptTemplatesProvider repository={repository}>
+          <PromptTemplateListPage />
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    expect(
+      screen.getByText('No templates match the current filters'),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Clear filters' }));
+
+    expect(
+      screen.queryByText('No templates match the current filters'),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText('Code Review Assistant')).toBeInTheDocument();
+    expect(screen.queryByText('API Design Partner')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('Archived: visible'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('Search: api'),
+    ).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Tag')).toHaveValue('all');
+  });
 });

@@ -19,6 +19,7 @@ interface PromptTemplateListProps {
   onOpenRunHistory: (id: string) => void;
   onFiltersChange: (nextFilters: PromptTemplateFiltersValue) => void;
   onToggleArchived: () => void;
+  onClearFilters: () => void;
   onExport: () => void;
   onImport: () => void;
 }
@@ -37,6 +38,7 @@ export function PromptTemplateList({
   onOpenRunHistory,
   onFiltersChange,
   onToggleArchived,
+  onClearFilters,
   onExport,
   onImport,
 }: PromptTemplateListProps) {
@@ -121,7 +123,10 @@ export function PromptTemplateList({
           ))}
         </div>
       ) : (
-        <PromptTemplateEmptyState onCreate={onCreate} />
+        <PromptTemplateEmptyState
+          onCreate={onCreate}
+          onClearFilters={hasActiveFilters ? onClearFilters : undefined}
+        />
       )}
     </section>
   );

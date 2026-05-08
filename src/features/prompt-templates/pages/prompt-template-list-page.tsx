@@ -123,6 +123,15 @@ export function PromptTemplateListPage() {
         onToggleArchived={() =>
           updateListSearchParams(filters, !showArchived)
         }
+        onClearFilters={() =>
+          updateListSearchParams(
+            {
+              search: '',
+              tag: 'all',
+            },
+            false,
+          )
+        }
         onExport={handleExport}
         onImport={() => fileInputRef.current?.click()}
       />
