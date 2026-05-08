@@ -69,7 +69,7 @@ export function PromptRunHistoryPage() {
     }
 
     setSearchParams(nextSearchParams, { replace: true });
-  }, [searchValue, selectedTemplateId, setSearchParams]);
+  }, [normalizedSearchValue, selectedTemplateId, setSearchParams]);
 
   return (
     <section className="playground-layout">
