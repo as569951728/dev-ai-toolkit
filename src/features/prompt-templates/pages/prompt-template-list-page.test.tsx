@@ -66,6 +66,7 @@ describe('PromptTemplateListPage', () => {
 
     expect(screen.getByText('API Design Partner')).toBeInTheDocument();
     expect(screen.getByText('Archived May 7, 2026')).toBeInTheDocument();
+    expect(screen.getByText('Archived: visible')).toBeInTheDocument();
   });
 
   it('opens filtered run history from a template card', () => {
@@ -118,6 +119,9 @@ describe('PromptTemplateListPage', () => {
       screen.getByPlaceholderText('Search by name, tag, or prompt content'),
     ).toHaveValue('api');
     expect(screen.getByLabelText('Tag')).toHaveValue('api');
+    expect(screen.getByText('Search: api')).toBeInTheDocument();
+    expect(screen.getByText('Tag: api')).toBeInTheDocument();
+    expect(screen.getByText('Archived: visible')).toBeInTheDocument();
     expect(screen.getByText('API Design Partner')).toBeInTheDocument();
     expect(
       screen.queryByText('Code Review Assistant'),

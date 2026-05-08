@@ -40,6 +40,10 @@ export function PromptTemplateList({
   onExport,
   onImport,
 }: PromptTemplateListProps) {
+  const normalizedSearchValue = filters.search.trim();
+  const hasActiveFilters =
+    normalizedSearchValue.length > 0 || filters.tag !== 'all' || showArchived;
+
   return (
     <section className="panel">
       <div className="panel__header">
@@ -84,6 +88,22 @@ export function PromptTemplateList({
               ? 'Hide archived templates'
               : `Show archived templates (${archivedCount})`}
           </button>
+        </div>
+      ) : null}
+
+      {hasActiveFilters ? (
+        <div className="template-filter-list">
+          {normalizedSearchValue ? (
+            <span className="template-filter-chip">
+              Search: {normalizedSearchValue}
+            </span>
+          ) : null}
+          {filters.tag !== 'all' ? (
+            <span className="template-filter-chip">Tag: {filters.tag}</span>
+          ) : null}
+          {showArchived ? (
+            <span className="template-filter-chip">Archived: visible</span>
+          ) : null}
         </div>
       ) : null}
 
