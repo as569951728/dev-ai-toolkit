@@ -10,6 +10,7 @@ import { CodeViewerPage } from '@/features/code-viewer/pages/code-viewer-page';
 import { HomePage } from '@/features/home/pages/home-page';
 import { JsonToolsPage } from '@/features/json-tools/pages/json-tools-page';
 import { PromptDiffPage } from '@/features/prompt-diff/pages/prompt-diff-page';
+import { PromptRunNotesProvider } from '@/features/prompt-run-notes/providers/prompt-run-notes-provider';
 import { PromptRunDetailPage } from '@/features/prompt-runs/pages/prompt-run-detail-page';
 import { PromptPlaygroundPage } from '@/features/prompt-playground/pages/prompt-playground-page';
 import { PromptRunHistoryPage } from '@/features/prompt-runs/pages/prompt-run-history-page';
@@ -24,12 +25,14 @@ function RootLayout() {
   return (
     <PromptTemplatesProvider>
       <PromptRunsProvider>
-        <main className="app-shell">
-          <div className="page-frame">
-            <AppNavigation />
-            <Outlet />
-          </div>
-        </main>
+        <PromptRunNotesProvider>
+          <main className="app-shell">
+            <div className="page-frame">
+              <AppNavigation />
+              <Outlet />
+            </div>
+          </main>
+        </PromptRunNotesProvider>
       </PromptRunsProvider>
     </PromptTemplatesProvider>
   );

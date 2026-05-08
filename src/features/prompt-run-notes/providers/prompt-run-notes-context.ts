@@ -1,0 +1,12 @@
+import { createContext } from 'react';
+
+import type { PromptRunNote } from '@/types/prompt-run-note';
+
+export interface PromptRunNotesContextValue {
+  notes: PromptRunNote[];
+  getNoteByRunId: (runId: string) => PromptRunNote | undefined;
+  saveNote: (runId: string, body: string) => PromptRunNote;
+}
+
+export const PromptRunNotesContext =
+  createContext<PromptRunNotesContextValue | null>(null);
