@@ -50,6 +50,7 @@ Examples:
 
 - `PromptTemplatesProvider`
 - `PromptRunsProvider`
+- `PromptRunNotesProvider`
 
 They are the main bridge between React pages/components and the lower-level service or repository layer.
 
@@ -76,6 +77,7 @@ Current repository responsibilities include:
 - loading persisted template data
 - saving updated template collections
 - loading and saving prompt runs
+- loading and saving prompt run notes
 - normalizing stored payload shape at read time when needed
 
 ## Local persistence
@@ -103,7 +105,7 @@ The current browser-stored collections use a lightweight versioned payload shape
 
 This is handled in `src/lib/local-storage-schema.ts`.
 
-Repositories for prompt templates, prompt runs, and recent prompt usage follow the same basic rules:
+Repositories for prompt templates, prompt runs, prompt run notes, and recent prompt usage follow the same basic rules:
 
 - read legacy raw arrays when they already exist
 - read versioned payloads when the schema matches the current version
@@ -122,6 +124,7 @@ In practice that means:
 
 - prompt templates fall back to the seeded mock template set
 - prompt runs fall back to an empty collection
+- prompt run notes fall back to an empty collection
 - future schema changes should first extend the shared storage helper and repository tests before changing feature code
 
 ## Testing approach
