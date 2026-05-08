@@ -1,5 +1,6 @@
 import { Link, useParams } from 'react-router-dom';
 
+import { PromptRunNotePanel } from '@/features/prompt-run-notes/components/prompt-run-note-panel';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
 
@@ -103,6 +104,8 @@ export function PromptRunDetailPage() {
           </p>
         )}
       </section>
+
+      <PromptRunNotePanel runId={run.id} />
 
       <section className="panel">
         <div className="panel__header">
