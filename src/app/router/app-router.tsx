@@ -10,6 +10,7 @@ import { CodeViewerPage } from '@/features/code-viewer/pages/code-viewer-page';
 import { HomePage } from '@/features/home/pages/home-page';
 import { JsonToolsPage } from '@/features/json-tools/pages/json-tools-page';
 import { PromptDiffPage } from '@/features/prompt-diff/pages/prompt-diff-page';
+import { PromptRunDetailPage } from '@/features/prompt-runs/pages/prompt-run-detail-page';
 import { PromptPlaygroundPage } from '@/features/prompt-playground/pages/prompt-playground-page';
 import { PromptRunHistoryPage } from '@/features/prompt-runs/pages/prompt-run-history-page';
 import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs-provider';
@@ -50,6 +51,10 @@ const router = createBrowserRouter([
       {
         path: 'runs',
         element: <PromptRunHistoryPage />,
+      },
+      {
+        path: 'runs/:runId',
+        element: <PromptRunDetailPage />,
       },
       {
         path: 'prompts',

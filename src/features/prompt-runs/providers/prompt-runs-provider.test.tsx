@@ -21,11 +21,14 @@ function createMemoryRepository(
 }
 
 function TestConsumer() {
-  const { runs, createRun, getRunsByTemplateId } = usePromptRuns();
+  const { runs, createRun, getRunById, getRunsByTemplateId } = usePromptRuns();
 
   return (
     <div>
       <span data-testid="run-count">{runs.length}</span>
+      <span data-testid="known-run">
+        {getRunById('existing-run')?.templateName ?? 'missing'}
+      </span>
       <span data-testid="template-1-count">{getRunsByTemplateId('template-1').length}</span>
       <button
         type="button"
@@ -48,7 +51,18 @@ function TestConsumer() {
 
 describe('PromptRunsProvider', () => {
   it('persists prompt runs through the injected repository', () => {
-    const repository = createMemoryRepository();
+    const repository = createMemoryRepository([
+      {
+        id: 'existing-run',
+        templateId: 'template-2',
+        templateName: 'API Design Partner',
+        templateVersion: 1,
+        variables: {},
+        systemPrompt: 'System',
+        userPrompt: 'User',
+        createdAt: '2026-05-07T08:00:00.000Z',
+      },
+    ]);
 
     render(
       <PromptRunsProvider repository={repository}>
@@ -56,11 +70,14 @@ describe('PromptRunsProvider', () => {
       </PromptRunsProvider>,
     );
 
-    expect(screen.getByTestId('run-count')).toHaveTextContent('0');
+    expect(screen.getByTestId('run-count')).toHaveTextContent('1');
+    expect(screen.getByTestId('known-run')).toHaveTextContent(
+      'API Design Partner',
+    );
 
     fireEvent.click(screen.getByRole('button', { name: 'Save Run' }));
 
-    expect(screen.getByTestId('run-count')).toHaveTextContent('1');
+    expect(screen.getByTestId('run-count')).toHaveTextContent('2');
     expect(screen.getByTestId('template-1-count')).toHaveTextContent('1');
     expect(repository.snapshot()[0]?.templateName).toBe('Code Review Assistant');
   });

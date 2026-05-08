@@ -38,3 +38,10 @@ export function getRunsForTemplate(
   const filtered = runs.filter((run) => run.templateId === templateId);
   return typeof limit === 'number' ? filtered.slice(0, limit) : filtered;
 }
+
+export function getPromptRunById(
+  runs: PromptRunRecord[],
+  runId: string,
+) {
+  return runs.find((run) => run.id === runId);
+}

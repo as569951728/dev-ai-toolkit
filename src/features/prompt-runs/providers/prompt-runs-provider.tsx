@@ -6,6 +6,7 @@ import { createLocalStoragePromptRunRepository } from '@/features/prompt-runs/re
 import type { PromptRunRepository } from '@/features/prompt-runs/repositories/prompt-run-repository';
 import {
   createPromptRunRecord,
+  getPromptRunById,
   getRunsForTemplate,
   sortPromptRuns,
 } from '@/features/prompt-runs/services/prompt-run-service';
@@ -41,13 +42,19 @@ export function PromptRunsProvider({
     [runs],
   );
 
+  const getRunById = useCallback(
+    (runId: string) => getPromptRunById(runs, runId),
+    [runs],
+  );
+
   const value = useMemo<PromptRunsContextValue>(
     () => ({
       runs,
       createRun,
+      getRunById,
       getRunsByTemplateId,
     }),
-    [runs, createRun, getRunsByTemplateId],
+    [runs, createRun, getRunById, getRunsByTemplateId],
   );
 
   return (
