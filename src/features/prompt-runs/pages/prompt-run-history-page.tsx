@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 
+import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
 
@@ -17,6 +18,7 @@ function formatCreatedAt(createdAt: string) {
 export function PromptRunHistoryPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { runs } = usePromptRuns();
+  const { getNoteByRunId } = usePromptRunNotes();
   const { getTemplateById } = usePromptTemplates();
   const [selectedTemplateId, setSelectedTemplateId] = useState(
     searchParams.get('templateId') ?? 'all',
@@ -51,11 +53,15 @@ export function PromptRunHistoryPage() {
         selectedTemplateId === 'all' || run.templateId === selectedTemplateId;
       const matchesSearch =
         !normalizedSearchValue ||
-        run.templateName.toLowerCase().includes(normalizedSearchValue);
+        run.templateName.toLowerCase().includes(normalizedSearchValue) ||
+        (getNoteByRunId(run.id)?.body.toLowerCase().includes(
+          normalizedSearchValue,
+        ) ??
+          false);
 
       return matchesTemplate && matchesSearch;
     });
-  }, [runs, searchValue, selectedTemplateId]);
+  }, [getNoteByRunId, runs, searchValue, selectedTemplateId]);
 
   useEffect(() => {
     const nextSearchParams = new URLSearchParams();
@@ -161,6 +167,7 @@ export function PromptRunHistoryPage() {
               <div className="revision-list">
                 {filteredRuns.map((run) => {
                   const sourceTemplate = getTemplateById(run.templateId);
+                  const note = getNoteByRunId(run.id);
                   const variableCount = Object.keys(run.variables).length;
 
                   return (
@@ -181,6 +188,15 @@ export function PromptRunHistoryPage() {
                           ? `${variableCount} template variables were captured in this run.`
                           : 'No template variables were captured in this run.'}
                       </p>
+
+                      {note ? (
+                        <div className="run-history-note-summary">
+                          <span className="run-history-filter-chip">
+                            Note attached
+                          </span>
+                          <p>{note.body}</p>
+                        </div>
+                      ) : null}
 
                       <div className="detail-actions detail-actions--inline">
                         <Link
