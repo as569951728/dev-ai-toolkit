@@ -30,6 +30,17 @@ export function createPromptRunRecord(
   };
 }
 
+export function deletePromptRunRecord(
+  repository: PromptRunRepository,
+  runs: PromptRunRecord[],
+  runId: string,
+) {
+  const nextRuns = runs.filter((run) => run.id !== runId);
+  repository.saveAll(nextRuns);
+
+  return nextRuns;
+}
+
 export function getRunsForTemplate(
   runs: PromptRunRecord[],
   templateId: string,

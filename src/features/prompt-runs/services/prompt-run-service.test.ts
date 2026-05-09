@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { PromptRunRepository } from '@/features/prompt-runs/repositories/prompt-run-repository';
 import {
   createPromptRunRecord,
+  deletePromptRunRecord,
   getRunsForTemplate,
   sortPromptRuns,
 } from '@/features/prompt-runs/services/prompt-run-service';
@@ -88,5 +89,40 @@ describe('prompt-run-service', () => {
 
     expect(getRunsForTemplate(runs, 'template-1')).toHaveLength(2);
     expect(getRunsForTemplate(runs, 'template-1', 1)[0]?.id).toBe('run-1');
+  });
+
+  it('deletes a saved prompt run through the repository', () => {
+    const repository = createMemoryRepository([
+      {
+        id: 'run-1',
+        templateId: 'template-1',
+        templateName: 'One',
+        templateVersion: 1,
+        variables: {},
+        systemPrompt: 'A',
+        userPrompt: 'B',
+        createdAt: '2026-05-06T10:00:00.000Z',
+      },
+      {
+        id: 'run-2',
+        templateId: 'template-2',
+        templateName: 'Two',
+        templateVersion: 1,
+        variables: {},
+        systemPrompt: 'C',
+        userPrompt: 'D',
+        createdAt: '2026-05-06T11:00:00.000Z',
+      },
+    ]);
+
+    const nextRuns = deletePromptRunRecord(
+      repository,
+      repository.loadAll(),
+      'run-1',
+    );
+
+    expect(nextRuns).toHaveLength(1);
+    expect(nextRuns[0]?.id).toBe('run-2');
+    expect(repository.snapshot()).toEqual(nextRuns);
   });
 });

@@ -6,6 +6,7 @@ import { createLocalStoragePromptRunRepository } from '@/features/prompt-runs/re
 import type { PromptRunRepository } from '@/features/prompt-runs/repositories/prompt-run-repository';
 import {
   createPromptRunRecord,
+  deletePromptRunRecord,
   getPromptRunById,
   getRunsForTemplate,
   sortPromptRuns,
@@ -37,6 +38,13 @@ export function PromptRunsProvider({
     [repository, runs],
   );
 
+  const deleteRun = useCallback(
+    (runId: string) => {
+      setRuns(deletePromptRunRecord(repository, runs, runId));
+    },
+    [repository, runs],
+  );
+
   const getRunsByTemplateId = useCallback(
     (templateId: string, limit?: number) => getRunsForTemplate(runs, templateId, limit),
     [runs],
@@ -51,10 +59,11 @@ export function PromptRunsProvider({
     () => ({
       runs,
       createRun,
+      deleteRun,
       getRunById,
       getRunsByTemplateId,
     }),
-    [runs, createRun, getRunById, getRunsByTemplateId],
+    [runs, createRun, deleteRun, getRunById, getRunsByTemplateId],
   );
 
   return (

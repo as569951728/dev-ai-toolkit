@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { PromptRunNotePanel } from '@/features/prompt-run-notes/components/prompt-run-note-panel';
 import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
@@ -17,9 +17,10 @@ function formatCreatedAt(createdAt: string) {
 }
 
 export function PromptRunDetailPage() {
+  const navigate = useNavigate();
   const { runId } = useParams();
-  const { getRunById } = usePromptRuns();
-  const { getNoteByRunId } = usePromptRunNotes();
+  const { deleteRun, getRunById } = usePromptRuns();
+  const { deleteNoteByRunId, getNoteByRunId } = usePromptRunNotes();
   const { getTemplateById } = usePromptTemplates();
 
   const run = runId ? getRunById(runId) : undefined;
@@ -87,6 +88,17 @@ export function PromptRunDetailPage() {
               Compare with source
             </Link>
           ) : null}
+          <button
+            className="danger-button"
+            type="button"
+            onClick={() => {
+              deleteNoteByRunId(run.id);
+              deleteRun(run.id);
+              navigate('/runs');
+            }}
+          >
+            Delete run
+          </button>
         </div>
       </div>
 

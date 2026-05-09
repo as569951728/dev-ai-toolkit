@@ -5,6 +5,7 @@ import { PromptRunNotesContext, type PromptRunNotesContextValue } from '@/featur
 import { createLocalStoragePromptRunNoteRepository } from '@/features/prompt-run-notes/repositories/local-storage-prompt-run-note-repository';
 import type { PromptRunNoteRepository } from '@/features/prompt-run-notes/repositories/prompt-run-note-repository';
 import {
+  deleteNoteForRun,
   getNoteForRun,
   saveNoteForRun,
 } from '@/features/prompt-run-notes/services/prompt-run-note-service';
@@ -40,13 +41,21 @@ export function PromptRunNotesProvider({
     [repository, notes],
   );
 
+  const deleteNoteByRunId = useCallback(
+    (runId: string) => {
+      setNotes(deleteNoteForRun(repository, notes, runId));
+    },
+    [repository, notes],
+  );
+
   const value = useMemo<PromptRunNotesContextValue>(
     () => ({
       notes,
       getNoteByRunId,
       saveNote,
+      deleteNoteByRunId,
     }),
-    [notes, getNoteByRunId, saveNote],
+    [notes, getNoteByRunId, saveNote, deleteNoteByRunId],
   );
 
   return (

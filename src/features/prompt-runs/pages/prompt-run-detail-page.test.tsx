@@ -79,6 +79,7 @@ function renderRunDetail(
           <PromptRunNotesProvider repository={noteRepository}>
             <Routes>
               <Route path="/runs/:runId" element={<PromptRunDetailPage />} />
+              <Route path="/runs" element={<div>Run History Destination</div>} />
             </Routes>
           </PromptRunNotesProvider>
         </PromptRunsProvider>
@@ -189,6 +190,51 @@ describe('PromptRunDetailPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Export run JSON' }));
 
     expect(exportPromptRunAsJsonMock).toHaveBeenCalledWith({ run, note });
+  });
+
+  it('deletes the current run and its saved note', () => {
+    const runRepository = createRunRepository([
+      {
+        id: 'run-1',
+        templateId: mockPromptTemplates[0]!.id,
+        templateName: mockPromptTemplates[0]!.name,
+        templateVersion: 2,
+        variables: {},
+        systemPrompt: 'System',
+        userPrompt: 'User',
+        createdAt: '2026-05-07T09:00:00.000Z',
+      },
+    ]);
+    const noteRepository = createNoteRepository([
+      {
+        id: 'note-1',
+        runId: 'run-1',
+        body: 'Good baseline for future review prompts.',
+        createdAt: '2026-05-08T09:00:00.000Z',
+        updatedAt: '2026-05-08T09:00:00.000Z',
+      },
+    ]);
+
+    render(
+      <MemoryRouter initialEntries={['/runs/run-1']}>
+        <PromptTemplatesProvider repository={createTemplateRepository()}>
+          <PromptRunsProvider repository={runRepository}>
+            <PromptRunNotesProvider repository={noteRepository}>
+              <Routes>
+                <Route path="/runs/:runId" element={<PromptRunDetailPage />} />
+                <Route path="/runs" element={<div>Run History Destination</div>} />
+              </Routes>
+            </PromptRunNotesProvider>
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete run' }));
+
+    expect(screen.getByText('Run History Destination')).toBeInTheDocument();
+    expect(runRepository.loadAll()).toEqual([]);
+    expect(noteRepository.snapshot()).toEqual([]);
   });
 
   it('shows a not-found state when the run is missing', () => {

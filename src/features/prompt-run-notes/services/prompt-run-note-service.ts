@@ -40,3 +40,14 @@ export function saveNoteForRun(
     notes: nextNotes,
   };
 }
+
+export function deleteNoteForRun(
+  repository: PromptRunNoteRepository,
+  notes: PromptRunNote[],
+  runId: string,
+) {
+  const nextNotes = notes.filter((note) => note.runId !== runId);
+  repository.saveAll(nextNotes);
+
+  return nextNotes;
+}
