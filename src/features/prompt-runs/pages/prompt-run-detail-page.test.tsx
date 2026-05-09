@@ -1,5 +1,5 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
 import { PromptRunNotesProvider } from '@/features/prompt-run-notes/providers/prompt-run-notes-provider';
@@ -7,11 +7,24 @@ import type { PromptRunNoteRepository } from '@/features/prompt-run-notes/reposi
 import { mockPromptTemplates } from '@/features/prompt-templates/mock/prompts';
 import { PromptTemplatesProvider } from '@/features/prompt-templates/providers/prompt-templates-provider';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
+import { exportPromptRunAsJson } from '@/features/prompt-runs/lib/prompt-run-export';
 import { PromptRunDetailPage } from '@/features/prompt-runs/pages/prompt-run-detail-page';
 import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs-provider';
 import type { PromptRunRepository } from '@/features/prompt-runs/repositories/prompt-run-repository';
 import type { PromptRunNote } from '@/types/prompt-run-note';
 import type { PromptRunRecord } from '@/types/prompt-run';
+
+vi.mock('@/features/prompt-runs/lib/prompt-run-export', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('@/features/prompt-runs/lib/prompt-run-export')>();
+
+  return {
+    ...actual,
+    exportPromptRunAsJson: vi.fn(),
+  };
+});
+
+const exportPromptRunAsJsonMock = vi.mocked(exportPromptRunAsJson);
 
 function createTemplateRepository(
   initialTemplates = mockPromptTemplates,
@@ -80,6 +93,7 @@ function renderRunDetail(
 
 afterEach(() => {
   cleanup();
+  vi.clearAllMocks();
 });
 
 describe('PromptRunDetailPage', () => {
@@ -144,6 +158,37 @@ describe('PromptRunDetailPage', () => {
       runId: 'run-1',
       body: 'Good baseline for future review prompts.',
     });
+  });
+
+  it('exports the current run with saved note context', () => {
+    const run: PromptRunRecord = {
+      id: 'run-1',
+      templateId: mockPromptTemplates[0]!.id,
+      templateName: mockPromptTemplates[0]!.name,
+      templateVersion: 2,
+      variables: {},
+      systemPrompt: 'System',
+      userPrompt: 'User',
+      createdAt: '2026-05-07T09:00:00.000Z',
+    };
+    const note: PromptRunNote = {
+      id: 'note-1',
+      runId: 'run-1',
+      body: 'Good baseline for future review prompts.',
+      createdAt: '2026-05-08T09:00:00.000Z',
+      updatedAt: '2026-05-08T09:00:00.000Z',
+    };
+
+    renderRunDetail(
+      '/runs/run-1',
+      [run],
+      createTemplateRepository(),
+      createNoteRepository([note]),
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Export run JSON' }));
+
+    expect(exportPromptRunAsJsonMock).toHaveBeenCalledWith({ run, note });
   });
 
   it('shows a not-found state when the run is missing', () => {

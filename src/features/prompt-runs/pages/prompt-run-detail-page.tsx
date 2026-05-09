@@ -1,6 +1,8 @@
 import { Link, useParams } from 'react-router-dom';
 
 import { PromptRunNotePanel } from '@/features/prompt-run-notes/components/prompt-run-note-panel';
+import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
+import { exportPromptRunAsJson } from '@/features/prompt-runs/lib/prompt-run-export';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
 
@@ -17,6 +19,7 @@ function formatCreatedAt(createdAt: string) {
 export function PromptRunDetailPage() {
   const { runId } = useParams();
   const { getRunById } = usePromptRuns();
+  const { getNoteByRunId } = usePromptRunNotes();
   const { getTemplateById } = usePromptTemplates();
 
   const run = runId ? getRunById(runId) : undefined;
@@ -34,6 +37,7 @@ export function PromptRunDetailPage() {
   }
 
   const sourceTemplate = getTemplateById(run.templateId);
+  const note = getNoteByRunId(run.id);
   const variableEntries = Object.entries(run.variables);
   const codeViewerUrl =
     `/code-viewer?left=${encodeURIComponent(run.systemPrompt)}` +
@@ -71,6 +75,13 @@ export function PromptRunDetailPage() {
           <Link className="ghost-button" to={codeViewerUrl}>
             Open output in Code Viewer
           </Link>
+          <button
+            className="ghost-button"
+            type="button"
+            onClick={() => exportPromptRunAsJson({ run, note })}
+          >
+            Export run JSON
+          </button>
           {promptDiffUrl ? (
             <Link className="ghost-button" to={promptDiffUrl}>
               Compare with source
