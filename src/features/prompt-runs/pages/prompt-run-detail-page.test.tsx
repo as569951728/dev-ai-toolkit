@@ -192,7 +192,7 @@ describe('PromptRunDetailPage', () => {
     expect(exportPromptRunAsJsonMock).toHaveBeenCalledWith({ run, note });
   });
 
-  it('deletes the current run and its saved note', () => {
+  it('asks for confirmation before deleting the current run and its saved note', () => {
     const runRepository = createRunRepository([
       {
         id: 'run-1',
@@ -231,6 +231,15 @@ describe('PromptRunDetailPage', () => {
     );
 
     fireEvent.click(screen.getByRole('button', { name: 'Delete run' }));
+
+    expect(
+      screen.getByRole('button', { name: 'Confirm delete' }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
+    expect(runRepository.loadAll()).toHaveLength(1);
+    expect(noteRepository.snapshot()).toHaveLength(1);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm delete' }));
 
     expect(screen.getByText('Run History Destination')).toBeInTheDocument();
     expect(runRepository.loadAll()).toEqual([]);

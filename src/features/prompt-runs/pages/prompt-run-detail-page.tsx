@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { PromptRunNotePanel } from '@/features/prompt-run-notes/components/prompt-run-note-panel';
@@ -22,6 +23,7 @@ export function PromptRunDetailPage() {
   const { deleteRun, getRunById } = usePromptRuns();
   const { deleteNoteByRunId, getNoteByRunId } = usePromptRunNotes();
   const { getTemplateById } = usePromptTemplates();
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
 
   const run = runId ? getRunById(runId) : undefined;
 
@@ -40,6 +42,11 @@ export function PromptRunDetailPage() {
   const sourceTemplate = getTemplateById(run.templateId);
   const note = getNoteByRunId(run.id);
   const variableEntries = Object.entries(run.variables);
+  const handleDeleteRun = () => {
+    deleteNoteByRunId(run.id);
+    deleteRun(run.id);
+    navigate('/runs');
+  };
   const codeViewerUrl =
     `/code-viewer?left=${encodeURIComponent(run.systemPrompt)}` +
     `&right=${encodeURIComponent(run.userPrompt)}` +
@@ -88,17 +95,32 @@ export function PromptRunDetailPage() {
               Compare with source
             </Link>
           ) : null}
-          <button
-            className="danger-button"
-            type="button"
-            onClick={() => {
-              deleteNoteByRunId(run.id);
-              deleteRun(run.id);
-              navigate('/runs');
-            }}
-          >
-            Delete run
-          </button>
+          {isConfirmingDelete ? (
+            <>
+              <button
+                className="danger-button"
+                type="button"
+                onClick={handleDeleteRun}
+              >
+                Confirm delete
+              </button>
+              <button
+                className="ghost-button"
+                type="button"
+                onClick={() => setIsConfirmingDelete(false)}
+              >
+                Cancel
+              </button>
+            </>
+          ) : (
+            <button
+              className="danger-button"
+              type="button"
+              onClick={() => setIsConfirmingDelete(true)}
+            >
+              Delete run
+            </button>
+          )}
         </div>
       </div>
 
