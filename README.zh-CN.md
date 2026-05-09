@@ -40,9 +40,10 @@
 - Prompt Run History
   - 浏览已保存 runs
   - 按模板过滤
-  - 按模板名搜索
+  - 按模板名或备注内容搜索
   - 打开单条 run 详情
   - 为单条 run 保存维护备注
+  - 在历史列表中查看备注摘要
   - 跳回模板详情或继续在下游工具中查看输出
 - JSON Tools
   - 格式化、压缩、校验、复制
@@ -145,7 +146,7 @@ npm run lint
 | Prompt Workflows | Prompt Templates | 创建、编辑、复制、归档、恢复、删除、筛选、导入、导出模板 | 可以直接进入 Playground 或过滤后的 Run History |
 | Prompt Workflows | Prompt Playground | 选择模板、填变量、预览输出、保存 run、保留最近使用模板 | 当前主工作流入口 |
 | Prompt Workflows | Prompt Diff | 比较 prompt 文本、变量变化和行级差异 | 适合做模板改写后的复核 |
-| Prompt Workflows | Prompt Run History | 浏览 runs、按模板过滤、查看详情、添加备注、继续在下游工具查看输出 | 已保存 prompt 输出的历史视图 |
+| Prompt Workflows | Prompt Run History | 浏览 runs、按模板过滤、搜索备注、查看详情、添加备注、继续在下游工具查看输出 | 已保存 prompt 输出的历史视图 |
 | Developer Utilities | JSON Tools | 格式化、校验、压缩、复制、加载示例 | 适合调试 JSON 载荷 |
 | Developer Utilities | API Builder | 组织请求参数并生成 `fetch` 代码 | 本地请求草稿工具 |
 | Developer Utilities | Code Viewer | 单栏 / 双栏查看文本和代码输出 | 适合审阅 prompt 或生成结果 |
@@ -157,7 +158,7 @@ npm run lint
 1. 在 `Prompt Templates` 中创建或整理模板
 2. 进入 `Prompt Playground` 填变量并预览输出
 3. 保存 run snapshot
-4. 在 `Prompt Run History` 里回看某个模板的输出历史
+4. 在 `Prompt Run History` 里回看某个模板的输出历史，也可以按备注内容找回旧结果
 5. 打开单条 run 详情，补充维护备注，再进入 `Prompt Diff` 或 `Code Viewer` 继续检查结果
 
 ## 当前限制
