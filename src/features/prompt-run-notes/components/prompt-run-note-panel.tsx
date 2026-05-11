@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
 
@@ -11,6 +11,15 @@ export function PromptRunNotePanel({ runId }: PromptRunNotePanelProps) {
   const savedNote = getNoteByRunId(runId);
   const [body, setBody] = useState(savedNote?.body ?? '');
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const previousRunId = useRef(runId);
+
+  useEffect(() => {
+    if (previousRunId.current !== runId) {
+      setBody(savedNote?.body ?? '');
+      setStatusMessage(null);
+      previousRunId.current = runId;
+    }
+  }, [runId, savedNote?.body]);
 
   const handleSave = () => {
     saveNote(runId, body.trim());
