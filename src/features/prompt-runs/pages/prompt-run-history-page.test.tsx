@@ -1,6 +1,6 @@
 import { afterEach } from 'vitest';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, useNavigate } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 
 import { PromptRunNotesProvider } from '@/features/prompt-run-notes/providers/prompt-run-notes-provider';
@@ -91,6 +91,38 @@ function renderRunHistory({
         <PromptRunsProvider repository={createRunRepository(runs)}>
           <PromptRunNotesProvider repository={createNoteRepository(notes)}>
             <PromptRunHistoryPage />
+          </PromptRunNotesProvider>
+        </PromptRunsProvider>
+      </PromptTemplatesProvider>
+    </MemoryRouter>,
+  );
+}
+
+function RunHistoryNavigationHarness() {
+  const navigate = useNavigate();
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() =>
+          navigate(`/runs?templateId=${mockPromptTemplates[1]!.id}`)
+        }
+      >
+        Open API runs
+      </button>
+      <PromptRunHistoryPage />
+    </>
+  );
+}
+
+function renderNavigableRunHistory(initialEntry: string) {
+  render(
+    <MemoryRouter initialEntries={[initialEntry]}>
+      <PromptTemplatesProvider repository={createTemplateRepository()}>
+        <PromptRunsProvider repository={createRunRepository(sampleRuns)}>
+          <PromptRunNotesProvider repository={createNoteRepository()}>
+            <RunHistoryNavigationHarness />
           </PromptRunNotesProvider>
         </PromptRunsProvider>
       </PromptTemplatesProvider>
@@ -209,6 +241,31 @@ describe('PromptRunHistoryPage', () => {
     expect(
       screen.getByText('Template: API Design Partner'),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'API Design Partner' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: 'Code Review Assistant' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('syncs active filters when the route query changes', () => {
+    renderNavigableRunHistory(
+      `/runs?templateId=${mockPromptTemplates[0]!.id}`,
+    );
+
+    expect(screen.getByLabelText('Template')).toHaveValue(
+      mockPromptTemplates[0]!.id,
+    );
+    expect(
+      screen.getByRole('heading', { name: 'Code Review Assistant' }),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Open API runs' }));
+
+    expect(screen.getByLabelText('Template')).toHaveValue(
+      mockPromptTemplates[1]!.id,
+    );
     expect(
       screen.getByRole('heading', { name: 'API Design Partner' }),
     ).toBeInTheDocument();

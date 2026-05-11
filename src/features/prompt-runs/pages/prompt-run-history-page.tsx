@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 
 import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
@@ -20,10 +20,8 @@ export function PromptRunHistoryPage() {
   const { runs } = usePromptRuns();
   const { getNoteByRunId } = usePromptRunNotes();
   const { getTemplateById } = usePromptTemplates();
-  const [selectedTemplateId, setSelectedTemplateId] = useState(
-    searchParams.get('templateId') ?? 'all',
-  );
-  const [searchValue, setSearchValue] = useState(searchParams.get('q') ?? '');
+  const selectedTemplateId = searchParams.get('templateId') ?? 'all';
+  const searchValue = searchParams.get('q') ?? '';
   const hasActiveFilters =
     selectedTemplateId !== 'all' || searchValue.trim().length > 0;
 
@@ -45,6 +43,27 @@ export function PromptRunHistoryPage() {
           ?.name ?? null;
   const normalizedSearchValue = searchValue.trim();
 
+  const updateFilters = ({
+    nextSearchValue = searchValue,
+    nextTemplateId = selectedTemplateId,
+  }: {
+    nextSearchValue?: string;
+    nextTemplateId?: string;
+  }) => {
+    const nextSearchParams = new URLSearchParams();
+    const normalizedNextSearchValue = nextSearchValue.trim();
+
+    if (nextTemplateId !== 'all') {
+      nextSearchParams.set('templateId', nextTemplateId);
+    }
+
+    if (normalizedNextSearchValue) {
+      nextSearchParams.set('q', normalizedNextSearchValue);
+    }
+
+    setSearchParams(nextSearchParams, { replace: true });
+  };
+
   const filteredRuns = useMemo(() => {
     const normalizedSearchValue = searchValue.trim().toLowerCase();
 
@@ -62,20 +81,6 @@ export function PromptRunHistoryPage() {
       return matchesTemplate && matchesSearch;
     });
   }, [getNoteByRunId, runs, searchValue, selectedTemplateId]);
-
-  useEffect(() => {
-    const nextSearchParams = new URLSearchParams();
-
-    if (selectedTemplateId !== 'all') {
-      nextSearchParams.set('templateId', selectedTemplateId);
-    }
-
-    if (normalizedSearchValue) {
-      nextSearchParams.set('q', normalizedSearchValue);
-    }
-
-    setSearchParams(nextSearchParams, { replace: true });
-  }, [normalizedSearchValue, selectedTemplateId, setSearchParams]);
 
   return (
     <section className="playground-layout">
@@ -109,7 +114,9 @@ export function PromptRunHistoryPage() {
                   type="search"
                   value={searchValue}
                   placeholder="Search by template name"
-                  onChange={(event) => setSearchValue(event.target.value)}
+                  onChange={(event) =>
+                    updateFilters({ nextSearchValue: event.target.value })
+                  }
                 />
               </label>
 
@@ -117,7 +124,9 @@ export function PromptRunHistoryPage() {
                 <span>Template</span>
                 <select
                   value={selectedTemplateId}
-                  onChange={(event) => setSelectedTemplateId(event.target.value)}
+                  onChange={(event) =>
+                    updateFilters({ nextTemplateId: event.target.value })
+                  }
                 >
                   <option value="all">All templates</option>
                   {availableTemplates.map((template) => (
@@ -132,10 +141,9 @@ export function PromptRunHistoryPage() {
                 <button
                   className="ghost-button"
                   type="button"
-                  onClick={() => {
-                    setSearchValue('');
-                    setSelectedTemplateId('all');
-                  }}
+                  onClick={() =>
+                    setSearchParams(new URLSearchParams(), { replace: true })
+                  }
                 >
                   Clear filters
                 </button>
