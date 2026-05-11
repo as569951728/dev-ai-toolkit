@@ -55,4 +55,19 @@ describe('local-storage-prompt-template-repository', () => {
       data: mockPromptTemplates,
     });
   });
+
+  it('keeps an intentionally saved empty template collection', () => {
+    const storage = createMemoryStorage({
+      templates: JSON.stringify({
+        version: 1,
+        data: [],
+      }),
+    });
+    const repository = createLocalStoragePromptTemplateRepository(
+      'templates',
+      storage,
+    );
+
+    expect(repository.loadAll()).toEqual([]);
+  });
 });

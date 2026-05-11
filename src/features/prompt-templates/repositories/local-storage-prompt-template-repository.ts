@@ -14,7 +14,7 @@ type StorageLike = Pick<Storage, 'getItem' | 'setItem'>;
 function normalizeStoredTemplates(value: unknown) {
   const templates = readVersionedCollection<PromptTemplate>(value);
 
-  return templates && templates.length > 0
+  return templates
     ? templates.map((template) => ensurePromptTemplateVersioning(template))
     : mockPromptTemplates;
 }
