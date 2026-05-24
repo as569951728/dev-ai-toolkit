@@ -6,6 +6,7 @@ import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-
 import { exportPromptRunAsJson } from '@/features/prompt-runs/lib/prompt-run-export';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
+import { usePromptRunWorkflowActions } from '@/features/prompt-workflows/hooks/use-prompt-run-workflow-actions';
 
 function formatCreatedAt(createdAt: string) {
   return new Intl.DateTimeFormat('en', {
@@ -20,9 +21,10 @@ function formatCreatedAt(createdAt: string) {
 export function PromptRunDetailPage() {
   const navigate = useNavigate();
   const { runId } = useParams();
-  const { deleteRun, getRunById } = usePromptRuns();
-  const { deleteNoteByRunId, getNoteByRunId } = usePromptRunNotes();
+  const { getRunById } = usePromptRuns();
+  const { getNoteByRunId } = usePromptRunNotes();
   const { getTemplateById } = usePromptTemplates();
+  const { deleteRunWithRelatedData } = usePromptRunWorkflowActions();
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
 
   const run = runId ? getRunById(runId) : undefined;
@@ -43,8 +45,7 @@ export function PromptRunDetailPage() {
   const note = getNoteByRunId(run.id);
   const variableEntries = Object.entries(run.variables);
   const handleDeleteRun = () => {
-    deleteNoteByRunId(run.id);
-    deleteRun(run.id);
+    deleteRunWithRelatedData(run.id);
     navigate('/runs');
   };
   const codeViewerUrl =
