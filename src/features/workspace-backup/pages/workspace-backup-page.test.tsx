@@ -1,5 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { PromptRunNotesProvider } from '@/features/prompt-run-notes/providers/prompt-run-notes-provider';
 import type { PromptRunNoteRepository } from '@/features/prompt-run-notes/repositories/prompt-run-note-repository';
@@ -27,7 +27,7 @@ const downloadWorkspaceBackupMock = vi.mocked(downloadWorkspaceBackup);
 
 function createTemplateRepository(
   initialTemplates: PromptTemplate[] = [],
-): PromptTemplateRepository {
+): PromptTemplateRepository & { snapshot: () => PromptTemplate[] } {
   let templates = [...initialTemplates];
 
   return {
@@ -35,12 +35,13 @@ function createTemplateRepository(
     saveAll: (nextTemplates) => {
       templates = [...nextTemplates];
     },
+    snapshot: () => [...templates],
   };
 }
 
 function createRunRepository(
   initialRuns: PromptRunRecord[] = [],
-): PromptRunRepository {
+): PromptRunRepository & { snapshot: () => PromptRunRecord[] } {
   let runs = [...initialRuns];
 
   return {
@@ -48,12 +49,13 @@ function createRunRepository(
     saveAll: (nextRuns) => {
       runs = [...nextRuns];
     },
+    snapshot: () => [...runs],
   };
 }
 
 function createNoteRepository(
   initialNotes: PromptRunNote[] = [],
-): PromptRunNoteRepository {
+): PromptRunNoteRepository & { snapshot: () => PromptRunNote[] } {
   let notes = [...initialNotes];
 
   return {
@@ -61,6 +63,7 @@ function createNoteRepository(
     saveAll: (nextNotes) => {
       notes = [...nextNotes];
     },
+    snapshot: () => [...notes],
   };
 }
 
@@ -107,16 +110,31 @@ const note: PromptRunNote = {
 };
 
 function renderWorkspaceBackupPage() {
+  const templateRepository = createTemplateRepository([template]);
+  const runRepository = createRunRepository([run]);
+  const noteRepository = createNoteRepository([note]);
+
   render(
-    <PromptTemplatesProvider repository={createTemplateRepository([template])}>
-      <PromptRunsProvider repository={createRunRepository([run])}>
-        <PromptRunNotesProvider repository={createNoteRepository([note])}>
+    <PromptTemplatesProvider repository={templateRepository}>
+      <PromptRunsProvider repository={runRepository}>
+        <PromptRunNotesProvider repository={noteRepository}>
           <WorkspaceBackupPage />
         </PromptRunNotesProvider>
       </PromptRunsProvider>
     </PromptTemplatesProvider>,
   );
+
+  return {
+    noteRepository,
+    runRepository,
+    templateRepository,
+  };
 }
+
+afterEach(() => {
+  cleanup();
+  vi.clearAllMocks();
+});
 
 describe('WorkspaceBackupPage', () => {
   it('shows current local workspace counts and exports a backup file', () => {
@@ -134,5 +152,41 @@ describe('WorkspaceBackupPage', () => {
       runs: [run],
       notes: [note],
     });
+  });
+
+  it('imports a workspace backup JSON file and shows a summary', async () => {
+    const { noteRepository, runRepository, templateRepository } =
+      renderWorkspaceBackupPage();
+    const file = new File(
+      [
+        JSON.stringify({
+          version: 1,
+          exportedAt: '2026-06-10T08:30:00.000Z',
+          data: {
+            templates: [{ ...template, name: 'Imported Review Assistant' }],
+            runs: [{ ...run, templateName: 'Imported Review Assistant' }],
+            notes: [{ ...note, body: 'Imported note body.' }],
+          },
+        }),
+      ],
+      'workspace-backup.json',
+      { type: 'application/json' },
+    );
+
+    fireEvent.change(screen.getByLabelText('Import workspace JSON'), {
+      target: { files: [file] },
+    });
+
+    expect(await screen.findByText('Workspace backup imported.')).toBeInTheDocument();
+    expect(screen.getByText('Templates: 0 created, 1 updated.')).toBeInTheDocument();
+    expect(screen.getByText('Runs: 0 created, 1 updated.')).toBeInTheDocument();
+    expect(screen.getByText('Notes: 0 created, 1 updated.')).toBeInTheDocument();
+    expect(templateRepository.snapshot()[0]?.name).toBe(
+      'Imported Review Assistant',
+    );
+    expect(runRepository.snapshot()[0]?.templateName).toBe(
+      'Imported Review Assistant',
+    );
+    expect(noteRepository.snapshot()[0]?.body).toBe('Imported note body.');
   });
 });
