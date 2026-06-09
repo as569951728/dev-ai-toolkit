@@ -1,5 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it } from 'vitest';
 
 import { PromptRunNotesProvider } from '@/features/prompt-run-notes/providers/prompt-run-notes-provider';
 import type { PromptRunNoteRepository } from '@/features/prompt-run-notes/repositories/prompt-run-note-repository';
@@ -15,7 +15,7 @@ import type { PromptTemplate } from '@/types/prompt-template';
 
 function createTemplateRepository(
   initialTemplates: PromptTemplate[] = [],
-): PromptTemplateRepository {
+): PromptTemplateRepository & { snapshot: () => PromptTemplate[] } {
   let templates = [...initialTemplates];
 
   return {
@@ -23,12 +23,13 @@ function createTemplateRepository(
     saveAll: (nextTemplates) => {
       templates = [...nextTemplates];
     },
+    snapshot: () => [...templates],
   };
 }
 
 function createRunRepository(
   initialRuns: PromptRunRecord[] = [],
-): PromptRunRepository {
+): PromptRunRepository & { snapshot: () => PromptRunRecord[] } {
   let runs = [...initialRuns];
 
   return {
@@ -36,12 +37,13 @@ function createRunRepository(
     saveAll: (nextRuns) => {
       runs = [...nextRuns];
     },
+    snapshot: () => [...runs],
   };
 }
 
 function createNoteRepository(
   initialNotes: PromptRunNote[] = [],
-): PromptRunNoteRepository {
+): PromptRunNoteRepository & { snapshot: () => PromptRunNote[] } {
   let notes = [...initialNotes];
 
   return {
@@ -49,6 +51,7 @@ function createNoteRepository(
     saveAll: (nextNotes) => {
       notes = [...nextNotes];
     },
+    snapshot: () => [...notes],
   };
 }
 
@@ -95,22 +98,52 @@ const note: PromptRunNote = {
 };
 
 function TestConsumer() {
-  const { createWorkspaceBackupJson } = useWorkspaceBackup();
+  const { createWorkspaceBackupJson, importWorkspaceBackupJson } =
+    useWorkspaceBackup();
 
   return (
-    <button
-      type="button"
-      onClick={() => {
-        const backup = JSON.parse(
-          createWorkspaceBackupJson(),
-        ) as WorkspaceBackupPayload;
-        window.localStorage.setItem('workspace-backup-test', backup.data.runs[0]!.id);
-      }}
-    >
-      Create backup
-    </button>
+    <>
+      <button
+        type="button"
+        onClick={() => {
+          const backup = JSON.parse(
+            createWorkspaceBackupJson(),
+          ) as WorkspaceBackupPayload;
+          window.localStorage.setItem('workspace-backup-test', backup.data.runs[0]!.id);
+        }}
+      >
+        Create backup
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          const summary = importWorkspaceBackupJson(
+            JSON.stringify({
+              version: 1,
+              exportedAt: '2026-06-10T08:30:00.000Z',
+              data: {
+                templates: [{ ...template, name: 'Imported Review Assistant' }],
+                runs: [{ ...run, templateName: 'Imported Review Assistant' }],
+                notes: [{ ...note, body: 'Imported note body.' }],
+              },
+            }),
+          );
+
+          window.localStorage.setItem(
+            'workspace-import-summary-test',
+            `${summary.templates.updated}:${summary.runs.updated}:${summary.notes.updated}`,
+          );
+        }}
+      >
+        Import backup
+      </button>
+    </>
   );
 }
+
+afterEach(() => {
+  cleanup();
+});
 
 describe('useWorkspaceBackup', () => {
   it('creates a workspace backup JSON string from current app state', () => {
@@ -127,5 +160,34 @@ describe('useWorkspaceBackup', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Create backup' }));
 
     expect(window.localStorage.getItem('workspace-backup-test')).toBe('run-1');
+  });
+
+  it('imports a workspace backup JSON string into current app state', () => {
+    const templateRepository = createTemplateRepository([template]);
+    const runRepository = createRunRepository([run]);
+    const noteRepository = createNoteRepository([note]);
+
+    render(
+      <PromptTemplatesProvider repository={templateRepository}>
+        <PromptRunsProvider repository={runRepository}>
+          <PromptRunNotesProvider repository={noteRepository}>
+            <TestConsumer />
+          </PromptRunNotesProvider>
+        </PromptRunsProvider>
+      </PromptTemplatesProvider>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Import backup' }));
+
+    expect(window.localStorage.getItem('workspace-import-summary-test')).toBe(
+      '1:1:1',
+    );
+    expect(templateRepository.snapshot()[0]?.name).toBe(
+      'Imported Review Assistant',
+    );
+    expect(runRepository.snapshot()[0]?.templateName).toBe(
+      'Imported Review Assistant',
+    );
+    expect(noteRepository.snapshot()[0]?.body).toBe('Imported note body.');
   });
 });

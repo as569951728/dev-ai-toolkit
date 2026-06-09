@@ -3,12 +3,16 @@ import { useCallback, useMemo } from 'react';
 import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
-import { stringifyWorkspaceBackup } from '@/features/workspace-backup/lib/workspace-backup-transfer';
+import { mergeWorkspaceBackupData } from '@/features/workspace-backup/lib/workspace-backup-merge';
+import {
+  parseWorkspaceBackupImport,
+  stringifyWorkspaceBackup,
+} from '@/features/workspace-backup/lib/workspace-backup-transfer';
 
 export function useWorkspaceBackup() {
-  const { notes } = usePromptRunNotes();
-  const { runs } = usePromptRuns();
-  const { templates } = usePromptTemplates();
+  const { importNotes, notes } = usePromptRunNotes();
+  const { importRuns, runs } = usePromptRuns();
+  const { importTemplates, templates } = usePromptTemplates();
 
   const createWorkspaceBackupJson = useCallback(
     () =>
@@ -20,10 +24,32 @@ export function useWorkspaceBackup() {
     [notes, runs, templates],
   );
 
+  const importWorkspaceBackupJson = useCallback(
+    (rawValue: string) => {
+      const backup = parseWorkspaceBackupImport(rawValue);
+      const result = mergeWorkspaceBackupData(
+        {
+          templates,
+          runs,
+          notes,
+        },
+        backup.data,
+      );
+
+      importTemplates(backup.data.templates, result.summary.templates);
+      importRuns(backup.data.runs);
+      importNotes(backup.data.notes);
+
+      return result.summary;
+    },
+    [importNotes, importRuns, importTemplates, notes, runs, templates],
+  );
+
   return useMemo(
     () => ({
       createWorkspaceBackupJson,
+      importWorkspaceBackupJson,
     }),
-    [createWorkspaceBackupJson],
+    [createWorkspaceBackupJson, importWorkspaceBackupJson],
   );
 }
