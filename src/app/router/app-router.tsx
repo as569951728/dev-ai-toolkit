@@ -20,6 +20,7 @@ import { PromptTemplateDetailPage } from '@/features/prompt-templates/pages/prom
 import { PromptTemplateEditPage } from '@/features/prompt-templates/pages/prompt-template-edit-page';
 import { PromptTemplateListPage } from '@/features/prompt-templates/pages/prompt-template-list-page';
 import { PromptTemplatesProvider } from '@/features/prompt-templates/providers/prompt-templates-provider';
+import { WorkspaceBackupPage } from '@/features/workspace-backup/pages/workspace-backup-page';
 
 function RootLayout() {
   return (
@@ -90,6 +91,10 @@ const router = createBrowserRouter([
       {
         path: 'prompt-diff',
         element: <PromptDiffPage />,
+      },
+      {
+        path: 'workspace',
+        element: <WorkspaceBackupPage />,
       },
     ],
   },

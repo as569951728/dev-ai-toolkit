@@ -60,6 +60,15 @@ const navigationGroups: NavigationGroup[] = [
       },
     ],
   },
+  {
+    label: 'Workspace',
+    items: [
+      {
+        to: '/workspace',
+        label: 'Backup',
+      },
+    ],
+  },
 ];
 
 export function AppNavigation() {
