@@ -9,6 +9,7 @@ import {
   deletePromptRunRecord,
   getPromptRunById,
   getRunsForTemplate,
+  importPromptRunRecords,
   sortPromptRuns,
 } from '@/features/prompt-runs/services/prompt-run-service';
 import type { PromptRunRecord } from '@/types/prompt-run';
@@ -45,6 +46,13 @@ export function PromptRunsProvider({
     [repository, runs],
   );
 
+  const importRuns = useCallback(
+    (importedRuns: PromptRunRecord[]) => {
+      setRuns(importPromptRunRecords(repository, runs, importedRuns));
+    },
+    [repository, runs],
+  );
+
   const getRunsByTemplateId = useCallback(
     (templateId: string, limit?: number) => getRunsForTemplate(runs, templateId, limit),
     [runs],
@@ -60,10 +68,11 @@ export function PromptRunsProvider({
       runs,
       createRun,
       deleteRun,
+      importRuns,
       getRunById,
       getRunsByTemplateId,
     }),
-    [runs, createRun, deleteRun, getRunById, getRunsByTemplateId],
+    [runs, createRun, deleteRun, importRuns, getRunById, getRunsByTemplateId],
   );
 
   return (

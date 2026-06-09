@@ -7,6 +7,7 @@ import type { PromptRunNoteRepository } from '@/features/prompt-run-notes/reposi
 import {
   deleteNoteForRun,
   getNoteForRun,
+  importPromptRunNotes,
   saveNoteForRun,
 } from '@/features/prompt-run-notes/services/prompt-run-note-service';
 import type { PromptRunNote } from '@/types/prompt-run-note';
@@ -48,14 +49,22 @@ export function PromptRunNotesProvider({
     [repository, notes],
   );
 
+  const importNotes = useCallback(
+    (importedNotes: PromptRunNote[]) => {
+      setNotes(importPromptRunNotes(repository, notes, importedNotes));
+    },
+    [repository, notes],
+  );
+
   const value = useMemo<PromptRunNotesContextValue>(
     () => ({
       notes,
       getNoteByRunId,
       saveNote,
       deleteNoteByRunId,
+      importNotes,
     }),
-    [notes, getNoteByRunId, saveNote, deleteNoteByRunId],
+    [notes, getNoteByRunId, saveNote, deleteNoteByRunId, importNotes],
   );
 
   return (

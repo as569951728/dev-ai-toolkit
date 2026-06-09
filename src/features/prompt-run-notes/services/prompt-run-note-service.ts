@@ -51,3 +51,20 @@ export function deleteNoteForRun(
 
   return nextNotes;
 }
+
+export function importPromptRunNotes(
+  repository: PromptRunNoteRepository,
+  notes: PromptRunNote[],
+  importedNotes: PromptRunNote[],
+) {
+  const nextNotesById = new Map(notes.map((note) => [note.id, note]));
+
+  for (const note of importedNotes) {
+    nextNotesById.set(note.id, note);
+  }
+
+  const nextNotes = [...nextNotesById.values()];
+  repository.saveAll(nextNotes);
+
+  return nextNotes;
+}

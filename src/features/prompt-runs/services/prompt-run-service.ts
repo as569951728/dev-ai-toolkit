@@ -41,6 +41,23 @@ export function deletePromptRunRecord(
   return nextRuns;
 }
 
+export function importPromptRunRecords(
+  repository: PromptRunRepository,
+  runs: PromptRunRecord[],
+  importedRuns: PromptRunRecord[],
+) {
+  const nextRunsById = new Map(runs.map((run) => [run.id, run]));
+
+  for (const run of importedRuns) {
+    nextRunsById.set(run.id, run);
+  }
+
+  const nextRuns = sortPromptRuns([...nextRunsById.values()]);
+  repository.saveAll(nextRuns);
+
+  return nextRuns;
+}
+
 export function getRunsForTemplate(
   runs: PromptRunRecord[],
   templateId: string,

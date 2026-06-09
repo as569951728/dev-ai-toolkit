@@ -5,6 +5,7 @@ import {
   createPromptRunRecord,
   deletePromptRunRecord,
   getRunsForTemplate,
+  importPromptRunRecords,
   sortPromptRuns,
 } from '@/features/prompt-runs/services/prompt-run-service';
 import type { PromptRunRecord } from '@/types/prompt-run';
@@ -123,6 +124,50 @@ describe('prompt-run-service', () => {
 
     expect(nextRuns).toHaveLength(1);
     expect(nextRuns[0]?.id).toBe('run-2');
+    expect(repository.snapshot()).toEqual(nextRuns);
+  });
+
+  it('imports prompt runs by id without truncating restored history', () => {
+    const repository = createMemoryRepository([
+      {
+        id: 'run-1',
+        templateId: 'template-1',
+        templateName: 'Current',
+        templateVersion: 1,
+        variables: {},
+        systemPrompt: 'A',
+        userPrompt: 'B',
+        createdAt: '2026-05-06T10:00:00.000Z',
+      },
+    ]);
+
+    const nextRuns = importPromptRunRecords(repository, repository.loadAll(), [
+      {
+        id: 'run-1',
+        templateId: 'template-1',
+        templateName: 'Imported',
+        templateVersion: 2,
+        variables: { task: 'restore' },
+        systemPrompt: 'Imported A',
+        userPrompt: 'Imported B',
+        createdAt: '2026-05-06T11:00:00.000Z',
+      },
+      {
+        id: 'run-2',
+        templateId: 'template-2',
+        templateName: 'New',
+        templateVersion: 1,
+        variables: {},
+        systemPrompt: 'C',
+        userPrompt: 'D',
+        createdAt: '2026-05-06T12:00:00.000Z',
+      },
+    ]);
+
+    expect(nextRuns.map((run) => run.id)).toEqual(['run-2', 'run-1']);
+    expect(nextRuns.find((run) => run.id === 'run-1')?.templateName).toBe(
+      'Imported',
+    );
     expect(repository.snapshot()).toEqual(nextRuns);
   });
 });

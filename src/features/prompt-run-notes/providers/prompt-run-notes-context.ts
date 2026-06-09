@@ -7,6 +7,7 @@ export interface PromptRunNotesContextValue {
   getNoteByRunId: (runId: string) => PromptRunNote | undefined;
   saveNote: (runId: string, body: string) => PromptRunNote;
   deleteNoteByRunId: (runId: string) => void;
+  importNotes: (importedNotes: PromptRunNote[]) => void;
 }
 
 export const PromptRunNotesContext =

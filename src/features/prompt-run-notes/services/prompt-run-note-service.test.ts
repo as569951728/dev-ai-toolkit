@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
 import type { PromptRunNoteRepository } from '@/features/prompt-run-notes/repositories/prompt-run-note-repository';
-import { deleteNoteForRun } from '@/features/prompt-run-notes/services/prompt-run-note-service';
+import {
+  deleteNoteForRun,
+  importPromptRunNotes,
+} from '@/features/prompt-run-notes/services/prompt-run-note-service';
 import type { PromptRunNote } from '@/types/prompt-run-note';
 
 function createMemoryRepository(
@@ -45,6 +48,39 @@ describe('prompt-run-note-service', () => {
 
     expect(nextNotes).toHaveLength(1);
     expect(nextNotes[0]?.runId).toBe('run-2');
+    expect(repository.snapshot()).toEqual(nextNotes);
+  });
+
+  it('imports prompt run notes by id', () => {
+    const repository = createMemoryRepository([
+      {
+        id: 'note-1',
+        runId: 'run-1',
+        body: 'Current note',
+        createdAt: '2026-05-08T09:00:00.000Z',
+        updatedAt: '2026-05-08T09:00:00.000Z',
+      },
+    ]);
+
+    const nextNotes = importPromptRunNotes(repository, repository.loadAll(), [
+      {
+        id: 'note-1',
+        runId: 'run-1',
+        body: 'Imported note',
+        createdAt: '2026-05-08T09:00:00.000Z',
+        updatedAt: '2026-05-09T09:00:00.000Z',
+      },
+      {
+        id: 'note-2',
+        runId: 'run-2',
+        body: 'New note',
+        createdAt: '2026-05-10T09:00:00.000Z',
+        updatedAt: '2026-05-10T09:00:00.000Z',
+      },
+    ]);
+
+    expect(nextNotes.map((note) => note.id)).toEqual(['note-1', 'note-2']);
+    expect(nextNotes[0]?.body).toBe('Imported note');
     expect(repository.snapshot()).toEqual(nextNotes);
   });
 });

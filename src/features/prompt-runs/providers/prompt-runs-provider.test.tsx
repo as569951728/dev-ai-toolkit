@@ -1,5 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it } from 'vitest';
 
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs-provider';
@@ -21,7 +21,8 @@ function createMemoryRepository(
 }
 
 function TestConsumer() {
-  const { runs, createRun, getRunById, getRunsByTemplateId } = usePromptRuns();
+  const { runs, createRun, getRunById, getRunsByTemplateId, importRuns } =
+    usePromptRuns();
 
   return (
     <div>
@@ -45,9 +46,32 @@ function TestConsumer() {
       >
         Save Run
       </button>
+      <button
+        type="button"
+        onClick={() => {
+          importRuns([
+            {
+              id: 'imported-run',
+              templateId: 'template-1',
+              templateName: 'Imported Run',
+              templateVersion: 1,
+              variables: {},
+              systemPrompt: 'Imported system',
+              userPrompt: 'Imported user',
+              createdAt: '2026-05-08T08:00:00.000Z',
+            },
+          ]);
+        }}
+      >
+        Import runs
+      </button>
     </div>
   );
 }
+
+afterEach(() => {
+  cleanup();
+});
 
 describe('PromptRunsProvider', () => {
   it('persists prompt runs through the injected repository', () => {
@@ -80,5 +104,23 @@ describe('PromptRunsProvider', () => {
     expect(screen.getByTestId('run-count')).toHaveTextContent('2');
     expect(screen.getByTestId('template-1-count')).toHaveTextContent('1');
     expect(repository.snapshot()[0]?.templateName).toBe('Code Review Assistant');
+  });
+
+  it('imports prompt runs through the injected repository', () => {
+    const repository = createMemoryRepository();
+
+    render(
+      <PromptRunsProvider repository={repository}>
+        <TestConsumer />
+      </PromptRunsProvider>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Import runs' }));
+
+    expect(screen.getByTestId('run-count')).toHaveTextContent('1');
+    expect(repository.snapshot()[0]).toMatchObject({
+      id: 'imported-run',
+      templateName: 'Imported Run',
+    });
   });
 });

@@ -8,6 +8,7 @@ export interface PromptRunsContextValue {
     input: Omit<PromptRunRecord, 'id' | 'createdAt'>,
   ) => PromptRunRecord;
   deleteRun: (runId: string) => void;
+  importRuns: (importedRuns: PromptRunRecord[]) => void;
   getRunById: (runId: string) => PromptRunRecord | undefined;
   getRunsByTemplateId: (templateId: string, limit?: number) => PromptRunRecord[];
 }
