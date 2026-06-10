@@ -122,7 +122,7 @@ The current migration strategy is intentionally simple:
 
 In practice that means:
 
-- prompt templates fall back to the seeded mock template set
+- prompt templates fall back to the seeded starter templates
 - prompt runs fall back to an empty collection
 - prompt run notes fall back to an empty collection
 - future schema changes should first extend the shared storage helper and repository tests before changing feature code
