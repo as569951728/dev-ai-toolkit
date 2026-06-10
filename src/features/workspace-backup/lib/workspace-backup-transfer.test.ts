@@ -173,4 +173,48 @@ describe('workspace-backup-transfer', () => {
       ),
     ).toThrow('Invalid workspace backup format.');
   });
+
+  it('rejects workspace backups with blank identifiers or invalid dates', () => {
+    expect(() =>
+      parseWorkspaceBackupImport(
+        JSON.stringify({
+          version: 1,
+          exportedAt: '2026-05-04T08:00:00.000Z',
+          data: {
+            templates: [{ ...template, id: '   ' }],
+            runs: [run],
+            notes: [note],
+          },
+        }),
+      ),
+    ).toThrow('Invalid workspace backup format.');
+
+    expect(() =>
+      parseWorkspaceBackupImport(
+        JSON.stringify({
+          version: 1,
+          exportedAt: '2026-05-04T08:00:00.000Z',
+          data: {
+            templates: [template],
+            runs: [{ ...run, createdAt: 'not-a-date' }],
+            notes: [note],
+          },
+        }),
+      ),
+    ).toThrow('Invalid workspace backup format.');
+
+    expect(() =>
+      parseWorkspaceBackupImport(
+        JSON.stringify({
+          version: 1,
+          exportedAt: '2026-05-04T08:00:00.000Z',
+          data: {
+            templates: [template],
+            runs: [run],
+            notes: [{ ...note, runId: '' }],
+          },
+        }),
+      ),
+    ).toThrow('Invalid workspace backup format.');
+  });
 });

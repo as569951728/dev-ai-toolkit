@@ -20,6 +20,14 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
 }
 
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === 'string' && value.trim().length > 0;
+}
+
+function isValidDateString(value: unknown): value is string {
+  return isNonEmptyString(value) && !Number.isNaN(new Date(value).getTime());
+}
+
 function isStringRecord(value: unknown): value is Record<string, string> {
   return (
     isRecord(value) &&
@@ -35,11 +43,11 @@ function isValidPromptTemplateRevision(value: unknown) {
   return (
     isRecord(value) &&
     typeof value.version === 'number' &&
-    typeof value.updatedAt === 'string' &&
-    typeof value.name === 'string' &&
-    typeof value.description === 'string' &&
-    typeof value.systemPrompt === 'string' &&
-    typeof value.userPrompt === 'string' &&
+    isValidDateString(value.updatedAt) &&
+    isNonEmptyString(value.name) &&
+    isNonEmptyString(value.description) &&
+    isNonEmptyString(value.systemPrompt) &&
+    isNonEmptyString(value.userPrompt) &&
     isStringArray(value.tags)
   );
 }
@@ -47,42 +55,42 @@ function isValidPromptTemplateRevision(value: unknown) {
 function isValidPromptTemplate(value: unknown): value is PromptTemplate {
   return (
     isRecord(value) &&
-    typeof value.id === 'string' &&
-    typeof value.name === 'string' &&
-    typeof value.description === 'string' &&
-    typeof value.systemPrompt === 'string' &&
-    typeof value.userPrompt === 'string' &&
+    isNonEmptyString(value.id) &&
+    isNonEmptyString(value.name) &&
+    isNonEmptyString(value.description) &&
+    isNonEmptyString(value.systemPrompt) &&
+    isNonEmptyString(value.userPrompt) &&
     isStringArray(value.tags) &&
     typeof value.version === 'number' &&
     Array.isArray(value.revisions) &&
     value.revisions.every(isValidPromptTemplateRevision) &&
-    (typeof value.archivedAt === 'string' || value.archivedAt === null) &&
-    typeof value.updatedAt === 'string'
+    (isValidDateString(value.archivedAt) || value.archivedAt === null) &&
+    isValidDateString(value.updatedAt)
   );
 }
 
 function isValidPromptRun(value: unknown): value is PromptRunRecord {
   return (
     isRecord(value) &&
-    typeof value.id === 'string' &&
-    typeof value.templateId === 'string' &&
-    typeof value.templateName === 'string' &&
+    isNonEmptyString(value.id) &&
+    isNonEmptyString(value.templateId) &&
+    isNonEmptyString(value.templateName) &&
     typeof value.templateVersion === 'number' &&
     isStringRecord(value.variables) &&
-    typeof value.systemPrompt === 'string' &&
-    typeof value.userPrompt === 'string' &&
-    typeof value.createdAt === 'string'
+    isNonEmptyString(value.systemPrompt) &&
+    isNonEmptyString(value.userPrompt) &&
+    isValidDateString(value.createdAt)
   );
 }
 
 function isValidPromptRunNote(value: unknown): value is PromptRunNote {
   return (
     isRecord(value) &&
-    typeof value.id === 'string' &&
-    typeof value.runId === 'string' &&
-    typeof value.body === 'string' &&
-    typeof value.createdAt === 'string' &&
-    typeof value.updatedAt === 'string'
+    isNonEmptyString(value.id) &&
+    isNonEmptyString(value.runId) &&
+    isNonEmptyString(value.body) &&
+    isValidDateString(value.createdAt) &&
+    isValidDateString(value.updatedAt)
   );
 }
 
