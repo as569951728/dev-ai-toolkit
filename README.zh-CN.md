@@ -10,6 +10,7 @@
 - 预览带变量的 prompt 输出
 - 保存 prompt 运行记录并回看历史
 - 处理 JSON、接口草稿和文本输出
+- 手动备份和恢复当前浏览器里的本地工作区数据
 
 ## 适合做什么
 
@@ -55,6 +56,10 @@
 - Code Viewer
   - 单栏 / 双栏查看文本和代码输出
   - 复制内容
+- Workspace Backup
+  - 导出当前本地模板、已保存 runs 和 run notes
+  - 从 dev-ai-toolkit 导出的 JSON 文件恢复本地工作区
+  - 按 id 合并数据：已有记录会更新，新记录会追加
 
 ## 技术栈
 
@@ -136,6 +141,15 @@ npm run lint
 
 - [https://dev-ai-toolkit.vercel.app](https://dev-ai-toolkit.vercel.app)
 
+## 界面和使用路径
+
+下面的截图来自当前运行中的应用，用来展示真实界面状态，不是额外制作的营销图。
+
+![dev-ai-toolkit overview](./docs/assets/app-overview.png)
+
+主 prompt 工作流说明见
+[docs/prompt-workflow-walkthrough.md](./docs/prompt-workflow-walkthrough.md)。
+
 ### 部署说明
 
 见 [docs/deployment.md](./docs/deployment.md)。
@@ -152,6 +166,7 @@ npm run lint
 | Developer Utilities | JSON Tools | 格式化、校验、压缩、复制、加载示例 | 适合调试 JSON 载荷 |
 | Developer Utilities | API Builder | 组织请求参数并生成 `fetch` 代码 | 本地请求草稿工具 |
 | Developer Utilities | Code Viewer | 单栏 / 双栏查看文本和代码输出 | 适合审阅 prompt 或生成结果 |
+| Workspace | Workspace Backup | 导出和导入本地模板、runs、notes 的版本化 JSON | 当前浏览器 profile 的手动备份入口 |
 
 ## 典型使用路径
 
@@ -162,12 +177,13 @@ npm run lint
 3. 保存 run snapshot
 4. 在 `Prompt Run History` 里回看某个模板的输出历史，也可以按备注内容找回旧结果
 5. 打开单条 run 详情，补充维护备注，必要时导出 JSON，或删除过期 run，再进入 `Prompt Diff` 或 `Code Viewer` 继续检查结果
+6. 需要迁移或清理浏览器数据前，到 `Workspace Backup` 导出当前本地工作区
 
 ## 当前限制
 
 - 所有数据都存放在浏览器 `localStorage`
 - 没有后端、账号系统和跨设备同步
-- 运行记录只保存在当前浏览器环境
+- 运行记录和备份恢复都只作用于当前浏览器环境
 - 一些开发辅助模块目前还是轻量工具页，和 prompt 主链路相比更独立
 
 ## 路线图
