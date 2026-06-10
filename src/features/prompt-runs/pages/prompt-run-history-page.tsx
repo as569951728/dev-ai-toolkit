@@ -135,7 +135,7 @@ export function PromptRunHistoryPage() {
                 <input
                   type="search"
                   value={searchValue}
-                  placeholder="Search by template name"
+                  placeholder="Search by template or note"
                   onChange={(event) =>
                     updateFilters({ nextSearchValue: event.target.value })
                   }
