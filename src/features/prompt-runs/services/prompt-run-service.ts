@@ -1,8 +1,6 @@
 import type { PromptRunRepository } from '@/features/prompt-runs/repositories/prompt-run-repository';
 import type { PromptRunRecord } from '@/types/prompt-run';
 
-const MAX_RUNS = 20;
-
 export function sortPromptRuns(runs: PromptRunRecord[]) {
   return [...runs].sort(
     (left, right) =>
@@ -21,7 +19,7 @@ export function createPromptRunRecord(
     createdAt: new Date().toISOString(),
   };
 
-  const nextRuns = sortPromptRuns([record, ...runs]).slice(0, MAX_RUNS);
+  const nextRuns = sortPromptRuns([record, ...runs]);
   repository.saveAll(nextRuns);
 
   return {

@@ -24,6 +24,22 @@ function createMemoryRepository(
   };
 }
 
+function buildPromptRunRecord(
+  id: string,
+  createdAt: string,
+): PromptRunRecord {
+  return {
+    id,
+    templateId: 'template-1',
+    templateName: 'Code Review Assistant',
+    templateVersion: 1,
+    variables: {},
+    systemPrompt: 'System output',
+    userPrompt: 'User output',
+    createdAt,
+  };
+}
+
 describe('prompt-run-service', () => {
   it('creates and sorts prompt runs while keeping recent entries first', () => {
     const repository = createMemoryRepository();
@@ -52,6 +68,28 @@ describe('prompt-run-service', () => {
     expect(secondRun.record.id).toBeTruthy();
     expect(sorted[0]?.templateId).toBe('template-2');
     expect(sorted[1]?.templateId).toBe('template-1');
+  });
+
+  it('keeps the full saved run history when adding a new run', () => {
+    const existingRuns = Array.from({ length: 21 }, (_, index) =>
+      buildPromptRunRecord(
+        `run-${index + 1}`,
+        `2026-05-${String(index + 1).padStart(2, '0')}T10:00:00.000Z`,
+      ),
+    );
+    const repository = createMemoryRepository(existingRuns);
+
+    const result = createPromptRunRecord(repository, repository.loadAll(), {
+      templateId: 'template-1',
+      templateName: 'Code Review Assistant',
+      templateVersion: 2,
+      variables: { repository_name: 'dev-ai-toolkit' },
+      systemPrompt: 'New system output',
+      userPrompt: 'New user output',
+    });
+
+    expect(result.runs).toHaveLength(existingRuns.length + 1);
+    expect(repository.snapshot()).toHaveLength(existingRuns.length + 1);
   });
 
   it('filters runs by template id and respects limits', () => {
