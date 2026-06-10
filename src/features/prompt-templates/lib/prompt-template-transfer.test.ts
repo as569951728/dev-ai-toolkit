@@ -148,6 +148,29 @@ describe('prompt-template-transfer', () => {
     expect(result.importedTemplates[0]?.description).toBe('Second revision wins');
   });
 
+  it('treats id-less imports as new templates even when the name matches', () => {
+    const rawValue = JSON.stringify([
+      {
+        name: existingReviewTemplate.name,
+        description: 'Imported copy without a stored id',
+        systemPrompt: existingReviewTemplate.systemPrompt,
+        userPrompt: existingReviewTemplate.userPrompt,
+        tags: existingReviewTemplate.tags,
+        updatedAt: '2026-05-02T00:00:00.000Z',
+      },
+    ]);
+
+    const result = parsePromptTemplateImport(rawValue, starterPromptTemplates);
+
+    expect(result.summary).toEqual({
+      created: 1,
+      updated: 0,
+      total: 1,
+    });
+    expect(result.importedTemplates[0]?.id).toMatch(/^code-review-assistant-/);
+    expect(result.importedTemplates[0]?.id).not.toBe(existingReviewTemplate.id);
+  });
+
   it('normalizes archived template state from imported payloads', () => {
     const archivedTemplate = {
       ...existingApiTemplate,
