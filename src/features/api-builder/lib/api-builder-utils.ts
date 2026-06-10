@@ -82,7 +82,18 @@ export function buildRequestUrl(
       )
       .join('&');
 
-    return queryString ? `${trimmedUrl}?${queryString}` : trimmedUrl;
+    if (!queryString) {
+      return trimmedUrl;
+    }
+
+    const separator =
+      trimmedUrl.includes('?') && !trimmedUrl.endsWith('?') && !trimmedUrl.endsWith('&')
+        ? '&'
+        : trimmedUrl.includes('?')
+          ? ''
+          : '?';
+
+    return `${trimmedUrl}${separator}${queryString}`;
   }
 }
 
