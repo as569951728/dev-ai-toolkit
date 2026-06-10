@@ -27,6 +27,8 @@ The format is intentionally lightweight and human-readable.
 - Included recent playground template shortcuts in workspace backups
 - Included matching source template revision context in single prompt run JSON
   exports
+- Replaced the default React Router unknown-route error with a project-level
+  not found page
 
 ### Changed
 

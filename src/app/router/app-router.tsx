@@ -9,6 +9,7 @@ import { ApiBuilderPage } from '@/features/api-builder/pages/api-builder-page';
 import { CodeViewerPage } from '@/features/code-viewer/pages/code-viewer-page';
 import { HomePage } from '@/features/home/pages/home-page';
 import { JsonToolsPage } from '@/features/json-tools/pages/json-tools-page';
+import { NotFoundPage } from '@/features/not-found/pages/not-found-page';
 import { PromptDiffPage } from '@/features/prompt-diff/pages/prompt-diff-page';
 import { PromptRunNotesProvider } from '@/features/prompt-run-notes/providers/prompt-run-notes-provider';
 import { PromptRunDetailPage } from '@/features/prompt-runs/pages/prompt-run-detail-page';
@@ -95,6 +96,10 @@ const router = createBrowserRouter([
       {
         path: 'workspace',
         element: <WorkspaceBackupPage />,
+      },
+      {
+        path: '*',
+        element: <NotFoundPage />,
       },
     ],
   },
