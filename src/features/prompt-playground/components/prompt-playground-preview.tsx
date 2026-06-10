@@ -87,7 +87,9 @@ export function PromptPlaygroundPreview({
       </div>
 
       {saveStatusMessage ? (
-        <p className="status-banner">{saveStatusMessage}</p>
+        <p className="status-banner" role="status">
+          {saveStatusMessage}
+        </p>
       ) : null}
 
       {selectedTemplate && preview ? (

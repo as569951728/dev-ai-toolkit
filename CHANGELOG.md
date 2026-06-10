@@ -19,6 +19,7 @@ The format is intentionally lightweight and human-readable.
   context is searchable
 - Announced Workspace Backup import success and failure feedback with
   accessible status roles
+- Announced prompt run save and note save feedback with accessible status roles
 
 ### Changed
 

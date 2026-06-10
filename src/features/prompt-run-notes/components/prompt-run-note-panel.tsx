@@ -41,7 +41,11 @@ export function PromptRunNotePanel({ runId }: PromptRunNotePanelProps) {
         </div>
       </div>
 
-      {statusMessage ? <p className="status-banner">{statusMessage}</p> : null}
+      {statusMessage ? (
+        <p className="status-banner" role="status">
+          {statusMessage}
+        </p>
+      ) : null}
 
       <label className="field">
         <span>Note</span>

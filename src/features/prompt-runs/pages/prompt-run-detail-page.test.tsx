@@ -155,6 +155,7 @@ describe('PromptRunDetailPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save note' }));
 
     expect(screen.getByText('Note saved.')).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent('Note saved.');
     expect(noteRepository.snapshot()[0]).toMatchObject({
       runId: 'run-1',
       body: 'Good baseline for future review prompts.',

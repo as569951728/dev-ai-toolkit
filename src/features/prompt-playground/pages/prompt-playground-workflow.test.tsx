@@ -100,6 +100,9 @@ describe('Prompt playground workflow', () => {
         'Saved a run snapshot for Code Review Assistant v1.',
       ),
     ).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Saved a run snapshot for Code Review Assistant v1.',
+    );
 
     cleanup();
 

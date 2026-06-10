@@ -85,6 +85,7 @@ describe('PromptRunNotePanel', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save note' }));
 
     expect(screen.getByText('Note cleared.')).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent('Note cleared.');
     expect(repository.loadAll()).toEqual([]);
   });
 });
