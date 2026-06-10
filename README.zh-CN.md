@@ -163,7 +163,7 @@ npm run lint
 | 分组 | 模块 | 当前能力 | 备注 |
 | --- | --- | --- | --- |
 | Core | Overview | 介绍模块分组、主路径和当前阶段方向 | 首页入口 |
-| Prompt Workflows | Prompt Templates | 创建、编辑、复制、归档、恢复、删除、筛选、导入、导出模板 | 可以直接进入 Playground 或过滤后的 Run History |
+| Prompt Workflows | Prompt Templates | 创建、编辑、复制、归档、恢复、删除、筛选、导入、导出模板 | 活跃模板可以进入 Playground，所有模板都可以查看过滤后的 Run History |
 | Prompt Workflows | Prompt Playground | 选择模板、填变量、预览输出、保存 run、保留最近使用模板 | 当前主工作流入口 |
 | Prompt Workflows | Prompt Diff | 比较 prompt 文本、变量变化和行级差异 | 适合做模板改写后的复核 |
 | Prompt Workflows | Prompt Run History | 浏览 runs、按模板过滤、搜索备注、查看详情、添加备注、导出或删除单条 run、继续在下游工具查看输出 | 已保存 prompt 输出的历史视图 |

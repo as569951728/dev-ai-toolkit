@@ -21,6 +21,9 @@ Useful actions in the current template flow:
 - Export or import prompt templates as JSON.
 - Open a template in the playground when you are ready to fill variables.
 
+Archived templates stay available for preview, restore, and run-history review,
+but they are not offered as active Playground templates.
+
 ## 2. Fill Variables In Prompt Playground
 
 Open **Prompt Playground** from a template. The playground detects variables in

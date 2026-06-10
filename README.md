@@ -161,7 +161,7 @@ The toolbox is currently organized around two capability groups.
 | Group | Module | Current capabilities | Notes |
 | --- | --- | --- | --- |
 | Core | Overview | Introduces the module groups, main workflow, and near-term direction | Landing page for first-time users |
-| Prompt Workflows | Prompt Templates | Create, edit, duplicate, archive, restore, delete, filter, import, and export templates | Can open a template directly in the playground or filtered run history |
+| Prompt Workflows | Prompt Templates | Create, edit, duplicate, archive, restore, delete, filter, import, and export templates | Active templates can open in the playground; all templates can open filtered run history |
 | Prompt Workflows | Prompt Playground | Select templates, fill variables, preview output, save run snapshots, and keep recent template usage | Main path for generating reusable prompt output |
 | Prompt Workflows | Prompt Diff | Compare prompt revisions, detect variable drift, and inspect line-level wording changes | Best used after editing or templating changes |
 | Prompt Workflows | Prompt Run History | Browse saved runs, filter by template, search note content, open run details, add notes, export or delete a single run, and reopen output in downstream tools | Dedicated history view for saved prompt output |
@@ -172,7 +172,7 @@ The toolbox is currently organized around two capability groups.
 
 The current storage model is intentionally local-first:
 
-- Initial template data comes from a mock dataset
+- A few starter templates are seeded on first load
 - User changes and saved runs are persisted in `localStorage`
 - Workspace backups can export and restore local templates, saved runs, and notes
 - Repository boundaries are in place so future API-backed work does not require rewriting page structure first
