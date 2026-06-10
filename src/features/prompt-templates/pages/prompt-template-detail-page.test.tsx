@@ -43,6 +43,34 @@ afterEach(() => {
 });
 
 describe('PromptTemplateDetailPage', () => {
+  it('does not offer the playground action for an archived prompt template', () => {
+    const archivedTemplate = {
+      ...mockPromptTemplates[0]!,
+      archivedAt: '2026-05-07T08:00:00.000Z',
+    };
+    const templateRepository = createTemplateRepository([archivedTemplate]);
+
+    render(
+      <MemoryRouter initialEntries={[`/prompts/${archivedTemplate.id}`]}>
+        <PromptTemplatesProvider repository={templateRepository}>
+          <PromptRunsProvider repository={createRunRepository()}>
+            <Routes>
+              <Route
+                path="/prompts/:promptId"
+                element={<PromptTemplateDetailPage />}
+              />
+            </Routes>
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    expect(
+      screen.queryByRole('button', { name: 'Open in Playground' }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Restore' })).toBeInTheDocument();
+  });
+
   it('asks for confirmation before deleting a prompt template', () => {
     const templateRepository = createTemplateRepository();
     const templateId = mockPromptTemplates[0]!.id;

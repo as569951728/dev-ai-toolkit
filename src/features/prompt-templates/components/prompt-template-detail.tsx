@@ -64,13 +64,15 @@ export function PromptTemplateDetail({
           <button className="ghost-button" type="button" onClick={onBack}>
             Back to list
           </button>
-          <button
-            className="secondary-button"
-            type="button"
-            onClick={() => onOpenInPlayground(template.id)}
-          >
-            Open in Playground
-          </button>
+          {!template.archivedAt ? (
+            <button
+              className="secondary-button"
+              type="button"
+              onClick={() => onOpenInPlayground(template.id)}
+            >
+              Open in Playground
+            </button>
+          ) : null}
           <button
             className="secondary-button"
             type="button"
