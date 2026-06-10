@@ -189,4 +189,36 @@ describe('WorkspaceBackupPage', () => {
     );
     expect(noteRepository.snapshot()[0]?.body).toBe('Imported note body.');
   });
+
+  it('shows an import error when the selected backup is invalid', async () => {
+    const { noteRepository, runRepository, templateRepository } =
+      renderWorkspaceBackupPage();
+    const file = new File(
+      [
+        JSON.stringify({
+          version: 1,
+          exportedAt: '2026-06-10T08:30:00.000Z',
+          data: {
+            templates: [template],
+            runs: [run],
+            notes: [{ ...note, runId: 'missing-run' }],
+          },
+        }),
+      ],
+      'invalid-workspace-backup.json',
+      { type: 'application/json' },
+    );
+
+    fireEvent.change(screen.getByLabelText('Import workspace JSON'), {
+      target: { files: [file] },
+    });
+
+    expect(await screen.findByText('Import failed')).toBeInTheDocument();
+    expect(
+      screen.getByText('Invalid workspace backup format.'),
+    ).toBeInTheDocument();
+    expect(templateRepository.snapshot()).toEqual([template]);
+    expect(runRepository.snapshot()).toEqual([run]);
+    expect(noteRepository.snapshot()).toEqual([note]);
+  });
 });
