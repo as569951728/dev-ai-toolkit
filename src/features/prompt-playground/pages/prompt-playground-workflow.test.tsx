@@ -195,4 +195,28 @@ describe('Prompt playground workflow', () => {
       fallbackTemplateId,
     );
   });
+
+  it('shows an empty state when no active templates are available', () => {
+    const archivedTemplate = {
+      ...mockPromptTemplates[0]!,
+      archivedAt: '2026-05-07T08:00:00.000Z',
+    };
+    const templateRepository = createTemplateRepository([archivedTemplate]);
+    const runRepository = createRunRepository();
+
+    render(
+      <MemoryRouter initialEntries={['/playground']}>
+        <PromptTemplatesProvider repository={templateRepository}>
+          <PromptRunsProvider repository={runRepository}>
+            <PlaygroundWorkflowProbe />
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    expect(
+      screen.getByText('No active templates available'),
+    ).toBeInTheDocument();
+    expect(screen.queryByLabelText('Active template')).not.toBeInTheDocument();
+  });
 });

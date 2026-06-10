@@ -22,19 +22,26 @@ export function PromptPlaygroundTemplatePicker({
         </div>
       </div>
 
-      <label className="field">
-        <span>Active template</span>
-        <select
-          value={selectedTemplateId}
-          onChange={(event) => onTemplateChange(event.target.value)}
-        >
-          {templates.map((template) => (
-            <option key={template.id} value={template.id}>
-              {template.name}
-            </option>
-          ))}
-        </select>
-      </label>
+      {templates.length > 0 ? (
+        <label className="field">
+          <span>Active template</span>
+          <select
+            value={selectedTemplateId}
+            onChange={(event) => onTemplateChange(event.target.value)}
+          >
+            {templates.map((template) => (
+              <option key={template.id} value={template.id}>
+                {template.name}
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : (
+        <div className="empty-state empty-state--compact">
+          <h2>No active templates available</h2>
+          <p>Restore an archived template or create a new prompt template first.</p>
+        </div>
+      )}
 
       {recentTemplates.length > 0 ? (
         <div className="recent-list">
