@@ -41,6 +41,17 @@ function normalizeTags(value: string) {
   ];
 }
 
+function formatRequiredMessage(fields: string[]) {
+  if (fields.length === 1) {
+    return `${fields[0]} is required.`;
+  }
+
+  const lastField = fields[fields.length - 1];
+  const leadingFields = fields.slice(0, -1);
+
+  return `${leadingFields.join(', ')} and ${lastField} are required.`;
+}
+
 export function PromptTemplateForm({
   mode,
   initialValue,
@@ -50,6 +61,7 @@ export function PromptTemplateForm({
   const [formState, setFormState] = useState<FormState>(() =>
     createInitialState(initialValue),
   );
+  const [validationMessage, setValidationMessage] = useState<string | null>(null);
 
   const handleChange =
     (field: keyof FormState) =>
@@ -74,6 +86,19 @@ export function PromptTemplateForm({
       tags: normalizeTags(formState.tags),
     };
 
+    const missingFields = [
+      payload.name ? null : 'Name',
+      payload.description ? null : 'Description',
+      payload.systemPrompt ? null : 'system prompt',
+      payload.userPrompt ? null : 'user prompt',
+    ].filter((field): field is string => field !== null);
+
+    if (missingFields.length > 0) {
+      setValidationMessage(formatRequiredMessage(missingFields));
+      return;
+    }
+
+    setValidationMessage(null);
     onSubmit(payload);
   };
 
@@ -95,6 +120,12 @@ export function PromptTemplateForm({
           Back to list
         </button>
       </div>
+
+      {validationMessage ? (
+        <p className="status-banner status-banner--error" role="alert">
+          {validationMessage}
+        </p>
+      ) : null}
 
       <form className="prompt-form" onSubmit={handleSubmit}>
         <label className="field">
