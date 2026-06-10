@@ -40,6 +40,38 @@ describe('PromptTemplateForm', () => {
     ).toHaveTextContent('Name and system prompt are required.');
   });
 
+  it('clears validation feedback when the user edits the form again', () => {
+    render(
+      <PromptTemplateForm
+        mode="create"
+        onCancel={vi.fn()}
+        onSubmit={vi.fn()}
+      />,
+    );
+
+    fireEvent.change(screen.getByLabelText('Name'), {
+      target: { value: '   ' },
+    });
+    fireEvent.change(screen.getByLabelText('Description'), {
+      target: { value: 'Debug a failing workflow' },
+    });
+    fireEvent.change(screen.getByLabelText('System prompt'), {
+      target: { value: 'You are helping debug {{issue}}.' },
+    });
+    fireEvent.change(screen.getByLabelText('User prompt'), {
+      target: { value: 'Investigate {{issue}}.' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Create template' }));
+
+    expect(screen.getByRole('alert')).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText('Name'), {
+      target: { value: 'Debug Helper' },
+    });
+
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
   it('trims and deduplicates submitted tags', () => {
     const handleSubmit = vi.fn();
 

@@ -69,6 +69,7 @@ export function PromptTemplateForm({
       event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     ) => {
       const value = event.target.value;
+      setValidationMessage(null);
       setFormState((currentState) => ({
         ...currentState,
         [field]: value,
