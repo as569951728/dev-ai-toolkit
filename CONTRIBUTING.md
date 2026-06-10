@@ -36,6 +36,8 @@ npm run test
 npm run build
 ```
 
+Use `npm run test:coverage` when a change touches shared helpers, storage parsing, or cross-page workflow behavior.
+
 ## Contribution Scope
 
 Good first contributions include:
