@@ -26,12 +26,13 @@ function mergeByKey<T>(
   const mergedItemsByKey = new Map(
     currentItems.map((item) => [getKey(item), item]),
   );
+  const incomingItemsByKey = new Map(
+    incomingItems.map((item) => [getKey(item), item]),
+  );
   let created = 0;
   let updated = 0;
 
-  for (const item of incomingItems) {
-    const key = getKey(item);
-
+  for (const [key, item] of incomingItemsByKey) {
     if (currentKeys.has(key)) {
       updated += 1;
     } else {
@@ -46,7 +47,7 @@ function mergeByKey<T>(
     summary: {
       created,
       updated,
-      total: incomingItems.length,
+      total: incomingItemsByKey.size,
     },
   };
 }

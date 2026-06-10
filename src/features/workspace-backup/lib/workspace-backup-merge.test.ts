@@ -141,4 +141,41 @@ describe('workspace-backup-merge', () => {
       total: 1,
     });
   });
+
+  it('counts repeated incoming keys once in the import summary', () => {
+    const current: WorkspaceBackupData = {
+      templates: [],
+      runs: [],
+      notes: [],
+    };
+    const incoming: WorkspaceBackupData = {
+      templates: [
+        createTemplate('template-1', 'First Template'),
+        createTemplate('template-1', 'Last Template'),
+      ],
+      runs: [
+        createRun('run-1', 'First Run'),
+        createRun('run-1', 'Last Run'),
+      ],
+      notes: [
+        createNote('note-1', 'First note', 'run-1'),
+        createNote('note-2', 'Last note', 'run-1'),
+      ],
+    };
+
+    const result = mergeWorkspaceBackupData(current, incoming);
+
+    expect(result.data.templates.map((template) => template.name)).toEqual([
+      'Last Template',
+    ]);
+    expect(result.data.runs.map((run) => run.templateName)).toEqual([
+      'Last Run',
+    ]);
+    expect(result.data.notes.map((note) => note.body)).toEqual(['Last note']);
+    expect(result.summary).toEqual({
+      templates: { created: 1, updated: 0, total: 1 },
+      runs: { created: 1, updated: 0, total: 1 },
+      notes: { created: 1, updated: 0, total: 1 },
+    });
+  });
 });
