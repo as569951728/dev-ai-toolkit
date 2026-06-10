@@ -6,6 +6,7 @@ import {
 } from '@/features/prompt-runs/lib/prompt-run-export';
 import type { PromptRunNote } from '@/types/prompt-run-note';
 import type { PromptRunRecord } from '@/types/prompt-run';
+import type { PromptTemplateRevision } from '@/types/prompt-template';
 
 const sampleRun: PromptRunRecord = {
   id: 'run-1',
@@ -26,21 +27,33 @@ const sampleNote: PromptRunNote = {
   updatedAt: '2026-05-08T09:00:00.000Z',
 };
 
+const sampleSourceTemplateRevision: PromptTemplateRevision = {
+  version: 3,
+  updatedAt: '2026-05-06T09:00:00.000Z',
+  name: 'API Design Partner',
+  description: 'Review API endpoint drafts.',
+  systemPrompt: 'You are a practical API design reviewer.',
+  userPrompt: 'Review {{endpoint}}.',
+  tags: ['api'],
+};
+
 describe('prompt run export helpers', () => {
   it('creates a stable export payload with run data and note context', () => {
     expect(
       createPromptRunExportPayload({
-        run: sampleRun,
-        note: sampleNote,
-        exportedAt: '2026-05-09T10:00:00.000Z',
-      }),
-    ).toEqual({
-      schemaVersion: 1,
-      exportedAt: '2026-05-09T10:00:00.000Z',
       run: sampleRun,
       note: sampleNote,
-    });
+      sourceTemplateRevision: sampleSourceTemplateRevision,
+      exportedAt: '2026-05-09T10:00:00.000Z',
+    }),
+  ).toEqual({
+    schemaVersion: 1,
+    exportedAt: '2026-05-09T10:00:00.000Z',
+    run: sampleRun,
+    note: sampleNote,
+    sourceTemplateRevision: sampleSourceTemplateRevision,
   });
+});
 
   it('keeps note context nullable when a run has no saved note', () => {
     expect(
@@ -48,6 +61,15 @@ describe('prompt run export helpers', () => {
         run: sampleRun,
         exportedAt: '2026-05-09T10:00:00.000Z',
       }).note,
+    ).toBeNull();
+  });
+
+  it('keeps source template revision context nullable when it is unavailable', () => {
+    expect(
+      createPromptRunExportPayload({
+        run: sampleRun,
+        exportedAt: '2026-05-09T10:00:00.000Z',
+      }).sourceTemplateRevision,
     ).toBeNull();
   });
 

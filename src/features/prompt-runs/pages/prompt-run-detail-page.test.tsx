@@ -229,11 +229,12 @@ describe('PromptRunDetailPage', () => {
   });
 
   it('exports the current run with saved note context', () => {
+    const sourceTemplateRevision = starterPromptTemplates[0]!.revisions[0]!;
     const run: PromptRunRecord = {
       id: 'run-1',
       templateId: starterPromptTemplates[0]!.id,
       templateName: starterPromptTemplates[0]!.name,
-      templateVersion: 2,
+      templateVersion: sourceTemplateRevision.version,
       variables: {},
       systemPrompt: 'System',
       userPrompt: 'User',
@@ -256,7 +257,11 @@ describe('PromptRunDetailPage', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Export run JSON' }));
 
-    expect(exportPromptRunAsJsonMock).toHaveBeenCalledWith({ run, note });
+    expect(exportPromptRunAsJsonMock).toHaveBeenCalledWith({
+      run,
+      note,
+      sourceTemplateRevision,
+    });
   });
 
   it('asks for confirmation before deleting the current run and its saved note', () => {

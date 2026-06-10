@@ -25,6 +25,8 @@ The format is intentionally lightweight and human-readable.
 - Compared saved prompt runs against the matching source template revision when
   opening Prompt Diff from run details
 - Included recent playground template shortcuts in workspace backups
+- Included matching source template revision context in single prompt run JSON
+  exports
 
 ### Changed
 

@@ -1,20 +1,24 @@
 import type { PromptRunNote } from '@/types/prompt-run-note';
 import type { PromptRunRecord } from '@/types/prompt-run';
+import type { PromptTemplateRevision } from '@/types/prompt-template';
 
 export interface PromptRunExportPayload {
   schemaVersion: 1;
   exportedAt: string;
   run: PromptRunRecord;
   note: PromptRunNote | null;
+  sourceTemplateRevision: PromptTemplateRevision | null;
 }
 
 export function createPromptRunExportPayload({
   run,
   note,
+  sourceTemplateRevision,
   exportedAt = new Date().toISOString(),
 }: {
   run: PromptRunRecord;
   note?: PromptRunNote | null;
+  sourceTemplateRevision?: PromptTemplateRevision | null;
   exportedAt?: string;
 }): PromptRunExportPayload {
   return {
@@ -22,6 +26,7 @@ export function createPromptRunExportPayload({
     exportedAt,
     run,
     note: note ?? null,
+    sourceTemplateRevision: sourceTemplateRevision ?? null,
   };
 }
 
@@ -40,11 +45,17 @@ export function createPromptRunExportFilename(run: PromptRunRecord) {
 export function exportPromptRunAsJson({
   run,
   note,
+  sourceTemplateRevision,
 }: {
   run: PromptRunRecord;
   note?: PromptRunNote | null;
+  sourceTemplateRevision?: PromptTemplateRevision | null;
 }) {
-  const payload = createPromptRunExportPayload({ run, note });
+  const payload = createPromptRunExportPayload({
+    run,
+    note,
+    sourceTemplateRevision,
+  });
   const blob = new Blob([JSON.stringify(payload, null, 2)], {
     type: 'application/json',
   });

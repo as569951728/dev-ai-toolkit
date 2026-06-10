@@ -52,7 +52,8 @@ Run History supports:
 ## 4. Add Notes And Export Individual Runs
 
 On a run detail page, you can add a short note to explain why the run was kept
-or what should be reviewed later. Individual runs can also be exported as JSON.
+or what should be reviewed later. Individual runs can also be exported as JSON
+with the matching source template revision when it is still available locally.
 
 This is useful for small review loops where the prompt output needs context but
 does not yet need a backend or shared account model.

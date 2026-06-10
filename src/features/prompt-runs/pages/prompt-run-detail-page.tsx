@@ -95,7 +95,13 @@ export function PromptRunDetailPage() {
           <button
             className="ghost-button"
             type="button"
-            onClick={() => exportPromptRunAsJson({ run, note })}
+            onClick={() =>
+              exportPromptRunAsJson({
+                run,
+                note,
+                sourceTemplateRevision: sourceRevision,
+              })
+            }
           >
             Export run JSON
           </button>
