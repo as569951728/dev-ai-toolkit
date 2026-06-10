@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import type {
   PromptTemplate,
   PromptTemplateRevision,
@@ -44,6 +46,7 @@ export function PromptTemplateDetail({
   onRestoreRevision,
   recentRuns,
 }: PromptTemplateDetailProps) {
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const revisionHistory = [...template.revisions].sort(
     (left, right) => right.version - left.version,
   );
@@ -106,13 +109,32 @@ export function PromptTemplateDetail({
               Archive
             </button>
           )}
-          <button
-            className="danger-button"
-            type="button"
-            onClick={() => onDelete(template.id)}
-          >
-            Delete
-          </button>
+          {isConfirmingDelete ? (
+            <>
+              <button
+                className="danger-button"
+                type="button"
+                onClick={() => onDelete(template.id)}
+              >
+                Confirm delete
+              </button>
+              <button
+                className="ghost-button"
+                type="button"
+                onClick={() => setIsConfirmingDelete(false)}
+              >
+                Cancel
+              </button>
+            </>
+          ) : (
+            <button
+              className="danger-button"
+              type="button"
+              onClick={() => setIsConfirmingDelete(true)}
+            >
+              Delete
+            </button>
+          )}
         </div>
       </div>
 
