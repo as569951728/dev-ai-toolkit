@@ -115,10 +115,22 @@ http://localhost:5173
 npm run build
 ```
 
+### Run Tests
+
+```bash
+npm run test
+```
+
 ### Lint The Codebase
 
 ```bash
 npm run lint
+```
+
+### Check Dependencies
+
+```bash
+npm run audit
 ```
 
 ### Preview The Production Build

@@ -27,9 +27,12 @@ npm install
 npm run dev
 ```
 
-3. Verify the production build:
+3. Run the local quality checks:
 
 ```bash
+npm run audit
+npm run lint
+npm run test
 npm run build
 ```
 
@@ -55,7 +58,7 @@ Please avoid:
 1. Fork the repository
 2. Create a focused branch
 3. Make your changes
-4. Verify the app still builds
+4. Run the local quality checks
 5. Open a pull request with a clear description
 
 ## Pull Request Guidelines

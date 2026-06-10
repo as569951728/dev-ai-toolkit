@@ -135,6 +135,12 @@ npm run test
 npm run lint
 ```
 
+### 依赖安全检查
+
+```bash
+npm run audit
+```
+
 ## Live Demo
 
 当前演示地址已经配置，但部署是否跟随最新 `main`、以及本地访问稳定性
