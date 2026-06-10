@@ -77,11 +77,13 @@ export function PromptRunHistoryPage() {
     const normalizedSearchValue = searchValue.trim().toLowerCase();
 
     return runs.filter((run) => {
+      const sourceTemplateName = getTemplateById(run.templateId)?.name ?? '';
       const matchesTemplate =
         selectedTemplateId === 'all' || run.templateId === selectedTemplateId;
       const matchesSearch =
         !normalizedSearchValue ||
         run.templateName.toLowerCase().includes(normalizedSearchValue) ||
+        sourceTemplateName.toLowerCase().includes(normalizedSearchValue) ||
         (getNoteByRunId(run.id)?.body.toLowerCase().includes(
           normalizedSearchValue,
         ) ??
@@ -89,7 +91,7 @@ export function PromptRunHistoryPage() {
 
       return matchesTemplate && matchesSearch;
     });
-  }, [getNoteByRunId, runs, searchValue, selectedTemplateId]);
+  }, [getNoteByRunId, getTemplateById, runs, searchValue, selectedTemplateId]);
 
   return (
     <section className="playground-layout">

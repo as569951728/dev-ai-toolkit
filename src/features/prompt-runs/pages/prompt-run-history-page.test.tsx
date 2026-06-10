@@ -266,6 +266,33 @@ describe('PromptRunHistoryPage', () => {
     ).toBeInTheDocument();
   });
 
+  it('searches runs by the current source template name after a template rename', () => {
+    renderRunHistory({
+      runs: [
+        {
+          id: 'run-1',
+          templateId: mockPromptTemplates[0]!.id,
+          templateName: 'Older Review Name',
+          templateVersion: 1,
+          variables: {},
+          systemPrompt: 'System A',
+          userPrompt: 'User A',
+          createdAt: '2026-05-07T09:00:00.000Z',
+        },
+      ],
+    });
+
+    fireEvent.change(screen.getByLabelText('Search runs'), {
+      target: { value: 'code review' },
+    });
+
+    expect(
+      screen.getByRole('heading', { name: 'Older Review Name' }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Showing 1 of 1 saved runs.')).toBeInTheDocument();
+    expect(screen.getByText('Search: code review')).toBeInTheDocument();
+  });
+
   it('preselects the template filter from the route query', () => {
     renderRunHistory({
       initialEntry: `/runs?templateId=${mockPromptTemplates[1]!.id}`,
