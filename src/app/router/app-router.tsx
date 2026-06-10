@@ -1,5 +1,6 @@
 import {
   createBrowserRouter,
+  Navigate,
   Outlet,
   RouterProvider,
 } from 'react-router-dom';
@@ -96,6 +97,10 @@ const router = createBrowserRouter([
       {
         path: 'workspace',
         element: <WorkspaceBackupPage />,
+      },
+      {
+        path: 'workspace-backup',
+        element: <Navigate replace to="/workspace" />,
       },
       {
         path: '*',
