@@ -1,5 +1,7 @@
 # dev-ai-toolkit
 
+[![CI](https://github.com/as569951728/dev-ai-toolkit/actions/workflows/ci.yml/badge.svg)](https://github.com/as569951728/dev-ai-toolkit/actions/workflows/ci.yml)
+
 **语言版本：** [English](./README.md) | 简体中文
 
 `dev-ai-toolkit` 是一个本地优先的开发者 AI 工具箱，基于 React、Vite 和 TypeScript 构建。
