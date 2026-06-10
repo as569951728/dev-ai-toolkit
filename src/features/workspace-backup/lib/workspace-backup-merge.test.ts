@@ -44,10 +44,10 @@ function createRun(id: string, templateName = id): PromptRunRecord {
   };
 }
 
-function createNote(id: string, body = id): PromptRunNote {
+function createNote(id: string, body = id, runId = 'run-1'): PromptRunNote {
   return {
     id,
-    runId: 'run-1',
+    runId,
     body,
     createdAt: '2026-06-10T08:00:00.000Z',
     updatedAt: '2026-06-10T08:00:00.000Z',
@@ -72,7 +72,7 @@ describe('workspace-backup-merge', () => {
       ],
       notes: [
         createNote('note-1', 'Imported note'),
-        createNote('note-2', 'New note'),
+        createNote('note-2', 'New note', 'run-2'),
       ],
     };
 
@@ -115,6 +115,30 @@ describe('workspace-backup-merge', () => {
       created: 0,
       updated: 0,
       total: 0,
+    });
+  });
+
+  it('merges notes by run id even when imported note ids differ', () => {
+    const current: WorkspaceBackupData = {
+      templates: [],
+      runs: [createRun('run-1')],
+      notes: [createNote('note-1', 'Current note', 'run-1')],
+    };
+    const incoming: WorkspaceBackupData = {
+      templates: [],
+      runs: [],
+      notes: [createNote('imported-note', 'Imported note', 'run-1')],
+    };
+
+    const result = mergeWorkspaceBackupData(current, incoming);
+
+    expect(result.data.notes).toEqual([
+      createNote('imported-note', 'Imported note', 'run-1'),
+    ]);
+    expect(result.summary.notes).toEqual({
+      created: 0,
+      updated: 1,
+      total: 1,
     });
   });
 });

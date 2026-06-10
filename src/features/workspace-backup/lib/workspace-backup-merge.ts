@@ -17,27 +17,32 @@ export interface WorkspaceBackupMergeResult {
   summary: WorkspaceBackupImportSummary;
 }
 
-function mergeById<T extends { id: string }>(
+function mergeByKey<T>(
   currentItems: T[],
   incomingItems: T[],
+  getKey: (item: T) => string,
 ) {
-  const currentIds = new Set(currentItems.map((item) => item.id));
-  const mergedItemsById = new Map(currentItems.map((item) => [item.id, item]));
+  const currentKeys = new Set(currentItems.map(getKey));
+  const mergedItemsByKey = new Map(
+    currentItems.map((item) => [getKey(item), item]),
+  );
   let created = 0;
   let updated = 0;
 
   for (const item of incomingItems) {
-    if (currentIds.has(item.id)) {
+    const key = getKey(item);
+
+    if (currentKeys.has(key)) {
       updated += 1;
     } else {
       created += 1;
     }
 
-    mergedItemsById.set(item.id, item);
+    mergedItemsByKey.set(key, item);
   }
 
   return {
-    items: [...mergedItemsById.values()],
+    items: [...mergedItemsByKey.values()],
     summary: {
       created,
       updated,
@@ -50,9 +55,21 @@ export function mergeWorkspaceBackupData(
   currentData: WorkspaceBackupData,
   incomingData: WorkspaceBackupData,
 ): WorkspaceBackupMergeResult {
-  const templates = mergeById(currentData.templates, incomingData.templates);
-  const runs = mergeById(currentData.runs, incomingData.runs);
-  const notes = mergeById(currentData.notes, incomingData.notes);
+  const templates = mergeByKey(
+    currentData.templates,
+    incomingData.templates,
+    (template) => template.id,
+  );
+  const runs = mergeByKey(
+    currentData.runs,
+    incomingData.runs,
+    (run) => run.id,
+  );
+  const notes = mergeByKey(
+    currentData.notes,
+    incomingData.notes,
+    (note) => note.runId,
+  );
 
   return {
     data: {

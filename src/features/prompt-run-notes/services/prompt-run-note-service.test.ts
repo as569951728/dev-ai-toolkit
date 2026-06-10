@@ -122,4 +122,34 @@ describe('prompt-run-note-service', () => {
     expect(nextNotes[0]?.body).toBe('Imported note');
     expect(repository.snapshot()).toEqual(nextNotes);
   });
+
+  it('replaces the existing note for the same run when importing notes', () => {
+    const repository = createMemoryRepository([
+      {
+        id: 'note-1',
+        runId: 'run-1',
+        body: 'Current note',
+        createdAt: '2026-05-08T09:00:00.000Z',
+        updatedAt: '2026-05-08T09:00:00.000Z',
+      },
+    ]);
+
+    const nextNotes = importPromptRunNotes(repository, repository.loadAll(), [
+      {
+        id: 'imported-note',
+        runId: 'run-1',
+        body: 'Imported note for the same run',
+        createdAt: '2026-05-09T09:00:00.000Z',
+        updatedAt: '2026-05-09T09:00:00.000Z',
+      },
+    ]);
+
+    expect(nextNotes).toHaveLength(1);
+    expect(nextNotes[0]).toMatchObject({
+      id: 'imported-note',
+      runId: 'run-1',
+      body: 'Imported note for the same run',
+    });
+    expect(repository.snapshot()).toEqual(nextNotes);
+  });
 });

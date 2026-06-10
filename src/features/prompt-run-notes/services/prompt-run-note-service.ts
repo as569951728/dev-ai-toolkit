@@ -69,13 +69,13 @@ export function importPromptRunNotes(
   notes: PromptRunNote[],
   importedNotes: PromptRunNote[],
 ) {
-  const nextNotesById = new Map(notes.map((note) => [note.id, note]));
+  const nextNotesByRunId = new Map(notes.map((note) => [note.runId, note]));
 
   for (const note of importedNotes) {
-    nextNotesById.set(note.id, note);
+    nextNotesByRunId.set(note.runId, note);
   }
 
-  const nextNotes = [...nextNotesById.values()];
+  const nextNotes = [...nextNotesByRunId.values()];
   repository.saveAll(nextNotes);
 
   return nextNotes;
