@@ -104,4 +104,48 @@ describe('workspace-backup-transfer', () => {
       ),
     ).toThrow('Invalid workspace backup format.');
   });
+
+  it('rejects workspace backups with malformed records', () => {
+    expect(() =>
+      parseWorkspaceBackupImport(
+        JSON.stringify({
+          version: 1,
+          exportedAt: '2026-05-04T08:00:00.000Z',
+          data: {
+            templates: [{ id: 'template-1' }],
+            runs: [run],
+            notes: [note],
+          },
+        }),
+      ),
+    ).toThrow('Invalid workspace backup format.');
+
+    expect(() =>
+      parseWorkspaceBackupImport(
+        JSON.stringify({
+          version: 1,
+          exportedAt: '2026-05-04T08:00:00.000Z',
+          data: {
+            templates: [template],
+            runs: [{ id: 'run-1' }],
+            notes: [note],
+          },
+        }),
+      ),
+    ).toThrow('Invalid workspace backup format.');
+
+    expect(() =>
+      parseWorkspaceBackupImport(
+        JSON.stringify({
+          version: 1,
+          exportedAt: '2026-05-04T08:00:00.000Z',
+          data: {
+            templates: [template],
+            runs: [run],
+            notes: [{ id: 'note-1' }],
+          },
+        }),
+      ),
+    ).toThrow('Invalid workspace backup format.');
+  });
 });
