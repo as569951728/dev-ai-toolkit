@@ -32,8 +32,9 @@ The format is intentionally lightweight and human-readable.
 
 - Added `SECURITY.md` and linked it from both README files
 - Added CI status badges to the English and Simplified Chinese README files
-- Expanded regression coverage for local storage schema helpers, Prompt Diff,
-  JSON Tools, Code Viewer, API Builder, and template import behavior
+- Expanded regression coverage for local storage schema helpers, Playground
+  downstream links, Prompt Diff, JSON Tools, Code Viewer, API Builder, and
+  template import behavior
 
 ## [v0.1.0] - 2026-05-06
 
