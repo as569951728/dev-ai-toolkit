@@ -1,5 +1,11 @@
 import { afterEach } from 'vitest';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  within,
+} from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -88,6 +94,41 @@ describe('PromptTemplateListPage', () => {
     expect(mockNavigate).toHaveBeenCalledWith(
       `/runs?templateId=${mockPromptTemplates[0]!.id}`,
     );
+  });
+
+  it('does not offer the playground action for archived templates', () => {
+    const repository = createMemoryRepository([
+      mockPromptTemplates[0]!,
+      {
+        ...mockPromptTemplates[1]!,
+        archivedAt: '2026-05-07T08:00:00.000Z',
+      },
+      mockPromptTemplates[2]!,
+    ]);
+
+    render(
+      <MemoryRouter>
+        <PromptTemplatesProvider repository={repository}>
+          <PromptTemplateListPage />
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Show archived templates (1)' }),
+    );
+
+    const archivedCard = screen.getByText('API Design Partner').closest('article');
+
+    if (!archivedCard) {
+      throw new Error('Expected the archived template card to render.');
+    }
+
+    expect(
+      within(archivedCard).queryByRole('button', {
+        name: 'Open in Playground',
+      }),
+    ).not.toBeInTheDocument();
   });
 
   it('preloads list filters and archived visibility from the route query', () => {
