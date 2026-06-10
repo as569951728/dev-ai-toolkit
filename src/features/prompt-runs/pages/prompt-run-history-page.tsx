@@ -95,6 +95,11 @@ export function PromptRunHistoryPage() {
         !normalizedSearchValue ||
         run.templateName.toLowerCase().includes(normalizedSearchValue) ||
         sourceTemplateName.toLowerCase().includes(normalizedSearchValue) ||
+        Object.entries(run.variables).some(
+          ([name, value]) =>
+            name.toLowerCase().includes(normalizedSearchValue) ||
+            value.toLowerCase().includes(normalizedSearchValue),
+        ) ||
         (getNoteByRunId(run.id)?.body.toLowerCase().includes(
           normalizedSearchValue,
         ) ??
@@ -135,7 +140,7 @@ export function PromptRunHistoryPage() {
                 <input
                   type="search"
                   value={searchValue}
-                  placeholder="Search by template or note"
+                  placeholder="Search by template, variable, or note"
                   onChange={(event) =>
                     updateFilters({ nextSearchValue: event.target.value })
                   }

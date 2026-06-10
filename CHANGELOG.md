@@ -32,6 +32,7 @@ The format is intentionally lightweight and human-readable.
 
 - Added `SECURITY.md` and linked it from both README files
 - Added CI status badges to the English and Simplified Chinese README files
+- Prompt Run History search now includes captured variable names and values
 - Expanded regression coverage for local storage schema helpers, Playground
   downstream links, Prompt Diff, JSON Tools, Code Viewer, API Builder, and
   template import behavior

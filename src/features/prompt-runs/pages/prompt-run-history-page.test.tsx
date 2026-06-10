@@ -266,6 +266,22 @@ describe('PromptRunHistoryPage', () => {
     ).toBeInTheDocument();
   });
 
+  it('searches saved runs by captured variable values', () => {
+    renderRunHistory();
+
+    fireEvent.change(screen.getByLabelText('Search runs'), {
+      target: { value: 'run-history-page' },
+    });
+
+    expect(
+      screen.getByRole('heading', { name: 'API Design Partner' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: 'Code Review Assistant' }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText('Search: run-history-page')).toBeInTheDocument();
+  });
+
   it('searches runs by the current source template name after a template rename', () => {
     renderRunHistory({
       runs: [
