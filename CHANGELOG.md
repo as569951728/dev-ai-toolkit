@@ -15,6 +15,8 @@ The format is intentionally lightweight and human-readable.
 - Rejected workspace backups whose notes reference runs missing from the backup
 - Fixed API Builder query string generation for relative URLs that already
   include query parameters
+- Clarified the Prompt Run History search placeholder now that note content is
+  searchable
 
 ### Changed
 
@@ -23,6 +25,8 @@ The format is intentionally lightweight and human-readable.
 - Updated audited dependency resolutions for `react-router`, `react-router-dom`,
   and `brace-expansion`
 - Added weekly Dependabot checks for npm and GitHub Actions dependencies
+- Clarified that the public demo URL is still unverified and tracked in issue
+  #14
 
 ### Added
 
