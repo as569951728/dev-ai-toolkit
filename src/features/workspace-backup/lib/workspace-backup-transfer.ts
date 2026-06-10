@@ -94,16 +94,34 @@ function isValidPromptRunNote(value: unknown): value is PromptRunNote {
   );
 }
 
+function doNotesReferenceExportedRuns(
+  notes: PromptRunNote[],
+  runs: PromptRunRecord[],
+) {
+  const runIds = new Set(runs.map((run) => run.id));
+
+  return notes.every((note) => runIds.has(note.runId));
+}
+
 function isWorkspaceBackupData(value: unknown): value is WorkspaceBackupData {
-  return (
-    isRecord(value) &&
-    Array.isArray(value.templates) &&
-    Array.isArray(value.runs) &&
-    Array.isArray(value.notes) &&
-    value.templates.every(isValidPromptTemplate) &&
-    value.runs.every(isValidPromptRun) &&
-    value.notes.every(isValidPromptRunNote)
-  );
+  if (
+    !isRecord(value) ||
+    !Array.isArray(value.templates) ||
+    !Array.isArray(value.runs) ||
+    !Array.isArray(value.notes)
+  ) {
+    return false;
+  }
+
+  if (
+    !value.templates.every(isValidPromptTemplate) ||
+    !value.runs.every(isValidPromptRun) ||
+    !value.notes.every(isValidPromptRunNote)
+  ) {
+    return false;
+  }
+
+  return doNotesReferenceExportedRuns(value.notes, value.runs);
 }
 
 export function buildWorkspaceBackup(

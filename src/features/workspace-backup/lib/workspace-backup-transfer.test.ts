@@ -217,4 +217,20 @@ describe('workspace-backup-transfer', () => {
       ),
     ).toThrow('Invalid workspace backup format.');
   });
+
+  it('rejects workspace backups with notes that do not reference exported runs', () => {
+    expect(() =>
+      parseWorkspaceBackupImport(
+        JSON.stringify({
+          version: 1,
+          exportedAt: '2026-05-04T08:00:00.000Z',
+          data: {
+            templates: [template],
+            runs: [run],
+            notes: [{ ...note, runId: 'missing-run' }],
+          },
+        }),
+      ),
+    ).toThrow('Invalid workspace backup format.');
+  });
 });
