@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="dev-ai-toolkit">
+  <rect width="64" height="64" rx="16" fill="#101820" />
+  <path d="M19 22 9 32l10 10" fill="none" stroke="#f2aa4c" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="m45 22 10 10-10 10" fill="none" stroke="#f2aa4c" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="m36 16-8 32" fill="none" stroke="#f7f3e8" stroke-width="5" stroke-linecap="round" />
+</svg>
