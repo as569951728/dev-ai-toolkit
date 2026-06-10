@@ -28,7 +28,7 @@ The current version includes:
 - Prompt template import and export via JSON
 - Prompt Playground with variable detection and live prompt preview
 - Prompt Diff for comparing prompt revisions and variable drift
-- Prompt Run History for browsing, filtering, searching variables and notes, opening detail views, adding notes, exporting JSON, deleting local runs, and reusing saved prompt runs
+- Prompt Run History for browsing, filtering, searching prompt text, variables, and notes, opening detail views, adding notes, exporting JSON, deleting local runs, and reusing saved prompt runs
 - JSON Tools for formatting, validating, and minifying payloads
 - API Builder for drafting request configurations and fetch snippets
 - Code Viewer for reading code or generated output in single or compare mode
@@ -178,7 +178,7 @@ The toolbox is currently organized around two capability groups.
 | Prompt Workflows | Prompt Templates | Create, edit, duplicate, archive, restore, delete, filter, import, and export templates | Active templates can open in the playground; all templates can open filtered run history |
 | Prompt Workflows | Prompt Playground | Select templates, fill variables, preview output, save run snapshots, and keep recent template usage | Main path for generating reusable prompt output |
 | Prompt Workflows | Prompt Diff | Compare prompt revisions, detect variable drift, and inspect line-level wording changes | Best used after editing or templating changes |
-| Prompt Workflows | Prompt Run History | Browse saved runs, filter by template, search captured variables and note content, open run details, add notes, export or delete a single run, and reopen output in downstream tools | Dedicated history view for saved prompt output |
+| Prompt Workflows | Prompt Run History | Browse saved runs, filter by template, search saved prompt text, captured variables, and note content, open run details, add notes, export or delete a single run, and reopen output in downstream tools | Dedicated history view for saved prompt output |
 | Developer Utilities | JSON Tools | Format, validate, minify, copy, and sample JSON payloads | Useful for debugging and payload cleanup |
 | Developer Utilities | API Builder | Draft request URLs, headers, query params, JSON bodies, and `fetch` snippets | Local request scaffolding only |
 | Developer Utilities | Code Viewer | Inspect generated text or code in single or compare mode | Supports prompt and output review workflows |
@@ -198,7 +198,7 @@ The most complete workflow in the current version looks like this:
 1. Start in `Prompt Templates` and move into `Prompt Playground`
 2. Save a prompt run from the playground
 3. Open filtered `Prompt Run History` for the active template
-4. Search saved runs by template name, captured variable, or note content when reviewing older output
+4. Search saved runs by template name, saved prompt text, captured variable, or note content when reviewing older output
 5. Review a saved run detail page, add a short note, export the run as JSON, or delete stale local runs
 6. Continue into `Prompt Diff` or `Code Viewer`
 

@@ -282,6 +282,22 @@ describe('PromptRunHistoryPage', () => {
     expect(screen.getByText('Search: run-history-page')).toBeInTheDocument();
   });
 
+  it('searches saved runs by saved prompt text', () => {
+    renderRunHistory();
+
+    fireEvent.change(screen.getByLabelText('Search runs'), {
+      target: { value: 'user b' },
+    });
+
+    expect(
+      screen.getByRole('heading', { name: 'API Design Partner' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: 'Code Review Assistant' }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText('Search: user b')).toBeInTheDocument();
+  });
+
   it('searches runs by the current source template name after a template rename', () => {
     renderRunHistory({
       runs: [

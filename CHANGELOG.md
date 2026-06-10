@@ -15,8 +15,8 @@ The format is intentionally lightweight and human-readable.
 - Rejected workspace backups whose notes reference runs missing from the backup
 - Fixed API Builder query string generation for relative URLs that already
   include query parameters
-- Clarified the Prompt Run History search placeholder now that note content is
-  searchable
+- Clarified the Prompt Run History search placeholder now that saved run
+  context is searchable
 
 ### Changed
 
@@ -32,7 +32,8 @@ The format is intentionally lightweight and human-readable.
 
 - Added `SECURITY.md` and linked it from both README files
 - Added CI status badges to the English and Simplified Chinese README files
-- Prompt Run History search now includes captured variable names and values
+- Prompt Run History search now includes saved prompt text and captured
+  variable names and values
 - Expanded regression coverage for local storage schema helpers, Playground
   downstream links, Prompt Diff, JSON Tools, Code Viewer, API Builder, and
   template import behavior
