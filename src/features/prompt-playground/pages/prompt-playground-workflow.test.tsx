@@ -1,6 +1,6 @@
 import { afterEach } from 'vitest';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 
 import { PromptPlaygroundPage } from '@/features/prompt-playground/pages/prompt-playground-page';
@@ -55,6 +55,17 @@ function PlaygroundWorkflowProbe() {
   );
 }
 
+function LocationProbe() {
+  const location = useLocation();
+
+  return (
+    <>
+      <div data-testid="location-pathname">{location.pathname}</div>
+      <div data-testid="location-search">{location.search}</div>
+    </>
+  );
+}
+
 afterEach(() => {
   cleanup();
 });
@@ -106,6 +117,78 @@ describe('Prompt playground workflow', () => {
 
     expect(await screen.findByText('Recent run history')).toBeInTheDocument();
     expect(await screen.findByText('Run from v1')).toBeInTheDocument();
+  });
+
+  it('opens generated prompt output in downstream review tools', () => {
+    const templateRepository = createTemplateRepository();
+    const runRepository = createRunRepository();
+    const templateId = starterPromptTemplates[0]!.id;
+
+    render(
+      <MemoryRouter initialEntries={[`/playground?templateId=${templateId}`]}>
+        <PromptTemplatesProvider repository={templateRepository}>
+          <PromptRunsProvider repository={runRepository}>
+            <Routes>
+              <Route path="/playground" element={<PromptPlaygroundPage />} />
+              <Route path="/prompt-diff" element={<LocationProbe />} />
+              <Route path="/code-viewer" element={<LocationProbe />} />
+            </Routes>
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.change(screen.getByLabelText('Repository Name'), {
+      target: { value: 'dev-ai-toolkit' },
+    });
+    fireEvent.change(screen.getByLabelText('Change Scope'), {
+      target: { value: 'frontend workflow' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Review in Prompt Diff' }));
+
+    const promptDiffParams = new URLSearchParams(
+      screen.getByTestId('location-search').textContent ?? '',
+    );
+
+    expect(screen.getByTestId('location-pathname')).toHaveTextContent(
+      '/prompt-diff',
+    );
+    expect(promptDiffParams.get('left')).toContain('{{repository_name}}');
+    expect(promptDiffParams.get('right')).toContain('dev-ai-toolkit');
+
+    cleanup();
+
+    render(
+      <MemoryRouter initialEntries={[`/playground?templateId=${templateId}`]}>
+        <PromptTemplatesProvider repository={templateRepository}>
+          <PromptRunsProvider repository={runRepository}>
+            <Routes>
+              <Route path="/playground" element={<PromptPlaygroundPage />} />
+              <Route path="/code-viewer" element={<LocationProbe />} />
+            </Routes>
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.change(screen.getByLabelText('Repository Name'), {
+      target: { value: 'dev-ai-toolkit' },
+    });
+    fireEvent.change(screen.getByLabelText('Change Scope'), {
+      target: { value: 'frontend workflow' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Open in Code Viewer' }));
+
+    const codeViewerParams = new URLSearchParams(
+      screen.getByTestId('location-search').textContent ?? '',
+    );
+
+    expect(screen.getByTestId('location-pathname')).toHaveTextContent(
+      '/code-viewer',
+    );
+    expect(codeViewerParams.get('right')).toContain('frontend workflow');
+    expect(codeViewerParams.get('mode')).toBe('compare');
+    expect(codeViewerParams.get('language')).toBe('markdown');
   });
 
   it('clears the save status when the active template changes', async () => {
