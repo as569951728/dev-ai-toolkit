@@ -175,4 +175,24 @@ describe('Prompt playground workflow', () => {
       screen.queryByText('Saved a run snapshot for Code Review Assistant v1.'),
     ).not.toBeInTheDocument();
   });
+
+  it('falls back to the first template when the URL template id is missing', () => {
+    const templateRepository = createTemplateRepository();
+    const runRepository = createRunRepository();
+    const fallbackTemplateId = mockPromptTemplates[0]!.id;
+
+    render(
+      <MemoryRouter initialEntries={['/playground?templateId=missing-template']}>
+        <PromptTemplatesProvider repository={templateRepository}>
+          <PromptRunsProvider repository={runRepository}>
+            <PlaygroundWorkflowProbe />
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByLabelText('Active template')).toHaveValue(
+      fallbackTemplateId,
+    );
+  });
 });
