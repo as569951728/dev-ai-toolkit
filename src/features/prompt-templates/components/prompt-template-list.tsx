@@ -53,8 +53,8 @@ export function PromptTemplateList({
           <p className="eyebrow">Prompt Templates</p>
           <h1>Manage reusable AI prompts</h1>
           <p className="panel__summary">
-            Start with local mock data today, then swap the hook to a real API
-            later without changing the page structure.
+            Keep reusable prompt templates in local storage, then open them in
+            the playground or review their saved run history.
           </p>
         </div>
 
