@@ -65,4 +65,48 @@ describe('local-storage-prompt-run-repository', () => {
       data: sampleRuns,
     });
   });
+
+  it('ignores malformed run records from stored payloads', () => {
+    const storage = createMemoryStorage({
+      runs: JSON.stringify({
+        version: 1,
+        data: [
+          sampleRuns[0],
+          {
+            id: '',
+            templateId: 'template-1',
+            templateName: 'Missing id',
+            templateVersion: 1,
+            variables: {},
+            systemPrompt: 'System output',
+            userPrompt: 'User output',
+            createdAt: '2026-05-07T01:30:00.000Z',
+          },
+          {
+            id: 'run-invalid-date',
+            templateId: 'template-1',
+            templateName: 'Invalid date',
+            templateVersion: 1,
+            variables: {},
+            systemPrompt: 'System output',
+            userPrompt: 'User output',
+            createdAt: 'not-a-date',
+          },
+          {
+            id: 'run-invalid-variables',
+            templateId: 'template-1',
+            templateName: 'Invalid variables',
+            templateVersion: 1,
+            variables: { repository_name: 42 },
+            systemPrompt: 'System output',
+            userPrompt: 'User output',
+            createdAt: '2026-05-07T01:30:00.000Z',
+          },
+        ],
+      }),
+    });
+    const repository = createLocalStoragePromptRunRepository('runs', storage);
+
+    expect(repository.loadAll()).toEqual(sampleRuns);
+  });
 });
