@@ -129,9 +129,13 @@ npm run preview
 
 ## Live Demo
 
-The current public demo is available at:
+The public demo URL is reachable, but deployment tracking is still being
+verified. If you need the latest version from `main`, run the app locally for
+now.
 
 - [https://dev-ai-toolkit.vercel.app](https://dev-ai-toolkit.vercel.app)
+
+See [docs/deployment.md](./docs/deployment.md) for the current deployment notes.
 
 ## Visual Walkthrough
 
@@ -146,7 +150,9 @@ For the main prompt workflow path, see
 
 ### Deploy To Vercel
 
-See [docs/deployment.md](./docs/deployment.md) for the current deployment notes.
+This app can be deployed as a static Vite site. See
+[docs/deployment.md](./docs/deployment.md) for the setup and verification
+steps.
 
 ## Current Modules
 

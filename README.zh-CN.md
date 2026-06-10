@@ -137,9 +137,12 @@ npm run lint
 
 ## Live Demo
 
-当前可访问的演示地址：
+当前演示地址可以访问，但部署链路还在确认中。如果需要体验最新
+`main` 分支代码，建议先在本地运行。
 
 - [https://dev-ai-toolkit.vercel.app](https://dev-ai-toolkit.vercel.app)
+
+当前部署说明见 [docs/deployment.md](./docs/deployment.md)。
 
 ## 界面和使用路径
 
@@ -152,7 +155,8 @@ npm run lint
 
 ### 部署说明
 
-见 [docs/deployment.md](./docs/deployment.md)。
+这个项目可以作为 Vite 静态站点部署到 Vercel。具体设置和验证步骤见
+[docs/deployment.md](./docs/deployment.md)。
 
 ## 模块概览
 
