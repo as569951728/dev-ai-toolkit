@@ -178,6 +178,9 @@ describe('WorkspaceBackupPage', () => {
     });
 
     expect(await screen.findByText('Workspace backup imported.')).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Workspace backup imported.',
+    );
     expect(screen.getByText('Templates: 0 created, 1 updated.')).toBeInTheDocument();
     expect(screen.getByText('Runs: 0 created, 1 updated.')).toBeInTheDocument();
     expect(screen.getByText('Notes: 0 created, 1 updated.')).toBeInTheDocument();
@@ -214,6 +217,7 @@ describe('WorkspaceBackupPage', () => {
     });
 
     expect(await screen.findByText('Import failed')).toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('Import failed');
     expect(
       screen.getByText('Invalid workspace backup format.'),
     ).toBeInTheDocument();

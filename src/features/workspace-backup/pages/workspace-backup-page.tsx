@@ -123,7 +123,7 @@ export function WorkspaceBackupPage() {
         </div>
 
         {importSummary ? (
-          <div className="empty-state empty-state--compact">
+          <div className="empty-state empty-state--compact" role="status">
             <h2>Workspace backup imported.</h2>
             <p>
               Templates: {importSummary.templates.created} created,{' '}
@@ -141,7 +141,7 @@ export function WorkspaceBackupPage() {
         ) : null}
 
         {importError ? (
-          <div className="empty-state empty-state--compact">
+          <div className="empty-state empty-state--compact" role="alert">
             <h2>Import failed</h2>
             <p>{importError}</p>
           </div>

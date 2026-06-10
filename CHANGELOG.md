@@ -17,6 +17,8 @@ The format is intentionally lightweight and human-readable.
   include query parameters
 - Clarified the Prompt Run History search placeholder now that saved run
   context is searchable
+- Announced Workspace Backup import success and failure feedback with
+  accessible status roles
 
 ### Changed
 
