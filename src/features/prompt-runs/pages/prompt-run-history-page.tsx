@@ -40,9 +40,20 @@ export function PromptRunHistoryPage() {
         });
       }
 
+      if (selectedTemplateId !== 'all' && !templatesById.has(selectedTemplateId)) {
+        const selectedTemplate = getTemplateById(selectedTemplateId);
+
+        if (selectedTemplate) {
+          templatesById.set(selectedTemplate.id, {
+            id: selectedTemplate.id,
+            name: selectedTemplate.name,
+          });
+        }
+      }
+
       return [...templatesById.values()];
     },
-    [getTemplateById, runs],
+    [getTemplateById, runs, selectedTemplateId],
   );
 
   const selectedTemplateName =

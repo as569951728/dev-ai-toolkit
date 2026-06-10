@@ -315,6 +315,37 @@ describe('PromptRunHistoryPage', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('keeps the selected template filter visible when that template has no runs yet', () => {
+    renderRunHistory({
+      initialEntry: `/runs?templateId=${mockPromptTemplates[1]!.id}`,
+      runs: [
+        {
+          id: 'run-1',
+          templateId: mockPromptTemplates[0]!.id,
+          templateName: mockPromptTemplates[0]!.name,
+          templateVersion: 1,
+          variables: {},
+          systemPrompt: 'System A',
+          userPrompt: 'User A',
+          createdAt: '2026-05-07T09:00:00.000Z',
+        },
+      ],
+    });
+
+    expect(screen.getByLabelText('Template')).toHaveValue(
+      mockPromptTemplates[1]!.id,
+    );
+    expect(
+      screen.getByText('Showing 0 of 1 saved runs for API Design Partner.'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('Template: API Design Partner'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('No runs match the current filters'),
+    ).toBeInTheDocument();
+  });
+
   it('syncs active filters when the route query changes', () => {
     renderNavigableRunHistory(
       `/runs?templateId=${mockPromptTemplates[0]!.id}`,
