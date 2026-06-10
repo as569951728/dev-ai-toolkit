@@ -220,6 +220,10 @@ For contributor-facing code structure notes, see [docs/architecture.md](./docs/a
 
 Contributions are welcome. Please read [CONTRIBUTING.md](./CONTRIBUTING.md) before opening a pull request.
 
+## Security
+
+For security reporting guidance, see [SECURITY.md](./SECURITY.md).
+
 ## License
 
 This project is licensed under the [MIT License](./LICENSE).

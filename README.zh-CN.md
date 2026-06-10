@@ -211,6 +211,10 @@ npm run lint
 
 欢迎提交 issue 或 pull request。开始之前请先阅读 [CONTRIBUTING.md](./CONTRIBUTING.md)。
 
+## 安全
+
+安全问题报告方式见 [SECURITY.md](./SECURITY.md)。
+
 ## License
 
 本项目使用 [MIT License](./LICENSE)。
