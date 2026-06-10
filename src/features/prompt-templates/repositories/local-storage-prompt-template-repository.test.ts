@@ -56,6 +56,26 @@ describe('local-storage-prompt-template-repository', () => {
     });
   });
 
+  it('returns a fresh copy of starter templates when storage is empty', () => {
+    const repository = createLocalStoragePromptTemplateRepository(
+      'templates',
+      createMemoryStorage(),
+    );
+    const firstLoad = repository.loadAll();
+
+    firstLoad[0]!.name = 'Mutated template name';
+    firstLoad[0]!.tags.push('mutated-tag');
+    firstLoad[0]!.revisions[0]!.tags.push('mutated-revision-tag');
+
+    const secondLoad = repository.loadAll();
+
+    expect(secondLoad[0]!.name).toBe(starterPromptTemplates[0]!.name);
+    expect(secondLoad[0]!.tags).not.toContain('mutated-tag');
+    expect(secondLoad[0]!.revisions[0]!.tags).not.toContain(
+      'mutated-revision-tag',
+    );
+  });
+
   it('keeps an intentionally saved empty template collection', () => {
     const storage = createMemoryStorage({
       templates: JSON.stringify({

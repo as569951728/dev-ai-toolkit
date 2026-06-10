@@ -11,12 +11,27 @@ const STORAGE_KEY = 'dev-ai-toolkit.prompt-templates';
 
 type StorageLike = Pick<Storage, 'getItem' | 'setItem'>;
 
+function clonePromptTemplate(template: PromptTemplate): PromptTemplate {
+  return {
+    ...template,
+    tags: [...template.tags],
+    revisions: template.revisions.map((revision) => ({
+      ...revision,
+      tags: [...revision.tags],
+    })),
+  };
+}
+
+function loadStarterTemplates() {
+  return starterPromptTemplates.map((template) => clonePromptTemplate(template));
+}
+
 function normalizeStoredTemplates(value: unknown) {
   const templates = readVersionedCollection<PromptTemplate>(value);
 
   return templates
     ? templates.map((template) => ensurePromptTemplateVersioning(template))
-    : starterPromptTemplates;
+    : loadStarterTemplates();
 }
 
 export function createLocalStoragePromptTemplateRepository(
@@ -27,19 +42,19 @@ export function createLocalStoragePromptTemplateRepository(
   return {
     loadAll() {
       if (!storage) {
-        return starterPromptTemplates;
+        return loadStarterTemplates();
       }
 
       const storedValue = storage.getItem(storageKey);
 
       if (!storedValue) {
-        return starterPromptTemplates;
+        return loadStarterTemplates();
       }
 
       try {
         return normalizeStoredTemplates(JSON.parse(storedValue));
       } catch {
-        return starterPromptTemplates;
+        return loadStarterTemplates();
       }
     },
     saveAll(templates: PromptTemplate[]) {
