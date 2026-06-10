@@ -63,4 +63,49 @@ describe('local-storage-prompt-run-note-repository', () => {
       data: sampleNotes,
     });
   });
+
+  it('ignores malformed note records from stored payloads', () => {
+    const storage = createMemoryStorage({
+      notes: JSON.stringify({
+        version: 1,
+        data: [
+          sampleNotes[0],
+          {
+            id: '',
+            runId: 'run-1',
+            body: 'Missing note id',
+            createdAt: '2026-05-08T02:00:00.000Z',
+            updatedAt: '2026-05-08T02:00:00.000Z',
+          },
+          {
+            id: 'note-missing-run',
+            runId: '',
+            body: 'Missing run id',
+            createdAt: '2026-05-08T02:00:00.000Z',
+            updatedAt: '2026-05-08T02:00:00.000Z',
+          },
+          {
+            id: 'note-empty-body',
+            runId: 'run-1',
+            body: '   ',
+            createdAt: '2026-05-08T02:00:00.000Z',
+            updatedAt: '2026-05-08T02:00:00.000Z',
+          },
+          {
+            id: 'note-invalid-date',
+            runId: 'run-1',
+            body: 'Invalid date',
+            createdAt: 'not-a-date',
+            updatedAt: '2026-05-08T02:00:00.000Z',
+          },
+        ],
+      }),
+    });
+    const repository = createLocalStoragePromptRunNoteRepository(
+      'notes',
+      storage,
+    );
+
+    expect(repository.loadAll()).toEqual(sampleNotes);
+  });
 });
