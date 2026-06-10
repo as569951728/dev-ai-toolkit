@@ -59,7 +59,7 @@
 - Workspace Backup
   - 导出当前本地模板、已保存 runs 和 run notes
   - 从 dev-ai-toolkit 导出的 JSON 文件恢复本地工作区
-  - 按 id 合并数据：已有记录会更新，新记录会追加
+  - 模板和 runs 按 id 合并，run notes 按 runId 合并
 
 ## 技术栈
 

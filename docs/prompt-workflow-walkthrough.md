@@ -66,8 +66,9 @@ The workspace backup currently includes:
 - Saved prompt runs
 - Notes attached to prompt runs
 
-Exported backups are versioned JSON files. Importing a backup merges records by
-id: matching records are updated, and new records are added.
+Exported backups are versioned JSON files. Importing a backup merges prompt
+templates and runs by `id`, and run notes by `runId`, so a saved run keeps at
+most one note after import.
 
 ## Known Limits
 
