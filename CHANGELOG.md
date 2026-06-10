@@ -22,6 +22,8 @@ The format is intentionally lightweight and human-readable.
 - Announced prompt run save and note save feedback with accessible status roles
 - Recorded a template as recently used when saving a prompt run from the
   Playground
+- Compared saved prompt runs against the matching source template revision when
+  opening Prompt Diff from run details
 
 ### Changed
 

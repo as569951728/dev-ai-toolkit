@@ -13,6 +13,7 @@ import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs
 import type { PromptRunRepository } from '@/features/prompt-runs/repositories/prompt-run-repository';
 import type { PromptRunNote } from '@/types/prompt-run-note';
 import type { PromptRunRecord } from '@/types/prompt-run';
+import type { PromptTemplate } from '@/types/prompt-template';
 
 vi.mock('@/features/prompt-runs/lib/prompt-run-export', async (importOriginal) => {
   const actual =
@@ -160,6 +161,71 @@ describe('PromptRunDetailPage', () => {
       runId: 'run-1',
       body: 'Good baseline for future review prompts.',
     });
+  });
+
+  it('compares a saved run with the matching source template revision', () => {
+    const template: PromptTemplate = {
+      id: 'review-template',
+      name: 'Review Template',
+      description: 'Review code changes.',
+      systemPrompt: 'Current system prompt v2.',
+      userPrompt: 'Current user prompt v2.',
+      tags: ['review'],
+      version: 2,
+      revisions: [
+        {
+          version: 1,
+          updatedAt: '2026-05-06T09:00:00.000Z',
+          name: 'Review Template',
+          description: 'Review code changes.',
+          systemPrompt: 'Original system prompt v1.',
+          userPrompt: 'Original user prompt v1.',
+          tags: ['review'],
+        },
+        {
+          version: 2,
+          updatedAt: '2026-05-07T09:00:00.000Z',
+          name: 'Review Template',
+          description: 'Review code changes.',
+          systemPrompt: 'Current system prompt v2.',
+          userPrompt: 'Current user prompt v2.',
+          tags: ['review'],
+        },
+      ],
+      archivedAt: null,
+      updatedAt: '2026-05-07T09:00:00.000Z',
+    };
+
+    renderRunDetail(
+      '/runs/run-1',
+      [
+        {
+          id: 'run-1',
+          templateId: template.id,
+          templateName: template.name,
+          templateVersion: 1,
+          variables: {},
+          systemPrompt: 'Generated system prompt.',
+          userPrompt: 'Generated user prompt.',
+          createdAt: '2026-05-08T09:00:00.000Z',
+        },
+      ],
+      createTemplateRepository([template]),
+    );
+
+    const compareUrl = new URL(
+      screen.getByRole('link', { name: 'Compare with source' }).getAttribute(
+        'href',
+      ) ?? '',
+      'https://example.test',
+    );
+
+    expect(compareUrl.searchParams.get('left')).toBe(
+      'Original system prompt v1.\n\nOriginal user prompt v1.',
+    );
+    expect(compareUrl.searchParams.get('right')).toBe(
+      'Generated system prompt.\n\nGenerated user prompt.',
+    );
   });
 
   it('exports the current run with saved note context', () => {

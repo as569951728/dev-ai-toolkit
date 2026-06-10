@@ -52,10 +52,18 @@ export function PromptRunDetailPage() {
     `/code-viewer?left=${encodeURIComponent(run.systemPrompt)}` +
     `&right=${encodeURIComponent(run.userPrompt)}` +
     '&mode=compare&language=markdown';
-  const promptDiffUrl = sourceTemplate
-    ? `/prompt-diff?left=${encodeURIComponent(
-        `${sourceTemplate.systemPrompt}\n\n${sourceTemplate.userPrompt}`,
-      )}&right=${encodeURIComponent(`${run.systemPrompt}\n\n${run.userPrompt}`)}`
+  const sourceRevision =
+    sourceTemplate?.revisions.find(
+      (revision) => revision.version === run.templateVersion,
+    ) ?? null;
+  const sourcePromptText = sourceTemplate
+    ? `${sourceRevision?.systemPrompt ?? sourceTemplate.systemPrompt}\n\n${
+        sourceRevision?.userPrompt ?? sourceTemplate.userPrompt
+      }`
+    : null;
+  const promptDiffUrl = sourcePromptText
+    ? `/prompt-diff?left=${encodeURIComponent(sourcePromptText)}` +
+      `&right=${encodeURIComponent(`${run.systemPrompt}\n\n${run.userPrompt}`)}`
     : null;
 
   return (
