@@ -90,6 +90,10 @@ describe('workspace-backup-transfer', () => {
   });
 
   it('rejects unsupported or incomplete workspace backup payloads', () => {
+    expect(() => parseWorkspaceBackupImport('{not-json')).toThrow(
+      'Invalid workspace backup format.',
+    );
+
     expect(() =>
       parseWorkspaceBackupImport(JSON.stringify({ version: 99, data: {} })),
     ).toThrow('Unsupported workspace backup version.');

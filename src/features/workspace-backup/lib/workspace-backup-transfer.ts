@@ -115,7 +115,13 @@ export function stringifyWorkspaceBackup(data: WorkspaceBackupData) {
 export function parseWorkspaceBackupImport(
   rawValue: string,
 ): WorkspaceBackupPayload {
-  const parsedValue = JSON.parse(rawValue) as unknown;
+  let parsedValue: unknown;
+
+  try {
+    parsedValue = JSON.parse(rawValue) as unknown;
+  } catch {
+    throw new Error('Invalid workspace backup format.');
+  }
 
   if (!isRecord(parsedValue)) {
     throw new Error('Invalid workspace backup format.');
