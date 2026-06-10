@@ -2,14 +2,14 @@
 
 ## Vision
 
-`dev-ai-toolkit` is designed to become a practical open-source AI developer toolbox.
+`dev-ai-toolkit` is an early local-first AI developer toolbox.
 
 Its value is not only in helping users write prompts faster, but in turning repeated AI-assisted development tasks into reusable, structured workflows:
 
 - Prompt templates that can be reused across coding, review, debugging, and API design tasks
 - A playground that turns templates plus variables into ready-to-run prompts
-- A growing toolchain for payload work, request drafting, and output review
-- A foundation that can grow from personal productivity into shared team knowledge
+- A small set of tools for payload work, request drafting, and output review
+- A codebase that can gradually grow from personal productivity into shared team knowledge
 
 In short:
 
@@ -47,12 +47,12 @@ The project should help teams preserve AI working patterns instead of losing the
 - Repeated task acceleration
 - Knowledge capture through structured prompt assets
 
-### 3. From Demo to Sustainable Open-Source Project
+### 3. From Early App to Sustainable Open-Source Project
 
-The project should become a strong open-source foundation that others can use directly or extend:
+The project should become a maintainable open-source project that others can use directly or extend:
 
 - Clear architecture
-- Real modules instead of placeholder pages
+- Modules that remain useful as the scope grows
 - Stable engineering quality
 - Open contribution workflow
 
