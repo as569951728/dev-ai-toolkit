@@ -30,6 +30,17 @@ function createInitialState(initialValue?: PromptTemplate | null): FormState {
   };
 }
 
+function normalizeTags(value: string) {
+  return [
+    ...new Set(
+      value
+        .split(',')
+        .map((tag) => tag.trim())
+        .filter(Boolean),
+    ),
+  ];
+}
+
 export function PromptTemplateForm({
   mode,
   initialValue,
@@ -60,10 +71,7 @@ export function PromptTemplateForm({
       description: formState.description.trim(),
       systemPrompt: formState.systemPrompt.trim(),
       userPrompt: formState.userPrompt.trim(),
-      tags: formState.tags
-        .split(',')
-        .map((tag) => tag.trim())
-        .filter(Boolean),
+      tags: normalizeTags(formState.tags),
     };
 
     onSubmit(payload);
