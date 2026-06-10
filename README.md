@@ -30,6 +30,7 @@ The current version includes:
 - JSON Tools for formatting, validating, and minifying payloads
 - API Builder for drafting request configurations and fetch snippets
 - Code Viewer for reading code or generated output in single or compare mode
+- Workspace Backup for exporting and importing local templates, saved runs, and notes as JSON
 - Recent template history in the playground
 - Local browser persistence via `localStorage`
 - Feature-based code organization
@@ -62,9 +63,12 @@ dev-ai-toolkit/
 │   │   ├── api-builder/
 │   │   ├── code-viewer/
 │   │   ├── json-tools/
-│   │   ├── prompt-playground/
 │   │   ├── prompt-diff/
-│   │   └── prompt-templates/
+│   │   ├── prompt-playground/
+│   │   ├── prompt-run-notes/
+│   │   ├── prompt-runs/
+│   │   ├── prompt-templates/
+│   │   └── workspace-backup/
 │   ├── hooks/
 │   ├── lib/
 │   ├── types/
@@ -129,6 +133,17 @@ The current public demo is available at:
 
 - [https://dev-ai-toolkit.vercel.app](https://dev-ai-toolkit.vercel.app)
 
+## Visual Walkthrough
+
+The current UI is still small and local-first. These screenshots are captured
+from the running app and are meant to show the real workflow rather than a
+polished marketing mockup.
+
+![dev-ai-toolkit overview](./docs/assets/app-overview.png)
+
+For the main prompt workflow path, see
+[docs/prompt-workflow-walkthrough.md](./docs/prompt-workflow-walkthrough.md).
+
 ### Deploy To Vercel
 
 See [docs/deployment.md](./docs/deployment.md) for the current deployment notes.
@@ -147,11 +162,13 @@ The toolbox is currently organized around two capability groups.
 | Developer Utilities | JSON Tools | Format, validate, minify, copy, and sample JSON payloads | Useful for debugging and payload cleanup |
 | Developer Utilities | API Builder | Draft request URLs, headers, query params, JSON bodies, and `fetch` snippets | Local request scaffolding only |
 | Developer Utilities | Code Viewer | Inspect generated text or code in single or compare mode | Supports prompt and output review workflows |
+| Workspace | Workspace Backup | Export and import local templates, saved runs, and notes as versioned JSON | Manual backup for the current browser profile |
 
 The current storage model is intentionally local-first:
 
 - Initial template data comes from a mock dataset
 - User changes and saved runs are persisted in `localStorage`
+- Workspace backups can export and restore local templates, saved runs, and notes
 - Repository boundaries are in place so future API-backed work does not require rewriting page structure first
 
 ## How It Works
