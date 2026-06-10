@@ -22,8 +22,10 @@ export function PromptRunNotePanel({ runId }: PromptRunNotePanelProps) {
   }, [runId, savedNote?.body]);
 
   const handleSave = () => {
-    saveNote(runId, body.trim());
-    setStatusMessage('Note saved.');
+    const note = saveNote(runId, body);
+
+    setBody(note?.body ?? '');
+    setStatusMessage(note ? 'Note saved.' : 'Note cleared.');
   };
 
   return (

@@ -4,6 +4,7 @@ import type { PromptRunNoteRepository } from '@/features/prompt-run-notes/reposi
 import {
   deleteNoteForRun,
   importPromptRunNotes,
+  saveNoteForRun,
 } from '@/features/prompt-run-notes/services/prompt-run-note-service';
 import type { PromptRunNote } from '@/types/prompt-run-note';
 
@@ -22,6 +23,44 @@ function createMemoryRepository(
 }
 
 describe('prompt-run-note-service', () => {
+  it('removes an existing note when saving a blank body', () => {
+    const repository = createMemoryRepository([
+      {
+        id: 'note-1',
+        runId: 'run-1',
+        body: 'Clear me',
+        createdAt: '2026-05-08T09:00:00.000Z',
+        updatedAt: '2026-05-08T09:00:00.000Z',
+      },
+    ]);
+
+    const result = saveNoteForRun(
+      repository,
+      repository.loadAll(),
+      'run-1',
+      '   ',
+    );
+
+    expect(result.note).toBeNull();
+    expect(result.notes).toEqual([]);
+    expect(repository.snapshot()).toEqual([]);
+  });
+
+  it('does not create a new note for a blank body', () => {
+    const repository = createMemoryRepository();
+
+    const result = saveNoteForRun(
+      repository,
+      repository.loadAll(),
+      'run-1',
+      '',
+    );
+
+    expect(result.note).toBeNull();
+    expect(result.notes).toEqual([]);
+    expect(repository.snapshot()).toEqual([]);
+  });
+
   it('deletes the note attached to a saved run', () => {
     const repository = createMemoryRepository([
       {

@@ -12,17 +12,29 @@ export function saveNoteForRun(
   body: string,
 ) {
   const existingNote = getNoteForRun(notes, runId);
+  const normalizedBody = body.trim();
+
+  if (!normalizedBody) {
+    const nextNotes = notes.filter((note) => note.runId !== runId);
+    repository.saveAll(nextNotes);
+
+    return {
+      note: null,
+      notes: nextNotes,
+    };
+  }
+
   const now = new Date().toISOString();
   const note: PromptRunNote = existingNote
     ? {
         ...existingNote,
-        body,
+        body: normalizedBody,
         updatedAt: now,
       }
     : {
         id: crypto.randomUUID(),
         runId,
-        body,
+        body: normalizedBody,
         createdAt: now,
         updatedAt: now,
       };

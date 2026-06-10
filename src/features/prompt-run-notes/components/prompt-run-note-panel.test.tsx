@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { PromptRunNotePanel } from '@/features/prompt-run-notes/components/prompt-run-note-panel';
@@ -20,11 +20,17 @@ function createNoteRepository(
 }
 
 function renderNotePanel(runId: string, notes: PromptRunNote[]) {
-  return render(
-    <PromptRunNotesProvider repository={createNoteRepository(notes)}>
+  const repository = createNoteRepository(notes);
+  const result = render(
+    <PromptRunNotesProvider repository={repository}>
       <PromptRunNotePanel runId={runId} />
     </PromptRunNotesProvider>,
   );
+
+  return {
+    ...result,
+    repository,
+  };
 }
 
 afterEach(() => {
@@ -60,5 +66,25 @@ describe('PromptRunNotePanel', () => {
     );
 
     expect(screen.getByLabelText('Note')).toHaveValue('Second run note');
+  });
+
+  it('clears an existing note when the editor is saved empty', () => {
+    const { repository } = renderNotePanel('run-1', [
+      {
+        id: 'note-1',
+        runId: 'run-1',
+        body: 'Clear this note',
+        createdAt: '2026-05-08T09:00:00.000Z',
+        updatedAt: '2026-05-08T09:00:00.000Z',
+      },
+    ]);
+
+    fireEvent.change(screen.getByLabelText('Note'), {
+      target: { value: '   ' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Save note' }));
+
+    expect(screen.getByText('Note cleared.')).toBeInTheDocument();
+    expect(repository.loadAll()).toEqual([]);
   });
 });

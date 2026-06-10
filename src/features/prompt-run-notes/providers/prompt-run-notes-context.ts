@@ -5,7 +5,7 @@ import type { PromptRunNote } from '@/types/prompt-run-note';
 export interface PromptRunNotesContextValue {
   notes: PromptRunNote[];
   getNoteByRunId: (runId: string) => PromptRunNote | undefined;
-  saveNote: (runId: string, body: string) => PromptRunNote;
+  saveNote: (runId: string, body: string) => PromptRunNote | null;
   deleteNoteByRunId: (runId: string) => void;
   importNotes: (importedNotes: PromptRunNote[]) => void;
 }
