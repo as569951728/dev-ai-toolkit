@@ -113,6 +113,7 @@ export function WorkspaceBackupPage() {
             Import workspace JSON
           </label>
           <input
+            className="sr-only"
             id="workspace-backup-import"
             type="file"
             accept="application/json,.json"
