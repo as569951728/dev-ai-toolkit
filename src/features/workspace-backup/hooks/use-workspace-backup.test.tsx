@@ -5,6 +5,10 @@ import { PromptRunNotesProvider } from '@/features/prompt-run-notes/providers/pr
 import type { PromptRunNoteRepository } from '@/features/prompt-run-notes/repositories/prompt-run-note-repository';
 import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs-provider';
 import type { PromptRunRepository } from '@/features/prompt-runs/repositories/prompt-run-repository';
+import {
+  loadRecentTemplateIds,
+  saveRecentTemplateIds,
+} from '@/features/prompt-playground/repositories/local-storage-recent-template-repository';
 import { PromptTemplatesProvider } from '@/features/prompt-templates/providers/prompt-templates-provider';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
 import { useWorkspaceBackup } from '@/features/workspace-backup/hooks/use-workspace-backup';
@@ -109,7 +113,12 @@ function TestConsumer() {
           const backup = JSON.parse(
             createWorkspaceBackupJson(),
           ) as WorkspaceBackupPayload;
-          window.localStorage.setItem('workspace-backup-test', backup.data.runs[0]!.id);
+          window.localStorage.setItem(
+            'workspace-backup-test',
+            `${backup.data.runs[0]!.id}:${backup.data.recentTemplateIds?.join(
+              ',',
+            )}`,
+          );
         }}
       >
         Create backup
@@ -125,6 +134,7 @@ function TestConsumer() {
                 templates: [{ ...template, name: 'Imported Review Assistant' }],
                 runs: [{ ...run, templateName: 'Imported Review Assistant' }],
                 notes: [{ ...note, body: 'Imported note body.' }],
+                recentTemplateIds: ['template-1', 'missing-template'],
               },
             }),
           );
@@ -143,10 +153,13 @@ function TestConsumer() {
 
 afterEach(() => {
   cleanup();
+  window.localStorage.clear();
 });
 
 describe('useWorkspaceBackup', () => {
   it('creates a workspace backup JSON string from current app state', () => {
+    saveRecentTemplateIds(['missing-template', 'template-1']);
+
     render(
       <PromptTemplatesProvider repository={createTemplateRepository([template])}>
         <PromptRunsProvider repository={createRunRepository([run])}>
@@ -159,7 +172,9 @@ describe('useWorkspaceBackup', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Create backup' }));
 
-    expect(window.localStorage.getItem('workspace-backup-test')).toBe('run-1');
+    expect(window.localStorage.getItem('workspace-backup-test')).toBe(
+      'run-1:template-1',
+    );
   });
 
   it('imports a workspace backup JSON string into current app state', () => {
@@ -189,5 +204,6 @@ describe('useWorkspaceBackup', () => {
       'Imported Review Assistant',
     );
     expect(noteRepository.snapshot()[0]?.body).toBe('Imported note body.');
+    expect(loadRecentTemplateIds()).toEqual(['template-1']);
   });
 });

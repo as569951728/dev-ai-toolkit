@@ -4,6 +4,7 @@ import type { ChangeEvent } from 'react';
 import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
+import { loadRecentTemplateIds } from '@/features/prompt-playground/repositories/local-storage-recent-template-repository';
 import { useWorkspaceBackup } from '@/features/workspace-backup/hooks/use-workspace-backup';
 import { downloadWorkspaceBackup } from '@/features/workspace-backup/lib/workspace-backup-download';
 import type { WorkspaceBackupImportSummary } from '@/features/workspace-backup/lib/workspace-backup-merge';
@@ -18,14 +19,21 @@ export function WorkspaceBackupPage() {
   const { templates } = usePromptTemplates();
   const { importWorkspaceBackupJson } = useWorkspaceBackup();
   const [importError, setImportError] = useState('');
+  const [recentTemplateIds, setRecentTemplateIds] = useState(() =>
+    loadRecentTemplateIds(),
+  );
   const [importSummary, setImportSummary] =
     useState<WorkspaceBackupImportSummary | null>(null);
+  const currentRecentTemplateIds = recentTemplateIds.filter((templateId) =>
+    templates.some((template) => template.id === templateId),
+  );
 
   const handleExportWorkspace = () => {
     downloadWorkspaceBackup({
       templates,
       runs,
       notes,
+      recentTemplateIds: currentRecentTemplateIds,
     });
   };
 
@@ -41,6 +49,7 @@ export function WorkspaceBackupPage() {
     try {
       const summary = importWorkspaceBackupJson(await file.text());
       setImportSummary(summary);
+      setRecentTemplateIds(loadRecentTemplateIds());
       setImportError('');
     } catch (error) {
       setImportSummary(null);
@@ -96,6 +105,13 @@ export function WorkspaceBackupPage() {
             <span className="metric-card__label">Run notes</span>
             <strong>{formatCount(notes.length, 'run note')}</strong>
             <p>Notes attached to saved prompt runs for later review.</p>
+          </article>
+          <article className="metric-card">
+            <span className="metric-card__label">Recent templates</span>
+            <strong>
+              {formatCount(currentRecentTemplateIds.length, 'recent template')}
+            </strong>
+            <p>Playground shortcuts for templates used most recently.</p>
           </article>
         </div>
       </section>

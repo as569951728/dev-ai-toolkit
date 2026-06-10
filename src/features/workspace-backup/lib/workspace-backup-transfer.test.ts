@@ -66,6 +66,7 @@ describe('workspace-backup-transfer', () => {
       templates: [template],
       runs: [run],
       notes: [note],
+      recentTemplateIds: ['template-1'],
     });
 
     expect(backup.version).toBe(1);
@@ -73,6 +74,7 @@ describe('workspace-backup-transfer', () => {
     expect(backup.data.templates).toEqual([template]);
     expect(backup.data.runs).toEqual([run]);
     expect(backup.data.notes).toEqual([note]);
+    expect(backup.data.recentTemplateIds).toEqual(['template-1']);
   });
 
   it('stringifies and parses workspace backup payloads', () => {
@@ -80,6 +82,7 @@ describe('workspace-backup-transfer', () => {
       templates: [template],
       runs: [run],
       notes: [note],
+      recentTemplateIds: ['template-1', ' ', 'template-1'],
     });
 
     const parsedBackup = parseWorkspaceBackupImport(rawBackup);
@@ -87,6 +90,23 @@ describe('workspace-backup-transfer', () => {
     expect(parsedBackup.data.templates[0]?.id).toBe('template-1');
     expect(parsedBackup.data.runs[0]?.id).toBe('run-1');
     expect(parsedBackup.data.notes[0]?.id).toBe('note-1');
+    expect(parsedBackup.data.recentTemplateIds).toEqual(['template-1']);
+  });
+
+  it('parses older backups without recent template shortcuts', () => {
+    const parsedBackup = parseWorkspaceBackupImport(
+      JSON.stringify({
+        version: 1,
+        exportedAt: '2026-05-04T08:00:00.000Z',
+        data: {
+          templates: [template],
+          runs: [run],
+          notes: [note],
+        },
+      }),
+    );
+
+    expect(parsedBackup.data.recentTemplateIds).toBeUndefined();
   });
 
   it('rejects unsupported or incomplete workspace backup payloads', () => {
@@ -104,6 +124,21 @@ describe('workspace-backup-transfer', () => {
           version: 1,
           exportedAt: '2026-05-04T08:00:00.000Z',
           data: { templates: [], runs: [] },
+        }),
+      ),
+    ).toThrow('Invalid workspace backup format.');
+
+    expect(() =>
+      parseWorkspaceBackupImport(
+        JSON.stringify({
+          version: 1,
+          exportedAt: '2026-05-04T08:00:00.000Z',
+          data: {
+            templates: [template],
+            runs: [run],
+            notes: [note],
+            recentTemplateIds: ['template-1', 42],
+          },
         }),
       ),
     ).toThrow('Invalid workspace backup format.');

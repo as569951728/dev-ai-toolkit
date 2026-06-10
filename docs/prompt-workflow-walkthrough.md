@@ -69,6 +69,7 @@ The workspace backup currently includes:
 - Prompt templates and revisions
 - Saved prompt runs
 - Notes attached to prompt runs
+- Recent playground template shortcuts
 
 Exported backups are versioned JSON files. Importing a backup merges prompt
 templates and runs by `id`, and run notes by `runId`, so a saved run keeps at

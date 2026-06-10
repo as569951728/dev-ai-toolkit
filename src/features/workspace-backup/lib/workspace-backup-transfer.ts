@@ -8,6 +8,7 @@ export interface WorkspaceBackupData {
   templates: PromptTemplate[];
   runs: PromptRunRecord[];
   notes: PromptRunNote[];
+  recentTemplateIds?: string[];
 }
 
 export interface WorkspaceBackupPayload {
@@ -37,6 +38,22 @@ function isStringRecord(value: unknown): value is Record<string, string> {
 
 function isStringArray(value: unknown): value is string[] {
   return Array.isArray(value) && value.every((item) => typeof item === 'string');
+}
+
+function normalizeRecentTemplateIds(value: unknown) {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  if (!isStringArray(value)) {
+    return null;
+  }
+
+  return [
+    ...new Set(
+      value.map((templateId) => templateId.trim()).filter(Boolean),
+    ),
+  ];
 }
 
 function isValidPromptTemplateRevision(value: unknown) {
@@ -103,14 +120,16 @@ function doNotesReferenceExportedRuns(
   return notes.every((note) => runIds.has(note.runId));
 }
 
-function isWorkspaceBackupData(value: unknown): value is WorkspaceBackupData {
+function normalizeWorkspaceBackupData(
+  value: unknown,
+): WorkspaceBackupData | null {
   if (
     !isRecord(value) ||
     !Array.isArray(value.templates) ||
     !Array.isArray(value.runs) ||
     !Array.isArray(value.notes)
   ) {
-    return false;
+    return null;
   }
 
   if (
@@ -118,10 +137,27 @@ function isWorkspaceBackupData(value: unknown): value is WorkspaceBackupData {
     !value.runs.every(isValidPromptRun) ||
     !value.notes.every(isValidPromptRunNote)
   ) {
-    return false;
+    return null;
   }
 
-  return doNotesReferenceExportedRuns(value.notes, value.runs);
+  if (!doNotesReferenceExportedRuns(value.notes, value.runs)) {
+    return null;
+  }
+
+  const recentTemplateIds = normalizeRecentTemplateIds(
+    value.recentTemplateIds,
+  );
+
+  if (recentTemplateIds === null) {
+    return null;
+  }
+
+  return {
+    templates: value.templates,
+    runs: value.runs,
+    notes: value.notes,
+    ...(recentTemplateIds !== undefined ? { recentTemplateIds } : {}),
+  };
 }
 
 export function buildWorkspaceBackup(
@@ -157,10 +193,12 @@ export function parseWorkspaceBackupImport(
     throw new Error('Unsupported workspace backup version.');
   }
 
+  const data = normalizeWorkspaceBackupData(parsedValue.data);
+
   if (
     typeof parsedValue.exportedAt !== 'string' ||
     Number.isNaN(new Date(parsedValue.exportedAt).getTime()) ||
-    !isWorkspaceBackupData(parsedValue.data)
+    data === null
   ) {
     throw new Error('Invalid workspace backup format.');
   }
@@ -168,7 +206,7 @@ export function parseWorkspaceBackupImport(
   return {
     version: WORKSPACE_BACKUP_VERSION,
     exportedAt: parsedValue.exportedAt,
-    data: parsedValue.data,
+    data,
   };
 }
 

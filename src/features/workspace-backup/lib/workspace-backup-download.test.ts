@@ -17,6 +17,7 @@ describe('workspace-backup-download', () => {
       templates: [],
       runs: [],
       notes: [],
+      recentTemplateIds: ['template-1'],
       exportedAt: '2026-06-10T08:30:00.000Z',
     });
 
@@ -27,6 +28,7 @@ describe('workspace-backup-download', () => {
         templates: [],
         runs: [],
         notes: [],
+        recentTemplateIds: ['template-1'],
       },
     });
   });

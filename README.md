@@ -32,7 +32,7 @@ The current version includes:
 - JSON Tools for formatting, validating, and minifying payloads
 - API Builder for drafting request configurations and fetch snippets
 - Code Viewer for reading code or generated output in single or compare mode
-- Workspace Backup for exporting and importing local templates, saved runs, and notes as JSON
+- Workspace Backup for exporting and importing local templates, saved runs, notes, and recent playground shortcuts as JSON
 - Recent template history in the playground
 - Local browser persistence via `localStorage`
 - Feature-based code organization
@@ -182,13 +182,13 @@ The toolbox is currently organized around two capability groups.
 | Developer Utilities | JSON Tools | Format, validate, minify, copy, and sample JSON payloads | Useful for debugging and payload cleanup |
 | Developer Utilities | API Builder | Draft request URLs, headers, query params, JSON bodies, and `fetch` snippets | Local request scaffolding only |
 | Developer Utilities | Code Viewer | Inspect generated text or code in single or compare mode | Supports prompt and output review workflows |
-| Workspace | Workspace Backup | Export and import local templates, saved runs, and notes as versioned JSON | Manual backup for the current browser profile |
+| Workspace | Workspace Backup | Export and import local templates, saved runs, notes, and recent playground shortcuts as versioned JSON | Manual backup for the current browser profile |
 
 The current storage model is intentionally local-first:
 
 - A few starter templates are seeded on first load
 - User changes and saved runs are persisted in `localStorage`
-- Workspace backups can export and restore local templates, saved runs, and notes
+- Workspace backups can export and restore local templates, saved runs, notes, and recent playground shortcuts
 - Repository boundaries are in place so future API-backed work does not require rewriting page structure first
 
 ## How It Works

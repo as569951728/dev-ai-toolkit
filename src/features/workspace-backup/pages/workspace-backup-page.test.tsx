@@ -5,6 +5,7 @@ import { PromptRunNotesProvider } from '@/features/prompt-run-notes/providers/pr
 import type { PromptRunNoteRepository } from '@/features/prompt-run-notes/repositories/prompt-run-note-repository';
 import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs-provider';
 import type { PromptRunRepository } from '@/features/prompt-runs/repositories/prompt-run-repository';
+import { saveRecentTemplateIds } from '@/features/prompt-playground/repositories/local-storage-recent-template-repository';
 import { PromptTemplatesProvider } from '@/features/prompt-templates/providers/prompt-templates-provider';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
 import { downloadWorkspaceBackup } from '@/features/workspace-backup/lib/workspace-backup-download';
@@ -133,17 +134,21 @@ function renderWorkspaceBackupPage() {
 
 afterEach(() => {
   cleanup();
+  window.localStorage.clear();
   vi.clearAllMocks();
 });
 
 describe('WorkspaceBackupPage', () => {
   it('shows current local workspace counts and exports a backup file', () => {
+    saveRecentTemplateIds(['missing-template', 'template-1']);
+
     renderWorkspaceBackupPage();
 
     expect(screen.getByRole('heading', { name: 'Workspace backup' })).toBeInTheDocument();
     expect(screen.getByText('1 prompt template')).toBeInTheDocument();
     expect(screen.getByText('1 saved run')).toBeInTheDocument();
     expect(screen.getByText('1 run note')).toBeInTheDocument();
+    expect(screen.getByText('1 recent template')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Export workspace JSON' }));
 
@@ -151,6 +156,7 @@ describe('WorkspaceBackupPage', () => {
       templates: [template],
       runs: [run],
       notes: [note],
+      recentTemplateIds: ['template-1'],
     });
   });
 
@@ -166,6 +172,7 @@ describe('WorkspaceBackupPage', () => {
             templates: [{ ...template, name: 'Imported Review Assistant' }],
             runs: [{ ...run, templateName: 'Imported Review Assistant' }],
             notes: [{ ...note, body: 'Imported note body.' }],
+            recentTemplateIds: ['template-1'],
           },
         }),
       ],
@@ -184,6 +191,7 @@ describe('WorkspaceBackupPage', () => {
     expect(screen.getByText('Templates: 0 created, 1 updated.')).toBeInTheDocument();
     expect(screen.getByText('Runs: 0 created, 1 updated.')).toBeInTheDocument();
     expect(screen.getByText('Notes: 0 created, 1 updated.')).toBeInTheDocument();
+    expect(screen.getByText('1 recent template')).toBeInTheDocument();
     expect(templateRepository.snapshot()[0]?.name).toBe(
       'Imported Review Assistant',
     );
