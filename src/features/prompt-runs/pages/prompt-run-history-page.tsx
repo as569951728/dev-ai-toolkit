@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 
 import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
+import { matchesPromptRunSearch } from '@/features/prompt-runs/lib/prompt-run-search';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
 
 function formatCreatedAt(createdAt: string) {
@@ -85,27 +86,16 @@ export function PromptRunHistoryPage() {
   };
 
   const filteredRuns = useMemo(() => {
-    const normalizedSearchValue = searchValue.trim().toLowerCase();
-
     return runs.filter((run) => {
       const sourceTemplateName = getTemplateById(run.templateId)?.name ?? '';
       const matchesTemplate =
         selectedTemplateId === 'all' || run.templateId === selectedTemplateId;
-      const matchesSearch =
-        !normalizedSearchValue ||
-        run.templateName.toLowerCase().includes(normalizedSearchValue) ||
-        sourceTemplateName.toLowerCase().includes(normalizedSearchValue) ||
-        run.systemPrompt.toLowerCase().includes(normalizedSearchValue) ||
-        run.userPrompt.toLowerCase().includes(normalizedSearchValue) ||
-        Object.entries(run.variables).some(
-          ([name, value]) =>
-            name.toLowerCase().includes(normalizedSearchValue) ||
-            value.toLowerCase().includes(normalizedSearchValue),
-        ) ||
-        (getNoteByRunId(run.id)?.body.toLowerCase().includes(
-          normalizedSearchValue,
-        ) ??
-          false);
+      const matchesSearch = matchesPromptRunSearch({
+        run,
+        sourceTemplateName,
+        note: getNoteByRunId(run.id) ?? null,
+        query: searchValue,
+      });
 
       return matchesTemplate && matchesSearch;
     });
