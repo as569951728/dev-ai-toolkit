@@ -131,6 +131,42 @@ describe('PromptTemplateListPage', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('hides archived-only tags until archived templates are visible', () => {
+    const repository = createMemoryRepository([
+      mockPromptTemplates[0]!,
+      {
+        ...mockPromptTemplates[1]!,
+        archivedAt: '2026-05-07T08:00:00.000Z',
+        tags: ['archived-only'],
+      },
+      mockPromptTemplates[2]!,
+    ]);
+
+    render(
+      <MemoryRouter>
+        <PromptTemplatesProvider repository={repository}>
+          <PromptTemplateListPage />
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    const tagSelect = screen.getByLabelText('Tag');
+
+    expect(
+      within(tagSelect).queryByRole('option', { name: 'archived-only' }),
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Show archived templates (1)' }),
+    );
+
+    expect(
+      within(screen.getByLabelText('Tag')).getByRole('option', {
+        name: 'archived-only',
+      }),
+    ).toBeInTheDocument();
+  });
+
   it('preloads list filters and archived visibility from the route query', () => {
     const repository = createMemoryRepository([
       mockPromptTemplates[0]!,

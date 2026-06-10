@@ -8,13 +8,14 @@ import {
 } from '@/features/prompt-templates/lib/prompt-template-transfer';
 import { PromptTemplateList } from '@/features/prompt-templates/components/prompt-template-list';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
+import { collectPromptTemplateTags } from '@/features/prompt-templates/services/prompt-template-service';
 import type { PromptTemplateFilters } from '@/types/prompt-template';
 
 export function PromptTemplateListPage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const { importTemplates, tags, templates } = usePromptTemplates();
+  const { importTemplates, templates } = usePromptTemplates();
   const filters: PromptTemplateFilters = {
     search: searchParams.get('search') ?? '',
     tag: searchParams.get('tag') ?? 'all',
@@ -26,6 +27,7 @@ export function PromptTemplateListPage() {
     ? templates
     : templates.filter((template) => !template.archivedAt);
   const archivedCount = templates.filter((template) => template.archivedAt).length;
+  const visibleTags = collectPromptTemplateTags(visibleTemplates);
   const filteredTemplates = filterPromptTemplates(visibleTemplates, filters);
 
   const updateListSearchParams = (
@@ -107,7 +109,7 @@ export function PromptTemplateListPage() {
 
       <PromptTemplateList
         templates={filteredTemplates}
-        tags={tags}
+        tags={visibleTags}
         filters={filters}
         statusMessage={statusMessage}
         archivedCount={archivedCount}
