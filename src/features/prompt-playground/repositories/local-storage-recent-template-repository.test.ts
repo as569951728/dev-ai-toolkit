@@ -40,10 +40,39 @@ describe('local-storage-recent-template-repository', () => {
     ]);
   });
 
+  it('normalizes blank and repeated recent template ids', () => {
+    const storage = createMemoryStorage({
+      recent: JSON.stringify({
+        version: 1,
+        data: ['template-1', ' ', 'template-1', 42, 'template-2'],
+      }),
+    });
+
+    expect(loadRecentTemplateIds('recent', storage)).toEqual([
+      'template-1',
+      'template-2',
+    ]);
+  });
+
   it('writes recent template ids using the versioned payload shape', () => {
     const storage = createMemoryStorage();
 
     saveRecentTemplateIds(['template-1', 'template-2'], 'recent', storage);
+
+    expect(JSON.parse(storage.getItem('recent') ?? 'null')).toEqual({
+      version: 1,
+      data: ['template-1', 'template-2'],
+    });
+  });
+
+  it('normalizes recent template ids before writing', () => {
+    const storage = createMemoryStorage();
+
+    saveRecentTemplateIds(
+      ['template-1', 'template-1', '', 'template-2'],
+      'recent',
+      storage,
+    );
 
     expect(JSON.parse(storage.getItem('recent') ?? 'null')).toEqual({
       version: 1,

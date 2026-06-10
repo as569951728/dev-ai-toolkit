@@ -11,7 +11,15 @@ function normalizeRecentTemplateIds(value: unknown) {
   const templateIds = readVersionedCollection<string>(value);
 
   return templateIds
-    ? templateIds.filter((templateId) => typeof templateId === 'string')
+    ? [
+        ...new Set(
+          templateIds
+            .map((templateId) =>
+              typeof templateId === 'string' ? templateId.trim() : '',
+            )
+            .filter(Boolean),
+        ),
+      ]
     : [];
 }
 
@@ -49,6 +57,8 @@ export function saveRecentTemplateIds(
 
   storage.setItem(
     storageKey,
-    JSON.stringify(writeVersionedCollection(templateIds)),
+    JSON.stringify(
+      writeVersionedCollection(normalizeRecentTemplateIds(templateIds)),
+    ),
   );
 }
