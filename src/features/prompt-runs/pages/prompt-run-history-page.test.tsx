@@ -198,6 +198,45 @@ describe('PromptRunHistoryPage', () => {
     ).toBeInTheDocument();
   });
 
+  it('deduplicates template filter options when saved runs keep older template names', () => {
+    const templateId = mockPromptTemplates[0]!.id;
+
+    renderRunHistory({
+      runs: [
+        {
+          id: 'run-2',
+          templateId,
+          templateName: 'Older Code Review Name',
+          templateVersion: 1,
+          variables: {},
+          systemPrompt: 'System B',
+          userPrompt: 'User B',
+          createdAt: '2026-05-07T09:10:00.000Z',
+        },
+        {
+          id: 'run-1',
+          templateId,
+          templateName: mockPromptTemplates[0]!.name,
+          templateVersion: 2,
+          variables: {},
+          systemPrompt: 'System A',
+          userPrompt: 'User A',
+          createdAt: '2026-05-07T09:00:00.000Z',
+        },
+      ],
+    });
+
+    const templateSelect = screen.getByLabelText('Template');
+    const matchingOptions = Array.from(
+      templateSelect.querySelectorAll(`option[value="${templateId}"]`),
+    );
+
+    expect(matchingOptions).toHaveLength(1);
+    expect(matchingOptions[0]).toHaveTextContent(
+      mockPromptTemplates[0]!.name,
+    );
+  });
+
   it('searches saved runs by note content', () => {
     renderRunHistory({
       notes: [

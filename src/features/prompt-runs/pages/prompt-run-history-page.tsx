@@ -26,14 +26,23 @@ export function PromptRunHistoryPage() {
     selectedTemplateId !== 'all' || searchValue.trim().length > 0;
 
   const availableTemplates = useMemo(
-    () =>
-      [...new Set(runs.map((run) => `${run.templateId}:::${run.templateName}`))].map(
-        (value) => {
-          const [id, name] = value.split(':::');
-          return { id, name };
-        },
-      ),
-    [runs],
+    () => {
+      const templatesById = new Map<string, { id: string; name: string }>();
+
+      for (const run of runs) {
+        if (templatesById.has(run.templateId)) {
+          continue;
+        }
+
+        templatesById.set(run.templateId, {
+          id: run.templateId,
+          name: getTemplateById(run.templateId)?.name ?? run.templateName,
+        });
+      }
+
+      return [...templatesById.values()];
+    },
+    [getTemplateById, runs],
   );
 
   const selectedTemplateName =
