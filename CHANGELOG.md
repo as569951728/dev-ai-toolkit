@@ -20,6 +20,8 @@ The format is intentionally lightweight and human-readable.
 - Announced Workspace Backup import success and failure feedback with
   accessible status roles
 - Announced prompt run save and note save feedback with accessible status roles
+- Recorded a template as recently used when saving a prompt run from the
+  Playground
 
 ### Changed
 

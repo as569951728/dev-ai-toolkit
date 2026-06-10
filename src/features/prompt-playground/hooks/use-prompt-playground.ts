@@ -79,6 +79,25 @@ export function usePromptPlayground(initialTemplateId?: string) {
     [activeTemplates, recentTemplateIds],
   );
 
+  const markTemplateAsRecent = (templateId: string) => {
+    const template = findTemplateById(activeTemplates, templateId);
+
+    if (!template) {
+      return;
+    }
+
+    setRecentTemplateIds((currentIds) => {
+      const nextIds = [
+        templateId,
+        ...currentIds.filter((id) => id !== templateId),
+      ].slice(0, MAX_RECENT_ITEMS);
+
+      saveRecentTemplateIds(nextIds);
+
+      return nextIds;
+    });
+  };
+
   return {
     selectedTemplate,
     selectedTemplateId: activeTemplateId,
@@ -96,10 +115,6 @@ export function usePromptPlayground(initialTemplateId?: string) {
 
       setSelectedTemplateId(nextTemplateId);
       setVariableValues((currentValues) => {
-        if (!nextTemplate) {
-          return {};
-        }
-
         const nextEntries = extractVariables(nextTemplate).map((variable) => [
           variable.key,
           currentValues[variable.key] ?? '',
@@ -107,17 +122,9 @@ export function usePromptPlayground(initialTemplateId?: string) {
 
         return Object.fromEntries(nextEntries);
       });
-      setRecentTemplateIds((currentIds) => {
-        const nextIds = [
-          nextTemplateId,
-          ...currentIds.filter((id) => id !== nextTemplateId),
-        ].slice(0, MAX_RECENT_ITEMS);
-
-        saveRecentTemplateIds(nextIds);
-
-        return nextIds;
-      });
+      markTemplateAsRecent(nextTemplateId);
     },
+    markTemplateAsRecent,
     updateVariableValue: (key: string, value: string) => {
       setVariableValues((currentValues) => ({
         ...currentValues,

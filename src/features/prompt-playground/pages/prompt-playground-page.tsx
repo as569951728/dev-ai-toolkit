@@ -45,6 +45,7 @@ function PromptPlaygroundWorkspace({
     variableValues,
     preview,
     recentTemplates,
+    markTemplateAsRecent,
     setSelectedTemplateId,
     updateVariableValue,
   } = usePromptPlayground(initialTemplateId);
@@ -129,6 +130,7 @@ function PromptPlaygroundWorkspace({
               systemPrompt: preview.systemPrompt,
               userPrompt: preview.userPrompt,
             });
+            markTemplateAsRecent(selectedTemplate.id);
 
             setSaveStatus({
               contextKey: buildPreviewContextKey(
