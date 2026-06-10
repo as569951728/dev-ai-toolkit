@@ -148,4 +148,25 @@ describe('workspace-backup-transfer', () => {
       ),
     ).toThrow('Invalid workspace backup format.');
   });
+
+  it('rejects workspace backups with malformed template revisions', () => {
+    expect(() =>
+      parseWorkspaceBackupImport(
+        JSON.stringify({
+          version: 1,
+          exportedAt: '2026-05-04T08:00:00.000Z',
+          data: {
+            templates: [
+              {
+                ...template,
+                revisions: [{ version: 1 }],
+              },
+            ],
+            runs: [run],
+            notes: [note],
+          },
+        }),
+      ),
+    ).toThrow('Invalid workspace backup format.');
+  });
 });

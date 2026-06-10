@@ -31,6 +31,19 @@ function isStringArray(value: unknown): value is string[] {
   return Array.isArray(value) && value.every((item) => typeof item === 'string');
 }
 
+function isValidPromptTemplateRevision(value: unknown) {
+  return (
+    isRecord(value) &&
+    typeof value.version === 'number' &&
+    typeof value.updatedAt === 'string' &&
+    typeof value.name === 'string' &&
+    typeof value.description === 'string' &&
+    typeof value.systemPrompt === 'string' &&
+    typeof value.userPrompt === 'string' &&
+    isStringArray(value.tags)
+  );
+}
+
 function isValidPromptTemplate(value: unknown): value is PromptTemplate {
   return (
     isRecord(value) &&
@@ -42,6 +55,7 @@ function isValidPromptTemplate(value: unknown): value is PromptTemplate {
     isStringArray(value.tags) &&
     typeof value.version === 'number' &&
     Array.isArray(value.revisions) &&
+    value.revisions.every(isValidPromptTemplateRevision) &&
     (typeof value.archivedAt === 'string' || value.archivedAt === null) &&
     typeof value.updatedAt === 'string'
   );
