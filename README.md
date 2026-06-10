@@ -129,9 +129,9 @@ npm run preview
 
 ## Live Demo
 
-The public demo URL is reachable, but deployment tracking is still being
-verified. If you need the latest version from `main`, run the app locally for
-now.
+The public demo URL is configured, but deployment freshness and local
+reachability are still being verified. If you need the latest version from
+`main`, run the app locally for now.
 
 - [https://dev-ai-toolkit.vercel.app](https://dev-ai-toolkit.vercel.app)
 

@@ -8,8 +8,8 @@ This project can be deployed to Vercel as a static Vite application.
 - The production output directory is `dist`
 - Client-side routing is handled by `react-router-dom`
 - `vercel.json` is included so route refreshes fall back to `index.html`
-- The public demo URL is reachable, but Vercel deployment tracking still needs
-  to be verified against the latest `main` branch
+- The public demo URL is configured, but Vercel deployment tracking and local
+  reachability still need to be verified against the latest `main` branch
 
 ## Deploy to Vercel
 

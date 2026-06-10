@@ -137,8 +137,8 @@ npm run lint
 
 ## Live Demo
 
-当前演示地址可以访问，但部署链路还在确认中。如果需要体验最新
-`main` 分支代码，建议先在本地运行。
+当前演示地址已经配置，但部署是否跟随最新 `main`、以及本地访问稳定性
+仍在确认中。如果需要体验最新代码，建议先在本地运行。
 
 - [https://dev-ai-toolkit.vercel.app](https://dev-ai-toolkit.vercel.app)
 
