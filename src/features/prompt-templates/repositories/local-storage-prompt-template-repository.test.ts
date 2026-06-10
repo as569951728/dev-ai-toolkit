@@ -90,4 +90,23 @@ describe('local-storage-prompt-template-repository', () => {
 
     expect(repository.loadAll()).toEqual([]);
   });
+
+  it('ignores malformed stored template records', () => {
+    const storage = createMemoryStorage({
+      templates: JSON.stringify({
+        version: 1,
+        data: [
+          { id: 'template-without-prompts' },
+          { ...starterPromptTemplates[0], tags: 'review' },
+          starterPromptTemplates[1],
+        ],
+      }),
+    });
+    const repository = createLocalStoragePromptTemplateRepository(
+      'templates',
+      storage,
+    );
+
+    expect(repository.loadAll()).toEqual([starterPromptTemplates[1]]);
+  });
 });
