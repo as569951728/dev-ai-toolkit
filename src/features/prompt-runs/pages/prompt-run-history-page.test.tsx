@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 
 import { PromptRunNotesProvider } from '@/features/prompt-run-notes/providers/prompt-run-notes-provider';
 import type { PromptRunNoteRepository } from '@/features/prompt-run-notes/repositories/prompt-run-note-repository';
-import { mockPromptTemplates } from '@/features/prompt-templates/mock/prompts';
+import { starterPromptTemplates } from '@/features/prompt-templates/seed/prompt-templates';
 import { PromptTemplatesProvider } from '@/features/prompt-templates/providers/prompt-templates-provider';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
 import { PromptRunHistoryPage } from '@/features/prompt-runs/pages/prompt-run-history-page';
@@ -15,7 +15,7 @@ import type { PromptRunNote } from '@/types/prompt-run-note';
 import type { PromptRunRecord } from '@/types/prompt-run';
 
 function createTemplateRepository(
-  initialTemplates = mockPromptTemplates,
+  initialTemplates = starterPromptTemplates,
 ): PromptTemplateRepository {
   let templates = [...initialTemplates];
 
@@ -54,8 +54,8 @@ function createNoteRepository(
 const sampleRuns: PromptRunRecord[] = [
   {
     id: 'run-2',
-    templateId: mockPromptTemplates[1]!.id,
-    templateName: mockPromptTemplates[1]!.name,
+    templateId: starterPromptTemplates[1]!.id,
+    templateName: starterPromptTemplates[1]!.name,
     templateVersion: 2,
     variables: { feature_name: 'run-history-page' },
     systemPrompt: 'System B',
@@ -64,8 +64,8 @@ const sampleRuns: PromptRunRecord[] = [
   },
   {
     id: 'run-1',
-    templateId: mockPromptTemplates[0]!.id,
-    templateName: mockPromptTemplates[0]!.name,
+    templateId: starterPromptTemplates[0]!.id,
+    templateName: starterPromptTemplates[0]!.name,
     templateVersion: 1,
     variables: {},
     systemPrompt: 'System A',
@@ -106,7 +106,7 @@ function RunHistoryNavigationHarness() {
       <button
         type="button"
         onClick={() =>
-          navigate(`/runs?templateId=${mockPromptTemplates[1]!.id}`)
+          navigate(`/runs?templateId=${starterPromptTemplates[1]!.id}`)
         }
       >
         Open API runs
@@ -144,7 +144,7 @@ describe('PromptRunHistoryPage', () => {
     expect(headings[1]).toHaveTextContent('Code Review Assistant');
     expect(
       screen.getAllByRole('link', { name: 'View source template' })[0],
-    ).toHaveAttribute('href', `/prompts/${mockPromptTemplates[1]!.id}`);
+    ).toHaveAttribute('href', `/prompts/${starterPromptTemplates[1]!.id}`);
     expect(
       screen.getAllByRole('link', { name: 'View details' })[0],
     ).toHaveAttribute('href', '/runs/run-2');
@@ -184,7 +184,7 @@ describe('PromptRunHistoryPage', () => {
       target: { value: '' },
     });
     fireEvent.change(screen.getByLabelText('Template'), {
-      target: { value: mockPromptTemplates[1]!.id },
+      target: { value: starterPromptTemplates[1]!.id },
     });
 
     expect(
@@ -199,7 +199,7 @@ describe('PromptRunHistoryPage', () => {
   });
 
   it('deduplicates template filter options when saved runs keep older template names', () => {
-    const templateId = mockPromptTemplates[0]!.id;
+    const templateId = starterPromptTemplates[0]!.id;
 
     renderRunHistory({
       runs: [
@@ -216,7 +216,7 @@ describe('PromptRunHistoryPage', () => {
         {
           id: 'run-1',
           templateId,
-          templateName: mockPromptTemplates[0]!.name,
+          templateName: starterPromptTemplates[0]!.name,
           templateVersion: 2,
           variables: {},
           systemPrompt: 'System A',
@@ -233,7 +233,7 @@ describe('PromptRunHistoryPage', () => {
 
     expect(matchingOptions).toHaveLength(1);
     expect(matchingOptions[0]).toHaveTextContent(
-      mockPromptTemplates[0]!.name,
+      starterPromptTemplates[0]!.name,
     );
   });
 
@@ -271,7 +271,7 @@ describe('PromptRunHistoryPage', () => {
       runs: [
         {
           id: 'run-1',
-          templateId: mockPromptTemplates[0]!.id,
+          templateId: starterPromptTemplates[0]!.id,
           templateName: 'Older Review Name',
           templateVersion: 1,
           variables: {},
@@ -295,11 +295,11 @@ describe('PromptRunHistoryPage', () => {
 
   it('preselects the template filter from the route query', () => {
     renderRunHistory({
-      initialEntry: `/runs?templateId=${mockPromptTemplates[1]!.id}`,
+      initialEntry: `/runs?templateId=${starterPromptTemplates[1]!.id}`,
     });
 
     expect(screen.getByLabelText('Template')).toHaveValue(
-      mockPromptTemplates[1]!.id,
+      starterPromptTemplates[1]!.id,
     );
     expect(
       screen.getByText('Showing 1 of 2 saved runs for API Design Partner.'),
@@ -317,12 +317,12 @@ describe('PromptRunHistoryPage', () => {
 
   it('keeps the selected template filter visible when that template has no runs yet', () => {
     renderRunHistory({
-      initialEntry: `/runs?templateId=${mockPromptTemplates[1]!.id}`,
+      initialEntry: `/runs?templateId=${starterPromptTemplates[1]!.id}`,
       runs: [
         {
           id: 'run-1',
-          templateId: mockPromptTemplates[0]!.id,
-          templateName: mockPromptTemplates[0]!.name,
+          templateId: starterPromptTemplates[0]!.id,
+          templateName: starterPromptTemplates[0]!.name,
           templateVersion: 1,
           variables: {},
           systemPrompt: 'System A',
@@ -333,7 +333,7 @@ describe('PromptRunHistoryPage', () => {
     });
 
     expect(screen.getByLabelText('Template')).toHaveValue(
-      mockPromptTemplates[1]!.id,
+      starterPromptTemplates[1]!.id,
     );
     expect(
       screen.getByText('Showing 0 of 1 saved runs for API Design Partner.'),
@@ -348,11 +348,11 @@ describe('PromptRunHistoryPage', () => {
 
   it('syncs active filters when the route query changes', () => {
     renderNavigableRunHistory(
-      `/runs?templateId=${mockPromptTemplates[0]!.id}`,
+      `/runs?templateId=${starterPromptTemplates[0]!.id}`,
     );
 
     expect(screen.getByLabelText('Template')).toHaveValue(
-      mockPromptTemplates[0]!.id,
+      starterPromptTemplates[0]!.id,
     );
     expect(
       screen.getByRole('heading', { name: 'Code Review Assistant' }),
@@ -361,7 +361,7 @@ describe('PromptRunHistoryPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Open API runs' }));
 
     expect(screen.getByLabelText('Template')).toHaveValue(
-      mockPromptTemplates[1]!.id,
+      starterPromptTemplates[1]!.id,
     );
     expect(
       screen.getByRole('heading', { name: 'API Design Partner' }),
@@ -386,7 +386,7 @@ describe('PromptRunHistoryPage', () => {
 
   it('clears active filters and restores the full run list', () => {
     renderRunHistory({
-      initialEntry: `/runs?templateId=${mockPromptTemplates[1]!.id}`,
+      initialEntry: `/runs?templateId=${starterPromptTemplates[1]!.id}`,
     });
 
     expect(

@@ -5,11 +5,11 @@ import {
   parsePromptTemplateImport,
   stringifyPromptTemplateExport,
 } from '@/features/prompt-templates/lib/prompt-template-transfer';
-import { mockPromptTemplates } from '@/features/prompt-templates/mock/prompts';
+import { starterPromptTemplates } from '@/features/prompt-templates/seed/prompt-templates';
 
 describe('prompt-template-transfer', () => {
-  const existingReviewTemplate = mockPromptTemplates[0]!;
-  const existingApiTemplate = mockPromptTemplates[1]!;
+  const existingReviewTemplate = starterPromptTemplates[0]!;
+  const existingApiTemplate = starterPromptTemplates[1]!;
 
   it('parses exported payloads and reports created or updated counts', () => {
     const incoming = [
@@ -34,7 +34,7 @@ describe('prompt-template-transfer', () => {
       templates: incoming,
     });
 
-    const result = parsePromptTemplateImport(rawValue, mockPromptTemplates);
+    const result = parsePromptTemplateImport(rawValue, starterPromptTemplates);
 
     expect(result.summary).toEqual({
       created: 1,
@@ -46,19 +46,19 @@ describe('prompt-template-transfer', () => {
   });
 
   it('exports and merges templates without dropping existing ids', () => {
-    const exported = stringifyPromptTemplateExport(mockPromptTemplates);
+    const exported = stringifyPromptTemplateExport(starterPromptTemplates);
     const parsed = JSON.parse(exported) as { templates: unknown[] };
 
-    expect(parsed.templates).toHaveLength(mockPromptTemplates.length);
+    expect(parsed.templates).toHaveLength(starterPromptTemplates.length);
 
-    const merged = mergePromptTemplates(mockPromptTemplates, [
+    const merged = mergePromptTemplates(starterPromptTemplates, [
       {
         ...existingApiTemplate,
         name: 'Updated API Design Partner',
       },
     ]);
 
-    expect(merged).toHaveLength(mockPromptTemplates.length);
+    expect(merged).toHaveLength(starterPromptTemplates.length);
     expect(merged.find((item) => item.id === existingApiTemplate.id)?.name).toBe(
       'Updated API Design Partner',
     );
@@ -98,7 +98,7 @@ describe('prompt-template-transfer', () => {
       },
     ]);
 
-    const result = parsePromptTemplateImport(rawValue, mockPromptTemplates);
+    const result = parsePromptTemplateImport(rawValue, starterPromptTemplates);
     const importedTemplate = result.importedTemplates[0]!;
 
     expect(result.summary).toEqual({
@@ -137,7 +137,7 @@ describe('prompt-template-transfer', () => {
       },
     ]);
 
-    const result = parsePromptTemplateImport(rawValue, mockPromptTemplates);
+    const result = parsePromptTemplateImport(rawValue, starterPromptTemplates);
 
     expect(result.summary).toEqual({
       created: 1,

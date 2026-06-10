@@ -4,13 +4,13 @@ import { describe, expect, it } from 'vitest';
 
 import { usePromptPlayground } from '@/features/prompt-playground/hooks/use-prompt-playground';
 import { buildPromptTemplateFromInput } from '@/features/prompt-templates/lib/prompt-template-versioning';
-import { mockPromptTemplates } from '@/features/prompt-templates/mock/prompts';
+import { starterPromptTemplates } from '@/features/prompt-templates/seed/prompt-templates';
 import { PromptTemplatesProvider } from '@/features/prompt-templates/providers/prompt-templates-provider';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
 import type { PromptTemplate } from '@/types/prompt-template';
 
 function createTemplateRepository(
-  templates: PromptTemplate[] = mockPromptTemplates,
+  templates: PromptTemplate[] = starterPromptTemplates,
 ): PromptTemplateRepository {
   return {
     loadAll: () => [...templates],
@@ -46,7 +46,7 @@ function createArchivedTemplate() {
 
 describe('usePromptPlayground', () => {
   it('normalizes a missing initial template id to the first available template', () => {
-    const fallbackTemplate = mockPromptTemplates[0]!;
+    const fallbackTemplate = starterPromptTemplates[0]!;
 
     const { result } = renderHook(
       () => usePromptPlayground('missing-template'),
@@ -64,7 +64,7 @@ describe('usePromptPlayground', () => {
 
     const { result } = renderHook(() => usePromptPlayground(), {
       wrapper: createWrapper(
-        createTemplateRepository([archivedTemplate, ...mockPromptTemplates]),
+        createTemplateRepository([archivedTemplate, ...starterPromptTemplates]),
       ),
     });
 
@@ -75,13 +75,13 @@ describe('usePromptPlayground', () => {
 
   it('falls back to the first active template when the initial template is archived', () => {
     const archivedTemplate = createArchivedTemplate();
-    const fallbackTemplate = mockPromptTemplates[0]!;
+    const fallbackTemplate = starterPromptTemplates[0]!;
 
     const { result } = renderHook(
       () => usePromptPlayground(archivedTemplate.id),
       {
         wrapper: createWrapper(
-          createTemplateRepository([archivedTemplate, ...mockPromptTemplates]),
+          createTemplateRepository([archivedTemplate, ...starterPromptTemplates]),
         ),
       },
     );

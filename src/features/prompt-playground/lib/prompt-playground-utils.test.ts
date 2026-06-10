@@ -6,10 +6,10 @@ import {
   extractVariables,
   formatPromptSections,
 } from '@/features/prompt-playground/lib/prompt-playground-utils';
-import { mockPromptTemplates } from '@/features/prompt-templates/mock/prompts';
+import { starterPromptTemplates } from '@/features/prompt-templates/seed/prompt-templates';
 
 describe('prompt-playground-utils', () => {
-  const template = mockPromptTemplates[0]!;
+  const template = starterPromptTemplates[0]!;
 
   it('extracts unique variables from both prompt sections', () => {
     const variables = extractVariables(template);

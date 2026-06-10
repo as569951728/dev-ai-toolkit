@@ -4,7 +4,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
 import { PromptRunNotesProvider } from '@/features/prompt-run-notes/providers/prompt-run-notes-provider';
 import type { PromptRunNoteRepository } from '@/features/prompt-run-notes/repositories/prompt-run-note-repository';
-import { mockPromptTemplates } from '@/features/prompt-templates/mock/prompts';
+import { starterPromptTemplates } from '@/features/prompt-templates/seed/prompt-templates';
 import { PromptTemplatesProvider } from '@/features/prompt-templates/providers/prompt-templates-provider';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
 import { exportPromptRunAsJson } from '@/features/prompt-runs/lib/prompt-run-export';
@@ -27,7 +27,7 @@ vi.mock('@/features/prompt-runs/lib/prompt-run-export', async (importOriginal) =
 const exportPromptRunAsJsonMock = vi.mocked(exportPromptRunAsJson);
 
 function createTemplateRepository(
-  initialTemplates = mockPromptTemplates,
+  initialTemplates = starterPromptTemplates,
 ): PromptTemplateRepository {
   let templates = [...initialTemplates];
 
@@ -102,8 +102,8 @@ describe('PromptRunDetailPage', () => {
     renderRunDetail('/runs/run-1', [
       {
         id: 'run-1',
-        templateId: mockPromptTemplates[0]!.id,
-        templateName: mockPromptTemplates[0]!.name,
+        templateId: starterPromptTemplates[0]!.id,
+        templateName: starterPromptTemplates[0]!.name,
         templateVersion: 2,
         variables: { repository_name: 'dev-ai-toolkit' },
         systemPrompt: 'Review the code carefully.',
@@ -123,7 +123,7 @@ describe('PromptRunDetailPage', () => {
     ).toBeInTheDocument();
     expect(
       screen.getByRole('link', { name: 'View source template' }),
-    ).toHaveAttribute('href', `/prompts/${mockPromptTemplates[0]!.id}`);
+    ).toHaveAttribute('href', `/prompts/${starterPromptTemplates[0]!.id}`);
     expect(
       screen.getByRole('link', { name: 'Open output in Code Viewer' }),
     ).toHaveAttribute(
@@ -139,8 +139,8 @@ describe('PromptRunDetailPage', () => {
     const { noteRepository } = renderRunDetail('/runs/run-1', [
       {
         id: 'run-1',
-        templateId: mockPromptTemplates[0]!.id,
-        templateName: mockPromptTemplates[0]!.name,
+        templateId: starterPromptTemplates[0]!.id,
+        templateName: starterPromptTemplates[0]!.name,
         templateVersion: 2,
         variables: {},
         systemPrompt: 'System',
@@ -164,8 +164,8 @@ describe('PromptRunDetailPage', () => {
   it('exports the current run with saved note context', () => {
     const run: PromptRunRecord = {
       id: 'run-1',
-      templateId: mockPromptTemplates[0]!.id,
-      templateName: mockPromptTemplates[0]!.name,
+      templateId: starterPromptTemplates[0]!.id,
+      templateName: starterPromptTemplates[0]!.name,
       templateVersion: 2,
       variables: {},
       systemPrompt: 'System',
@@ -196,8 +196,8 @@ describe('PromptRunDetailPage', () => {
     const runRepository = createRunRepository([
       {
         id: 'run-1',
-        templateId: mockPromptTemplates[0]!.id,
-        templateName: mockPromptTemplates[0]!.name,
+        templateId: starterPromptTemplates[0]!.id,
+        templateName: starterPromptTemplates[0]!.name,
         templateVersion: 2,
         variables: {},
         systemPrompt: 'System',

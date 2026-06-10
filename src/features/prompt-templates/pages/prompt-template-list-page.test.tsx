@@ -12,7 +12,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { PromptTemplateListPage } from '@/features/prompt-templates/pages/prompt-template-list-page';
 import { PromptTemplatesProvider } from '@/features/prompt-templates/providers/prompt-templates-provider';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
-import { mockPromptTemplates } from '@/features/prompt-templates/mock/prompts';
+import { starterPromptTemplates } from '@/features/prompt-templates/seed/prompt-templates';
 
 const mockNavigate = vi.fn();
 
@@ -28,7 +28,7 @@ vi.mock('react-router-dom', async () => {
 });
 
 function createMemoryRepository(
-  initialTemplates = mockPromptTemplates,
+  initialTemplates = starterPromptTemplates,
 ): PromptTemplateRepository {
   let templates = [...initialTemplates];
 
@@ -47,12 +47,12 @@ afterEach(() => {
 describe('PromptTemplateListPage', () => {
   it('hides archived templates by default and reveals them on demand', () => {
     const repository = createMemoryRepository([
-      mockPromptTemplates[0]!,
+      starterPromptTemplates[0]!,
       {
-        ...mockPromptTemplates[1]!,
+        ...starterPromptTemplates[1]!,
         archivedAt: '2026-05-07T08:00:00.000Z',
       },
-      mockPromptTemplates[2]!,
+      starterPromptTemplates[2]!,
     ]);
 
     render(
@@ -92,18 +92,18 @@ describe('PromptTemplateListPage', () => {
     );
 
     expect(mockNavigate).toHaveBeenCalledWith(
-      `/runs?templateId=${mockPromptTemplates[0]!.id}`,
+      `/runs?templateId=${starterPromptTemplates[0]!.id}`,
     );
   });
 
   it('does not offer the playground action for archived templates', () => {
     const repository = createMemoryRepository([
-      mockPromptTemplates[0]!,
+      starterPromptTemplates[0]!,
       {
-        ...mockPromptTemplates[1]!,
+        ...starterPromptTemplates[1]!,
         archivedAt: '2026-05-07T08:00:00.000Z',
       },
-      mockPromptTemplates[2]!,
+      starterPromptTemplates[2]!,
     ]);
 
     render(
@@ -133,13 +133,13 @@ describe('PromptTemplateListPage', () => {
 
   it('hides archived-only tags until archived templates are visible', () => {
     const repository = createMemoryRepository([
-      mockPromptTemplates[0]!,
+      starterPromptTemplates[0]!,
       {
-        ...mockPromptTemplates[1]!,
+        ...starterPromptTemplates[1]!,
         archivedAt: '2026-05-07T08:00:00.000Z',
         tags: ['archived-only'],
       },
-      mockPromptTemplates[2]!,
+      starterPromptTemplates[2]!,
     ]);
 
     render(
@@ -169,12 +169,12 @@ describe('PromptTemplateListPage', () => {
 
   it('preloads list filters and archived visibility from the route query', () => {
     const repository = createMemoryRepository([
-      mockPromptTemplates[0]!,
+      starterPromptTemplates[0]!,
       {
-        ...mockPromptTemplates[1]!,
+        ...starterPromptTemplates[1]!,
         archivedAt: '2026-05-07T08:00:00.000Z',
       },
-      mockPromptTemplates[2]!,
+      starterPromptTemplates[2]!,
     ]);
 
     render(
@@ -207,12 +207,12 @@ describe('PromptTemplateListPage', () => {
 
   it('clears active filters from the empty state and restores the default list', () => {
     const repository = createMemoryRepository([
-      mockPromptTemplates[0]!,
+      starterPromptTemplates[0]!,
       {
-        ...mockPromptTemplates[1]!,
+        ...starterPromptTemplates[1]!,
         archivedAt: '2026-05-07T08:00:00.000Z',
       },
-      mockPromptTemplates[2]!,
+      starterPromptTemplates[2]!,
     ]);
 
     render(

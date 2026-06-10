@@ -1,5 +1,5 @@
 import { ensurePromptTemplateVersioning } from '@/features/prompt-templates/lib/prompt-template-versioning';
-import { mockPromptTemplates } from '@/features/prompt-templates/mock/prompts';
+import { starterPromptTemplates } from '@/features/prompt-templates/seed/prompt-templates';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
 import type { PromptTemplate } from '@/types/prompt-template';
 import {
@@ -16,7 +16,7 @@ function normalizeStoredTemplates(value: unknown) {
 
   return templates
     ? templates.map((template) => ensurePromptTemplateVersioning(template))
-    : mockPromptTemplates;
+    : starterPromptTemplates;
 }
 
 export function createLocalStoragePromptTemplateRepository(
@@ -27,19 +27,19 @@ export function createLocalStoragePromptTemplateRepository(
   return {
     loadAll() {
       if (!storage) {
-        return mockPromptTemplates;
+        return starterPromptTemplates;
       }
 
       const storedValue = storage.getItem(storageKey);
 
       if (!storedValue) {
-        return mockPromptTemplates;
+        return starterPromptTemplates;
       }
 
       try {
         return normalizeStoredTemplates(JSON.parse(storedValue));
       } catch {
-        return mockPromptTemplates;
+        return starterPromptTemplates;
       }
     },
     saveAll(templates: PromptTemplate[]) {

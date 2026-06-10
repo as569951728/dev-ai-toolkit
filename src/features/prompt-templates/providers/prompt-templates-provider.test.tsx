@@ -1,13 +1,13 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { mockPromptTemplates } from '@/features/prompt-templates/mock/prompts';
+import { starterPromptTemplates } from '@/features/prompt-templates/seed/prompt-templates';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
 import { PromptTemplatesProvider } from '@/features/prompt-templates/providers/prompt-templates-provider';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
 
 function createMemoryRepository(
-  initialTemplates = mockPromptTemplates,
+  initialTemplates = starterPromptTemplates,
 ): PromptTemplateRepository & { snapshot: () => typeof initialTemplates } {
   let templates = [...initialTemplates];
 
@@ -51,7 +51,7 @@ function TestConsumer() {
       <button
         type="button"
         onClick={() => {
-          duplicateTemplate(mockPromptTemplates[0]!.id);
+          duplicateTemplate(starterPromptTemplates[0]!.id);
         }}
       >
         Duplicate
@@ -59,7 +59,7 @@ function TestConsumer() {
       <button
         type="button"
         onClick={() => {
-          archiveTemplate(mockPromptTemplates[0]!.id);
+          archiveTemplate(starterPromptTemplates[0]!.id);
         }}
       >
         Archive
@@ -67,7 +67,7 @@ function TestConsumer() {
       <button
         type="button"
         onClick={() => {
-          restoreArchivedTemplate(mockPromptTemplates[0]!.id);
+          restoreArchivedTemplate(starterPromptTemplates[0]!.id);
         }}
       >
         Restore
@@ -104,14 +104,14 @@ describe('PromptTemplatesProvider', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Archive' }));
 
     expect(
-      repository.snapshot().find((template) => template.id === mockPromptTemplates[0]!.id)
+      repository.snapshot().find((template) => template.id === starterPromptTemplates[0]!.id)
         ?.archivedAt,
     ).not.toBeNull();
 
     fireEvent.click(screen.getByRole('button', { name: 'Restore' }));
 
     expect(
-      repository.snapshot().find((template) => template.id === mockPromptTemplates[0]!.id)
+      repository.snapshot().find((template) => template.id === starterPromptTemplates[0]!.id)
         ?.archivedAt,
     ).toBeNull();
   });

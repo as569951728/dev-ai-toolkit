@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { mockPromptTemplates } from '@/features/prompt-templates/mock/prompts';
+import { starterPromptTemplates } from '@/features/prompt-templates/seed/prompt-templates';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
 import {
   archivePromptTemplate,
@@ -16,7 +16,7 @@ import {
 } from '@/features/prompt-templates/services/prompt-template-service';
 
 function createMemoryRepository(
-  initialTemplates = mockPromptTemplates,
+  initialTemplates = starterPromptTemplates,
 ): PromptTemplateRepository & { snapshot: () => typeof initialTemplates } {
   let templates = [...initialTemplates];
 
@@ -31,7 +31,7 @@ function createMemoryRepository(
 
 describe('prompt-template-service', () => {
   it('sorts templates and collects tags', () => {
-    const sorted = sortPromptTemplates(mockPromptTemplates);
+    const sorted = sortPromptTemplates(starterPromptTemplates);
     const tags = collectPromptTemplateTags(sorted);
 
     expect(
@@ -56,7 +56,7 @@ describe('prompt-template-service', () => {
     expect(createResult.template.id).toContain('release-note-writer');
     expect(createResult.template.version).toBe(1);
     expect(createResult.template.revisions).toHaveLength(1);
-    expect(repository.snapshot()).toHaveLength(mockPromptTemplates.length + 1);
+    expect(repository.snapshot()).toHaveLength(starterPromptTemplates.length + 1);
 
     const updateResult = updatePromptTemplate(
       repository,
@@ -120,7 +120,7 @@ describe('prompt-template-service', () => {
     ).toBe(3);
 
     const importedTemplate = {
-      ...mockPromptTemplates[0]!,
+      ...starterPromptTemplates[0]!,
       description: 'Imported update',
     };
 
@@ -155,7 +155,7 @@ describe('prompt-template-service', () => {
 
   it('archives and restores templates without deleting their history', () => {
     const repository = createMemoryRepository();
-    const templateId = mockPromptTemplates[0]!.id;
+    const templateId = starterPromptTemplates[0]!.id;
 
     const archiveResult = archivePromptTemplate(
       repository,
@@ -183,6 +183,6 @@ describe('prompt-template-service', () => {
     expect(
       repository.snapshot().find((template) => template.id === templateId)
         ?.revisions.length,
-    ).toBe(mockPromptTemplates[0]!.revisions.length);
+    ).toBe(starterPromptTemplates[0]!.revisions.length);
   });
 });

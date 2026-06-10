@@ -7,14 +7,14 @@ import { PromptPlaygroundPage } from '@/features/prompt-playground/pages/prompt-
 import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs-provider';
 import type { PromptRunRepository } from '@/features/prompt-runs/repositories/prompt-run-repository';
 import type { PromptRunRecord } from '@/types/prompt-run';
-import { mockPromptTemplates } from '@/features/prompt-templates/mock/prompts';
+import { starterPromptTemplates } from '@/features/prompt-templates/seed/prompt-templates';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
 import { PromptTemplatesProvider } from '@/features/prompt-templates/providers/prompt-templates-provider';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
 import { PromptTemplateDetailPage } from '@/features/prompt-templates/pages/prompt-template-detail-page';
 
 function createTemplateRepository(
-  initialTemplates = mockPromptTemplates,
+  initialTemplates = starterPromptTemplates,
 ): PromptTemplateRepository {
   let templates = [...initialTemplates];
 
@@ -63,7 +63,7 @@ describe('Prompt playground workflow', () => {
   it('saves a run snapshot and exposes it in template history', async () => {
     const templateRepository = createTemplateRepository();
     const runRepository = createRunRepository();
-    const templateId = mockPromptTemplates[0]!.id;
+    const templateId = starterPromptTemplates[0]!.id;
 
     render(
       <MemoryRouter initialEntries={[`/playground?templateId=${templateId}`]}>
@@ -111,7 +111,7 @@ describe('Prompt playground workflow', () => {
   it('clears the save status when the active template changes', async () => {
     const templateRepository = createTemplateRepository();
     const runRepository = createRunRepository();
-    const templateId = mockPromptTemplates[0]!.id;
+    const templateId = starterPromptTemplates[0]!.id;
 
     render(
       <MemoryRouter initialEntries={[`/playground?templateId=${templateId}`]}>
@@ -132,7 +132,7 @@ describe('Prompt playground workflow', () => {
     ).toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText('Active template'), {
-      target: { value: mockPromptTemplates[1]!.id },
+      target: { value: starterPromptTemplates[1]!.id },
     });
 
     expect(
@@ -143,7 +143,7 @@ describe('Prompt playground workflow', () => {
   it('clears the save status when the preview content changes', async () => {
     const templateRepository = createTemplateRepository();
     const runRepository = createRunRepository();
-    const templateId = mockPromptTemplates[0]!.id;
+    const templateId = starterPromptTemplates[0]!.id;
 
     render(
       <MemoryRouter initialEntries={[`/playground?templateId=${templateId}`]}>
@@ -179,7 +179,7 @@ describe('Prompt playground workflow', () => {
   it('falls back to the first template when the URL template id is missing', () => {
     const templateRepository = createTemplateRepository();
     const runRepository = createRunRepository();
-    const fallbackTemplateId = mockPromptTemplates[0]!.id;
+    const fallbackTemplateId = starterPromptTemplates[0]!.id;
 
     render(
       <MemoryRouter initialEntries={['/playground?templateId=missing-template']}>
@@ -198,7 +198,7 @@ describe('Prompt playground workflow', () => {
 
   it('shows an empty state when no active templates are available', () => {
     const archivedTemplate = {
-      ...mockPromptTemplates[0]!,
+      ...starterPromptTemplates[0]!,
       archivedAt: '2026-05-07T08:00:00.000Z',
     };
     const templateRepository = createTemplateRepository([archivedTemplate]);

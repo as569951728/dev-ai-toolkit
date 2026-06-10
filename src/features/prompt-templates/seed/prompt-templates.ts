@@ -1,7 +1,7 @@
 import { buildPromptTemplateFromInput } from '@/features/prompt-templates/lib/prompt-template-versioning';
 import type { PromptTemplate } from '@/types/prompt-template';
 
-export const mockPromptTemplates: PromptTemplate[] = [
+export const starterPromptTemplates: PromptTemplate[] = [
   buildPromptTemplateFromInput({
     id: 'code-review-assistant',
     input: {
