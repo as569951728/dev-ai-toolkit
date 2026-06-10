@@ -13,6 +13,10 @@ import type { PromptTemplate } from '@/types/prompt-template';
 
 const MAX_RECENT_ITEMS = 5;
 
+function findTemplateById(templates: PromptTemplate[], templateId: string) {
+  return templates.find((template) => template.id === templateId) ?? null;
+}
+
 function createInitialValues(template: PromptTemplate | null) {
   if (!template) {
     return {} as Record<string, string>;
@@ -24,10 +28,14 @@ function createInitialValues(template: PromptTemplate | null) {
 }
 
 export function usePromptPlayground(initialTemplateId?: string) {
-  const { templates, getTemplateById } = usePromptTemplates();
-  const defaultTemplate = templates[0] ?? null;
+  const { templates } = usePromptTemplates();
+  const activeTemplates = useMemo(
+    () => templates.filter((template) => !template.archivedAt),
+    [templates],
+  );
+  const defaultTemplate = activeTemplates[0] ?? null;
   const initialTemplate = initialTemplateId
-    ? getTemplateById(initialTemplateId)
+    ? findTemplateById(activeTemplates, initialTemplateId)
     : defaultTemplate;
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>(
     initialTemplate?.id ?? defaultTemplate?.id ?? '',
@@ -43,8 +51,11 @@ export function usePromptPlayground(initialTemplateId?: string) {
     selectedTemplateId || initialTemplate?.id || defaultTemplate?.id || '';
 
   const selectedTemplate = useMemo(
-    () => getTemplateById(activeTemplateId) ?? initialTemplate ?? defaultTemplate,
-    [activeTemplateId, defaultTemplate, getTemplateById, initialTemplate],
+    () =>
+      findTemplateById(activeTemplates, activeTemplateId) ??
+      initialTemplate ??
+      defaultTemplate,
+    [activeTemplateId, activeTemplates, defaultTemplate, initialTemplate],
   );
 
   const variables = useMemo(
@@ -63,21 +74,25 @@ export function usePromptPlayground(initialTemplateId?: string) {
   const recentTemplates = useMemo(
     () =>
       recentTemplateIds
-        .map((templateId) => getTemplateById(templateId))
+        .map((templateId) => findTemplateById(activeTemplates, templateId))
         .filter((template): template is PromptTemplate => template !== null),
-    [getTemplateById, recentTemplateIds],
+    [activeTemplates, recentTemplateIds],
   );
 
   return {
     selectedTemplate,
     selectedTemplateId: activeTemplateId,
-    templates,
+    templates: activeTemplates,
     variables,
     variableValues,
     preview,
     recentTemplates,
     setSelectedTemplateId: (nextTemplateId: string) => {
-      const nextTemplate = getTemplateById(nextTemplateId);
+      const nextTemplate = findTemplateById(activeTemplates, nextTemplateId);
+
+      if (!nextTemplate) {
+        return;
+      }
 
       setSelectedTemplateId(nextTemplateId);
       setVariableValues((currentValues) => {
