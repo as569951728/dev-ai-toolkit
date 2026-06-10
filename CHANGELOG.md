@@ -4,6 +4,33 @@ All notable changes to this project will be documented in this file.
 
 The format is intentionally lightweight and human-readable.
 
+## [Unreleased]
+
+### Fixed
+
+- Kept the full local prompt run history instead of trimming saved runs to the
+  most recent 20 records
+- Ignored malformed prompt template, prompt run, and prompt run note records
+  when reading browser storage
+- Rejected workspace backups whose notes reference runs missing from the backup
+- Fixed API Builder query string generation for relative URLs that already
+  include query parameters
+
+### Changed
+
+- Updated GitHub Actions to current action runtimes and added dependency audit
+  to CI
+- Updated audited dependency resolutions for `react-router`, `react-router-dom`,
+  and `brace-expansion`
+- Added weekly Dependabot checks for npm and GitHub Actions dependencies
+
+### Added
+
+- Added `SECURITY.md` and linked it from both README files
+- Added CI status badges to the English and Simplified Chinese README files
+- Expanded regression coverage for local storage schema helpers, Prompt Diff,
+  JSON Tools, Code Viewer, API Builder, and template import behavior
+
 ## [v0.1.0] - 2026-05-06
 
 Initial public release of `dev-ai-toolkit`.
