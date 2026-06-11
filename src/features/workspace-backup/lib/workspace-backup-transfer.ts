@@ -29,6 +29,10 @@ function isValidDateString(value: unknown): value is string {
   return isNonEmptyString(value) && !Number.isNaN(new Date(value).getTime());
 }
 
+function isPositiveInteger(value: unknown): value is number {
+  return typeof value === 'number' && Number.isInteger(value) && value > 0;
+}
+
 function isStringRecord(value: unknown): value is Record<string, string> {
   return (
     isRecord(value) &&
@@ -59,7 +63,7 @@ function normalizeRecentTemplateIds(value: unknown) {
 function isValidPromptTemplateRevision(value: unknown) {
   return (
     isRecord(value) &&
-    typeof value.version === 'number' &&
+    isPositiveInteger(value.version) &&
     isValidDateString(value.updatedAt) &&
     isNonEmptyString(value.name) &&
     isNonEmptyString(value.description) &&
@@ -78,7 +82,7 @@ function isValidPromptTemplate(value: unknown): value is PromptTemplate {
     isNonEmptyString(value.systemPrompt) &&
     isNonEmptyString(value.userPrompt) &&
     isStringArray(value.tags) &&
-    typeof value.version === 'number' &&
+    isPositiveInteger(value.version) &&
     Array.isArray(value.revisions) &&
     value.revisions.every(isValidPromptTemplateRevision) &&
     (isValidDateString(value.archivedAt) || value.archivedAt === null) &&
@@ -92,7 +96,7 @@ function isValidPromptRun(value: unknown): value is PromptRunRecord {
     isNonEmptyString(value.id) &&
     isNonEmptyString(value.templateId) &&
     isNonEmptyString(value.templateName) &&
-    typeof value.templateVersion === 'number' &&
+    isPositiveInteger(value.templateVersion) &&
     isStringRecord(value.variables) &&
     isNonEmptyString(value.systemPrompt) &&
     isNonEmptyString(value.userPrompt) &&
