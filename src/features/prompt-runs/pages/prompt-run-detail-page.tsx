@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { PromptRunNotePanel } from '@/features/prompt-run-notes/components/prompt-run-note-panel';
 import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
 import { exportPromptRunAsJson } from '@/features/prompt-runs/lib/prompt-run-export';
+import { buildPromptRunSourceDiffUrl } from '@/features/prompt-runs/lib/prompt-run-links';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
 import { usePromptRunWorkflowActions } from '@/features/prompt-workflows/hooks/use-prompt-run-workflow-actions';
@@ -56,15 +57,7 @@ export function PromptRunDetailPage() {
     sourceTemplate?.revisions.find(
       (revision) => revision.version === run.templateVersion,
     ) ?? null;
-  const sourcePromptText = sourceTemplate
-    ? `${sourceRevision?.systemPrompt ?? sourceTemplate.systemPrompt}\n\n${
-        sourceRevision?.userPrompt ?? sourceTemplate.userPrompt
-      }`
-    : null;
-  const promptDiffUrl = sourcePromptText
-    ? `/prompt-diff?left=${encodeURIComponent(sourcePromptText)}` +
-      `&right=${encodeURIComponent(`${run.systemPrompt}\n\n${run.userPrompt}`)}`
-    : null;
+  const promptDiffUrl = buildPromptRunSourceDiffUrl({ run, sourceTemplate });
 
   return (
     <section className="playground-layout">

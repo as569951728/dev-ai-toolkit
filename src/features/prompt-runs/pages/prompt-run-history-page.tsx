@@ -9,6 +9,7 @@ import {
   getCapturedVariablePreview,
 } from '@/features/prompt-runs/lib/prompt-run-display';
 import { parsePromptRunExportImport } from '@/features/prompt-runs/lib/prompt-run-export';
+import { buildPromptRunSourceDiffUrl } from '@/features/prompt-runs/lib/prompt-run-links';
 import { matchesPromptRunSearch } from '@/features/prompt-runs/lib/prompt-run-search';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
 
@@ -263,6 +264,10 @@ export function PromptRunHistoryPage() {
                   const note = getNoteByRunId(run.id);
                   const variableCount = Object.keys(run.variables).length;
                   const variablePreview = getCapturedVariablePreview(run.variables);
+                  const promptDiffUrl = buildPromptRunSourceDiffUrl({
+                    run,
+                    sourceTemplate,
+                  });
 
                   return (
                     <article className="revision-card" key={run.id}>
@@ -336,6 +341,11 @@ export function PromptRunHistoryPage() {
                         >
                           Open output in Code Viewer
                         </Link>
+                        {promptDiffUrl ? (
+                          <Link className="ghost-button" to={promptDiffUrl}>
+                            Compare with source
+                          </Link>
+                        ) : null}
                       </div>
                     </article>
                   );

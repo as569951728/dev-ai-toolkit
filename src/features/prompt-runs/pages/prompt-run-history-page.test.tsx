@@ -165,6 +165,9 @@ describe('PromptRunHistoryPage', () => {
       screen.getAllByRole('link', { name: 'Open output in Code Viewer' }),
     ).toHaveLength(2);
     expect(
+      screen.getAllByRole('link', { name: 'Compare with source' }),
+    ).toHaveLength(2);
+    expect(
       screen.getByText('Showing 2 of 2 saved runs.'),
     ).toBeInTheDocument();
     expect(
