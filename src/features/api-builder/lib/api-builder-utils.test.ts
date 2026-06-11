@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  buildCurlCommand,
   buildFetchSnippet,
   buildHeadersObject,
   buildRequestUrl,
@@ -55,5 +56,25 @@ describe('api-builder-utils', () => {
       headers: { 'Content-Type': 'application/json' },
       hasBody: true,
     });
+  });
+
+  it('builds a curl command from the request draft', () => {
+    const state: ApiBuilderState = {
+      method: 'POST',
+      url: '/api/prompts',
+      queryParams,
+      headers: [
+        { id: 'header-1', key: 'Content-Type', value: 'application/json' },
+        { id: 'header-2', key: 'X-Owner', value: "Dev's Toolkit" },
+      ],
+      body: '{ "name": "Code Review Assistant" }',
+    };
+
+    expect(buildCurlCommand(state)).toBe(
+      "curl -X POST '/api/prompts?workspace=dev-ai-toolkit&empty-value=' \\\n" +
+        "  -H 'Content-Type: application/json' \\\n" +
+        "  -H 'X-Owner: Dev'\\''s Toolkit' \\\n" +
+        `  --data-raw '{ "name": "Code Review Assistant" }'`,
+    );
   });
 });

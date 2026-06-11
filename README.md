@@ -30,7 +30,7 @@ The current version includes:
 - Prompt Diff for comparing prompt revisions and variable drift
 - Prompt Run History for browsing, filtering, searching prompt text, variables, and notes, opening detail views, adding notes, importing/exporting run JSON, deleting local runs, and reusing saved prompt runs
 - JSON Tools for formatting, validating, and minifying payloads
-- API Builder for drafting request configurations and fetch snippets
+- API Builder for drafting request configurations, fetch snippets, and cURL commands
 - Code Viewer for reading code or generated output in single or compare mode
 - Workspace Backup for exporting and importing local templates, saved runs, notes, and recent playground shortcuts as JSON
 - Recent template history in the playground
@@ -180,7 +180,7 @@ The toolbox is currently organized around two capability groups.
 | Prompt Workflows | Prompt Diff | Compare prompt revisions, detect variable drift, and inspect line-level wording changes | Best used after editing or templating changes |
 | Prompt Workflows | Prompt Run History | Browse saved runs, filter by template, search saved prompt text, captured variables, and note content, open run details, add notes, import or export a single run, delete stale runs, and reopen output in downstream tools | Dedicated history view for saved prompt output |
 | Developer Utilities | JSON Tools | Format, validate, minify, copy, and sample JSON payloads | Useful for debugging and payload cleanup |
-| Developer Utilities | API Builder | Draft request URLs, headers, query params, JSON bodies, and `fetch` snippets | Local request scaffolding only |
+| Developer Utilities | API Builder | Draft request URLs, headers, query params, JSON bodies, `fetch` snippets, and cURL commands | Local request scaffolding only |
 | Developer Utilities | Code Viewer | Inspect generated text or code in single or compare mode | Supports prompt and output review workflows |
 | Workspace | Workspace Backup | Export and import local templates, saved runs, notes, and recent playground shortcuts as versioned JSON | Manual backup for the current browser profile |
 

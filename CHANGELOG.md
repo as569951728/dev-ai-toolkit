@@ -10,6 +10,8 @@ The format is intentionally lightweight and human-readable.
 
 - Added single prompt run JSON import from the Run History page, including
   saved note context when present
+- Added cURL command previews to API Builder alongside the existing fetch
+  snippet output
 
 ### Fixed
 

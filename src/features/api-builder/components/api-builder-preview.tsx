@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import {
+  buildCurlCommand,
   buildFetchSnippet,
   summarizeRequest,
   type ApiBuilderState,
@@ -22,6 +23,7 @@ export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
   const [copyLabel, setCopyLabel] = useState('Copy fetch code');
   const { requestUrl, headers, hasBody } = summarizeRequest(state);
   const fetchSnippet = buildFetchSnippet(state);
+  const curlCommand = buildCurlCommand(state);
 
   const handleCopy = async () => {
     try {
@@ -73,6 +75,13 @@ export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
           <h3>Fetch snippet</h3>
         </div>
         <pre className="prompt-preview api-output">{fetchSnippet}</pre>
+      </article>
+
+      <article className="detail-card">
+        <div className="detail-card__header">
+          <h3>cURL command</h3>
+        </div>
+        <pre className="prompt-preview api-output">{curlCommand}</pre>
       </article>
     </section>
   );

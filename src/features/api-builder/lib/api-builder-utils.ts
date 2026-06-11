@@ -125,6 +125,29 @@ export function buildFetchSnippet(state: ApiBuilderState) {
   return `fetch('${requestUrl || 'https://api.example.com'}', {\n  ${optionsLines.join(',\n  ')}\n});`;
 }
 
+function shellQuote(value: string) {
+  return `'${value.replaceAll("'", "'\\''")}'`;
+}
+
+export function buildCurlCommand(state: ApiBuilderState) {
+  const requestUrl = buildRequestUrl(state.url, state.queryParams);
+  const headersObject = buildHeadersObject(state.headers);
+  const bodyValue = state.body.trim();
+  const commandLines = [
+    `curl -X ${state.method} ${shellQuote(requestUrl || 'https://api.example.com')}`,
+  ];
+
+  for (const [key, value] of Object.entries(headersObject)) {
+    commandLines.push(`-H ${shellQuote(`${key}: ${value}`)}`);
+  }
+
+  if (bodyValue.length > 0) {
+    commandLines.push(`--data-raw ${shellQuote(bodyValue)}`);
+  }
+
+  return commandLines.join(' \\\n  ');
+}
+
 export function summarizeRequest(state: ApiBuilderState) {
   return {
     requestUrl: buildRequestUrl(state.url, state.queryParams),

@@ -33,4 +33,19 @@ describe('ApiBuilderPage', () => {
     expect(screen.getByLabelText('HTTP method')).toHaveValue('GET');
     expect(screen.getByText('No request body')).toBeInTheDocument();
   });
+
+  it('shows a curl command preview for the current request draft', () => {
+    render(<ApiBuilderPage />);
+
+    expect(
+      screen.getByRole('heading', { name: 'cURL command' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText((content) =>
+        content.includes(
+          "curl -X POST 'https://api.example.com/v1/prompts/render?workspace=dev-ai-toolkit'",
+        ),
+      ),
+    ).toBeInTheDocument();
+  });
 });

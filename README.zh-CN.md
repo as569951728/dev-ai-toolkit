@@ -54,7 +54,7 @@
   - 格式化、压缩、校验、复制
 - API Builder
   - 组织 URL、Query、Headers、JSON Body
-  - 生成 `fetch` 示例代码
+  - 生成 `fetch` 示例代码和 cURL 命令
 - Code Viewer
   - 单栏 / 双栏查看文本和代码输出
   - 复制内容
@@ -177,7 +177,7 @@ npm run audit
 | Prompt Workflows | Prompt Diff | 比较 prompt 文本、变量变化和行级差异 | 适合做模板改写后的复核 |
 | Prompt Workflows | Prompt Run History | 浏览 runs、按模板过滤、搜索 prompt 文本、变量或备注、查看详情、添加备注、导出或删除单条 run、继续在下游工具查看输出 | 已保存 prompt 输出的历史视图 |
 | Developer Utilities | JSON Tools | 格式化、校验、压缩、复制、加载示例 | 适合调试 JSON 载荷 |
-| Developer Utilities | API Builder | 组织请求参数并生成 `fetch` 代码 | 本地请求草稿工具 |
+| Developer Utilities | API Builder | 组织请求参数并生成 `fetch` 代码和 cURL 命令 | 本地请求草稿工具 |
 | Developer Utilities | Code Viewer | 单栏 / 双栏查看文本和代码输出 | 适合审阅 prompt 或生成结果 |
 | Workspace | Workspace Backup | 导出和导入本地模板、runs、notes 的版本化 JSON | 当前浏览器 profile 的手动备份入口 |
 
