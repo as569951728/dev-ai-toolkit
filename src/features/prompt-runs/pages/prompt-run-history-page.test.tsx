@@ -167,6 +167,38 @@ describe('PromptRunHistoryPage', () => {
     expect(
       screen.getByText('Showing 2 of 2 saved runs.'),
     ).toBeInTheDocument();
+    expect(
+      screen.getByText('feature_name: run-history-page'),
+    ).toBeInTheDocument();
+  });
+
+  it('summarizes captured variables when a run has several values', () => {
+    renderRunHistory({
+      runs: [
+        {
+          id: 'run-many-variables',
+          templateId: starterPromptTemplates[1]!.id,
+          templateName: starterPromptTemplates[1]!.name,
+          templateVersion: 2,
+          variables: {
+            endpoint: '/v1/prompts',
+            method: 'POST',
+            repository_name: 'dev-ai-toolkit',
+            change_scope: 'frontend',
+          },
+          systemPrompt: 'System',
+          userPrompt: 'User',
+          createdAt: '2026-05-07T09:10:00.000Z',
+        },
+      ],
+    });
+
+    expect(screen.getByText('endpoint: /v1/prompts')).toBeInTheDocument();
+    expect(screen.getByText('method: POST')).toBeInTheDocument();
+    expect(
+      screen.getByText('repository_name: dev-ai-toolkit'),
+    ).toBeInTheDocument();
+    expect(screen.getByText('+1 more variable')).toBeInTheDocument();
   });
 
   it('shows an empty state when no runs have been saved yet', () => {

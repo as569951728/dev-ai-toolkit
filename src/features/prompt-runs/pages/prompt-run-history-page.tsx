@@ -4,7 +4,10 @@ import { Link, useSearchParams } from 'react-router-dom';
 
 import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
-import { formatCapturedVariableCount } from '@/features/prompt-runs/lib/prompt-run-display';
+import {
+  formatCapturedVariableCount,
+  getCapturedVariablePreview,
+} from '@/features/prompt-runs/lib/prompt-run-display';
 import { parsePromptRunExportImport } from '@/features/prompt-runs/lib/prompt-run-export';
 import { matchesPromptRunSearch } from '@/features/prompt-runs/lib/prompt-run-search';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
@@ -259,6 +262,7 @@ export function PromptRunHistoryPage() {
                   const sourceTemplate = getTemplateById(run.templateId);
                   const note = getNoteByRunId(run.id);
                   const variableCount = Object.keys(run.variables).length;
+                  const variablePreview = getCapturedVariablePreview(run.variables);
 
                   return (
                     <article className="revision-card" key={run.id}>
@@ -276,6 +280,27 @@ export function PromptRunHistoryPage() {
                       <p className="revision-card__description">
                         {formatCapturedVariableCount(variableCount)}
                       </p>
+
+                      {variablePreview.entries.length > 0 ? (
+                        <div
+                          aria-label="Captured variables"
+                          className="run-history-filter-list"
+                        >
+                          {variablePreview.entries.map(([name, value]) => (
+                            <span className="run-history-filter-chip" key={name}>
+                              {name}: {value}
+                            </span>
+                          ))}
+                          {variablePreview.remainingCount > 0 ? (
+                            <span className="run-history-filter-chip">
+                              +{variablePreview.remainingCount} more{' '}
+                              {variablePreview.remainingCount === 1
+                                ? 'variable'
+                                : 'variables'}
+                            </span>
+                          ) : null}
+                        </div>
+                      ) : null}
 
                       {note ? (
                         <div className="run-history-note-summary">

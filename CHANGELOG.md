@@ -17,6 +17,7 @@ The format is intentionally lightweight and human-readable.
   Viewer
 - Added an API Builder shortcut for opening generated fetch snippets in Code
   Viewer
+- Added captured variable previews to Prompt Run History cards
 
 ### Fixed
 

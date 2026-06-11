@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
-import { formatCapturedVariableCount } from '@/features/prompt-runs/lib/prompt-run-display';
+import {
+  formatCapturedVariableCount,
+  getCapturedVariablePreview,
+} from '@/features/prompt-runs/lib/prompt-run-display';
 
 describe('prompt-run-display', () => {
   it('formats captured variable counts with readable singular and plural text', () => {
@@ -13,5 +16,26 @@ describe('prompt-run-display', () => {
     expect(formatCapturedVariableCount(2)).toBe(
       '2 template variables were captured in this run.',
     );
+  });
+
+  it('builds a compact captured variable preview', () => {
+    expect(
+      getCapturedVariablePreview(
+        {
+          feature_name: 'run-history-page',
+          endpoint: '/v1/prompts',
+          repository_name: 'dev-ai-toolkit',
+          change_scope: 'frontend',
+        },
+        3,
+      ),
+    ).toEqual({
+      entries: [
+        ['feature_name', 'run-history-page'],
+        ['endpoint', '/v1/prompts'],
+        ['repository_name', 'dev-ai-toolkit'],
+      ],
+      remainingCount: 1,
+    });
   });
 });
