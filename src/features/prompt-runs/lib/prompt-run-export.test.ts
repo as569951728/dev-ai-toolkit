@@ -119,5 +119,32 @@ describe('prompt run export helpers', () => {
         }),
       ),
     ).toThrow('Prompt run note does not match the exported run.');
+
+    expect(() =>
+      parsePromptRunExportImport(
+        JSON.stringify({
+          schemaVersion: 1,
+          exportedAt: '2026-05-09T10:00:00.000Z',
+          run: { ...sampleRun, templateVersion: 0 },
+          note: null,
+          sourceTemplateRevision: null,
+        }),
+      ),
+    ).toThrow('Invalid prompt run export format.');
+
+    expect(() =>
+      parsePromptRunExportImport(
+        JSON.stringify({
+          schemaVersion: 1,
+          exportedAt: '2026-05-09T10:00:00.000Z',
+          run: sampleRun,
+          note: null,
+          sourceTemplateRevision: {
+            ...sampleSourceTemplateRevision,
+            version: 1.5,
+          },
+        }),
+      ),
+    ).toThrow('Invalid prompt run export format.');
   });
 });

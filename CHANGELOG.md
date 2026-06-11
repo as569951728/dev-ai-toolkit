@@ -62,6 +62,7 @@ The format is intentionally lightweight and human-readable.
   persisted local storage records
 - Normalized API Builder HTTP methods before generating fetch snippets and cURL
   commands
+- Rejected prompt run JSON imports with invalid run or source revision versions
 - Replaced the default React Router unknown-route error with a project-level
   not found page
 - Added `/workspace-backup` as a compatibility route for the Workspace Backup
