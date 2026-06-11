@@ -25,7 +25,7 @@ export function ApiBuilderPage() {
         <h1>Shape API requests before you wire them into code.</h1>
         <p className="panel__summary">
           Build URLs, query params, headers, and request payloads in one place,
-          then copy the generated fetch snippet into your app or debugging flow.
+          then review the generated fetch snippet or cURL command.
         </p>
       </div>
 

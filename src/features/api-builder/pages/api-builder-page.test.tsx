@@ -26,6 +26,11 @@ describe('ApiBuilderPage', () => {
         name: 'Shape API requests before you wire them into code.',
       }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Build URLs, query params, headers, and request payloads in one place, then review the generated fetch snippet or cURL command.',
+      ),
+    ).toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText('Base URL'), {
       target: { value: '/api/prompts?limit=10' },

@@ -21,6 +21,7 @@ The format is intentionally lightweight and human-readable.
 - Added Prompt Run History shortcuts for comparing saved runs with their source
   template revisions
 - Updated the homepage API Builder copy to include cURL command output
+- Updated the API Builder page summary to reflect both fetch and cURL outputs
 
 ### Fixed
 
