@@ -20,19 +20,24 @@ async function copyToClipboard(value: string) {
 }
 
 export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
-  const [copyLabel, setCopyLabel] = useState('Copy fetch code');
+  const [fetchCopyLabel, setFetchCopyLabel] = useState('Copy fetch code');
+  const [curlCopyLabel, setCurlCopyLabel] = useState('Copy cURL command');
   const { requestUrl, headers, hasBody } = summarizeRequest(state);
   const fetchSnippet = buildFetchSnippet(state);
   const curlCommand = buildCurlCommand(state);
 
-  const handleCopy = async () => {
+  const handleCopy = async (
+    value: string,
+    setLabel: (label: string) => void,
+    resetLabel: string,
+  ) => {
     try {
-      await copyToClipboard(fetchSnippet);
-      setCopyLabel('Copied');
-      window.setTimeout(() => setCopyLabel('Copy fetch code'), 1600);
+      await copyToClipboard(value);
+      setLabel('Copied');
+      window.setTimeout(() => setLabel(resetLabel), 1600);
     } catch {
-      setCopyLabel('Copy failed');
-      window.setTimeout(() => setCopyLabel('Copy fetch code'), 1600);
+      setLabel('Copy failed');
+      window.setTimeout(() => setLabel(resetLabel), 1600);
     }
   };
 
@@ -43,8 +48,14 @@ export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
           <p className="eyebrow">Preview</p>
           <h2>Inspect the generated request</h2>
         </div>
-        <button className="secondary-button" type="button" onClick={handleCopy}>
-          {copyLabel}
+        <button
+          className="secondary-button"
+          type="button"
+          onClick={() =>
+            handleCopy(fetchSnippet, setFetchCopyLabel, 'Copy fetch code')
+          }
+        >
+          {fetchCopyLabel}
         </button>
       </div>
 
@@ -80,6 +91,15 @@ export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
       <article className="detail-card">
         <div className="detail-card__header">
           <h3>cURL command</h3>
+          <button
+            className="ghost-button"
+            type="button"
+            onClick={() =>
+              handleCopy(curlCommand, setCurlCopyLabel, 'Copy cURL command')
+            }
+          >
+            {curlCopyLabel}
+          </button>
         </div>
         <pre className="prompt-preview api-output">{curlCommand}</pre>
       </article>

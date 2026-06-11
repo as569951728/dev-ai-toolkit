@@ -1,10 +1,11 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { ApiBuilderPage } from '@/features/api-builder/pages/api-builder-page';
 
 afterEach(() => {
   cleanup();
+  vi.restoreAllMocks();
 });
 
 describe('ApiBuilderPage', () => {
@@ -47,5 +48,25 @@ describe('ApiBuilderPage', () => {
         ),
       ),
     ).toBeInTheDocument();
+  });
+
+  it('copies the generated curl command', () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText },
+    });
+
+    render(<ApiBuilderPage />);
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Copy cURL command' }),
+    );
+
+    expect(writeText).toHaveBeenCalledWith(
+      expect.stringContaining(
+        "curl -X POST 'https://api.example.com/v1/prompts/render?workspace=dev-ai-toolkit'",
+      ),
+    );
   });
 });
