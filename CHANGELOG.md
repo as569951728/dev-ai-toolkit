@@ -20,6 +20,7 @@ The format is intentionally lightweight and human-readable.
 - Added captured variable previews to Prompt Run History cards
 - Added Prompt Run History shortcuts for comparing saved runs with their source
   template revisions
+- Updated the homepage API Builder copy to include cURL command output
 
 ### Fixed
 

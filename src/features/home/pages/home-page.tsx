@@ -54,7 +54,7 @@ const moduleGroups = [
       {
         title: 'API Builder',
         description:
-          'Compose request URLs, headers, query params, and payloads, then generate a fetch snippet.',
+          'Compose request URLs, headers, query params, and payloads, then generate fetch snippets or cURL commands.',
         href: '/api-builder',
         meta: 'Draft request configurations',
       },
