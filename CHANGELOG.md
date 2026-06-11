@@ -20,9 +20,18 @@ The format is intentionally lightweight and human-readable.
 - Added captured variable previews to Prompt Run History cards
 - Added Prompt Run History shortcuts for comparing saved runs with their source
   template revisions
+- Added a Playground shortcut for opening a saved run immediately after saving
+  a prompt snapshot
 - Updated the homepage API Builder copy to include cURL command output
 - Updated the API Builder page summary to reflect both fetch and cURL outputs
 - Linked homepage recent activity cards to saved run details
+- Added `SECURITY.md` and linked it from both README files
+- Added CI status badges to the English and Simplified Chinese README files
+- Prompt Run History search now includes saved prompt text and captured
+  variable names and values
+- Expanded regression coverage for local storage schema helpers, Playground
+  downstream links, Prompt Diff, JSON Tools, Code Viewer, API Builder, and
+  template import behavior
 
 ### Fixed
 
@@ -45,6 +54,12 @@ The format is intentionally lightweight and human-readable.
 - Included recent playground template shortcuts in workspace backups
 - Included matching source template revision context in single prompt run JSON
   exports
+- Reported imported and skipped recent playground shortcuts in Workspace Backup
+  import feedback
+- Dropped duplicate prompt templates, saved runs, and run notes when reading
+  persisted local storage records
+- Normalized API Builder HTTP methods before generating fetch snippets and cURL
+  commands
 - Replaced the default React Router unknown-route error with a project-level
   not found page
 - Added `/workspace-backup` as a compatibility route for the Workspace Backup
@@ -60,16 +75,6 @@ The format is intentionally lightweight and human-readable.
 - Added weekly Dependabot checks for npm and GitHub Actions dependencies
 - Clarified that the public demo URL is still unverified and tracked in issue
   #14
-
-### Added
-
-- Added `SECURITY.md` and linked it from both README files
-- Added CI status badges to the English and Simplified Chinese README files
-- Prompt Run History search now includes saved prompt text and captured
-  variable names and values
-- Expanded regression coverage for local storage schema helpers, Playground
-  downstream links, Prompt Diff, JSON Tools, Code Viewer, API Builder, and
-  template import behavior
 
 ## [v0.1.0] - 2026-05-06
 
