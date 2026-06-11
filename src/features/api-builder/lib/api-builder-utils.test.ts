@@ -58,6 +58,32 @@ describe('api-builder-utils', () => {
     });
   });
 
+  it('normalizes HTTP methods in generated snippets', () => {
+    const state: ApiBuilderState = {
+      method: ' post ',
+      url: '/api/prompts',
+      queryParams: [],
+      headers: [],
+      body: '',
+    };
+
+    expect(buildFetchSnippet(state)).toContain("method: 'POST'");
+    expect(buildCurlCommand(state)).toContain('curl -X POST');
+  });
+
+  it('falls back to GET when the request method is blank', () => {
+    const state: ApiBuilderState = {
+      method: '   ',
+      url: '/api/prompts',
+      queryParams: [],
+      headers: [],
+      body: '',
+    };
+
+    expect(buildFetchSnippet(state)).toContain("method: 'GET'");
+    expect(buildCurlCommand(state)).toContain('curl -X GET');
+  });
+
   it('builds a curl command from the request draft', () => {
     const state: ApiBuilderState = {
       method: 'POST',

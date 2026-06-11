@@ -47,6 +47,10 @@ function cleanPairs(pairs: ApiFieldPair[]) {
   return pairs.filter((pair) => pair.key.trim() || pair.value.trim());
 }
 
+function normalizeHttpMethod(method: string) {
+  return method.trim().toUpperCase() || 'GET';
+}
+
 export function buildRequestUrl(
   baseUrl: string,
   queryParams: ApiFieldPair[],
@@ -112,7 +116,7 @@ export function buildFetchSnippet(state: ApiBuilderState) {
   const bodyValue = state.body.trim();
   const includeBody = bodyValue.length > 0;
 
-  const optionsLines = [`method: '${state.method}'`];
+  const optionsLines = [`method: '${normalizeHttpMethod(state.method)}'`];
 
   if (hasHeaders) {
     optionsLines.push(`headers: ${JSON.stringify(headersObject, null, 2)}`);
@@ -134,7 +138,7 @@ export function buildCurlCommand(state: ApiBuilderState) {
   const headersObject = buildHeadersObject(state.headers);
   const bodyValue = state.body.trim();
   const commandLines = [
-    `curl -X ${state.method} ${shellQuote(requestUrl || 'https://api.example.com')}`,
+    `curl -X ${normalizeHttpMethod(state.method)} ${shellQuote(requestUrl || 'https://api.example.com')}`,
   ];
 
   for (const [key, value] of Object.entries(headersObject)) {
