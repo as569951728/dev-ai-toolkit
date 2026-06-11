@@ -104,6 +104,9 @@ describe('Prompt playground workflow', () => {
     expect(screen.getByRole('status')).toHaveTextContent(
       'Saved a run snapshot for Code Review Assistant v1.',
     );
+    expect(
+      screen.getByRole('link', { name: 'Open saved run' }).getAttribute('href'),
+    ).toMatch(/^\/runs\/.+/);
     expect(screen.getByText('Recently used')).toBeInTheDocument();
     expect(
       screen.getByRole('button', { name: /Code Review Assistant/ }),

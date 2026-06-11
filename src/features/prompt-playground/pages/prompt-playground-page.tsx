@@ -15,6 +15,7 @@ type PromptPlaygroundWorkspaceProps = {
 type SaveStatus = {
   contextKey: string;
   message: string;
+  runId: string;
 };
 
 function buildPreviewContextKey(
@@ -86,6 +87,10 @@ function PromptPlaygroundWorkspace({
     saveStatus && saveStatus.contextKey === currentPreviewContextKey
       ? saveStatus.message
       : null;
+  const savedRunId =
+    saveStatus && saveStatus.contextKey === currentPreviewContextKey
+      ? saveStatus.runId
+      : null;
 
   return (
     <section className="playground-layout">
@@ -122,7 +127,7 @@ function PromptPlaygroundWorkspace({
               return;
             }
 
-            createRun({
+            const savedRun = createRun({
               templateId: selectedTemplate.id,
               templateName: selectedTemplate.name,
               templateVersion: selectedTemplate.version,
@@ -140,6 +145,7 @@ function PromptPlaygroundWorkspace({
                 preview.userPrompt,
               ),
               message: `Saved a run snapshot for ${selectedTemplate.name} v${selectedTemplate.version}.`,
+              runId: savedRun.id,
             });
           }}
           onReviewInPromptDiff={() => {
@@ -158,6 +164,7 @@ function PromptPlaygroundWorkspace({
             });
             navigate(`/code-viewer?${params.toString()}`);
           }}
+          savedRunId={savedRunId}
         />
       </div>
     </section>

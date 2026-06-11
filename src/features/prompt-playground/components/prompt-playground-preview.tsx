@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import type { PromptTemplate } from '@/types/prompt-template';
 
@@ -13,6 +14,7 @@ interface PromptPlaygroundPreviewProps {
   onReviewInPromptDiff: () => void;
   onOpenInCodeViewer: () => void;
   onSaveRun: () => void;
+  savedRunId: string | null;
   saveStatusMessage: string | null;
 }
 
@@ -30,6 +32,7 @@ export function PromptPlaygroundPreview({
   onReviewInPromptDiff,
   onOpenInCodeViewer,
   onSaveRun,
+  savedRunId,
   saveStatusMessage,
 }: PromptPlaygroundPreviewProps) {
   const [copiedSection, setCopiedSection] = useState<'system' | 'user' | null>(
@@ -88,7 +91,10 @@ export function PromptPlaygroundPreview({
 
       {saveStatusMessage ? (
         <p className="status-banner" role="status">
-          {saveStatusMessage}
+          {saveStatusMessage}{' '}
+          {savedRunId ? (
+            <Link to={`/runs/${savedRunId}`}>Open saved run</Link>
+          ) : null}
         </p>
       ) : null}
 
