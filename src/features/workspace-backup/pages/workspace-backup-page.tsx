@@ -153,6 +153,10 @@ export function WorkspaceBackupPage() {
               Notes: {importSummary.notes.created} created,{' '}
               {importSummary.notes.updated} updated.
             </p>
+            <p>
+              Recent templates: {importSummary.recentTemplates.imported}{' '}
+              imported, {importSummary.recentTemplates.skipped} skipped.
+            </p>
           </div>
         ) : null}
 

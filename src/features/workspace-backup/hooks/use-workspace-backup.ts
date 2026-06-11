@@ -57,13 +57,8 @@ export function useWorkspaceBackup() {
       importRuns(backup.data.runs);
       importNotes(backup.data.notes);
 
-      if (backup.data.recentTemplateIds) {
-        saveRecentTemplateIds(
-          filterExistingTemplateIds(
-            backup.data.recentTemplateIds,
-            result.data.templates.map((template) => template.id),
-          ),
-        );
+      if (result.data.recentTemplateIds) {
+        saveRecentTemplateIds(result.data.recentTemplateIds);
       }
 
       return result.summary;

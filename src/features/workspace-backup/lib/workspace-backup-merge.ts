@@ -6,10 +6,17 @@ export interface WorkspaceBackupCollectionImportSummary {
   total: number;
 }
 
+export interface WorkspaceBackupRecentTemplateImportSummary {
+  imported: number;
+  skipped: number;
+  total: number;
+}
+
 export interface WorkspaceBackupImportSummary {
   templates: WorkspaceBackupCollectionImportSummary;
   runs: WorkspaceBackupCollectionImportSummary;
   notes: WorkspaceBackupCollectionImportSummary;
+  recentTemplates: WorkspaceBackupRecentTemplateImportSummary;
 }
 
 export interface WorkspaceBackupMergeResult {
@@ -52,6 +59,39 @@ function mergeByKey<T>(
   };
 }
 
+function summarizeRecentTemplateIds(
+  incomingTemplateIds: string[] | undefined,
+  availableTemplateIds: string[],
+) {
+  const emptySummary = {
+    imported: 0,
+    skipped: 0,
+    total: 0,
+  };
+
+  if (!incomingTemplateIds) {
+    return {
+      recentTemplateIds: undefined,
+      summary: emptySummary,
+    };
+  }
+
+  const availableTemplateIdSet = new Set(availableTemplateIds);
+  const uniqueIncomingTemplateIds = [...new Set(incomingTemplateIds)];
+  const importedTemplateIds = uniqueIncomingTemplateIds.filter((templateId) =>
+    availableTemplateIdSet.has(templateId),
+  );
+
+  return {
+    recentTemplateIds: importedTemplateIds,
+    summary: {
+      imported: importedTemplateIds.length,
+      skipped: uniqueIncomingTemplateIds.length - importedTemplateIds.length,
+      total: uniqueIncomingTemplateIds.length,
+    },
+  };
+}
+
 export function mergeWorkspaceBackupData(
   currentData: WorkspaceBackupData,
   incomingData: WorkspaceBackupData,
@@ -71,17 +111,25 @@ export function mergeWorkspaceBackupData(
     incomingData.notes,
     (note) => note.runId,
   );
+  const recentTemplates = summarizeRecentTemplateIds(
+    incomingData.recentTemplateIds,
+    templates.items.map((template) => template.id),
+  );
 
   return {
     data: {
       templates: templates.items,
       runs: runs.items,
       notes: notes.items,
+      ...(recentTemplates.recentTemplateIds
+        ? { recentTemplateIds: recentTemplates.recentTemplateIds }
+        : {}),
     },
     summary: {
       templates: templates.summary,
       runs: runs.summary,
       notes: notes.summary,
+      recentTemplates: recentTemplates.summary,
     },
   };
 }

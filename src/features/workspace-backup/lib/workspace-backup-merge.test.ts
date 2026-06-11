@@ -94,6 +94,7 @@ describe('workspace-backup-merge', () => {
       templates: { created: 1, updated: 1, total: 2 },
       runs: { created: 1, updated: 1, total: 2 },
       notes: { created: 1, updated: 1, total: 2 },
+      recentTemplates: { imported: 0, skipped: 0, total: 0 },
     });
   });
 
@@ -114,6 +115,11 @@ describe('workspace-backup-merge', () => {
     expect(result.summary.templates).toEqual({
       created: 0,
       updated: 0,
+      total: 0,
+    });
+    expect(result.summary.recentTemplates).toEqual({
+      imported: 0,
+      skipped: 0,
       total: 0,
     });
   });
@@ -176,6 +182,30 @@ describe('workspace-backup-merge', () => {
       templates: { created: 1, updated: 0, total: 1 },
       runs: { created: 1, updated: 0, total: 1 },
       notes: { created: 1, updated: 0, total: 1 },
+      recentTemplates: { imported: 0, skipped: 0, total: 0 },
+    });
+  });
+
+  it('summarizes recent template shortcuts against merged templates', () => {
+    const current: WorkspaceBackupData = {
+      templates: [createTemplate('template-1')],
+      runs: [],
+      notes: [],
+    };
+    const incoming: WorkspaceBackupData = {
+      templates: [createTemplate('template-2')],
+      runs: [],
+      notes: [],
+      recentTemplateIds: ['template-2', 'missing-template', 'template-2'],
+    };
+
+    const result = mergeWorkspaceBackupData(current, incoming);
+
+    expect(result.data.recentTemplateIds).toEqual(['template-2']);
+    expect(result.summary.recentTemplates).toEqual({
+      imported: 1,
+      skipped: 1,
+      total: 2,
     });
   });
 });

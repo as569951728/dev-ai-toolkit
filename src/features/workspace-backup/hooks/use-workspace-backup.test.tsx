@@ -141,7 +141,7 @@ function TestConsumer() {
 
           window.localStorage.setItem(
             'workspace-import-summary-test',
-            `${summary.templates.updated}:${summary.runs.updated}:${summary.notes.updated}`,
+            `${summary.templates.updated}:${summary.runs.updated}:${summary.notes.updated}:${summary.recentTemplates.imported}:${summary.recentTemplates.skipped}`,
           );
         }}
       >
@@ -195,7 +195,7 @@ describe('useWorkspaceBackup', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Import backup' }));
 
     expect(window.localStorage.getItem('workspace-import-summary-test')).toBe(
-      '1:1:1',
+      '1:1:1:1:1',
     );
     expect(templateRepository.snapshot()[0]?.name).toBe(
       'Imported Review Assistant',

@@ -172,7 +172,7 @@ describe('WorkspaceBackupPage', () => {
             templates: [{ ...template, name: 'Imported Review Assistant' }],
             runs: [{ ...run, templateName: 'Imported Review Assistant' }],
             notes: [{ ...note, body: 'Imported note body.' }],
-            recentTemplateIds: ['template-1'],
+            recentTemplateIds: ['template-1', 'missing-template'],
           },
         }),
       ],
@@ -191,6 +191,9 @@ describe('WorkspaceBackupPage', () => {
     expect(screen.getByText('Templates: 0 created, 1 updated.')).toBeInTheDocument();
     expect(screen.getByText('Runs: 0 created, 1 updated.')).toBeInTheDocument();
     expect(screen.getByText('Notes: 0 created, 1 updated.')).toBeInTheDocument();
+    expect(
+      screen.getByText('Recent templates: 1 imported, 1 skipped.'),
+    ).toBeInTheDocument();
     expect(screen.getByText('1 recent template')).toBeInTheDocument();
     expect(templateRepository.snapshot()[0]?.name).toBe(
       'Imported Review Assistant',
