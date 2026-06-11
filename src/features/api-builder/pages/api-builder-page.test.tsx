@@ -94,4 +94,20 @@ describe('ApiBuilderPage', () => {
       "curl -X POST 'https://api.example.com/v1/prompts/render?workspace=dev-ai-toolkit'",
     );
   });
+
+  it('links the generated fetch snippet to Code Viewer', () => {
+    renderApiBuilderPage();
+
+    const link = screen.getByRole('link', {
+      name: 'Open fetch in Code Viewer',
+    });
+    const target = new URL(link.getAttribute('href') ?? '', 'http://localhost');
+
+    expect(target.pathname).toBe('/code-viewer');
+    expect(target.searchParams.get('mode')).toBe('single');
+    expect(target.searchParams.get('language')).toBe('javascript');
+    expect(target.searchParams.get('left')).toContain(
+      "fetch('https://api.example.com/v1/prompts/render?workspace=dev-ai-toolkit'",
+    );
+  });
 });

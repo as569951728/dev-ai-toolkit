@@ -26,6 +26,11 @@ export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
   const { requestUrl, headers, hasBody } = summarizeRequest(state);
   const fetchSnippet = buildFetchSnippet(state);
   const curlCommand = buildCurlCommand(state);
+  const fetchCodeViewerUrl = `/code-viewer?${new URLSearchParams({
+    left: fetchSnippet,
+    mode: 'single',
+    language: 'javascript',
+  }).toString()}`;
   const codeViewerUrl = `/code-viewer?${new URLSearchParams({
     left: curlCommand,
     mode: 'single',
@@ -90,6 +95,9 @@ export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
       <article className="detail-card">
         <div className="detail-card__header">
           <h3>Fetch snippet</h3>
+          <Link className="ghost-button" to={fetchCodeViewerUrl}>
+            Open fetch in Code Viewer
+          </Link>
         </div>
         <pre className="prompt-preview api-output">{fetchSnippet}</pre>
       </article>

@@ -15,6 +15,8 @@ The format is intentionally lightweight and human-readable.
 - Added copy support for generated API Builder cURL commands
 - Added an API Builder shortcut for opening generated cURL commands in Code
   Viewer
+- Added an API Builder shortcut for opening generated fetch snippets in Code
+  Viewer
 
 ### Fixed
 
