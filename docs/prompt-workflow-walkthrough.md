@@ -43,11 +43,13 @@ prompt work in the app.
 Run History supports:
 
 - Filtering runs by source template.
+- Previewing captured variables directly on the run cards.
 - Searching by template name, saved prompt text, captured variable, and note
   content.
 - Opening a detail page for a saved run.
 - Reopening output in Code Viewer.
-- Comparing a saved run with its source template in Prompt Diff.
+- Comparing a saved run with its source template in Prompt Diff from the list
+  or detail page.
 
 ## 4. Add Notes And Import Or Export Individual Runs
 
