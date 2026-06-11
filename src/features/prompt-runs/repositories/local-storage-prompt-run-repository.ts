@@ -4,6 +4,7 @@ import {
   readVersionedCollection,
   writeVersionedCollection,
 } from '@/lib/local-storage-schema';
+import { keepLastByKey } from '@/lib/collection-utils';
 
 const STORAGE_KEY = 'dev-ai-toolkit.prompt-runs';
 
@@ -61,11 +62,12 @@ function normalizePromptRunRecord(value: unknown): PromptRunRecord | null {
 }
 
 function normalizeRuns(value: unknown) {
-  return (
+  const runs =
     readVersionedCollection<unknown>(value)
       ?.map((run) => normalizePromptRunRecord(run))
-      .filter((run): run is PromptRunRecord => run !== null) ?? []
-  );
+      .filter((run): run is PromptRunRecord => run !== null) ?? [];
+
+  return keepLastByKey(runs, (run) => run.id);
 }
 
 export function createLocalStoragePromptRunRepository(

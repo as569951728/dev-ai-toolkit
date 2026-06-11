@@ -109,4 +109,26 @@ describe('local-storage-prompt-template-repository', () => {
 
     expect(repository.loadAll()).toEqual([starterPromptTemplates[1]]);
   });
+
+  it('keeps the last valid template when stored ids are repeated', () => {
+    const storage = createMemoryStorage({
+      templates: JSON.stringify({
+        version: 1,
+        data: [
+          { ...starterPromptTemplates[0], name: 'Older template copy' },
+          { ...starterPromptTemplates[0], name: 'Latest template copy' },
+          starterPromptTemplates[1],
+        ],
+      }),
+    });
+    const repository = createLocalStoragePromptTemplateRepository(
+      'templates',
+      storage,
+    );
+
+    expect(repository.loadAll().map((template) => template.name)).toEqual([
+      'Latest template copy',
+      starterPromptTemplates[1]!.name,
+    ]);
+  });
 });

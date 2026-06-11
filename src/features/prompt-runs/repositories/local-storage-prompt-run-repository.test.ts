@@ -109,4 +109,21 @@ describe('local-storage-prompt-run-repository', () => {
 
     expect(repository.loadAll()).toEqual(sampleRuns);
   });
+
+  it('keeps the last valid run when stored ids are repeated', () => {
+    const storage = createMemoryStorage({
+      runs: JSON.stringify({
+        version: 1,
+        data: [
+          { ...sampleRuns[0], templateName: 'Older run copy' },
+          { ...sampleRuns[0], templateName: 'Latest run copy' },
+        ],
+      }),
+    });
+    const repository = createLocalStoragePromptRunRepository('runs', storage);
+
+    expect(repository.loadAll().map((run) => run.templateName)).toEqual([
+      'Latest run copy',
+    ]);
+  });
 });

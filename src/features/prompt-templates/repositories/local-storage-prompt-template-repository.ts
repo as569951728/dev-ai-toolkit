@@ -9,6 +9,7 @@ import {
   readVersionedCollection,
   writeVersionedCollection,
 } from '@/lib/local-storage-schema';
+import { keepLastByKey } from '@/lib/collection-utils';
 
 const STORAGE_KEY = 'dev-ai-toolkit.prompt-templates';
 
@@ -94,11 +95,15 @@ function normalizeStoredTemplate(value: unknown): PromptTemplate | null {
 function normalizeStoredTemplates(value: unknown) {
   const templates = readVersionedCollection<unknown>(value);
 
-  return templates
-    ? templates
-        .map((template) => normalizeStoredTemplate(template))
-        .filter((template): template is PromptTemplate => template !== null)
-    : loadStarterTemplates();
+  if (!templates) {
+    return loadStarterTemplates();
+  }
+
+  const normalizedTemplates = templates
+    .map((template) => normalizeStoredTemplate(template))
+    .filter((template): template is PromptTemplate => template !== null);
+
+  return keepLastByKey(normalizedTemplates, (template) => template.id);
 }
 
 export function createLocalStoragePromptTemplateRepository(

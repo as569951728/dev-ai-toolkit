@@ -2,6 +2,7 @@ import {
   readVersionedCollection,
   writeVersionedCollection,
 } from '@/lib/local-storage-schema';
+import { keepLastByKey } from '@/lib/collection-utils';
 import type { PromptRunNoteRepository } from '@/features/prompt-run-notes/repositories/prompt-run-note-repository';
 import type { PromptRunNote } from '@/types/prompt-run-note';
 
@@ -46,11 +47,12 @@ function normalizePromptRunNote(value: unknown): PromptRunNote | null {
 }
 
 function normalizeNotes(value: unknown) {
-  return (
+  const notes =
     readVersionedCollection<unknown>(value)
       ?.map((note) => normalizePromptRunNote(note))
-      .filter((note): note is PromptRunNote => note !== null) ?? []
-  );
+      .filter((note): note is PromptRunNote => note !== null) ?? [];
+
+  return keepLastByKey(notes, (note) => note.runId);
 }
 
 export function createLocalStoragePromptRunNoteRepository(

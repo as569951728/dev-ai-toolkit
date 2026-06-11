@@ -108,4 +108,24 @@ describe('local-storage-prompt-run-note-repository', () => {
 
     expect(repository.loadAll()).toEqual(sampleNotes);
   });
+
+  it('keeps the last valid note when stored run ids are repeated', () => {
+    const storage = createMemoryStorage({
+      notes: JSON.stringify({
+        version: 1,
+        data: [
+          { ...sampleNotes[0], id: 'older-note', body: 'Older note copy.' },
+          { ...sampleNotes[0], id: 'latest-note', body: 'Latest note copy.' },
+        ],
+      }),
+    });
+    const repository = createLocalStoragePromptRunNoteRepository(
+      'notes',
+      storage,
+    );
+
+    expect(repository.loadAll()).toEqual([
+      { ...sampleNotes[0], id: 'latest-note', body: 'Latest note copy.' },
+    ]);
+  });
 });
