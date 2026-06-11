@@ -8,6 +8,8 @@ import type {
 } from '@/types/prompt-template';
 
 const EXPORT_VERSION = 1;
+const INVALID_TEMPLATE_IMPORT_MESSAGE =
+  'Invalid file format. Expected a template array or an exported dev-ai-toolkit payload.';
 
 interface ExportedPromptTemplatesPayload {
   version: number;
@@ -156,7 +158,14 @@ export function parsePromptTemplateImport(
   rawValue: string,
   existingTemplates: PromptTemplate[],
 ) {
-  const parsedValue = JSON.parse(rawValue) as unknown;
+  let parsedValue: unknown;
+
+  try {
+    parsedValue = JSON.parse(rawValue) as unknown;
+  } catch {
+    throw new Error(INVALID_TEMPLATE_IMPORT_MESSAGE);
+  }
+
   const templatesSource = Array.isArray(parsedValue)
     ? parsedValue
     : isRecord(parsedValue) && Array.isArray(parsedValue.templates)
@@ -164,9 +173,7 @@ export function parsePromptTemplateImport(
       : null;
 
   if (!templatesSource) {
-    throw new Error(
-      'Invalid file format. Expected a template array or an exported dev-ai-toolkit payload.',
-    );
+    throw new Error(INVALID_TEMPLATE_IMPORT_MESSAGE);
   }
 
   const existingTemplatesById = new Map(

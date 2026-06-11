@@ -64,6 +64,8 @@ The format is intentionally lightweight and human-readable.
   commands
 - Rejected prompt run JSON imports with invalid run or source revision versions
 - Rejected workspace backups with invalid template, revision, or run versions
+- Reported malformed prompt template import JSON with a stable project-level
+  error message
 - Replaced the default React Router unknown-route error with a project-level
   not found page
 - Added `/workspace-backup` as a compatibility route for the Workspace Backup

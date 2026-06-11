@@ -115,6 +115,14 @@ describe('prompt-template-transfer', () => {
     expect(importedTemplate.revisions[1]?.version).toBe(3);
   });
 
+  it('reports invalid template import JSON with a stable message', () => {
+    expect(() =>
+      parsePromptTemplateImport('{not-json', starterPromptTemplates),
+    ).toThrow(
+      'Invalid file format. Expected a template array or an exported dev-ai-toolkit payload.',
+    );
+  });
+
   it('deduplicates repeated template ids inside the same import file', () => {
     const rawValue = JSON.stringify([
       {
