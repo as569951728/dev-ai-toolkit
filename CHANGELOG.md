@@ -36,6 +36,7 @@ The format is intentionally lightweight and human-readable.
   not found page
 - Added `/workspace-backup` as a compatibility route for the Workspace Backup
   page
+- Fixed singular/plural copy for saved prompt run variable counts
 
 ### Changed
 

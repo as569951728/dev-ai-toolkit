@@ -5,6 +5,7 @@ import type {
   PromptTemplateRevision,
 } from '@/types/prompt-template';
 import type { PromptRunRecord } from '@/types/prompt-run';
+import { formatCapturedVariableCount } from '@/features/prompt-runs/lib/prompt-run-display';
 
 interface PromptTemplateDetailProps {
   template: PromptTemplate;
@@ -236,9 +237,9 @@ export function PromptTemplateDetail({
                   </div>
 
                   <p className="revision-card__description">
-                    {Object.keys(run.variables).length > 0
-                      ? `${Object.keys(run.variables).length} variables captured for this run.`
-                      : 'No template variables were filled for this run.'}
+                    {formatCapturedVariableCount(
+                      Object.keys(run.variables).length,
+                    )}
                   </p>
                 </article>
               ))}

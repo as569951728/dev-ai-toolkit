@@ -4,6 +4,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 
 import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
+import { formatCapturedVariableCount } from '@/features/prompt-runs/lib/prompt-run-display';
 import { parsePromptRunExportImport } from '@/features/prompt-runs/lib/prompt-run-export';
 import { matchesPromptRunSearch } from '@/features/prompt-runs/lib/prompt-run-search';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
@@ -273,9 +274,7 @@ export function PromptRunHistoryPage() {
                       </div>
 
                       <p className="revision-card__description">
-                        {variableCount > 0
-                          ? `${variableCount} template variables were captured in this run.`
-                          : 'No template variables were captured in this run.'}
+                        {formatCapturedVariableCount(variableCount)}
                       </p>
 
                       {note ? (
