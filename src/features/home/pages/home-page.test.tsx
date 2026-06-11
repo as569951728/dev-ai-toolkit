@@ -37,11 +37,11 @@ function createRunRepository(
   };
 }
 
-function renderHomePage() {
+function renderHomePage({ runs = [] }: { runs?: PromptRunRecord[] } = {}) {
   render(
     <MemoryRouter>
       <PromptTemplatesProvider repository={createTemplateRepository()}>
-        <PromptRunsProvider repository={createRunRepository()}>
+        <PromptRunsProvider repository={createRunRepository(runs)}>
           <HomePage />
         </PromptRunsProvider>
       </PromptTemplatesProvider>
@@ -62,5 +62,26 @@ describe('HomePage', () => {
         'Compose request URLs, headers, query params, and payloads, then generate fetch snippets or cURL commands.',
       ),
     ).toBeInTheDocument();
+  });
+
+  it('links recent activity cards to the saved run detail page', () => {
+    renderHomePage({
+      runs: [
+        {
+          id: 'run-1',
+          templateId: 'code-review-assistant',
+          templateName: 'Code Review Assistant',
+          templateVersion: 2,
+          variables: { repository_name: 'dev-ai-toolkit' },
+          systemPrompt: 'System',
+          userPrompt: 'User',
+          createdAt: '2026-05-07T09:00:00.000Z',
+        },
+      ],
+    });
+
+    expect(
+      screen.getByRole('link', { name: 'Open run detail' }),
+    ).toHaveAttribute('href', '/runs/run-1');
   });
 });

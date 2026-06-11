@@ -299,8 +299,8 @@ export function HomePage() {
                   Saved from template version v{run.templateVersion} with{' '}
                   {Object.keys(run.variables).length} captured variables.
                 </p>
-                <Link className="ghost-button" to={`/prompts/${run.templateId}`}>
-                  Open template history
+                <Link className="ghost-button" to={`/runs/${run.id}`}>
+                  Open run detail
                 </Link>
               </article>
             ))}

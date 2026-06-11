@@ -22,6 +22,7 @@ The format is intentionally lightweight and human-readable.
   template revisions
 - Updated the homepage API Builder copy to include cURL command output
 - Updated the API Builder page summary to reflect both fetch and cURL outputs
+- Linked homepage recent activity cards to saved run details
 
 ### Fixed
 
