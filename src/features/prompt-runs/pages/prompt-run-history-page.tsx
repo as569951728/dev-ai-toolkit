@@ -23,13 +23,18 @@ function formatCreatedAt(createdAt: string) {
   }).format(new Date(createdAt));
 }
 
+type ImportStatus = {
+  message: string;
+  runId: string;
+};
+
 export function PromptRunHistoryPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { importRuns, runs } = usePromptRuns();
   const { getNoteByRunId, importNotes } = usePromptRunNotes();
   const { getTemplateById } = usePromptTemplates();
   const [importError, setImportError] = useState('');
-  const [importStatus, setImportStatus] = useState('');
+  const [importStatus, setImportStatus] = useState<ImportStatus | null>(null);
   const selectedTemplateId = searchParams.get('templateId') ?? 'all';
   const searchValue = searchParams.get('q') ?? '';
   const hasActiveFilters =
@@ -109,12 +114,13 @@ export function PromptRunHistoryPage() {
         importNotes([payload.note]);
       }
 
-      setImportStatus(
-        `Imported ${payload.run.templateName} from ${file.name}.`,
-      );
+      setImportStatus({
+        message: `Imported ${payload.run.templateName} from ${file.name}.`,
+        runId: payload.run.id,
+      });
       setImportError('');
     } catch (error) {
-      setImportStatus('');
+      setImportStatus(null);
       setImportError(
         error instanceof Error
           ? error.message
@@ -180,7 +186,10 @@ export function PromptRunHistoryPage() {
         {importStatus ? (
           <div className="empty-state empty-state--compact" role="status">
             <h2>Prompt run imported.</h2>
-            <p>{importStatus}</p>
+            <p>
+              {importStatus.message}{' '}
+              <Link to={`/runs/${importStatus.runId}`}>Open imported run</Link>
+            </p>
           </div>
         ) : null}
 

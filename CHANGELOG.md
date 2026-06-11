@@ -22,6 +22,8 @@ The format is intentionally lightweight and human-readable.
   template revisions
 - Added a Playground shortcut for opening a saved run immediately after saving
   a prompt snapshot
+- Added a Run History shortcut for opening an imported run from the import
+  success message
 - Updated the homepage API Builder copy to include cURL command output
 - Updated the API Builder page summary to reflect both fetch and cURL outputs
 - Linked homepage recent activity cards to saved run details

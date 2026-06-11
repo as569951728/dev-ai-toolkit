@@ -255,6 +255,9 @@ describe('PromptRunHistoryPage', () => {
       'Imported Code Review Assistant from prompt-run.json.',
     );
     expect(
+      screen.getByRole('link', { name: 'Open imported run' }),
+    ).toHaveAttribute('href', '/runs/imported-run');
+    expect(
       screen.getByRole('heading', { name: 'Code Review Assistant' }),
     ).toBeInTheDocument();
     expect(
