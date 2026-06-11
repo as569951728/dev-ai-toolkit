@@ -17,6 +17,8 @@ export function JsonResultPanel({
   outputCharacters,
   outputLines,
 }: JsonResultPanelProps) {
+  const resultMessage = isValid ? message : `Invalid JSON: ${message}`;
+
   return (
     <section className="panel json-panel">
       <div className="json-panel__header">
@@ -31,8 +33,11 @@ export function JsonResultPanel({
         </span>
       </div>
 
-      <p className={isValid ? 'status-banner' : 'status-banner status-banner--error'}>
-        {message}
+      <p
+        className={isValid ? 'status-banner' : 'status-banner status-banner--error'}
+        role={isValid ? 'status' : 'alert'}
+      >
+        {resultMessage}
       </p>
 
       <div className="json-metrics" aria-label="JSON metrics">

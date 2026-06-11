@@ -19,6 +19,9 @@ describe('JsonToolsPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Format' }));
 
     expect(screen.getByText('JSON formatted successfully.')).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'JSON formatted successfully.',
+    );
     expect(screen.getByText(/"name": "dev-ai-toolkit"/)).toBeInTheDocument();
 
     fireEvent.change(input, {
@@ -27,6 +30,7 @@ describe('JsonToolsPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Validate' }));
 
     expect(screen.getByText('Invalid JSON')).toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('Invalid JSON');
     expect(screen.getByText('No output yet.')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
