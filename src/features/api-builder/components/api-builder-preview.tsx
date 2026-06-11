@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import {
   buildCurlCommand,
@@ -25,6 +26,11 @@ export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
   const { requestUrl, headers, hasBody } = summarizeRequest(state);
   const fetchSnippet = buildFetchSnippet(state);
   const curlCommand = buildCurlCommand(state);
+  const codeViewerUrl = `/code-viewer?${new URLSearchParams({
+    left: curlCommand,
+    mode: 'single',
+    language: 'bash',
+  }).toString()}`;
 
   const handleCopy = async (
     value: string,
@@ -91,15 +97,20 @@ export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
       <article className="detail-card">
         <div className="detail-card__header">
           <h3>cURL command</h3>
-          <button
-            className="ghost-button"
-            type="button"
-            onClick={() =>
-              handleCopy(curlCommand, setCurlCopyLabel, 'Copy cURL command')
-            }
-          >
-            {curlCopyLabel}
-          </button>
+          <div className="detail-actions">
+            <Link className="ghost-button" to={codeViewerUrl}>
+              Open cURL in Code Viewer
+            </Link>
+            <button
+              className="ghost-button"
+              type="button"
+              onClick={() =>
+                handleCopy(curlCommand, setCurlCopyLabel, 'Copy cURL command')
+              }
+            >
+              {curlCopyLabel}
+            </button>
+          </div>
         </div>
         <pre className="prompt-preview api-output">{curlCommand}</pre>
       </article>

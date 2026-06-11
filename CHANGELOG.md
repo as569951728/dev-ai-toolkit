@@ -13,6 +13,8 @@ The format is intentionally lightweight and human-readable.
 - Added cURL command previews to API Builder alongside the existing fetch
   snippet output
 - Added copy support for generated API Builder cURL commands
+- Added an API Builder shortcut for opening generated cURL commands in Code
+  Viewer
 
 ### Fixed
 
