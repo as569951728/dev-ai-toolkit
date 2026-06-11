@@ -123,6 +123,19 @@ describe('prompt-template-transfer', () => {
     );
   });
 
+  it('rejects unsupported exported template payload versions', () => {
+    expect(() =>
+      parsePromptTemplateImport(
+        JSON.stringify({
+          version: 99,
+          exportedAt: '2026-05-01T00:00:00.000Z',
+          templates: [existingReviewTemplate],
+        }),
+        starterPromptTemplates,
+      ),
+    ).toThrow('Unsupported prompt template export version.');
+  });
+
   it('deduplicates repeated template ids inside the same import file', () => {
     const rawValue = JSON.stringify([
       {
