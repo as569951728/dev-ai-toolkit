@@ -1,8 +1,10 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import type { ChangeEvent } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 
 import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
+import { parsePromptRunExportImport } from '@/features/prompt-runs/lib/prompt-run-export';
 import { matchesPromptRunSearch } from '@/features/prompt-runs/lib/prompt-run-search';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
 
@@ -18,9 +20,11 @@ function formatCreatedAt(createdAt: string) {
 
 export function PromptRunHistoryPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { runs } = usePromptRuns();
-  const { getNoteByRunId } = usePromptRunNotes();
+  const { importRuns, runs } = usePromptRuns();
+  const { getNoteByRunId, importNotes } = usePromptRunNotes();
   const { getTemplateById } = usePromptTemplates();
+  const [importError, setImportError] = useState('');
+  const [importStatus, setImportStatus] = useState('');
   const selectedTemplateId = searchParams.get('templateId') ?? 'all';
   const searchValue = searchParams.get('q') ?? '';
   const hasActiveFilters =
@@ -85,6 +89,37 @@ export function PromptRunHistoryPage() {
     setSearchParams(nextSearchParams, { replace: true });
   };
 
+  const handleImportRun = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    try {
+      const payload = parsePromptRunExportImport(await file.text());
+      importRuns([payload.run]);
+
+      if (payload.note) {
+        importNotes([payload.note]);
+      }
+
+      setImportStatus(
+        `Imported ${payload.run.templateName} from ${file.name}.`,
+      );
+      setImportError('');
+    } catch (error) {
+      setImportStatus('');
+      setImportError(
+        error instanceof Error
+          ? error.message
+          : 'Unable to import the selected prompt run JSON.',
+      );
+    } finally {
+      event.target.value = '';
+    }
+  };
+
   const filteredRuns = useMemo(() => {
     return runs.filter((run) => {
       const sourceTemplateName = getTemplateById(run.templateId)?.name ?? '';
@@ -122,7 +157,34 @@ export function PromptRunHistoryPage() {
               captured variables.
             </p>
           </div>
+          <div className="detail-actions detail-actions--inline">
+            <label className="ghost-button" htmlFor="prompt-run-import">
+              Import run JSON
+            </label>
+            <input
+              className="sr-only"
+              id="prompt-run-import"
+              type="file"
+              accept="application/json,.json"
+              aria-label="Import run JSON"
+              onChange={handleImportRun}
+            />
+          </div>
         </div>
+
+        {importStatus ? (
+          <div className="empty-state empty-state--compact" role="status">
+            <h2>Prompt run imported.</h2>
+            <p>{importStatus}</p>
+          </div>
+        ) : null}
+
+        {importError ? (
+          <div className="empty-state empty-state--compact" role="alert">
+            <h2>Import failed</h2>
+            <p>{importError}</p>
+          </div>
+        ) : null}
 
         {runs.length > 0 ? (
           <>

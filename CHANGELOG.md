@@ -6,6 +6,11 @@ The format is intentionally lightweight and human-readable.
 
 ## [Unreleased]
 
+### Added
+
+- Added single prompt run JSON import from the Run History page, including
+  saved note context when present
+
 ### Fixed
 
 - Kept the full local prompt run history instead of trimming saved runs to the

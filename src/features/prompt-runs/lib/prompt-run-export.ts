@@ -30,6 +30,116 @@ export function createPromptRunExportPayload({
   };
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === 'string' && value.trim().length > 0;
+}
+
+function isValidDateString(value: unknown): value is string {
+  return isNonEmptyString(value) && !Number.isNaN(new Date(value).getTime());
+}
+
+function isStringRecord(value: unknown): value is Record<string, string> {
+  return (
+    isRecord(value) &&
+    Object.values(value).every((item) => typeof item === 'string')
+  );
+}
+
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((item) => typeof item === 'string');
+}
+
+function isValidPromptRun(value: unknown): value is PromptRunRecord {
+  return (
+    isRecord(value) &&
+    isNonEmptyString(value.id) &&
+    isNonEmptyString(value.templateId) &&
+    isNonEmptyString(value.templateName) &&
+    typeof value.templateVersion === 'number' &&
+    isStringRecord(value.variables) &&
+    isNonEmptyString(value.systemPrompt) &&
+    isNonEmptyString(value.userPrompt) &&
+    isValidDateString(value.createdAt)
+  );
+}
+
+function isValidPromptRunNote(value: unknown): value is PromptRunNote {
+  return (
+    isRecord(value) &&
+    isNonEmptyString(value.id) &&
+    isNonEmptyString(value.runId) &&
+    isNonEmptyString(value.body) &&
+    isValidDateString(value.createdAt) &&
+    isValidDateString(value.updatedAt)
+  );
+}
+
+function isValidPromptTemplateRevision(
+  value: unknown,
+): value is PromptTemplateRevision {
+  return (
+    isRecord(value) &&
+    typeof value.version === 'number' &&
+    isValidDateString(value.updatedAt) &&
+    isNonEmptyString(value.name) &&
+    isNonEmptyString(value.description) &&
+    isNonEmptyString(value.systemPrompt) &&
+    isNonEmptyString(value.userPrompt) &&
+    isStringArray(value.tags)
+  );
+}
+
+export function parsePromptRunExportImport(
+  rawValue: string,
+): PromptRunExportPayload {
+  let parsedValue: unknown;
+
+  try {
+    parsedValue = JSON.parse(rawValue) as unknown;
+  } catch {
+    throw new Error('Invalid prompt run export format.');
+  }
+
+  if (
+    !isRecord(parsedValue) ||
+    parsedValue.schemaVersion !== 1 ||
+    !isValidDateString(parsedValue.exportedAt) ||
+    !isValidPromptRun(parsedValue.run)
+  ) {
+    throw new Error('Invalid prompt run export format.');
+  }
+
+  const note = parsedValue.note ?? null;
+  const sourceTemplateRevision = parsedValue.sourceTemplateRevision ?? null;
+
+  if (note !== null && !isValidPromptRunNote(note)) {
+    throw new Error('Invalid prompt run export format.');
+  }
+
+  if (note !== null && note.runId !== parsedValue.run.id) {
+    throw new Error('Prompt run note does not match the exported run.');
+  }
+
+  if (
+    sourceTemplateRevision !== null &&
+    !isValidPromptTemplateRevision(sourceTemplateRevision)
+  ) {
+    throw new Error('Invalid prompt run export format.');
+  }
+
+  return {
+    schemaVersion: 1,
+    exportedAt: parsedValue.exportedAt,
+    run: parsedValue.run,
+    note,
+    sourceTemplateRevision,
+  };
+}
+
 export function createPromptRunExportFilename(run: PromptRunRecord) {
   const createdDate = run.createdAt.slice(0, 10) || 'undated';
   const templateName = run.templateName

@@ -49,11 +49,13 @@ Run History supports:
 - Reopening output in Code Viewer.
 - Comparing a saved run with its source template in Prompt Diff.
 
-## 4. Add Notes And Export Individual Runs
+## 4. Add Notes And Import Or Export Individual Runs
 
 On a run detail page, you can add a short note to explain why the run was kept
 or what should be reviewed later. Individual runs can also be exported as JSON
 with the matching source template revision when it is still available locally.
+The Run History page can import one of those JSON files later, including its
+saved note when the note belongs to the exported run.
 
 This is useful for small review loops where the prompt output needs context but
 does not yet need a backend or shared account model.

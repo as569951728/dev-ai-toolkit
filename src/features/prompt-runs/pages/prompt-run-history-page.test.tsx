@@ -8,6 +8,7 @@ import type { PromptRunNoteRepository } from '@/features/prompt-run-notes/reposi
 import { starterPromptTemplates } from '@/features/prompt-templates/seed/prompt-templates';
 import { PromptTemplatesProvider } from '@/features/prompt-templates/providers/prompt-templates-provider';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
+import { createPromptRunExportPayload } from '@/features/prompt-runs/lib/prompt-run-export';
 import { PromptRunHistoryPage } from '@/features/prompt-runs/pages/prompt-run-history-page';
 import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs-provider';
 import type { PromptRunRepository } from '@/features/prompt-runs/repositories/prompt-run-repository';
@@ -27,7 +28,9 @@ function createTemplateRepository(
   };
 }
 
-function createRunRepository(initialRuns: PromptRunRecord[]): PromptRunRepository {
+function createRunRepository(
+  initialRuns: PromptRunRecord[],
+): PromptRunRepository & { snapshot: () => PromptRunRecord[] } {
   let runs = [...initialRuns];
 
   return {
@@ -35,12 +38,13 @@ function createRunRepository(initialRuns: PromptRunRecord[]): PromptRunRepositor
     saveAll: (nextRuns) => {
       runs = [...nextRuns];
     },
+    snapshot: () => [...runs],
   };
 }
 
 function createNoteRepository(
   initialNotes: PromptRunNote[] = [],
-): PromptRunNoteRepository {
+): PromptRunNoteRepository & { snapshot: () => PromptRunNote[] } {
   let notes = [...initialNotes];
 
   return {
@@ -48,6 +52,7 @@ function createNoteRepository(
     saveAll: (nextNotes) => {
       notes = [...nextNotes];
     },
+    snapshot: () => [...notes],
   };
 }
 
@@ -85,17 +90,25 @@ function renderRunHistory({
   notes?: PromptRunNote[];
   templateRepository?: PromptTemplateRepository;
 } = {}) {
+  const runRepository = createRunRepository(runs);
+  const noteRepository = createNoteRepository(notes);
+
   render(
     <MemoryRouter initialEntries={[initialEntry]}>
       <PromptTemplatesProvider repository={templateRepository}>
-        <PromptRunsProvider repository={createRunRepository(runs)}>
-          <PromptRunNotesProvider repository={createNoteRepository(notes)}>
+        <PromptRunsProvider repository={runRepository}>
+          <PromptRunNotesProvider repository={noteRepository}>
             <PromptRunHistoryPage />
           </PromptRunNotesProvider>
         </PromptRunsProvider>
       </PromptTemplatesProvider>
     </MemoryRouter>,
   );
+
+  return {
+    noteRepository,
+    runRepository,
+  };
 }
 
 function RunHistoryNavigationHarness() {
@@ -163,6 +176,57 @@ describe('PromptRunHistoryPage', () => {
     expect(
       screen.getByRole('link', { name: 'Open Prompt Playground' }),
     ).toHaveAttribute('href', '/playground');
+  });
+
+  it('imports a single prompt run JSON export with note context', async () => {
+    const { noteRepository, runRepository } = renderRunHistory({ runs: [] });
+    const importedRun: PromptRunRecord = {
+      id: 'imported-run',
+      templateId: starterPromptTemplates[0]!.id,
+      templateName: starterPromptTemplates[0]!.name,
+      templateVersion: 1,
+      variables: { repository_name: 'dev-ai-toolkit' },
+      systemPrompt: 'Imported system prompt.',
+      userPrompt: 'Imported user prompt.',
+      createdAt: '2026-05-10T09:00:00.000Z',
+    };
+    const importedNote: PromptRunNote = {
+      id: 'note-imported-run',
+      runId: importedRun.id,
+      body: 'Imported note for later review.',
+      createdAt: '2026-05-10T10:00:00.000Z',
+      updatedAt: '2026-05-10T10:00:00.000Z',
+    };
+    const file = new File(
+      [
+        JSON.stringify(
+          createPromptRunExportPayload({
+            run: importedRun,
+            note: importedNote,
+            exportedAt: '2026-05-10T11:00:00.000Z',
+          }),
+        ),
+      ],
+      'prompt-run.json',
+      { type: 'application/json' },
+    );
+
+    fireEvent.change(screen.getByLabelText('Import run JSON'), {
+      target: { files: [file] },
+    });
+
+    expect(await screen.findByText('Prompt run imported.')).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Imported Code Review Assistant from prompt-run.json.',
+    );
+    expect(
+      screen.getByRole('heading', { name: 'Code Review Assistant' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('Imported note for later review.'),
+    ).toBeInTheDocument();
+    expect(runRepository.snapshot()).toEqual([importedRun]);
+    expect(noteRepository.snapshot()).toEqual([importedNote]);
   });
 
   it('filters runs by template and template name search', () => {

@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   createPromptRunExportFilename,
   createPromptRunExportPayload,
+  parsePromptRunExportImport,
 } from '@/features/prompt-runs/lib/prompt-run-export';
 import type { PromptRunNote } from '@/types/prompt-run-note';
 import type { PromptRunRecord } from '@/types/prompt-run';
@@ -41,19 +42,19 @@ describe('prompt run export helpers', () => {
   it('creates a stable export payload with run data and note context', () => {
     expect(
       createPromptRunExportPayload({
+        run: sampleRun,
+        note: sampleNote,
+        sourceTemplateRevision: sampleSourceTemplateRevision,
+        exportedAt: '2026-05-09T10:00:00.000Z',
+      }),
+    ).toEqual({
+      schemaVersion: 1,
+      exportedAt: '2026-05-09T10:00:00.000Z',
       run: sampleRun,
       note: sampleNote,
       sourceTemplateRevision: sampleSourceTemplateRevision,
-      exportedAt: '2026-05-09T10:00:00.000Z',
-    }),
-  ).toEqual({
-    schemaVersion: 1,
-    exportedAt: '2026-05-09T10:00:00.000Z',
-    run: sampleRun,
-    note: sampleNote,
-    sourceTemplateRevision: sampleSourceTemplateRevision,
+    });
   });
-});
 
   it('keeps note context nullable when a run has no saved note', () => {
     expect(
@@ -77,5 +78,46 @@ describe('prompt run export helpers', () => {
     expect(createPromptRunExportFilename(sampleRun)).toBe(
       '2026-05-07-api-design-partner-run-1.json',
     );
+  });
+
+  it('parses a single prompt run export payload for import', () => {
+    const payload = createPromptRunExportPayload({
+      run: sampleRun,
+      note: sampleNote,
+      sourceTemplateRevision: sampleSourceTemplateRevision,
+      exportedAt: '2026-05-09T10:00:00.000Z',
+    });
+
+    expect(parsePromptRunExportImport(JSON.stringify(payload))).toEqual(payload);
+  });
+
+  it('rejects malformed prompt run import payloads', () => {
+    expect(() => parsePromptRunExportImport('{not-json')).toThrow(
+      'Invalid prompt run export format.',
+    );
+
+    expect(() =>
+      parsePromptRunExportImport(
+        JSON.stringify({
+          schemaVersion: 1,
+          exportedAt: '2026-05-09T10:00:00.000Z',
+          run: { ...sampleRun, id: '' },
+          note: null,
+          sourceTemplateRevision: null,
+        }),
+      ),
+    ).toThrow('Invalid prompt run export format.');
+
+    expect(() =>
+      parsePromptRunExportImport(
+        JSON.stringify({
+          schemaVersion: 1,
+          exportedAt: '2026-05-09T10:00:00.000Z',
+          run: sampleRun,
+          note: { ...sampleNote, runId: 'other-run' },
+          sourceTemplateRevision: null,
+        }),
+      ),
+    ).toThrow('Prompt run note does not match the exported run.');
   });
 });
