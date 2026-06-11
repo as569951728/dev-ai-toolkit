@@ -68,6 +68,7 @@ The format is intentionally lightweight and human-readable.
   error message
 - Rejected prompt template exports with unsupported payload versions
 - Announced JSON Tools success and error messages with status and alert roles
+- Announced Prompt Templates import and export feedback with a status role
 - Replaced the default React Router unknown-route error with a project-level
   not found page
 - Added `/workspace-backup` as a compatibility route for the Workspace Backup

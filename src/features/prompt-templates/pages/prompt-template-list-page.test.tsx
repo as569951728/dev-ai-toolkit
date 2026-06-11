@@ -45,6 +45,38 @@ afterEach(() => {
 });
 
 describe('PromptTemplateListPage', () => {
+  it('announces template export feedback', () => {
+    const createObjectURL = vi.fn(() => 'blob:prompt-template-export');
+    const revokeObjectURL = vi.fn();
+    const click = vi
+      .spyOn(HTMLAnchorElement.prototype, 'click')
+      .mockImplementation(() => undefined);
+
+    Object.defineProperty(window.URL, 'createObjectURL', {
+      configurable: true,
+      value: createObjectURL,
+    });
+    Object.defineProperty(window.URL, 'revokeObjectURL', {
+      configurable: true,
+      value: revokeObjectURL,
+    });
+
+    render(
+      <MemoryRouter>
+        <PromptTemplatesProvider repository={createMemoryRepository()}>
+          <PromptTemplateListPage />
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Export JSON' }));
+
+    expect(screen.getByRole('status')).toHaveTextContent(
+      `Exported ${starterPromptTemplates.length} templates to JSON.`,
+    );
+    expect(click).toHaveBeenCalled();
+  });
+
   it('hides archived templates by default and reveals them on demand', () => {
     const repository = createMemoryRepository([
       starterPromptTemplates[0]!,

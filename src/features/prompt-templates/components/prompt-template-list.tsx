@@ -71,7 +71,11 @@ export function PromptTemplateList({
         </div>
       </div>
 
-      {statusMessage ? <p className="status-banner">{statusMessage}</p> : null}
+      {statusMessage ? (
+        <p className="status-banner" role="status">
+          {statusMessage}
+        </p>
+      ) : null}
 
       <PromptTemplateFilters
         filters={filters}
