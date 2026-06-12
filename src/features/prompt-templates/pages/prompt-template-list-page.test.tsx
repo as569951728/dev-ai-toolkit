@@ -86,13 +86,7 @@ describe('PromptTemplateListPage', () => {
       </MemoryRouter>,
     );
 
-    const fileInput = document.querySelector<HTMLInputElement>(
-      'input[type="file"]',
-    );
-
-    if (!fileInput) {
-      throw new Error('Expected the template import file input to render.');
-    }
+    const fileInput = screen.getByLabelText('Import prompt templates JSON');
 
     const invalidFile = new File(['not json'], 'broken-template.json', {
       type: 'application/json',

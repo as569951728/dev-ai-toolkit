@@ -112,6 +112,7 @@ export function PromptTemplateListPage() {
     <>
       <input
         ref={fileInputRef}
+        aria-label="Import prompt templates JSON"
         className="sr-only"
         type="file"
         accept="application/json"
