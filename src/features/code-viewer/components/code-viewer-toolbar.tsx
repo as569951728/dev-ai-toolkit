@@ -29,6 +29,7 @@ export function CodeViewerToolbar({
     <div className="code-toolbar">
       <div className="code-toolbar__group">
         <button
+          aria-pressed={mode === 'single'}
           className={mode === 'single' ? 'primary-button' : 'secondary-button'}
           type="button"
           onClick={() => onModeChange('single')}
@@ -36,6 +37,7 @@ export function CodeViewerToolbar({
           Single view
         </button>
         <button
+          aria-pressed={mode === 'compare'}
           className={mode === 'compare' ? 'primary-button' : 'secondary-button'}
           type="button"
           onClick={() => onModeChange('compare')}

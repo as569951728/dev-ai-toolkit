@@ -47,6 +47,14 @@ describe('CodeViewerPage', () => {
       screen.getByRole('textbox', { name: 'Right input' }),
     ).toHaveValue('right output');
     expect(screen.getByLabelText('Language')).toHaveValue('markdown');
+    expect(screen.getByRole('button', { name: 'Compare view' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    expect(screen.getByRole('button', { name: 'Single view' })).toHaveAttribute(
+      'aria-pressed',
+      'false',
+    );
 
     fireEvent.click(screen.getByRole('button', { name: 'Single view' }));
 
@@ -54,6 +62,14 @@ describe('CodeViewerPage', () => {
     expect(
       screen.queryByRole('heading', { name: 'Right output' }),
     ).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Single view' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    expect(screen.getByRole('button', { name: 'Compare view' })).toHaveAttribute(
+      'aria-pressed',
+      'false',
+    );
   });
 
   it('copies left content and announces the result', async () => {
