@@ -10,6 +10,7 @@ interface PromptTemplateListProps {
   tags: string[];
   filters: PromptTemplateFiltersValue;
   statusMessage: string | null;
+  statusTone: 'success' | 'error';
   archivedCount: number;
   showArchived: boolean;
   onCreate: () => void;
@@ -29,6 +30,7 @@ export function PromptTemplateList({
   tags,
   filters,
   statusMessage,
+  statusTone,
   archivedCount,
   showArchived,
   onCreate,
@@ -72,7 +74,14 @@ export function PromptTemplateList({
       </div>
 
       {statusMessage ? (
-        <p className="status-banner" role="status">
+        <p
+          className={
+            statusTone === 'error'
+              ? 'status-banner status-banner--error'
+              : 'status-banner'
+          }
+          role={statusTone === 'error' ? 'alert' : 'status'}
+        >
           {statusMessage}
         </p>
       ) : null}

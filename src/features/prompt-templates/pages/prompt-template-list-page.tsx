@@ -11,6 +11,11 @@ import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt
 import { collectPromptTemplateTags } from '@/features/prompt-templates/services/prompt-template-service';
 import type { PromptTemplateFilters } from '@/types/prompt-template';
 
+interface PromptTemplateFeedback {
+  message: string;
+  tone: 'success' | 'error';
+}
+
 export function PromptTemplateListPage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -21,7 +26,7 @@ export function PromptTemplateListPage() {
     tag: searchParams.get('tag') ?? 'all',
   };
   const showArchived = searchParams.get('archived') === '1';
-  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<PromptTemplateFeedback | null>(null);
 
   const visibleTemplates = showArchived
     ? templates
@@ -63,7 +68,10 @@ export function PromptTemplateListPage() {
     link.click();
     window.URL.revokeObjectURL(url);
 
-    setStatusMessage(`Exported ${templates.length} templates to JSON.`);
+    setFeedback({
+      message: `Exported ${templates.length} templates to JSON.`,
+      tone: 'success',
+    });
   };
 
   const handleImport = async (
@@ -83,15 +91,18 @@ export function PromptTemplateListPage() {
       );
       const result = importTemplates(importedTemplates, summary);
 
-      setStatusMessage(
-        `Imported ${result.total} templates: ${result.created} created, ${result.updated} updated.`,
-      );
+      setFeedback({
+        message: `Imported ${result.total} templates: ${result.created} created, ${result.updated} updated.`,
+        tone: 'success',
+      });
     } catch (error) {
-      setStatusMessage(
-        error instanceof Error
-          ? error.message
-          : 'Failed to import the selected JSON file.',
-      );
+      setFeedback({
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Failed to import the selected JSON file.',
+        tone: 'error',
+      });
     } finally {
       event.target.value = '';
     }
@@ -111,7 +122,8 @@ export function PromptTemplateListPage() {
         templates={filteredTemplates}
         tags={visibleTags}
         filters={filters}
-        statusMessage={statusMessage}
+        statusMessage={feedback?.message ?? null}
+        statusTone={feedback?.tone ?? 'success'}
         archivedCount={archivedCount}
         showArchived={showArchived}
         onCreate={() => navigate('/prompts/new')}

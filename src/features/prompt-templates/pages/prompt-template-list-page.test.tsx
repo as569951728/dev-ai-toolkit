@@ -77,6 +77,38 @@ describe('PromptTemplateListPage', () => {
     expect(click).toHaveBeenCalled();
   });
 
+  it('announces invalid template import feedback as an alert', async () => {
+    render(
+      <MemoryRouter>
+        <PromptTemplatesProvider repository={createMemoryRepository()}>
+          <PromptTemplateListPage />
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    const fileInput = document.querySelector<HTMLInputElement>(
+      'input[type="file"]',
+    );
+
+    if (!fileInput) {
+      throw new Error('Expected the template import file input to render.');
+    }
+
+    const invalidFile = new File(['not json'], 'broken-template.json', {
+      type: 'application/json',
+    });
+
+    fireEvent.change(fileInput, {
+      target: {
+        files: [invalidFile],
+      },
+    });
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Invalid file format. Expected a template array or an exported dev-ai-toolkit payload.',
+    );
+  });
+
   it('hides archived templates by default and reveals them on demand', () => {
     const repository = createMemoryRepository([
       starterPromptTemplates[0]!,
