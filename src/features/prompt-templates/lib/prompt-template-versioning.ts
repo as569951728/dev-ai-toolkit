@@ -105,10 +105,22 @@ export function ensurePromptTemplateVersioning(
     typeof template.archivedAt === 'string' && isValidIsoDate(template.archivedAt)
       ? template.archivedAt
       : null;
-  const normalizedRevisions = (template.revisions ?? [])
-    .map((revision) => normalizeRevision(revision))
-    .filter((revision): revision is PromptTemplateRevision => revision !== null)
-    .sort((left, right) => left.version - right.version);
+  const normalizedRevisionsByVersion = new Map<number, PromptTemplateRevision>();
+
+  for (const revision of template.revisions ?? []) {
+    const normalizedRevision = normalizeRevision(revision);
+
+    if (normalizedRevision) {
+      normalizedRevisionsByVersion.set(
+        normalizedRevision.version,
+        normalizedRevision,
+      );
+    }
+  }
+
+  const normalizedRevisions = [...normalizedRevisionsByVersion.values()].sort(
+    (left, right) => left.version - right.version,
+  );
 
   const currentRevision = createPromptTemplateRevision(input, version, updatedAt);
   const hasCurrentRevision = normalizedRevisions.some(

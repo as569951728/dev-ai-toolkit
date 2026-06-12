@@ -86,6 +86,15 @@ describe('prompt-template-transfer', () => {
             tags: ['legacy', '', 'legacy'],
           },
           {
+            version: 2,
+            updatedAt: '2026-05-02T00:00:00.000Z',
+            name: 'Legacy Template',
+            description: 'Latest duplicate revision wins',
+            systemPrompt: 'Inspect {{repo}} more carefully.',
+            userPrompt: 'Summarize {{task}} with risks.',
+            tags: ['legacy', 'latest'],
+          },
+          {
             version: 0,
             updatedAt: 'bad-date',
             name: '',
@@ -110,7 +119,8 @@ describe('prompt-template-transfer', () => {
     expect(importedTemplate.revisions).toHaveLength(2);
     expect(importedTemplate.revisions[0]).toMatchObject({
       version: 2,
-      tags: ['legacy'],
+      description: 'Latest duplicate revision wins',
+      tags: ['legacy', 'latest'],
     });
     expect(importedTemplate.revisions[1]?.version).toBe(3);
   });
