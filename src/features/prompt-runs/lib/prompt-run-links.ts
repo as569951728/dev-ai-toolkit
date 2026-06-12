@@ -14,13 +14,20 @@ export function buildPromptRunSourceDiffUrl({
     return null;
   }
 
-  const sourceRevision =
-    sourceTemplate.revisions.find(
-      (revision) => revision.version === run.templateVersion,
-    ) ?? null;
-  const sourcePromptText = `${sourceRevision?.systemPrompt ?? sourceTemplate.systemPrompt}\n\n${
-    sourceRevision?.userPrompt ?? sourceTemplate.userPrompt
-  }`;
+  let sourcePromptText = `${sourceTemplate.systemPrompt}\n\n${sourceTemplate.userPrompt}`;
+
+  if (run.templateVersion !== sourceTemplate.version) {
+    const sourceRevision =
+      sourceTemplate.revisions.find(
+        (revision) => revision.version === run.templateVersion,
+      ) ?? null;
+
+    if (!sourceRevision) {
+      return null;
+    }
+
+    sourcePromptText = `${sourceRevision.systemPrompt}\n\n${sourceRevision.userPrompt}`;
+  }
   const runPromptText = `${run.systemPrompt}\n\n${run.userPrompt}`;
   const searchParams = new URLSearchParams({
     left: sourcePromptText,

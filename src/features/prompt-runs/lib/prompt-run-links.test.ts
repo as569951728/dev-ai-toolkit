@@ -71,4 +71,18 @@ describe('prompt-run-links', () => {
       buildPromptRunSourceDiffUrl({ run, sourceTemplate: null }),
     ).toBeNull();
   });
+
+  it('returns null when the matching source revision is missing', () => {
+    expect(
+      buildPromptRunSourceDiffUrl({
+        run,
+        sourceTemplate: {
+          ...template,
+          revisions: template.revisions.filter(
+            (revision) => revision.version !== run.templateVersion,
+          ),
+        },
+      }),
+    ).toBeNull();
+  });
 });

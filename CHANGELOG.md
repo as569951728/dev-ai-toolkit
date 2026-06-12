@@ -92,6 +92,8 @@ The format is intentionally lightweight and human-readable.
 - Added an accessible label for the Prompt Templates JSON import input
 - Allowed Prompt Templates JSON imports to be selected by `.json` extension
 - Exposed the active Code Viewer display mode to assistive technologies
+- Hid Prompt Diff source comparison links when the matching source revision is
+  unavailable
 - Replaced the default React Router unknown-route error with a project-level
   not found page
 - Added `/workspace-backup` as a compatibility route for the Workspace Backup
