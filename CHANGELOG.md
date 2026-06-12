@@ -82,6 +82,7 @@ The format is intentionally lightweight and human-readable.
 - Announced API Builder copy success and failure feedback with status and
   alert roles
 - Added accessible labels for API Builder query/header row controls
+- Added accessible labels for Code Viewer and Prompt Diff textareas
 - Replaced the default React Router unknown-route error with a project-level
   not found page
 - Added `/workspace-backup` as a compatibility route for the Workspace Backup

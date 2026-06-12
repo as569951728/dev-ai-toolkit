@@ -29,17 +29,22 @@ describe('PromptDiffPage', () => {
         `&right=${encodeURIComponent(rightPrompt)}`,
     );
 
-    const textareas = screen.getAllByRole('textbox');
+    const originalPromptInput = screen.getByRole('textbox', {
+      name: 'Original prompt',
+    });
+    const revisedPromptInput = screen.getByRole('textbox', {
+      name: 'Revised prompt',
+    });
 
-    expect(textareas[0]).toHaveValue(leftPrompt);
-    expect(textareas[1]).toHaveValue(rightPrompt);
+    expect(originalPromptInput).toHaveValue(leftPrompt);
+    expect(revisedPromptInput).toHaveValue(rightPrompt);
     expect(screen.getByText('+1 / -0')).toBeInTheDocument();
     expect(screen.getByText('module')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Swap sides' }));
 
-    expect(textareas[0]).toHaveValue(rightPrompt);
-    expect(textareas[1]).toHaveValue(leftPrompt);
+    expect(originalPromptInput).toHaveValue(rightPrompt);
+    expect(revisedPromptInput).toHaveValue(leftPrompt);
   });
 
   it('copies the left prompt and announces the result', async () => {

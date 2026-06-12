@@ -22,6 +22,7 @@ export function CodeEditorPanel({
       </div>
 
       <textarea
+        aria-label={title}
         className="code-textarea"
         value={value}
         onChange={(event) => onChange(event.target.value)}

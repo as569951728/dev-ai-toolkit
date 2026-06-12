@@ -21,6 +21,7 @@ export function PromptDiffEditorPanel({
       </div>
 
       <textarea
+        aria-label={title}
         className="code-textarea prompt-diff-textarea"
         value={value}
         onChange={(event) => {

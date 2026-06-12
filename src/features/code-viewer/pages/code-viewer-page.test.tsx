@@ -40,6 +40,12 @@ describe('CodeViewerPage', () => {
     ).toBeInTheDocument();
     expect(screen.getAllByText('left output').length).toBeGreaterThan(0);
     expect(screen.getAllByText('right output').length).toBeGreaterThan(0);
+    expect(
+      screen.getByRole('textbox', { name: 'Left input' }),
+    ).toHaveValue('left output');
+    expect(
+      screen.getByRole('textbox', { name: 'Right input' }),
+    ).toHaveValue('right output');
     expect(screen.getByLabelText('Language')).toHaveValue('markdown');
 
     fireEvent.click(screen.getByRole('button', { name: 'Single view' }));
