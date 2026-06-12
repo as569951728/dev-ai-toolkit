@@ -25,6 +25,11 @@ type CodeViewerWorkspaceProps = {
   initialRightValue: string;
 };
 
+type CopyFeedback = {
+  message: string;
+  tone: 'success' | 'error';
+};
+
 function CodeViewerWorkspace({
   initialMode,
   initialLanguage,
@@ -35,6 +40,21 @@ function CodeViewerWorkspace({
   const [language, setLanguage] = useState(initialLanguage);
   const [leftValue, setLeftValue] = useState(initialLeftValue);
   const [rightValue, setRightValue] = useState(initialRightValue);
+  const [copyFeedback, setCopyFeedback] = useState<CopyFeedback | null>(null);
+  const handleCopy = async (label: 'left' | 'right', value: string) => {
+    try {
+      await copyToClipboard(value);
+      setCopyFeedback({
+        message: `${label === 'left' ? 'Left' : 'Right'} input copied.`,
+        tone: 'success',
+      });
+    } catch {
+      setCopyFeedback({
+        message: `Failed to copy ${label} input.`,
+        tone: 'error',
+      });
+    }
+  };
 
   return (
     <section className="code-viewer-layout">
@@ -62,10 +82,10 @@ function CodeViewerWorkspace({
           onModeChange={setMode}
           onLanguageChange={setLanguage}
           onCopyLeft={() => {
-            void copyToClipboard(leftValue);
+            void handleCopy('left', leftValue);
           }}
           onCopyRight={() => {
-            void copyToClipboard(rightValue);
+            void handleCopy('right', rightValue);
           }}
           onLoadSample={() => {
             setLanguage('typescript');
@@ -78,6 +98,19 @@ function CodeViewerWorkspace({
             setRightValue('');
           }}
         />
+
+        {copyFeedback ? (
+          <p
+            className={
+              copyFeedback.tone === 'error'
+                ? 'status-banner status-banner--error'
+                : 'status-banner'
+            }
+            role={copyFeedback.tone === 'error' ? 'alert' : 'status'}
+          >
+            {copyFeedback.message}
+          </p>
+        ) : null}
 
         <div className="code-viewer-grid">
           <CodeEditorPanel

@@ -73,6 +73,8 @@ The format is intentionally lightweight and human-readable.
 - Announced JSON Tools success and error messages with status and alert roles
 - Announced Prompt Templates import and export feedback with a status role
 - Announced Prompt Templates import failures with an alert role
+- Announced Code Viewer copy success and failure feedback with status and
+  alert roles
 - Replaced the default React Router unknown-route error with a project-level
   not found page
 - Added `/workspace-backup` as a compatibility route for the Workspace Backup
