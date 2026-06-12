@@ -135,6 +135,13 @@ export function parsePromptRunExportImport(
     throw new Error('Invalid prompt run export format.');
   }
 
+  if (
+    sourceTemplateRevision !== null &&
+    sourceTemplateRevision.version !== parsedValue.run.templateVersion
+  ) {
+    throw new Error('Source template revision does not match the exported run.');
+  }
+
   return {
     schemaVersion: 1,
     exportedAt: parsedValue.exportedAt,

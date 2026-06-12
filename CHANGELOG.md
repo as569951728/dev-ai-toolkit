@@ -94,6 +94,8 @@ The format is intentionally lightweight and human-readable.
 - Exposed the active Code Viewer display mode to assistive technologies
 - Hid Prompt Diff source comparison links when the matching source revision is
   unavailable
+- Rejected prompt run imports when the embedded source revision version does
+  not match the run
 - Replaced the default React Router unknown-route error with a project-level
   not found page
 - Added `/workspace-backup` as a compatibility route for the Workspace Backup

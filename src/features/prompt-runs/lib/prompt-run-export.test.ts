@@ -146,5 +146,20 @@ describe('prompt run export helpers', () => {
         }),
       ),
     ).toThrow('Invalid prompt run export format.');
+
+    expect(() =>
+      parsePromptRunExportImport(
+        JSON.stringify({
+          schemaVersion: 1,
+          exportedAt: '2026-05-09T10:00:00.000Z',
+          run: sampleRun,
+          note: null,
+          sourceTemplateRevision: {
+            ...sampleSourceTemplateRevision,
+            version: sampleRun.templateVersion + 1,
+          },
+        }),
+      ),
+    ).toThrow('Source template revision does not match the exported run.');
   });
 });
