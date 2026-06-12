@@ -90,7 +90,7 @@ describe('prompt-run-note-service', () => {
     expect(repository.snapshot()).toEqual(nextNotes);
   });
 
-  it('imports prompt run notes by id', () => {
+  it('imports prompt run notes while keeping one note per run', () => {
     const repository = createMemoryRepository([
       {
         id: 'note-1',
