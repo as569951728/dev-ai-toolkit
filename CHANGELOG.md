@@ -79,6 +79,8 @@ The format is intentionally lightweight and human-readable.
   alert roles
 - Announced Prompt Playground prompt copy success and failure feedback with
   status and alert roles
+- Announced API Builder copy success and failure feedback with status and
+  alert roles
 - Replaced the default React Router unknown-route error with a project-level
   not found page
 - Added `/workspace-backup` as a compatibility route for the Workspace Backup

@@ -64,7 +64,7 @@ describe('ApiBuilderPage', () => {
     ).toBeInTheDocument();
   });
 
-  it('copies the generated curl command', () => {
+  it('copies the generated curl command and announces the result', async () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     Object.defineProperty(navigator, 'clipboard', {
       configurable: true,
@@ -81,6 +81,26 @@ describe('ApiBuilderPage', () => {
       expect.stringContaining(
         "curl -X POST 'https://api.example.com/v1/prompts/render?workspace=dev-ai-toolkit'",
       ),
+    );
+    expect(await screen.findByRole('status')).toHaveTextContent(
+      'cURL command copied.',
+    );
+  });
+
+  it('announces curl copy failures when the clipboard is unavailable', async () => {
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: undefined,
+    });
+
+    renderApiBuilderPage();
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Copy cURL command' }),
+    );
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Failed to copy cURL command.',
     );
   });
 

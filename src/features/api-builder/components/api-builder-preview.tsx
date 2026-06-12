@@ -12,6 +12,11 @@ interface ApiBuilderPreviewProps {
   state: ApiBuilderState;
 }
 
+interface CopyFeedback {
+  message: string;
+  tone: 'success' | 'error';
+}
+
 async function copyToClipboard(value: string) {
   if (!navigator.clipboard) {
     throw new Error('Clipboard API unavailable.');
@@ -23,6 +28,7 @@ async function copyToClipboard(value: string) {
 export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
   const [fetchCopyLabel, setFetchCopyLabel] = useState('Copy fetch code');
   const [curlCopyLabel, setCurlCopyLabel] = useState('Copy cURL command');
+  const [copyFeedback, setCopyFeedback] = useState<CopyFeedback | null>(null);
   const { requestUrl, headers, hasBody } = summarizeRequest(state);
   const fetchSnippet = buildFetchSnippet(state);
   const curlCommand = buildCurlCommand(state);
@@ -41,13 +47,22 @@ export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
     value: string,
     setLabel: (label: string) => void,
     resetLabel: string,
+    feedbackLabel: string,
   ) => {
     try {
       await copyToClipboard(value);
       setLabel('Copied');
+      setCopyFeedback({
+        message: `${feedbackLabel} copied.`,
+        tone: 'success',
+      });
       window.setTimeout(() => setLabel(resetLabel), 1600);
     } catch {
       setLabel('Copy failed');
+      setCopyFeedback({
+        message: `Failed to copy ${feedbackLabel}.`,
+        tone: 'error',
+      });
       window.setTimeout(() => setLabel(resetLabel), 1600);
     }
   };
@@ -63,12 +78,30 @@ export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
           className="secondary-button"
           type="button"
           onClick={() =>
-            handleCopy(fetchSnippet, setFetchCopyLabel, 'Copy fetch code')
+            handleCopy(
+              fetchSnippet,
+              setFetchCopyLabel,
+              'Copy fetch code',
+              'Fetch snippet',
+            )
           }
         >
           {fetchCopyLabel}
         </button>
       </div>
+
+      {copyFeedback ? (
+        <p
+          className={
+            copyFeedback.tone === 'error'
+              ? 'status-banner status-banner--error'
+              : 'status-banner'
+          }
+          role={copyFeedback.tone === 'error' ? 'alert' : 'status'}
+        >
+          {copyFeedback.message}
+        </p>
+      ) : null}
 
       <div className="api-preview-grid">
         <div className="metric-card metric-card--compact">
@@ -113,7 +146,12 @@ export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
               className="ghost-button"
               type="button"
               onClick={() =>
-                handleCopy(curlCommand, setCurlCopyLabel, 'Copy cURL command')
+                handleCopy(
+                  curlCommand,
+                  setCurlCopyLabel,
+                  'Copy cURL command',
+                  'cURL command',
+                )
               }
             >
               {curlCopyLabel}
