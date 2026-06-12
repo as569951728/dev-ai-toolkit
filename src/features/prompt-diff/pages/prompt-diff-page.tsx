@@ -22,12 +22,32 @@ type PromptDiffWorkspaceProps = {
   initialRightValue: string;
 };
 
+type CopyFeedback = {
+  message: string;
+  tone: 'success' | 'error';
+};
+
 function PromptDiffWorkspace({
   initialLeftValue,
   initialRightValue,
 }: PromptDiffWorkspaceProps) {
   const [leftValue, setLeftValue] = useState(initialLeftValue);
   const [rightValue, setRightValue] = useState(initialRightValue);
+  const [copyFeedback, setCopyFeedback] = useState<CopyFeedback | null>(null);
+  const handleCopy = async (label: 'left' | 'right', value: string) => {
+    try {
+      await copyToClipboard(value);
+      setCopyFeedback({
+        message: `${label === 'left' ? 'Left' : 'Right'} prompt copied.`,
+        tone: 'success',
+      });
+    } catch {
+      setCopyFeedback({
+        message: `Failed to copy ${label} prompt.`,
+        tone: 'error',
+      });
+    }
+  };
 
   return (
     <section className="prompt-diff-layout">
@@ -62,12 +82,25 @@ function PromptDiffWorkspace({
             setRightValue('');
           }}
           onCopyLeft={() => {
-            void copyToClipboard(leftValue);
+            void handleCopy('left', leftValue);
           }}
           onCopyRight={() => {
-            void copyToClipboard(rightValue);
+            void handleCopy('right', rightValue);
           }}
         />
+
+        {copyFeedback ? (
+          <p
+            className={
+              copyFeedback.tone === 'error'
+                ? 'status-banner status-banner--error'
+                : 'status-banner'
+            }
+            role={copyFeedback.tone === 'error' ? 'alert' : 'status'}
+          >
+            {copyFeedback.message}
+          </p>
+        ) : null}
 
         <div className="prompt-diff-grid">
           <PromptDiffEditorPanel
