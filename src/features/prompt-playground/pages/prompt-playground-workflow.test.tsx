@@ -1,7 +1,7 @@
 import { afterEach } from 'vitest';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { PromptPlaygroundPage } from '@/features/prompt-playground/pages/prompt-playground-page';
 import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs-provider';
@@ -69,6 +69,7 @@ function LocationProbe() {
 afterEach(() => {
   cleanup();
   window.localStorage.clear();
+  vi.restoreAllMocks();
 });
 
 describe('Prompt playground workflow', () => {
@@ -200,6 +201,64 @@ describe('Prompt playground workflow', () => {
     expect(codeViewerParams.get('right')).toContain('frontend workflow');
     expect(codeViewerParams.get('mode')).toBe('compare');
     expect(codeViewerParams.get('language')).toBe('markdown');
+  });
+
+  it('copies generated prompt sections and announces the result', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    const templateRepository = createTemplateRepository();
+    const runRepository = createRunRepository();
+    const templateId = starterPromptTemplates[0]!.id;
+
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText },
+    });
+
+    render(
+      <MemoryRouter initialEntries={[`/playground?templateId=${templateId}`]}>
+        <PromptTemplatesProvider repository={templateRepository}>
+          <PromptRunsProvider repository={runRepository}>
+            <PlaygroundWorkflowProbe />
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getAllByRole('button', { name: 'Copy' })[0]!);
+
+    expect(writeText).toHaveBeenCalledWith(
+      starterPromptTemplates[0]!.systemPrompt,
+    );
+    expect(await screen.findByRole('status')).toHaveTextContent(
+      'System prompt copied.',
+    );
+  });
+
+  it('announces prompt copy failures when the clipboard is unavailable', async () => {
+    const templateRepository = createTemplateRepository();
+    const runRepository = createRunRepository();
+    const templateId = starterPromptTemplates[0]!.id;
+
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: undefined,
+    });
+
+    render(
+      <MemoryRouter initialEntries={[`/playground?templateId=${templateId}`]}>
+        <PromptTemplatesProvider repository={templateRepository}>
+          <PromptRunsProvider repository={runRepository}>
+            <PlaygroundWorkflowProbe />
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getAllByRole('button', { name: 'Copy' })[0]!);
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Failed to copy system prompt.',
+    );
   });
 
   it('clears the save status when the active template changes', async () => {

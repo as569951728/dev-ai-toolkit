@@ -18,6 +18,11 @@ interface PromptPlaygroundPreviewProps {
   saveStatusMessage: string | null;
 }
 
+type CopyFeedback = {
+  message: string;
+  tone: 'success' | 'error';
+};
+
 async function copyToClipboard(value: string) {
   if (typeof navigator === 'undefined' || !navigator.clipboard) {
     throw new Error('Clipboard API is unavailable.');
@@ -38,11 +43,16 @@ export function PromptPlaygroundPreview({
   const [copiedSection, setCopiedSection] = useState<'system' | 'user' | null>(
     null,
   );
+  const [copyFeedback, setCopyFeedback] = useState<CopyFeedback | null>(null);
 
   const handleCopy = async (section: 'system' | 'user', value: string) => {
     try {
       await copyToClipboard(value);
       setCopiedSection(section);
+      setCopyFeedback({
+        message: `${section === 'system' ? 'System' : 'User'} prompt copied.`,
+        tone: 'success',
+      });
 
       window.setTimeout(() => {
         setCopiedSection((currentSection) =>
@@ -51,6 +61,10 @@ export function PromptPlaygroundPreview({
       }, 1600);
     } catch {
       setCopiedSection(null);
+      setCopyFeedback({
+        message: `Failed to copy ${section} prompt.`,
+        tone: 'error',
+      });
     }
   };
 
@@ -95,6 +109,19 @@ export function PromptPlaygroundPreview({
           {savedRunId ? (
             <Link to={`/runs/${savedRunId}`}>Open saved run</Link>
           ) : null}
+        </p>
+      ) : null}
+
+      {copyFeedback ? (
+        <p
+          className={
+            copyFeedback.tone === 'error'
+              ? 'status-banner status-banner--error'
+              : 'status-banner'
+          }
+          role={copyFeedback.tone === 'error' ? 'alert' : 'status'}
+        >
+          {copyFeedback.message}
         </p>
       ) : null}
 
