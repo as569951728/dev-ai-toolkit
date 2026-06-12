@@ -225,7 +225,7 @@ Current next steps include:
 - More workflow-level test coverage
 - Better open-source documentation and examples
 
-See the longer-term product direction in [docs/roadmap.md](./docs/roadmap.md).
+See the implementation roadmap in [docs/roadmap.md](./docs/roadmap.md).
 For contributor-facing code structure notes, see [docs/architecture.md](./docs/architecture.md).
 
 ## Releases

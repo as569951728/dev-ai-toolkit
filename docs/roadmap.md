@@ -1,175 +1,185 @@
-# Product Roadmap
+# Implementation Roadmap
 
-## Vision
+This roadmap captures the current implementation direction after the June 2026
+project review. It is intentionally practical: it should help decide what to
+build next, what to postpone, and how to keep the project maintainable.
 
-`dev-ai-toolkit` is an early local-first AI developer toolbox.
+## Current Direction
 
-Its value is not only in helping users write prompts faster, but in turning repeated AI-assisted development tasks into reusable, structured workflows:
+`dev-ai-toolkit` should be treated as a local-first prompt workflow manager for
+developers, not as a broad AI platform.
 
-- Prompt templates that can be reused across coding, review, debugging, and API design tasks
-- A playground that turns templates plus variables into ready-to-run prompts
-- A small set of tools for payload work, request drafting, and output review
-- A codebase that can gradually grow from personal productivity into shared team knowledge
+The strongest product path is:
 
-In short:
+1. Create or choose a prompt template.
+2. Fill template variables in the playground.
+3. Save a composed prompt snapshot.
+4. Review saved snapshots in run history.
+5. Add notes, compare with source templates, or inspect output in Code Viewer.
+6. Back up the local workspace as versioned JSON.
 
-- Current value: help developers manage prompt workflows and adjacent developer tasks in one local-first toolbox
-- Future value: evolve into a real developer-facing AI toolbox that supports repeatable, collaborative, and extensible workflows
+Supporting utilities such as JSON Tools and API Builder are useful, but they
+should remain secondary unless they connect back into the prompt workflow.
 
-## Value Today
+## Review Findings
 
-At the current stage, the project already provides practical value in a few ways:
+The project review produced four shared conclusions:
 
-- Reduces repeated prompt writing by making templates reusable
-- Improves prompt consistency across similar engineering tasks
-- Gives developers local-first tools for payload inspection and output review
-- Keeps everything local-first, simple, and easy to understand
+- The project has a real core workflow, but the positioning is still too broad
+  if described only as an "AI developer toolbox".
+- The prompt workflow is the main product value; standalone utility pages
+  should not become the center of the roadmap.
+- The local data model has grown enough that validators, import/export parsing,
+  and storage normalization need a more consistent domain layer.
+- Open-source maintenance needs a cleaner release and demo story before the
+  project is presented as mature.
 
-## Long-Term Value
+## Product Boundary
 
-Over time, the project should create value in three larger dimensions:
+### Build Next
 
-### 1. From Prompt Utility to AI Toolbox
+- Clearer prompt workflow language across the homepage, README, and docs
+- Better guidance after saving a prompt snapshot
+- More useful run detail and review states
+- Stronger local data validation and import/export consistency
+- Demo verification and release hygiene
 
-The project should evolve beyond template management into a broader AI development toolbox:
+### Do Not Build Yet
 
-- Prompt composition
-- Prompt preview and iteration
-- Structured developer utilities
-- More workflow-oriented AI tools
+- Backend accounts or cloud sync
+- Team permissions or shared workspaces
+- Plugin marketplace features
+- LLM runtime, tracing, evaluation, or observability features
+- More standalone utility pages unless they support the prompt workflow
 
-### 2. From Personal Tool to Team Asset
+These items may become useful later, but adding them now would make the project
+harder to understand and maintain.
 
-The project should help teams preserve AI working patterns instead of losing them in chat history:
+## Near-Term Implementation Plan
 
-- Shared reusable templates
-- Better workflow consistency
-- Repeated task acceleration
-- Knowledge capture through structured prompt assets
-
-### 3. From Early App to Sustainable Open-Source Project
-
-The project should become a maintainable open-source project that others can use directly or extend:
-
-- Clear architecture
-- Modules that remain useful as the scope grows
-- Stable engineering quality
-- Open contribution workflow
-
-## Delivery Rhythm
-
-The roadmap is split into four stages so the product grows in a focused and believable way.
-
-### Stage 1: Toolbox Framing
+### Week 1: Positioning And Open-Source Hygiene
 
 Goal:
-Turn the project from "runnable" into a clearly framed AI developer toolbox.
+Make the repository describe the current product accurately and keep release
+history easy to audit.
 
-Focus:
+Tasks:
 
-- Unify the homepage, README, and roadmap around toolbox positioning
-- Group modules into prompt workflows and developer utilities
-- Improve information architecture and basic navigation
-- Keep the current modules believable and easy to understand
-- Improve README, screenshots, and project documentation
+- Update homepage and README wording around local-first prompt workflows.
+- Keep JSON Tools and API Builder positioned as supporting utilities.
+- Verify whether the Vercel demo tracks the latest `main` branch.
+- Prepare an honest `v0.2.0` release summary for work completed after `v0.1.0`.
+- Align GitHub labels with issue templates and release categories.
+- Review roadmap and release docs for vague self-justifying language.
 
-Expected value:
+Expected outcome:
+New visitors should understand what the project does without expecting a model
+runtime, agent framework, or LLMOps platform.
 
-- New users can understand the product quickly
-- The product story matches the actual feature surface
-- The open-source project feels intentional rather than experimental
-
-Suggested versions:
-
-- `v0.3.x`
-
-### Stage 2: Workflow Connections
+### Week 2: Main Workflow Clarity
 
 Goal:
-Connect existing modules so the toolbox feels like one system instead of isolated pages.
+Make the core path from template to saved prompt review easier to follow.
 
-Focus:
+Tasks:
 
-- Cross-module paths from prompt workflows into review tools
-- Payload and request workflows that can feed each other
-- Better workflow-oriented actions and “continue in...” entry points
-- More curated prompt presets for common engineering scenarios
+- Standardize terms such as "run", "snapshot", "output", and "saved prompt".
+- Improve the post-save state in Prompt Playground with clearer next actions.
+- Make Run Detail feel like the review page for a saved prompt snapshot.
+- Add or refresh screenshots for the main path:
+  - Prompt Templates
+  - Prompt Playground
+  - Run History
+  - Run Detail or Prompt Diff
+- Keep the walkthrough aligned with the real UI.
 
-Expected value:
+Expected outcome:
+A user should be able to follow the prompt workflow without reading the source
+code or guessing what a saved run represents.
 
-- The project identity becomes much clearer
-- Developers can solve more related tasks in one place
-- Modules feel less like isolated utilities
-
-Suggested versions:
-
-- `v0.4.x` to `v0.5.x`
-
-### Stage 3: Collaboration and Knowledge Capture
-
-Goal:
-Move from individual productivity toward reusable team workflows.
-
-Focus:
-
-- Template repository or service abstraction
-- Template versioning
-- Archiving and organization
-- Better usage history and recommendations
-- Shared template design direction
-- Stronger information architecture by domain or use case
-
-Expected value:
-
-- Teams can start accumulating AI workflow knowledge
-- Reuse quality improves over time
-- The project becomes more than a personal scratchpad
-
-Suggested versions:
-
-- `v0.6.x` to `v0.8.x`
-
-### Stage 4: Open-Source Maturity
+### Week 3: Data Boundary And Test Quality
 
 Goal:
-Make the project sustainable and compelling as an open-source tool.
+Reduce duplicated validation logic and protect local data as the schema grows.
 
-Focus:
+Tasks:
 
-- More complete testing and CI quality gates
-- Stronger documentation and examples
-- Better contribution flow
-- Optional extensibility or plugin direction
-- Prompt evaluation and comparison ideas
-- Demo deployment and documentation site
+- Introduce shared domain codecs or validators for:
+  - `PromptTemplate`
+  - `PromptRunRecord`
+  - `PromptRunNote`
+- Reuse those codecs from local storage repositories, imports, exports, and
+  workspace backup parsing.
+- Check whether runs should validate their source template relationship during
+  workspace import.
+- Split large orchestration-heavy pages, starting with `PromptRunHistoryPage`.
+- Add one or two browser-level smoke checks for the core prompt workflow.
 
-Expected value:
+Expected outcome:
+Import/export behavior should be easier to reason about, and future storage
+changes should not require editing several separate validators by hand.
 
-- Easier community contribution
-- Stronger credibility as a real open-source tool
-- Better long-term adoption potential
+### Week 4: Workflow Integration And Release
 
-Suggested versions:
+Goal:
+Make supporting tools feel connected without expanding the scope too broadly.
 
-- `v0.9.x` to `v1.0.0`
+Tasks:
 
-## Near-Term Priority
+- Decide which JSON Tools and API Builder actions should connect into the
+  prompt workflow.
+- Keep unsupported utility ideas in a backlog instead of adding more pages.
+- Close or update stale issues that no longer match the roadmap.
+- Publish `v0.2.0` once the demo, docs, and core workflow improvements are in a
+  consistent state.
+- Start the next milestone from issues, not from a large untracked feature
+  batch.
 
-The most important next step is to land a strong toolbox transition phase.
+Expected outcome:
+The project should have a clearer story, a release that matches current
+functionality, and a more realistic issue-to-release maintenance loop.
 
-Recommended focus:
+## Engineering Priorities
 
-1. Unify product framing across home, README, and roadmap
-2. Connect existing modules with clearer workflow paths
-3. Prepare a cleaner data boundary for the prompt workflow
-4. Add automated tests for the most important user behavior
+The next engineering work should favor maintainability over new feature count.
+
+Priority order:
+
+1. Shared domain validators and normalization helpers
+2. Prompt workflow page decomposition
+3. Browser smoke coverage for the core path
+4. Import/export and backup consistency
+5. Utility integrations that support saved prompt review
+
+Avoid building a backend until the local domain model is more stable.
+
+## Open-Source Maintenance Priorities
+
+The project should keep a simple but visible maintenance loop:
+
+1. Create or update a scoped issue.
+2. Make a small implementation change.
+3. Run local checks.
+4. Commit with a clear message.
+5. Let CI pass on `main`.
+6. Include meaningful changes in the next release notes.
+
+Near-term repository maintenance:
+
+- Verify the public demo or remove demo claims until it is current.
+- Keep `v0.1.0` as a historical release and use `v0.2.0` for current work.
+- Align GitHub labels, issue templates, and release categories.
+- Prefer factual documentation over marketing language.
+- Track Dependabot failures as normal maintenance work.
 
 ## Decision Filter
 
-Every future feature should be checked against three questions:
+Before adding a feature, answer these questions:
 
-1. Can a new user understand the value of the project within a few minutes?
-2. Does this make repeat AI-assisted developer work faster or clearer?
-3. Does this make the repository stronger as a real open-source project?
+1. Does it make the prompt workflow easier to create, review, reuse, or back up?
+2. Does it reduce confusion for a new user?
+3. Does it strengthen local data reliability or open-source maintainability?
+4. Can it be delivered as a small, reviewable change?
 
-If a planned feature does not help at least one of those clearly, it should probably wait.
+If the answer is not clearly yes to at least one of the first three questions,
+the work should wait.

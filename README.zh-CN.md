@@ -211,7 +211,8 @@ npm run audit
 - 让本地持久化和测试更稳
 - 保持文档和实际功能状态一致
 
-更长期的规划见 [docs/roadmap.md](./docs/roadmap.md)。  
+复盘后的实现路线图见 [docs/roadmap.md](./docs/roadmap.md)。
+
 代码结构说明见 [docs/architecture.md](./docs/architecture.md)。
 
 ## 发布记录
