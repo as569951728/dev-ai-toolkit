@@ -73,8 +73,19 @@ function isValidPromptTemplateRevision(value: unknown) {
   );
 }
 
+function hasCurrentTemplateRevision(value: unknown) {
+  if (!isRecord(value) || !Array.isArray(value.revisions)) {
+    return false;
+  }
+
+  return value.revisions.some(
+    (revision) => isRecord(revision) && revision.version === value.version,
+  );
+}
+
 function isValidPromptTemplate(value: unknown): value is PromptTemplate {
-  return (
+  if (
+    !(
     isRecord(value) &&
     isNonEmptyString(value.id) &&
     isNonEmptyString(value.name) &&
@@ -87,7 +98,12 @@ function isValidPromptTemplate(value: unknown): value is PromptTemplate {
     value.revisions.every(isValidPromptTemplateRevision) &&
     (isValidDateString(value.archivedAt) || value.archivedAt === null) &&
     isValidDateString(value.updatedAt)
-  );
+    )
+  ) {
+    return false;
+  }
+
+  return hasCurrentTemplateRevision(value);
 }
 
 function isValidPromptRun(value: unknown): value is PromptRunRecord {

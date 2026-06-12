@@ -96,6 +96,8 @@ The format is intentionally lightweight and human-readable.
   unavailable
 - Rejected prompt run imports when the embedded source revision version does
   not match the run
+- Rejected workspace backups whose templates do not include the current
+  revision
 - Replaced the default React Router unknown-route error with a project-level
   not found page
 - Added `/workspace-backup` as a compatibility route for the Workspace Backup
