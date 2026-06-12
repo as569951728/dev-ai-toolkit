@@ -96,6 +96,7 @@ The format is intentionally lightweight and human-readable.
 - Added weekly Dependabot checks for npm and GitHub Actions dependencies
 - Clarified that the public demo URL is still unverified and tracked in issue
   #14
+- Centralized clipboard writes in a shared helper used by copy-enabled modules
 
 ## [v0.1.0] - 2026-05-06
 

@@ -12,14 +12,7 @@ import {
   sampleJson,
   validateJson,
 } from '@/features/json-tools/lib/json-tools-utils';
-
-async function copyToClipboard(value: string) {
-  if (!navigator.clipboard) {
-    throw new Error('Clipboard API unavailable.');
-  }
-
-  await navigator.clipboard.writeText(value);
-}
+import { writeClipboardText } from '@/lib/clipboard';
 
 export function JsonToolsPage() {
   const [inputValue, setInputValue] = useState(sampleJson);
@@ -48,7 +41,7 @@ export function JsonToolsPage() {
     }
 
     try {
-      await copyToClipboard(resultValue);
+      await writeClipboardText(resultValue);
       setMessage('Result copied to clipboard.');
       setIsValid(true);
     } catch {

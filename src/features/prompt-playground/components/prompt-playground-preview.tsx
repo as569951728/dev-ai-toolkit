@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import { writeClipboardText } from '@/lib/clipboard';
 import type { PromptTemplate } from '@/types/prompt-template';
 
 interface PromptPlaygroundPreviewProps {
@@ -23,14 +24,6 @@ type CopyFeedback = {
   tone: 'success' | 'error';
 };
 
-async function copyToClipboard(value: string) {
-  if (typeof navigator === 'undefined' || !navigator.clipboard) {
-    throw new Error('Clipboard API is unavailable.');
-  }
-
-  await navigator.clipboard.writeText(value);
-}
-
 export function PromptPlaygroundPreview({
   selectedTemplate,
   preview,
@@ -47,7 +40,7 @@ export function PromptPlaygroundPreview({
 
   const handleCopy = async (section: 'system' | 'user', value: string) => {
     try {
-      await copyToClipboard(value);
+      await writeClipboardText(value);
       setCopiedSection(section);
       setCopyFeedback({
         message: `${section === 'system' ? 'System' : 'User'} prompt copied.`,

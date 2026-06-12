@@ -8,14 +8,7 @@ import {
   promptDiffSampleLeft,
   promptDiffSampleRight,
 } from '@/features/prompt-diff/lib/prompt-diff-utils';
-
-async function copyToClipboard(value: string) {
-  if (!navigator.clipboard) {
-    throw new Error('Clipboard API unavailable.');
-  }
-
-  await navigator.clipboard.writeText(value);
-}
+import { writeClipboardText } from '@/lib/clipboard';
 
 type PromptDiffWorkspaceProps = {
   initialLeftValue: string;
@@ -36,7 +29,7 @@ function PromptDiffWorkspace({
   const [copyFeedback, setCopyFeedback] = useState<CopyFeedback | null>(null);
   const handleCopy = async (label: 'left' | 'right', value: string) => {
     try {
-      await copyToClipboard(value);
+      await writeClipboardText(value);
       setCopyFeedback({
         message: `${label === 'left' ? 'Left' : 'Right'} prompt copied.`,
         tone: 'success',

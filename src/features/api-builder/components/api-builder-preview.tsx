@@ -7,6 +7,7 @@ import {
   summarizeRequest,
   type ApiBuilderState,
 } from '@/features/api-builder/lib/api-builder-utils';
+import { writeClipboardText } from '@/lib/clipboard';
 
 interface ApiBuilderPreviewProps {
   state: ApiBuilderState;
@@ -15,14 +16,6 @@ interface ApiBuilderPreviewProps {
 interface CopyFeedback {
   message: string;
   tone: 'success' | 'error';
-}
-
-async function copyToClipboard(value: string) {
-  if (!navigator.clipboard) {
-    throw new Error('Clipboard API unavailable.');
-  }
-
-  await navigator.clipboard.writeText(value);
 }
 
 export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
@@ -50,7 +43,7 @@ export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
     feedbackLabel: string,
   ) => {
     try {
-      await copyToClipboard(value);
+      await writeClipboardText(value);
       setLabel('Copied');
       setCopyFeedback({
         message: `${feedbackLabel} copied.`,

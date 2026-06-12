@@ -9,14 +9,7 @@ import {
   codeViewerSampleRight,
   type CodeViewerMode,
 } from '@/features/code-viewer/lib/code-viewer-utils';
-
-async function copyToClipboard(value: string) {
-  if (!navigator.clipboard) {
-    throw new Error('Clipboard API unavailable.');
-  }
-
-  await navigator.clipboard.writeText(value);
-}
+import { writeClipboardText } from '@/lib/clipboard';
 
 type CodeViewerWorkspaceProps = {
   initialMode: CodeViewerMode;
@@ -43,7 +36,7 @@ function CodeViewerWorkspace({
   const [copyFeedback, setCopyFeedback] = useState<CopyFeedback | null>(null);
   const handleCopy = async (label: 'left' | 'right', value: string) => {
     try {
-      await copyToClipboard(value);
+      await writeClipboardText(value);
       setCopyFeedback({
         message: `${label === 'left' ? 'Left' : 'Right'} input copied.`,
         tone: 'success',
