@@ -118,18 +118,12 @@ export function ensurePromptTemplateVersioning(
     }
   }
 
-  const normalizedRevisions = [...normalizedRevisionsByVersion.values()].sort(
+  const currentRevision = createPromptTemplateRevision(input, version, updatedAt);
+  normalizedRevisionsByVersion.set(currentRevision.version, currentRevision);
+
+  const revisions = [...normalizedRevisionsByVersion.values()].sort(
     (left, right) => left.version - right.version,
   );
-
-  const currentRevision = createPromptTemplateRevision(input, version, updatedAt);
-  const hasCurrentRevision = normalizedRevisions.some(
-    (revision) => revision.version === currentRevision.version,
-  );
-
-  const revisions = hasCurrentRevision
-    ? normalizedRevisions
-    : [...normalizedRevisions, currentRevision];
 
   return {
     id: template.id,

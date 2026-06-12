@@ -95,6 +95,15 @@ describe('prompt-template-transfer', () => {
             tags: ['legacy', 'latest'],
           },
           {
+            version: 3,
+            updatedAt: '2026-05-01T00:00:00.000Z',
+            name: 'Legacy Template',
+            description: 'Stale current revision from the import file',
+            systemPrompt: 'Outdated system prompt.',
+            userPrompt: 'Outdated user prompt.',
+            tags: ['stale'],
+          },
+          {
             version: 0,
             updatedAt: 'bad-date',
             name: '',
@@ -122,7 +131,12 @@ describe('prompt-template-transfer', () => {
       description: 'Latest duplicate revision wins',
       tags: ['legacy', 'latest'],
     });
-    expect(importedTemplate.revisions[1]?.version).toBe(3);
+    expect(importedTemplate.revisions[1]).toMatchObject({
+      version: 3,
+      description: 'Imported from an older file',
+      systemPrompt: 'Inspect {{repo}}.',
+      userPrompt: 'Summarize {{task}}.',
+    });
   });
 
   it('reports invalid template import JSON with a stable message', () => {

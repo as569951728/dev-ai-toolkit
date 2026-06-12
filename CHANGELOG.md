@@ -101,6 +101,8 @@ The format is intentionally lightweight and human-readable.
 - Rejected workspace backups with duplicate template revision versions
 - Deduplicated prompt template revisions by version while normalizing imports
   and stored templates
+- Kept the current prompt template revision aligned with the template's current
+  fields during normalization
 - Replaced the default React Router unknown-route error with a project-level
   not found page
 - Added `/workspace-backup` as a compatibility route for the Workspace Backup
