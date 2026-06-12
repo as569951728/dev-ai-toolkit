@@ -17,6 +17,7 @@ interface PromptTemplateDetailProps {
   onDelete: (id: string) => void;
   onOpenInPlayground: (id: string) => void;
   onOpenRunHistory: (id: string) => void;
+  onOpenRunDetail: (id: string) => void;
   onRestoreRevision: (
     templateId: string,
     revisionVersion: PromptTemplateRevision['version'],
@@ -44,6 +45,7 @@ export function PromptTemplateDetail({
   onDelete,
   onOpenInPlayground,
   onOpenRunHistory,
+  onOpenRunDetail,
   onRestoreRevision,
   recentRuns,
 }: PromptTemplateDetailProps) {
@@ -241,6 +243,16 @@ export function PromptTemplateDetail({
                       Object.keys(run.variables).length,
                     )}
                   </p>
+
+                  <div className="detail-actions detail-actions--inline">
+                    <button
+                      className="ghost-button"
+                      type="button"
+                      onClick={() => onOpenRunDetail(run.id)}
+                    >
+                      View run details
+                    </button>
+                  </div>
                 </article>
               ))}
             </div>

@@ -43,6 +43,45 @@ afterEach(() => {
 });
 
 describe('PromptTemplateDetailPage', () => {
+  it('opens a recent run from the template detail activity list', () => {
+    const template = starterPromptTemplates[0]!;
+    const run: PromptRunRecord = {
+      id: 'run-from-template-detail',
+      templateId: template.id,
+      templateName: template.name,
+      templateVersion: template.version,
+      variables: {
+        component: 'PromptTemplateDetail',
+      },
+      systemPrompt: template.systemPrompt,
+      userPrompt: template.userPrompt,
+      createdAt: '2026-06-12T08:00:00.000Z',
+    };
+
+    render(
+      <MemoryRouter initialEntries={[`/prompts/${template.id}`]}>
+        <PromptTemplatesProvider repository={createTemplateRepository([template])}>
+          <PromptRunsProvider repository={createRunRepository([run])}>
+            <Routes>
+              <Route
+                path="/prompts/:promptId"
+                element={<PromptTemplateDetailPage />}
+              />
+              <Route
+                path="/runs/:runId"
+                element={<div>Run Detail Destination</div>}
+              />
+            </Routes>
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'View run details' }));
+
+    expect(screen.getByText('Run Detail Destination')).toBeInTheDocument();
+  });
+
   it('does not offer the playground action for an archived prompt template', () => {
     const archivedTemplate = {
       ...starterPromptTemplates[0]!,
