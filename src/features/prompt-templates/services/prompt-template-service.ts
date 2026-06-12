@@ -158,9 +158,12 @@ export function archivePromptTemplate(
         return template;
       }
 
+      const updatedAt = new Date().toISOString();
+
       archivedTemplate = {
         ...template,
-        archivedAt: new Date().toISOString(),
+        archivedAt: updatedAt,
+        updatedAt,
       };
 
       return archivedTemplate;
@@ -190,9 +193,12 @@ export function restoreArchivedPromptTemplate(
         return template;
       }
 
+      const updatedAt = new Date().toISOString();
+
       restoredTemplate = {
         ...template,
         archivedAt: null,
+        updatedAt,
       };
 
       return restoredTemplate;

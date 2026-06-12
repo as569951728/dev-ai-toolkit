@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { starterPromptTemplates } from '@/features/prompt-templates/seed/prompt-templates';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
@@ -154,35 +154,47 @@ describe('prompt-template-service', () => {
   });
 
   it('archives and restores templates without deleting their history', () => {
-    const repository = createMemoryRepository();
-    const templateId = starterPromptTemplates[0]!.id;
+    vi.useFakeTimers();
 
-    const archiveResult = archivePromptTemplate(
-      repository,
-      repository.loadAll(),
-      templateId,
-    );
+    try {
+      const repository = createMemoryRepository();
+      const templateId = starterPromptTemplates[0]!.id;
+      const archivedAt = '2026-05-10T10:00:00.000Z';
+      const restoredAt = '2026-05-11T10:00:00.000Z';
 
-    expect(archiveResult.template?.archivedAt).not.toBeNull();
-    expect(
-      repository.snapshot().find((template) => template.id === templateId)
-        ?.archivedAt,
-    ).not.toBeNull();
+      vi.setSystemTime(new Date(archivedAt));
+      const archiveResult = archivePromptTemplate(
+        repository,
+        repository.loadAll(),
+        templateId,
+      );
 
-    const restoreResult = restoreArchivedPromptTemplate(
-      repository,
-      repository.loadAll(),
-      templateId,
-    );
+      expect(archiveResult.template?.archivedAt).toBe(archivedAt);
+      expect(archiveResult.template?.updatedAt).toBe(archivedAt);
+      expect(
+        repository.snapshot().find((template) => template.id === templateId)
+          ?.archivedAt,
+      ).toBe(archivedAt);
 
-    expect(restoreResult.template?.archivedAt).toBeNull();
-    expect(
-      repository.snapshot().find((template) => template.id === templateId)
-        ?.archivedAt,
-    ).toBeNull();
-    expect(
-      repository.snapshot().find((template) => template.id === templateId)
-        ?.revisions.length,
-    ).toBe(starterPromptTemplates[0]!.revisions.length);
+      vi.setSystemTime(new Date(restoredAt));
+      const restoreResult = restoreArchivedPromptTemplate(
+        repository,
+        repository.loadAll(),
+        templateId,
+      );
+
+      expect(restoreResult.template?.archivedAt).toBeNull();
+      expect(restoreResult.template?.updatedAt).toBe(restoredAt);
+      expect(
+        repository.snapshot().find((template) => template.id === templateId)
+          ?.archivedAt,
+      ).toBeNull();
+      expect(
+        repository.snapshot().find((template) => template.id === templateId)
+          ?.revisions.length,
+      ).toBe(starterPromptTemplates[0]!.revisions.length);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

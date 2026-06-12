@@ -85,6 +85,8 @@ The format is intentionally lightweight and human-readable.
 - Added accessible labels for Code Viewer and Prompt Diff textareas
 - Normalized unsupported Code Viewer language query values before rendering
 - Centralized prompt run Code Viewer URL construction through a shared helper
+- Refreshed prompt template `updatedAt` values when archiving or restoring
+  templates
 - Replaced the default React Router unknown-route error with a project-level
   not found page
 - Added `/workspace-backup` as a compatibility route for the Workspace Backup
