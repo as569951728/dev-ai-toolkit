@@ -7,6 +7,7 @@ import {
   summarizeRequest,
   type ApiBuilderState,
 } from '@/features/api-builder/lib/api-builder-utils';
+import { buildCodeViewerUrl } from '@/features/code-viewer/lib/code-viewer-utils';
 import { writeClipboardText } from '@/lib/clipboard';
 
 interface ApiBuilderPreviewProps {
@@ -25,16 +26,16 @@ export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
   const { requestUrl, headers, hasBody } = summarizeRequest(state);
   const fetchSnippet = buildFetchSnippet(state);
   const curlCommand = buildCurlCommand(state);
-  const fetchCodeViewerUrl = `/code-viewer?${new URLSearchParams({
+  const fetchCodeViewerUrl = buildCodeViewerUrl({
     left: fetchSnippet,
     mode: 'single',
     language: 'javascript',
-  }).toString()}`;
-  const codeViewerUrl = `/code-viewer?${new URLSearchParams({
+  });
+  const codeViewerUrl = buildCodeViewerUrl({
     left: curlCommand,
     mode: 'single',
     language: 'bash',
-  }).toString()}`;
+  });
 
   const handleCopy = async (
     value: string,

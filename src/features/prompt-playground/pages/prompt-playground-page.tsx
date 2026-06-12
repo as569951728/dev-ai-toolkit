@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
+import { buildCodeViewerUrl } from '@/features/code-viewer/lib/code-viewer-utils';
 import { PromptPlaygroundPreview } from '@/features/prompt-playground/components/prompt-playground-preview';
 import { PromptPlaygroundTemplatePicker } from '@/features/prompt-playground/components/prompt-playground-template-picker';
 import { PromptPlaygroundVariableForm } from '@/features/prompt-playground/components/prompt-playground-variable-form';
@@ -156,13 +157,14 @@ function PromptPlaygroundWorkspace({
             navigate(`/prompt-diff?${params.toString()}`);
           }}
           onOpenInCodeViewer={() => {
-            const params = new URLSearchParams({
-              left: originalPromptText,
-              right: generatedPromptText,
-              mode: 'compare',
-              language: 'markdown',
-            });
-            navigate(`/code-viewer?${params.toString()}`);
+            navigate(
+              buildCodeViewerUrl({
+                left: originalPromptText,
+                right: generatedPromptText,
+                mode: 'compare',
+                language: 'markdown',
+              }),
+            );
           }}
           savedRunId={savedRunId}
         />

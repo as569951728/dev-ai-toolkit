@@ -87,6 +87,8 @@ The format is intentionally lightweight and human-readable.
 - Centralized prompt run Code Viewer URL construction through a shared helper
 - Refreshed prompt template `updatedAt` values when archiving or restoring
   templates
+- Reused the shared Code Viewer URL helper from API Builder and Prompt
+  Playground links
 - Replaced the default React Router unknown-route error with a project-level
   not found page
 - Added `/workspace-backup` as a compatibility route for the Workspace Backup
