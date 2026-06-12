@@ -61,7 +61,7 @@
   - 单栏 / 双栏查看文本和代码输出
   - 复制内容
 - Workspace Backup
-  - 导出当前本地模板、已保存 runs 和 run notes
+  - 导出当前本地模板、已保存 runs、run notes 和最近使用模板入口
   - 从 dev-ai-toolkit 导出的 JSON 文件恢复本地工作区
   - 模板和 runs 按 id 合并，run notes 按 runId 合并
 
@@ -182,7 +182,7 @@ npm run audit
 | Developer Utilities | JSON Tools | 格式化、校验、压缩、复制、加载示例 | 适合调试 JSON 载荷 |
 | Developer Utilities | API Builder | 组织请求参数并生成 `fetch` 代码和 cURL 命令 | 本地请求草稿工具 |
 | Developer Utilities | Code Viewer | 单栏 / 双栏查看文本和代码输出 | 适合审阅 prompt 或生成结果 |
-| Workspace | Workspace Backup | 导出和导入本地模板、runs、notes 的版本化 JSON | 当前浏览器 profile 的手动备份入口 |
+| Workspace | Workspace Backup | 导出和导入本地模板、runs、notes 和最近使用模板入口的版本化 JSON | 当前浏览器 profile 的手动备份入口 |
 
 ## 典型使用路径
 
