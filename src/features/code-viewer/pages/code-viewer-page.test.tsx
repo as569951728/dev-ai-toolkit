@@ -74,6 +74,19 @@ describe('CodeViewerPage', () => {
     );
   });
 
+  it('falls back to plaintext when the language query is unsupported', () => {
+    renderCodeViewer('/code-viewer?left=hello&language=text');
+
+    expect(screen.getByLabelText('Language')).toHaveValue('plaintext');
+    expect(
+      screen.getByText((_, element) =>
+        element?.className === 'panel__summary' &&
+        (element.textContent?.includes('Use plaintext as the current content label') ??
+          false),
+      ),
+    ).toBeInTheDocument();
+  });
+
   it('announces copy failures when the clipboard is unavailable', async () => {
     Object.defineProperty(navigator, 'clipboard', {
       configurable: true,

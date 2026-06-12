@@ -1,24 +1,19 @@
-import type { CodeViewerMode } from '@/features/code-viewer/lib/code-viewer-utils';
+import {
+  codeViewerLanguageOptions,
+  type CodeViewerLanguage,
+  type CodeViewerMode,
+} from '@/features/code-viewer/lib/code-viewer-utils';
 
 interface CodeViewerToolbarProps {
   mode: CodeViewerMode;
-  language: string;
+  language: CodeViewerLanguage;
   onModeChange: (mode: CodeViewerMode) => void;
-  onLanguageChange: (language: string) => void;
+  onLanguageChange: (language: CodeViewerLanguage) => void;
   onCopyLeft: () => void;
   onCopyRight: () => void;
   onLoadSample: () => void;
   onReset: () => void;
 }
-
-const languageOptions = [
-  'plaintext',
-  'typescript',
-  'javascript',
-  'json',
-  'markdown',
-  'bash',
-];
 
 export function CodeViewerToolbar({
   mode,
@@ -53,9 +48,11 @@ export function CodeViewerToolbar({
         <span>Language</span>
         <select
           value={language}
-          onChange={(event) => onLanguageChange(event.target.value)}
+          onChange={(event) =>
+            onLanguageChange(event.target.value as CodeViewerLanguage)
+          }
         >
-          {languageOptions.map((option) => (
+          {codeViewerLanguageOptions.map((option) => (
             <option key={option} value={option}>
               {option}
             </option>

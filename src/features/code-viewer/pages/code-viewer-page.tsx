@@ -7,13 +7,15 @@ import { CodeViewerToolbar } from '@/features/code-viewer/components/code-viewer
 import {
   codeViewerSampleLeft,
   codeViewerSampleRight,
+  normalizeCodeViewerLanguage,
+  type CodeViewerLanguage,
   type CodeViewerMode,
 } from '@/features/code-viewer/lib/code-viewer-utils';
 import { writeClipboardText } from '@/lib/clipboard';
 
 type CodeViewerWorkspaceProps = {
   initialMode: CodeViewerMode;
-  initialLanguage: string;
+  initialLanguage: CodeViewerLanguage;
   initialLeftValue: string;
   initialRightValue: string;
 };
@@ -137,7 +139,9 @@ export function CodeViewerPage() {
     () => (searchParams.get('mode') === 'single' ? 'single' : 'compare'),
     [searchParams],
   );
-  const initialLanguage = searchParams.get('language') ?? 'typescript';
+  const initialLanguage = searchParams.has('language')
+    ? normalizeCodeViewerLanguage(searchParams.get('language'))
+    : 'typescript';
   const initialLeftValue = searchParams.get('left') ?? codeViewerSampleLeft;
   const initialRightValue = searchParams.get('right') ?? codeViewerSampleRight;
   const workspaceKey = searchParams.toString() || 'default-code-viewer';

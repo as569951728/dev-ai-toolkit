@@ -1,12 +1,13 @@
 import {
   countCharacters,
   countLines,
+  type CodeViewerLanguage,
   type CodeViewerMode,
 } from '@/features/code-viewer/lib/code-viewer-utils';
 
 interface CodePreviewPanelProps {
   mode: CodeViewerMode;
-  language: string;
+  language: CodeViewerLanguage;
   leftValue: string;
   rightValue: string;
 }
