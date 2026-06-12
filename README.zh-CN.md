@@ -4,7 +4,7 @@
 
 **语言版本：** [English](./README.md) | 简体中文
 
-`dev-ai-toolkit` 是一个本地优先的开发者 AI 工具箱，基于 React、Vite 和 TypeScript 构建。
+`dev-ai-toolkit` 是一组本地优先的开发辅助工具，用来维护 prompt 模板、保存运行记录、清理 JSON，并整理 API 请求草稿。
 
 当前项目主要围绕几类日常开发场景展开：
 

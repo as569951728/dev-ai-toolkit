@@ -2,7 +2,7 @@
   "name": "dev-ai-toolkit",
   "version": "0.1.0",
   "private": false,
-  "description": "A practical open-source AI toolkit for developers, built with React, Vite, and TypeScript.",
+  "description": "Local-first developer tools for prompt templates, saved runs, JSON cleanup, and API request drafts.",
   "type": "module",
   "scripts": {
     "dev": "vite",

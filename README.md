@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/as569951728/dev-ai-toolkit/actions/workflows/ci.yml/badge.svg)](https://github.com/as569951728/dev-ai-toolkit/actions/workflows/ci.yml)
 
-A practical open-source AI toolkit for developers, built with React, Vite, and TypeScript.
+Local-first developer tools for prompt templates, saved runs, JSON cleanup, and API request drafts.
 
 This project is a local-first **AI developer toolbox** for a small set of practical workflows such as prompt authoring, payload inspection, request scaffolding, and output review.
 
