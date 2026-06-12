@@ -27,6 +27,7 @@ export function PromptRunDetailPage() {
   const { getTemplateById } = usePromptTemplates();
   const { deleteRunWithRelatedData } = usePromptRunWorkflowActions();
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
+  const [exportStatusMessage, setExportStatusMessage] = useState('');
 
   const run = runId ? getRunById(runId) : undefined;
 
@@ -58,6 +59,14 @@ export function PromptRunDetailPage() {
       (revision) => revision.version === run.templateVersion,
     ) ?? null;
   const promptDiffUrl = buildPromptRunSourceDiffUrl({ run, sourceTemplate });
+  const handleExportRun = () => {
+    exportPromptRunAsJson({
+      run,
+      note,
+      sourceTemplateRevision: sourceRevision,
+    });
+    setExportStatusMessage('Run exported as JSON.');
+  };
 
   return (
     <section className="playground-layout">
@@ -88,13 +97,7 @@ export function PromptRunDetailPage() {
           <button
             className="ghost-button"
             type="button"
-            onClick={() =>
-              exportPromptRunAsJson({
-                run,
-                note,
-                sourceTemplateRevision: sourceRevision,
-              })
-            }
+            onClick={handleExportRun}
           >
             Export run JSON
           </button>
@@ -130,6 +133,12 @@ export function PromptRunDetailPage() {
             </button>
           )}
         </div>
+
+        {exportStatusMessage ? (
+          <p className="status-banner" role="status">
+            {exportStatusMessage}
+          </p>
+        ) : null}
       </div>
 
       <section className="panel">

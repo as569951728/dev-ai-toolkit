@@ -262,6 +262,9 @@ describe('PromptRunDetailPage', () => {
       note,
       sourceTemplateRevision,
     });
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Run exported as JSON.',
+    );
   });
 
   it('asks for confirmation before deleting the current run and its saved note', () => {

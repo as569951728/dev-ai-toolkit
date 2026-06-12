@@ -25,6 +25,7 @@ The format is intentionally lightweight and human-readable.
 - Added a Run History shortcut for opening an imported run from the import
   success message
 - Added a Prompt Template detail shortcut for opening recent saved runs
+- Added Prompt Run Detail export feedback after downloading run JSON
 - Updated the homepage API Builder copy to include cURL command output
 - Updated the API Builder page summary to reflect both fetch and cURL outputs
 - Linked homepage recent activity cards to saved run details
