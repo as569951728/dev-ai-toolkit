@@ -158,6 +158,9 @@ describe('WorkspaceBackupPage', () => {
       notes: [note],
       recentTemplateIds: ['template-1'],
     });
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Workspace backup exported as JSON.',
+    );
   });
 
   it('imports a workspace backup JSON file and shows a summary', async () => {

@@ -18,6 +18,7 @@ export function WorkspaceBackupPage() {
   const { runs } = usePromptRuns();
   const { templates } = usePromptTemplates();
   const { importWorkspaceBackupJson } = useWorkspaceBackup();
+  const [exportStatusMessage, setExportStatusMessage] = useState('');
   const [importError, setImportError] = useState('');
   const [recentTemplateIds, setRecentTemplateIds] = useState(() =>
     loadRecentTemplateIds(),
@@ -35,6 +36,7 @@ export function WorkspaceBackupPage() {
       notes,
       recentTemplateIds: currentRecentTemplateIds,
     });
+    setExportStatusMessage('Workspace backup exported as JSON.');
   };
 
   const handleImportWorkspace = async (
@@ -82,6 +84,12 @@ export function WorkspaceBackupPage() {
             Export workspace JSON
           </button>
         </div>
+
+        {exportStatusMessage ? (
+          <p className="status-banner" role="status">
+            {exportStatusMessage}
+          </p>
+        ) : null}
       </section>
 
       <section className="home-section">

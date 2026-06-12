@@ -26,6 +26,7 @@ The format is intentionally lightweight and human-readable.
   success message
 - Added a Prompt Template detail shortcut for opening recent saved runs
 - Added Prompt Run Detail export feedback after downloading run JSON
+- Added Workspace Backup export feedback after downloading backup JSON
 - Updated the homepage API Builder copy to include cURL command output
 - Updated the API Builder page summary to reflect both fetch and cURL outputs
 - Linked homepage recent activity cards to saved run details
