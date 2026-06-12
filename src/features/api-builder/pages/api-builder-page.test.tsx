@@ -64,6 +64,35 @@ describe('ApiBuilderPage', () => {
     ).toBeInTheDocument();
   });
 
+  it('labels query and header pair controls for assistive technology', () => {
+    renderApiBuilderPage();
+
+    expect(
+      screen.getByRole('textbox', { name: 'Query params key 1' }),
+    ).toHaveValue('workspace');
+    expect(
+      screen.getByRole('textbox', { name: 'Query params value 1' }),
+    ).toHaveValue('dev-ai-toolkit');
+    expect(
+      screen.getByRole('textbox', { name: 'Headers key 1' }),
+    ).toHaveValue('Authorization');
+    expect(
+      screen.getByRole('textbox', { name: 'Headers value 1' }),
+    ).toHaveValue('Bearer <token>');
+    expect(
+      screen.getByRole('button', { name: 'Add Query params row' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Add Headers row' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Remove Query params row 1' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Remove Headers row 1' }),
+    ).toBeInTheDocument();
+  });
+
   it('copies the generated curl command and announces the result', async () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     Object.defineProperty(navigator, 'clipboard', {

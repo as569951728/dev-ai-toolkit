@@ -35,6 +35,7 @@ export function ApiBuilderPairsEditor({
           <p>{description}</p>
         </div>
         <button
+          aria-label={`Add ${title} row`}
           className="ghost-button"
           type="button"
           onClick={() => onChange([...nextPairs, createEmptyPair()])}
@@ -47,6 +48,7 @@ export function ApiBuilderPairsEditor({
         {nextPairs.map((pair, index) => (
           <div className="api-pairs-editor__row" key={pair.id}>
             <input
+              aria-label={`${title} key ${index + 1}`}
               value={pair.key}
               onChange={(event) => {
                 const updatedPairs = [...nextPairs];
@@ -59,6 +61,7 @@ export function ApiBuilderPairsEditor({
               placeholder={keyPlaceholder}
             />
             <input
+              aria-label={`${title} value ${index + 1}`}
               value={pair.value}
               onChange={(event) => {
                 const updatedPairs = [...nextPairs];
@@ -71,6 +74,7 @@ export function ApiBuilderPairsEditor({
               placeholder={valuePlaceholder}
             />
             <button
+              aria-label={`Remove ${title} row ${index + 1}`}
               className="ghost-button"
               type="button"
               onClick={() =>
