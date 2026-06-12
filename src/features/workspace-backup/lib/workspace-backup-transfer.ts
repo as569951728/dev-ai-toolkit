@@ -83,6 +83,18 @@ function hasCurrentTemplateRevision(value: unknown) {
   );
 }
 
+function hasUniqueTemplateRevisions(value: unknown) {
+  if (!isRecord(value) || !Array.isArray(value.revisions)) {
+    return false;
+  }
+
+  const revisionVersions = value.revisions
+    .filter(isRecord)
+    .map((revision) => revision.version);
+
+  return revisionVersions.length === new Set(revisionVersions).size;
+}
+
 function isValidPromptTemplate(value: unknown): value is PromptTemplate {
   if (
     !(
@@ -103,7 +115,7 @@ function isValidPromptTemplate(value: unknown): value is PromptTemplate {
     return false;
   }
 
-  return hasCurrentTemplateRevision(value);
+  return hasCurrentTemplateRevision(value) && hasUniqueTemplateRevisions(value);
 }
 
 function isValidPromptRun(value: unknown): value is PromptRunRecord {

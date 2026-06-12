@@ -98,6 +98,7 @@ The format is intentionally lightweight and human-readable.
   not match the run
 - Rejected workspace backups whose templates do not include the current
   revision
+- Rejected workspace backups with duplicate template revision versions
 - Replaced the default React Router unknown-route error with a project-level
   not found page
 - Added `/workspace-backup` as a compatibility route for the Workspace Backup
