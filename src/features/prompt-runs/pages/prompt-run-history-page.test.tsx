@@ -164,6 +164,17 @@ describe('PromptRunHistoryPage', () => {
     expect(
       screen.getAllByRole('link', { name: 'Open output in Code Viewer' }),
     ).toHaveLength(2);
+    const codeViewerUrl = new URL(
+      screen
+        .getAllByRole('link', { name: 'Open output in Code Viewer' })[0]!
+        .getAttribute('href') ?? '',
+      'https://example.test',
+    );
+    expect(codeViewerUrl.pathname).toBe('/code-viewer');
+    expect(codeViewerUrl.searchParams.get('left')).toBe('System B');
+    expect(codeViewerUrl.searchParams.get('right')).toBe('User B');
+    expect(codeViewerUrl.searchParams.get('mode')).toBe('compare');
+    expect(codeViewerUrl.searchParams.get('language')).toBe('markdown');
     expect(
       screen.getAllByRole('link', { name: 'Compare with source' }),
     ).toHaveLength(2);

@@ -125,12 +125,22 @@ describe('PromptRunDetailPage', () => {
     expect(
       screen.getByRole('link', { name: 'View source template' }),
     ).toHaveAttribute('href', `/prompts/${starterPromptTemplates[0]!.id}`);
-    expect(
-      screen.getByRole('link', { name: 'Open output in Code Viewer' }),
-    ).toHaveAttribute(
-      'href',
-      `/code-viewer?left=${encodeURIComponent('Review the code carefully.')}&right=${encodeURIComponent('Focus on bugs and missing tests.')}&mode=compare&language=markdown`,
+    const codeViewerUrl = new URL(
+      screen
+        .getByRole('link', { name: 'Open output in Code Viewer' })
+        .getAttribute('href') ?? '',
+      'https://example.test',
     );
+
+    expect(codeViewerUrl.pathname).toBe('/code-viewer');
+    expect(codeViewerUrl.searchParams.get('left')).toBe(
+      'Review the code carefully.',
+    );
+    expect(codeViewerUrl.searchParams.get('right')).toBe(
+      'Focus on bugs and missing tests.',
+    );
+    expect(codeViewerUrl.searchParams.get('mode')).toBe('compare');
+    expect(codeViewerUrl.searchParams.get('language')).toBe('markdown');
     expect(
       screen.getByRole('link', { name: 'Compare with source' }),
     ).toHaveAttribute('href', expect.stringContaining('/prompt-diff?left='));

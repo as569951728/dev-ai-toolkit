@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
+import { buildCodeViewerUrl } from '@/features/code-viewer/lib/code-viewer-utils';
 import { PromptRunNotePanel } from '@/features/prompt-run-notes/components/prompt-run-note-panel';
 import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
 import { exportPromptRunAsJson } from '@/features/prompt-runs/lib/prompt-run-export';
@@ -50,10 +51,12 @@ export function PromptRunDetailPage() {
     deleteRunWithRelatedData(run.id);
     navigate('/runs');
   };
-  const codeViewerUrl =
-    `/code-viewer?left=${encodeURIComponent(run.systemPrompt)}` +
-    `&right=${encodeURIComponent(run.userPrompt)}` +
-    '&mode=compare&language=markdown';
+  const codeViewerUrl = buildCodeViewerUrl({
+    left: run.systemPrompt,
+    right: run.userPrompt,
+    mode: 'compare',
+    language: 'markdown',
+  });
   const sourceRevision =
     sourceTemplate?.revisions.find(
       (revision) => revision.version === run.templateVersion,

@@ -49,3 +49,29 @@ export function normalizeCodeViewerLanguage(
     ? (value as CodeViewerLanguage)
     : fallback;
 }
+
+interface BuildCodeViewerUrlInput {
+  left: string;
+  right?: string;
+  mode?: CodeViewerMode;
+  language?: CodeViewerLanguage;
+}
+
+export function buildCodeViewerUrl({
+  left,
+  right,
+  mode = 'compare',
+  language = 'plaintext',
+}: BuildCodeViewerUrlInput) {
+  const searchParams = new URLSearchParams({
+    left,
+    mode,
+    language,
+  });
+
+  if (typeof right === 'string') {
+    searchParams.set('right', right);
+  }
+
+  return `/code-viewer?${searchParams.toString()}`;
+}

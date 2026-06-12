@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import type { ChangeEvent } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 
+import { buildCodeViewerUrl } from '@/features/code-viewer/lib/code-viewer-utils';
 import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import {
@@ -346,7 +347,12 @@ export function PromptRunHistoryPage() {
                         )}
                         <Link
                           className="ghost-button"
-                          to={`/code-viewer?left=${encodeURIComponent(run.systemPrompt)}&right=${encodeURIComponent(run.userPrompt)}&mode=compare&language=markdown`}
+                          to={buildCodeViewerUrl({
+                            left: run.systemPrompt,
+                            right: run.userPrompt,
+                            mode: 'compare',
+                            language: 'markdown',
+                          })}
                         >
                           Open output in Code Viewer
                         </Link>
