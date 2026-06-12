@@ -97,6 +97,8 @@ The format is intentionally lightweight and human-readable.
 - Clarified that the public demo URL is still unverified and tracked in issue
   #14
 - Centralized clipboard writes in a shared helper used by copy-enabled modules
+- Clarified that the Vercel demo URL is reachable but not yet verified against
+  the latest `main` commit
 
 ## [v0.1.0] - 2026-05-06
 

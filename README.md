@@ -143,10 +143,13 @@ npm run preview
 
 ## Live Demo
 
-There is no verified public demo for the latest `main` branch yet. If you need
-to try the current version, run the app locally for now.
+A public Vercel URL is available, but it is not yet verified as tracking the
+latest `main` branch. If you need to test the exact current repository state,
+run the app locally for now.
 
-- Candidate URL under verification: `https://dev-ai-toolkit.vercel.app`
+- Candidate URL: [https://dev-ai-toolkit.vercel.app](https://dev-ai-toolkit.vercel.app)
+- Verification status: reachable on 2026-06-12, but the deployment has not
+  been tied back to the latest `main` commit yet
 - Tracking issue: [#14](https://github.com/as569951728/dev-ai-toolkit/issues/14)
 
 See [docs/deployment.md](./docs/deployment.md) for the current deployment notes.

@@ -8,9 +8,10 @@ This project can be deployed to Vercel as a static Vite application.
 - The production output directory is `dist`
 - Client-side routing is handled by `react-router-dom`
 - `vercel.json` is included so route refreshes fall back to `index.html`
-- There is no verified public demo for the latest `main` branch yet
-- `https://dev-ai-toolkit.vercel.app` is a candidate URL, but local reachability
-  and Vercel deployment tracking still need to be verified
+- `https://dev-ai-toolkit.vercel.app` responds publicly as of 2026-06-12
+- The public URL is not yet verified as tracking the latest `main` branch
+- GitHub deployment records currently do not show a Vercel deployment for this
+  repository
 - Demo verification is tracked in
   [GitHub issue #14](https://github.com/as569951728/dev-ai-toolkit/issues/14)
 
@@ -55,7 +56,8 @@ curl -I -L https://dev-ai-toolkit.vercel.app
 ```
 
 The demo should be considered current only when the latest `main` commit has
-passed CI and the deployed bundle includes recently merged routes or UI changes.
+passed CI and the deployed bundle can be tied back to that commit. Until then,
+the public URL should be treated as a reachable but possibly stale preview.
 
 ## Notes
 

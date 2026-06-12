@@ -147,10 +147,11 @@ npm run audit
 
 ## Live Demo
 
-当前还没有确认可访问、且能对应最新 `main` 分支的公开 demo。如果需要体验
-当前代码，建议先在本地运行。
+当前有一个 Vercel 公开地址可以访问，但还没有确认它会跟随最新 `main`
+分支部署。如果需要体验当前仓库的准确状态，建议先在本地运行。
 
-- 候选地址仍在验证：`https://dev-ai-toolkit.vercel.app`
+- 候选地址：[https://dev-ai-toolkit.vercel.app](https://dev-ai-toolkit.vercel.app)
+- 验证状态：2026-06-12 可访问，但还没有确认部署内容对应最新 `main` commit
 - 跟踪 issue: [#14](https://github.com/as569951728/dev-ai-toolkit/issues/14)
 
 当前部署说明见 [docs/deployment.md](./docs/deployment.md)。
