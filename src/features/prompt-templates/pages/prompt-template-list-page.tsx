@@ -115,7 +115,7 @@ export function PromptTemplateListPage() {
         aria-label="Import prompt templates JSON"
         className="sr-only"
         type="file"
-        accept="application/json"
+        accept="application/json,.json"
         onChange={handleImport}
       />
 

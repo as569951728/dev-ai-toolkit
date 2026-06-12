@@ -90,6 +90,7 @@ The format is intentionally lightweight and human-readable.
 - Reused the shared Code Viewer URL helper from API Builder and Prompt
   Playground links
 - Added an accessible label for the Prompt Templates JSON import input
+- Allowed Prompt Templates JSON imports to be selected by `.json` extension
 - Replaced the default React Router unknown-route error with a project-level
   not found page
 - Added `/workspace-backup` as a compatibility route for the Workspace Backup
