@@ -4,19 +4,25 @@
 
 [![CI](https://github.com/as569951728/dev-ai-toolkit/actions/workflows/ci.yml/badge.svg)](https://github.com/as569951728/dev-ai-toolkit/actions/workflows/ci.yml)
 
-Local-first developer tools for prompt templates, saved runs, JSON cleanup, and API request drafts.
+Local-first prompt workflows with a small set of supporting developer utilities.
 
-This project is a local-first **AI developer toolbox** for a small set of practical workflows such as prompt authoring, payload inspection, request scaffolding, and output review.
+The main workflow covers reusable prompt templates, variable composition, saved
+prompt snapshots, review notes, and manual workspace backup. JSON Tools, API
+Builder, and Code Viewer are included as adjacent utilities rather than a broader
+AI platform.
 
 ## Why This Project
 
-Developers often use AI across repeated workflows:
+Prompt work often becomes difficult to reuse once it is spread across chat
+history, scratch files, and one-off scripts. This project keeps a small part of
+that work in a browser-based local workspace:
 
-- Reusing prompt templates for debugging, code review, and API design
-- Organizing AI inputs, request data, and output review in a clearer way
-- Building lightweight internal tooling without a heavy backend at the start
+- Maintain templates for repeated tasks such as code review and API design
+- Fill template variables and save the composed prompts as snapshots
+- Reopen, compare, annotate, export, or back up those snapshots later
 
-`dev-ai-toolkit` is an attempt to keep those workflows in one place without introducing a backend too early.
+There is no backend, account system, model runtime, or cloud sync in the current
+version. Data stays in the active browser profile unless it is exported manually.
 
 ## Current Features
 
@@ -49,36 +55,32 @@ The current version includes:
 
 ```txt
 dev-ai-toolkit/
+├── .github/
 ├── docs/
 ├── public/
 ├── src/
 │   ├── app/
 │   │   ├── router/
-│   │   ├── providers/
 │   │   └── styles/
 │   ├── components/
-│   │   ├── common/
-│   │   ├── layout/
-│   │   └── ui/
+│   │   └── layout/
 │   ├── features/
-│   │   ├── home/
 │   │   ├── api-builder/
 │   │   ├── code-viewer/
+│   │   ├── home/
 │   │   ├── json-tools/
 │   │   ├── prompt-diff/
 │   │   ├── prompt-playground/
 │   │   ├── prompt-run-notes/
 │   │   ├── prompt-runs/
 │   │   ├── prompt-templates/
+│   │   ├── prompt-workflows/
 │   │   └── workspace-backup/
-│   ├── hooks/
 │   ├── lib/
+│   ├── test/
 │   ├── types/
-│   ├── constants/
-│   ├── assets/
 │   ├── App.tsx
 │   └── main.tsx
-├── .github/
 ├── CONTRIBUTING.md
 ├── LICENSE
 ├── README.md
@@ -173,7 +175,8 @@ steps.
 
 ## Current Modules
 
-The toolbox is currently organized around two capability groups.
+The app is currently organized around the main prompt workflow and a secondary
+set of developer utilities.
 
 | Group | Module | Current capabilities | Notes |
 | --- | --- | --- | --- |
@@ -220,10 +223,10 @@ Current maintenance priorities:
 
 Current next steps include:
 
-- Better connections across existing modules
-- Stronger data boundaries for future API-backed growth
-- More workflow-level test coverage
-- Better open-source documentation and examples
+- Keep template, playground, run history, and run detail terminology consistent
+- Reuse domain validation across local storage and workspace imports
+- Add focused browser-level coverage for the core prompt workflow
+- Verify that the public demo tracks the current `main` branch
 
 See the implementation roadmap in [docs/roadmap.md](./docs/roadmap.md).
 For contributor-facing code structure notes, see [docs/architecture.md](./docs/architecture.md).
