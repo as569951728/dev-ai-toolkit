@@ -8,6 +8,8 @@ The format is intentionally lightweight and human-readable.
 
 ### Added
 
+- Added a non-blocking unresolved-variable count before Playground prompts are
+  copied or saved
 - Preserved an active template selection when Run History offers a first-run
   Playground action
 - Added a Run Detail action for copying a full labeled saved prompt in one step

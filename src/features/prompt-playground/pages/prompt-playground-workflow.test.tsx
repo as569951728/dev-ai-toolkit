@@ -74,6 +74,42 @@ afterEach(() => {
 });
 
 describe('Prompt playground workflow', () => {
+  it('surfaces unresolved variables until all prompt inputs are filled', () => {
+    render(
+      <MemoryRouter initialEntries={['/playground']}>
+        <PromptTemplatesProvider repository={createTemplateRepository()}>
+          <PromptRunsProvider repository={createRunRepository()}>
+            <PlaygroundWorkflowProbe />
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    expect(
+      screen.getByText(
+        '2 template variables are unresolved. Their placeholders will remain in copied and saved prompts.',
+      ),
+    ).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText('Repository Name'), {
+      target: { value: 'dev-ai-toolkit' },
+    });
+
+    expect(
+      screen.getByText(
+        '1 template variable is unresolved. Its placeholder will remain in copied and saved prompts.',
+      ),
+    ).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText('Change Scope'), {
+      target: { value: 'frontend workflow' },
+    });
+
+    expect(
+      screen.queryByText(/template variable is unresolved/),
+    ).not.toBeInTheDocument();
+  });
+
   it('composes templates with dotted variable names', () => {
     const dottedTemplate = {
       ...starterPromptTemplates[0]!,

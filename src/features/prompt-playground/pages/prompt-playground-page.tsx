@@ -53,6 +53,7 @@ function PromptPlaygroundWorkspace({
     variableValues,
     preview,
     recentTemplates,
+    unresolvedVariableCount,
     markTemplateAsRecent,
     setSelectedTemplateId,
     updateVariableValue,
@@ -142,6 +143,7 @@ function PromptPlaygroundWorkspace({
           preview={preview}
           saveStatusMessage={saveStatusMessage}
           saveStatusTone={saveStatusTone}
+          unresolvedVariableCount={unresolvedVariableCount}
           onSaveRun={() => {
             if (!selectedTemplate || !preview) {
               return;

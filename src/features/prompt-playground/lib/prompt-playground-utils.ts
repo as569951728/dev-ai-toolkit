@@ -40,6 +40,13 @@ export function applyVariables(
   });
 }
 
+export function countUnresolvedVariables(
+  variables: PromptPlaygroundVariable[],
+  values: Record<string, string>,
+) {
+  return variables.filter((variable) => !values[variable.key]?.trim()).length;
+}
+
 export function buildPromptPreview(
   template: PromptTemplate,
   values: Record<string, string>,

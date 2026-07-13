@@ -19,6 +19,7 @@ interface PromptPlaygroundPreviewProps {
   savedRunId: string | null;
   saveStatusMessage: string | null;
   saveStatusTone: 'success' | 'error' | null;
+  unresolvedVariableCount: number;
 }
 
 type CopyFeedback = {
@@ -43,6 +44,7 @@ export function PromptPlaygroundPreview({
   savedRunId,
   saveStatusMessage,
   saveStatusTone,
+  unresolvedVariableCount,
 }: PromptPlaygroundPreviewProps) {
   const [copiedSection, setCopiedSection] = useState<CopiedSection | null>(null);
   const [copyFeedback, setCopyFeedback] = useState<CopyFeedback | null>(null);
@@ -100,6 +102,15 @@ export function PromptPlaygroundPreview({
             Review the final composed prompt before you copy it into your AI
             workflow.
           </p>
+          {unresolvedVariableCount > 0 ? (
+            <p aria-live="polite" className="run-history-note">
+              {unresolvedVariableCount}{' '}
+              {unresolvedVariableCount === 1
+                ? 'template variable is unresolved. Its placeholder'
+                : 'template variables are unresolved. Their placeholders'}{' '}
+              will remain in copied and saved prompts.
+            </p>
+          ) : null}
         </div>
 
         {selectedTemplate && preview ? (
