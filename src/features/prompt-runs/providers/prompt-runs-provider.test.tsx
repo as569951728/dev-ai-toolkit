@@ -21,8 +21,14 @@ function createMemoryRepository(
 }
 
 function TestConsumer() {
-  const { runs, createRun, getRunById, getRunsByTemplateId, importRuns } =
-    usePromptRuns();
+  const {
+    runs,
+    createRun,
+    getRunById,
+    getRunsByTemplateId,
+    importRuns,
+    replaceRuns,
+  } = usePromptRuns();
 
   return (
     <div>
@@ -81,6 +87,25 @@ function TestConsumer() {
         }}
       >
         Import runs
+      </button>
+      <button
+        type="button"
+        onClick={() =>
+          replaceRuns([
+            {
+              id: 'replacement-run',
+              templateId: 'template-3',
+              templateName: 'Replacement Run',
+              templateVersion: 1,
+              variables: {},
+              systemPrompt: 'Replacement system',
+              userPrompt: 'Replacement user',
+              createdAt: '2026-05-09T08:00:00.000Z',
+            },
+          ])
+        }
+      >
+        Replace runs
       </button>
     </div>
   );
@@ -157,6 +182,34 @@ describe('PromptRunsProvider', () => {
     expect(repository.snapshot().map((run) => run.templateName)).toEqual([
       'Second Run',
       'First Run',
+    ]);
+  });
+
+  it('replaces the full prompt run collection', () => {
+    const repository = createMemoryRepository([
+      {
+        id: 'existing-run',
+        templateId: 'template-1',
+        templateName: 'Existing Run',
+        templateVersion: 1,
+        variables: {},
+        systemPrompt: 'System',
+        userPrompt: 'User',
+        createdAt: '2026-05-08T08:00:00.000Z',
+      },
+    ]);
+
+    render(
+      <PromptRunsProvider repository={repository}>
+        <TestConsumer />
+      </PromptRunsProvider>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Replace runs' }));
+
+    expect(screen.getByTestId('run-count')).toHaveTextContent('1');
+    expect(repository.snapshot().map((run) => run.id)).toEqual([
+      'replacement-run',
     ]);
   });
 });

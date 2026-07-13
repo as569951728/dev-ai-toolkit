@@ -61,6 +61,15 @@ export function PromptRunsProvider({
     [commitRuns, repository],
   );
 
+  const replaceRuns = useCallback(
+    (nextRuns: PromptRunRecord[]) => {
+      const sortedRuns = sortPromptRuns(nextRuns);
+      repository.saveAll(sortedRuns);
+      commitRuns(sortedRuns);
+    },
+    [commitRuns, repository],
+  );
+
   const getRunsByTemplateId = useCallback(
     (templateId: string, limit?: number) => getRunsForTemplate(runs, templateId, limit),
     [runs],
@@ -77,10 +86,19 @@ export function PromptRunsProvider({
       createRun,
       deleteRun,
       importRuns,
+      replaceRuns,
       getRunById,
       getRunsByTemplateId,
     }),
-    [runs, createRun, deleteRun, importRuns, getRunById, getRunsByTemplateId],
+    [
+      runs,
+      createRun,
+      deleteRun,
+      importRuns,
+      replaceRuns,
+      getRunById,
+      getRunsByTemplateId,
+    ],
   );
 
   return (

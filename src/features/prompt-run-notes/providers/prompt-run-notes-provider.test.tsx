@@ -21,7 +21,8 @@ function createMemoryRepository(
 }
 
 function TestConsumer() {
-  const { getNoteByRunId, importNotes, notes, saveNote } = usePromptRunNotes();
+  const { getNoteByRunId, importNotes, notes, replaceNotes, saveNote } =
+    usePromptRunNotes();
   const note = getNoteByRunId('run-1');
 
   return (
@@ -58,6 +59,22 @@ function TestConsumer() {
         }
       >
         Import notes
+      </button>
+      <button
+        type="button"
+        onClick={() =>
+          replaceNotes([
+            {
+              id: 'replacement-note',
+              runId: 'run-2',
+              body: 'Replacement note.',
+              createdAt: '2026-05-09T09:00:00.000Z',
+              updatedAt: '2026-05-09T09:00:00.000Z',
+            },
+          ])
+        }
+      >
+        Replace notes
       </button>
     </div>
   );
@@ -123,6 +140,31 @@ describe('PromptRunNotesProvider', () => {
     expect(repository.snapshot().map((note) => note.runId)).toEqual([
       'run-2',
       'run-1',
+    ]);
+  });
+
+  it('replaces the full prompt run note collection', () => {
+    const repository = createMemoryRepository([
+      {
+        id: 'existing-note',
+        runId: 'run-1',
+        body: 'Existing note.',
+        createdAt: '2026-05-08T09:00:00.000Z',
+        updatedAt: '2026-05-08T09:00:00.000Z',
+      },
+    ]);
+
+    render(
+      <PromptRunNotesProvider repository={repository}>
+        <TestConsumer />
+      </PromptRunNotesProvider>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Replace notes' }));
+
+    expect(screen.getByTestId('note-count')).toHaveTextContent('1');
+    expect(repository.snapshot().map((note) => note.id)).toEqual([
+      'replacement-note',
     ]);
   });
 });

@@ -24,6 +24,7 @@ export interface PromptTemplatesContextValue {
     importedTemplates: PromptTemplate[],
     summary: PromptTemplateImportSummary,
   ) => PromptTemplateImportSummary;
+  replaceTemplates: (nextTemplates: PromptTemplate[]) => void;
   restoreTemplateRevision: (
     templateId: string,
     revisionVersion: PromptTemplateRevision['version'],

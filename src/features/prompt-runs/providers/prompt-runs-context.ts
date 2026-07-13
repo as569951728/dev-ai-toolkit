@@ -9,6 +9,7 @@ export interface PromptRunsContextValue {
   ) => PromptRunRecord;
   deleteRun: (runId: string) => void;
   importRuns: (importedRuns: PromptRunRecord[]) => void;
+  replaceRuns: (nextRuns: PromptRunRecord[]) => void;
   getRunById: (runId: string) => PromptRunRecord | undefined;
   getRunsByTemplateId: (templateId: string, limit?: number) => PromptRunRecord[];
 }

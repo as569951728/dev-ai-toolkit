@@ -27,6 +27,7 @@ function TestConsumer() {
     duplicateTemplate,
     archiveTemplate,
     restoreArchivedTemplate,
+    replaceTemplates,
   } = usePromptTemplates();
   const firstTemplate = templates[0];
 
@@ -87,6 +88,12 @@ function TestConsumer() {
         }}
       >
         Restore
+      </button>
+      <button
+        type="button"
+        onClick={() => replaceTemplates([starterPromptTemplates[2]!])}
+      >
+        Replace templates
       </button>
     </div>
   );
@@ -154,6 +161,25 @@ describe('PromptTemplatesProvider', () => {
     expect(repository.snapshot().map((template) => template.name)).toEqual([
       'Second Template',
       'First Template',
+    ]);
+  });
+
+  it('replaces the full prompt template collection', () => {
+    const repository = createMemoryRepository();
+
+    render(
+      <PromptTemplatesProvider repository={repository}>
+        <TestConsumer />
+      </PromptTemplatesProvider>,
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Replace templates' }),
+    );
+
+    expect(screen.getByTestId('count')).toHaveTextContent('1');
+    expect(repository.snapshot().map((template) => template.id)).toEqual([
+      starterPromptTemplates[2]!.id,
     ]);
   });
 });

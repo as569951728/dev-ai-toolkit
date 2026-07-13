@@ -148,6 +148,15 @@ export function PromptTemplatesProvider({
     [commitTemplates, repository],
   );
 
+  const replaceTemplates = useCallback(
+    (nextTemplates: PromptTemplate[]) => {
+      const templatesToPersist = [...nextTemplates];
+      repository.saveAll(templatesToPersist);
+      commitTemplates(templatesToPersist);
+    },
+    [commitTemplates, repository],
+  );
+
   const restoreTemplateRevisionAction = useCallback(
     (templateId: string, revisionVersion: number) => {
       const result = restorePromptTemplateRevision(
@@ -174,6 +183,7 @@ export function PromptTemplatesProvider({
       duplicateTemplate,
       getTemplateById,
       importTemplates,
+      replaceTemplates,
       restoreTemplateRevision: restoreTemplateRevisionAction,
     }),
     [
@@ -187,6 +197,7 @@ export function PromptTemplatesProvider({
       duplicateTemplate,
       getTemplateById,
       importTemplates,
+      replaceTemplates,
       restoreTemplateRevisionAction,
     ],
   );

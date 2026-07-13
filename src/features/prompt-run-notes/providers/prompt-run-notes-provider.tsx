@@ -69,6 +69,15 @@ export function PromptRunNotesProvider({
     [commitNotes, repository],
   );
 
+  const replaceNotes = useCallback(
+    (nextNotes: PromptRunNote[]) => {
+      const notesToPersist = [...nextNotes];
+      repository.saveAll(notesToPersist);
+      commitNotes(notesToPersist);
+    },
+    [commitNotes, repository],
+  );
+
   const value = useMemo<PromptRunNotesContextValue>(
     () => ({
       notes,
@@ -76,8 +85,16 @@ export function PromptRunNotesProvider({
       saveNote,
       deleteNoteByRunId,
       importNotes,
+      replaceNotes,
     }),
-    [notes, getNoteByRunId, saveNote, deleteNoteByRunId, importNotes],
+    [
+      notes,
+      getNoteByRunId,
+      saveNote,
+      deleteNoteByRunId,
+      importNotes,
+      replaceNotes,
+    ],
   );
 
   return (
