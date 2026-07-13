@@ -93,7 +93,7 @@ dev-ai-toolkit/
 
 ### Requirements
 
-- Node.js 20 or later
+- Node.js 20.19+, or Node.js 22.12+
 - npm 10 or later recommended
 
 ### Installation

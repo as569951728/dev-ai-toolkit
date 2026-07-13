@@ -31,7 +31,7 @@ npm run build
 dist
 ```
 
-5. Use Node.js `20` or later.
+5. Use Node.js `20.19+` or `22.12+`.
 6. Deploy.
 
 ## Before publishing

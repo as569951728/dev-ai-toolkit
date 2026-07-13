@@ -101,7 +101,7 @@ dev-ai-toolkit/
 
 ### 环境要求
 
-- Node.js 20 或更高版本
+- Node.js 20.19+，或 Node.js 22.12+
 - 推荐使用 npm 10 或更高版本
 
 ### 安装依赖
