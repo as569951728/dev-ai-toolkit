@@ -1,0 +1,40 @@
+import type { PromptRunRecord } from '@/types/prompt-run';
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === 'string' && value.trim().length > 0;
+}
+
+function isValidDateString(value: unknown): value is string {
+  return isNonEmptyString(value) && !Number.isNaN(new Date(value).getTime());
+}
+
+function isPositiveInteger(value: unknown): value is number {
+  return typeof value === 'number' && Number.isInteger(value) && value > 0;
+}
+
+function isVariablesRecord(value: unknown): value is Record<string, string> {
+  return (
+    isRecord(value) &&
+    Object.values(value).every(
+      (variableValue) => typeof variableValue === 'string',
+    )
+  );
+}
+
+export function isPromptRunRecord(value: unknown): value is PromptRunRecord {
+  return (
+    isRecord(value) &&
+    isNonEmptyString(value.id) &&
+    isNonEmptyString(value.templateId) &&
+    isNonEmptyString(value.templateName) &&
+    isPositiveInteger(value.templateVersion) &&
+    isVariablesRecord(value.variables) &&
+    isNonEmptyString(value.systemPrompt) &&
+    isNonEmptyString(value.userPrompt) &&
+    isValidDateString(value.createdAt)
+  );
+}
