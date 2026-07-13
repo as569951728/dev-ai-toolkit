@@ -307,4 +307,27 @@ describe('prompt-template-transfer', () => {
       )?.archivedAt,
     ).toBeNull();
   });
+
+  it('restores an archived template when the import explicitly marks it active', () => {
+    const archivedTemplate = {
+      ...existingApiTemplate,
+      archivedAt: '2026-05-03T08:00:00.000Z',
+    };
+    const result = parsePromptTemplateImport(
+      JSON.stringify([
+        {
+          ...archivedTemplate,
+          description: 'Restored from an active exported template',
+          archivedAt: null,
+        },
+      ]),
+      [existingReviewTemplate, archivedTemplate],
+    );
+
+    expect(result.importedTemplates[0]).toMatchObject({
+      id: archivedTemplate.id,
+      description: 'Restored from an active exported template',
+      archivedAt: null,
+    });
+  });
 });

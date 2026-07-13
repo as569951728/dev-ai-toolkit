@@ -132,7 +132,10 @@ function normalizePromptTemplate(
     tags,
     version: providedVersion ?? existingTemplate?.version,
     revisions: providedRevisions ?? existingTemplate?.revisions,
-    archivedAt: archivedAtValue ?? existingTemplate?.archivedAt ?? null,
+    archivedAt:
+      value.archivedAt === null
+        ? null
+        : archivedAtValue ?? existingTemplate?.archivedAt ?? null,
     updatedAt:
       updatedAtValue ??
       existingTemplate?.updatedAt ??
