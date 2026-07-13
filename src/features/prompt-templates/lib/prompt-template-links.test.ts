@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  buildPromptTemplateCreatePath,
   buildPromptTemplateDetailPath,
   buildPromptTemplateEditPath,
   buildPromptTemplatePlaygroundPath,
@@ -8,6 +9,13 @@ import {
 } from '@/features/prompt-templates/lib/prompt-template-links';
 
 describe('prompt-template-links', () => {
+  it('builds the standalone template create path', () => {
+    expect(buildPromptTemplateCreatePath()).toBe('/create-template');
+    expect(buildPromptTemplateCreatePath('imported/run #1')).toBe(
+      '/create-template?runId=imported%2Frun%20%231',
+    );
+  });
+
   it('encodes a template ID as one URL path segment', () => {
     expect(buildPromptTemplateDetailPath('imported/template #1')).toBe(
       '/prompts/imported%2Ftemplate%20%231',

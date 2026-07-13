@@ -36,7 +36,7 @@ function renderCreatePage(initialEntry: string, runs: PromptRunRecord[]) {
   const router = createMemoryRouter(
     [
       {
-        path: '/prompts/new',
+        path: '/create-template',
         element: (
           <PromptTemplatesProvider repository={templateRepository}>
             <PromptRunsProvider repository={createRunRepository(runs)}>
@@ -75,7 +75,7 @@ describe('PromptTemplateCreatePage', () => {
       createdAt: '2026-07-13T08:00:00.000Z',
     };
     const { templateRepository } = renderCreatePage(
-      '/prompts/new?runId=imported%2Frun%20%231',
+      '/create-template?runId=imported%2Frun%20%231',
       [run],
     );
 
@@ -114,7 +114,7 @@ describe('PromptTemplateCreatePage', () => {
 
   it('falls back to a blank form when the requested run is missing', () => {
     const { templateRepository } = renderCreatePage(
-      '/prompts/new?runId=missing-run',
+      '/create-template?runId=missing-run',
       [],
     );
 

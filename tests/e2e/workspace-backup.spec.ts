@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 test('exports and restores a local workspace backup', async ({ page }) => {
   const templateName = 'Incident Review Checklist';
 
-  await page.goto('/prompts/new');
+  await page.goto('/create-template');
   await page.getByLabel('Name').fill(templateName);
   await page
     .getByLabel('Description')

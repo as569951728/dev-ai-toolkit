@@ -9,6 +9,7 @@ import {
 import { PromptTemplateList } from '@/features/prompt-templates/components/prompt-template-list';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
 import {
+  buildPromptTemplateCreatePath,
   buildPromptTemplateDetailPath,
   buildPromptTemplateEditPath,
   buildPromptTemplatePlaygroundPath,
@@ -152,7 +153,7 @@ export function PromptTemplateListPage() {
         statusTone={feedback?.tone ?? 'success'}
         archivedCount={archivedCount}
         showArchived={showArchived}
-        onCreate={() => navigate('/prompts/new')}
+        onCreate={() => navigate(buildPromptTemplateCreatePath())}
         onView={(id) => navigate(buildPromptTemplateDetailPath(id))}
         onEdit={(id) => navigate(buildPromptTemplateEditPath(id))}
         onOpenInPlayground={(id) =>

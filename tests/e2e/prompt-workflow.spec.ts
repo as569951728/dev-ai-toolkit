@@ -103,7 +103,7 @@ test('prefills a new template from a saved prompt snapshot', async ({ page }) =>
     .getByRole('link', { name: 'Create template from snapshot' })
     .click();
 
-  await expect(page).toHaveURL(/\/prompts\/new\?runId=/);
+  await expect(page).toHaveURL(/\/create-template\?runId=/);
   await expect(page.getByRole('status')).toContainText(
     'Prefilled from a saved prompt snapshot.',
   );
@@ -121,7 +121,7 @@ test('resolves dotted template variables in the Playground', async ({
 }) => {
   const templateName = 'Pull Request Summary';
 
-  await page.goto('/prompts/new');
+  await page.goto('/create-template');
   await page.getByLabel('Name').fill(templateName);
   await page
     .getByLabel('Description')
@@ -163,7 +163,7 @@ test('resolves dotted template variables in the Playground', async ({
 });
 
 test('protects unsaved prompt template changes', async ({ page }) => {
-  await page.goto('/prompts/new');
+  await page.goto('/create-template');
   await page.getByLabel('Name').fill('Work in progress');
   await page.getByRole('button', { name: 'Back to list' }).click();
 
@@ -176,7 +176,7 @@ test('protects unsaved prompt template changes', async ({ page }) => {
 
   await page.getByRole('button', { name: 'Continue editing' }).click();
 
-  await expect(page).toHaveURL(/\/prompts\/new$/);
+  await expect(page).toHaveURL(/\/create-template$/);
   await expect(page.getByLabel('Name')).toHaveValue('Work in progress');
 
   await page.getByRole('button', { name: 'Cancel' }).click();
@@ -185,6 +185,40 @@ test('protects unsaved prompt template changes', async ({ page }) => {
   await expect(page).toHaveURL(/\/prompts$/);
   await expect(
     page.getByRole('heading', { name: 'Manage reusable AI prompts' }),
+  ).toBeVisible();
+});
+
+test('opens an imported template whose ID is new', async ({ page }) => {
+  const templateName = 'Imported New Route Template';
+
+  await page.goto('/prompts');
+  await page.getByLabel('Import prompt templates JSON').setInputFiles({
+    name: 'new-template.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(
+      JSON.stringify([
+        {
+          id: 'new',
+          name: templateName,
+          description: 'Verifies the reserved route no longer hides templates.',
+          systemPrompt: 'Review the selected change.',
+          userPrompt: 'Summarize the result.',
+          tags: ['routing'],
+        },
+      ]),
+    ),
+  });
+
+  await expect(page.getByRole('status')).toContainText('Imported 1 template');
+  const templateCard = page.getByRole('article').filter({
+    has: page.getByRole('heading', { name: templateName }),
+  });
+
+  await templateCard.getByRole('button', { name: 'Preview' }).click();
+
+  await expect(page).toHaveURL(/\/prompts\/new$/);
+  await expect(
+    page.getByRole('heading', { name: templateName, level: 1 }),
   ).toBeVisible();
 });
 

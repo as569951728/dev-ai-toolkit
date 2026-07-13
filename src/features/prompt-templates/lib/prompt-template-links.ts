@@ -1,3 +1,9 @@
+export function buildPromptTemplateCreatePath(runId?: string) {
+  return runId
+    ? `/create-template?runId=${encodeURIComponent(runId)}`
+    : '/create-template';
+}
+
 export function buildPromptTemplateDetailPath(templateId: string) {
   return `/prompts/${encodeURIComponent(templateId)}`;
 }

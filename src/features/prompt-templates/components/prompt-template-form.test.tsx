@@ -38,7 +38,7 @@ function renderForm(
   const router = createMemoryRouter(
     [
       {
-        path: '/prompts/new',
+        path: '/create-template',
         element: <PromptTemplateFormHarness onSubmit={onSubmit} />,
       },
       {
@@ -46,7 +46,7 @@ function renderForm(
         element: <h1>Prompt template list</h1>,
       },
     ],
-    { initialEntries: ['/prompts/new'] },
+    { initialEntries: ['/create-template'] },
   );
 
   render(<RouterProvider router={router} />);

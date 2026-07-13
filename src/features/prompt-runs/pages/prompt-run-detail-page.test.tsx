@@ -204,7 +204,7 @@ describe('PromptRunDetailPage', () => {
     expect(screen.getByText('Imported user prompt.')).toBeInTheDocument();
     expect(
       screen.getByRole('link', { name: 'Create template from snapshot' }),
-    ).toHaveAttribute('href', '/prompts/new?runId=imported%2Frun%20%231');
+    ).toHaveAttribute('href', '/create-template?runId=imported%2Frun%20%231');
   });
 
   it('encodes an imported source template ID in its detail link', () => {

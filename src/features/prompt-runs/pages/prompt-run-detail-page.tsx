@@ -14,11 +14,13 @@ import { exportPromptRunAsJson } from '@/features/prompt-runs/lib/prompt-run-exp
 import {
   buildPromptRunPlaygroundPath,
   buildPromptRunSourceDiffUrl,
-  buildPromptTemplateCreateFromRunPath,
 } from '@/features/prompt-runs/lib/prompt-run-links';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
-import { buildPromptTemplateDetailPath } from '@/features/prompt-templates/lib/prompt-template-links';
+import {
+  buildPromptTemplateCreatePath,
+  buildPromptTemplateDetailPath,
+} from '@/features/prompt-templates/lib/prompt-template-links';
 import {
   PromptRunNoteRollbackError,
   usePromptRunWorkflowActions,
@@ -208,7 +210,7 @@ export function PromptRunDetailPage() {
           )}
           <Link
             className="ghost-button"
-            to={buildPromptTemplateCreateFromRunPath(run.id)}
+            to={buildPromptTemplateCreatePath(run.id)}
           >
             Create template from snapshot
           </Link>

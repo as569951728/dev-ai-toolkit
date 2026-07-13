@@ -73,7 +73,7 @@ const router = createBrowserRouter([
         element: <PromptTemplateDetailPage />,
       },
       {
-        path: 'prompts/new',
+        path: 'create-template',
         element: <PromptTemplateCreatePage />,
       },
       {

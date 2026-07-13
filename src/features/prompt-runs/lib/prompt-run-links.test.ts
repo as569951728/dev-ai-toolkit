@@ -4,7 +4,6 @@ import {
   buildPromptRunDetailPath,
   buildPromptRunPlaygroundPath,
   buildPromptRunSourceDiffUrl,
-  buildPromptTemplateCreateFromRunPath,
 } from '@/features/prompt-runs/lib/prompt-run-links';
 import type { PromptRunRecord } from '@/types/prompt-run';
 import type { PromptTemplate } from '@/types/prompt-template';
@@ -58,15 +57,6 @@ describe('prompt-run-links', () => {
       '/runs/imported%2Frun%20%231',
     );
     expect(buildPromptRunDetailPath('run-1')).toBe('/runs/run-1');
-  });
-
-  it('builds a template create path from a saved run ID', () => {
-    expect(buildPromptTemplateCreateFromRunPath('imported/run #1')).toBe(
-      '/prompts/new?runId=imported%2Frun%20%231',
-    );
-    expect(buildPromptTemplateCreateFromRunPath('run-1')).toBe(
-      '/prompts/new?runId=run-1',
-    );
   });
 
   it('encodes run and template IDs used to reopen a saved run', () => {
