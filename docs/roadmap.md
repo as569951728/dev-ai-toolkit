@@ -57,6 +57,25 @@ harder to understand and maintain.
 
 ## Near-Term Implementation Plan
 
+### Progress As Of 2026-07-13
+
+Completed since the project review:
+
+- Repositioned the homepage and documentation around the local-first prompt
+  workflow.
+- Improved the Playground post-save actions and Run Detail review flow.
+- Reused shared validators across prompt templates, runs, notes, and imports.
+- Split Run History card, filter, and import responsibilities out of the page.
+- Added a Chromium smoke test for the template-to-saved-run path.
+- Aligned GitHub issue and release labels with repository templates.
+
+Still open:
+
+- Verify that the public Vercel demo tracks the current `main` branch (#14).
+- Finish consistent browser storage failure feedback for remaining write paths.
+- Decide which supporting utility actions belong in the prompt workflow.
+- Prepare `v0.2.0` only after the demo, CI, docs, and release notes agree.
+
 ### Week 1: Positioning And Open-Source Hygiene
 
 Goal:

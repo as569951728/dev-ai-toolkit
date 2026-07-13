@@ -231,10 +231,10 @@ Current maintenance priorities:
 
 Current next steps include:
 
-- Keep template, playground, run history, and run detail terminology consistent
-- Reuse domain validation across local storage and workspace imports
-- Add focused browser-level coverage for the core prompt workflow
-- Verify that the public demo tracks the current `main` branch
+- Verify the public demo after the current `main` changes are pushed
+- Finish consistent browser storage failure feedback for remaining write paths
+- Decide which supporting utility actions should connect to the prompt workflow
+- Prepare `v0.2.0` after CI, demo, documentation, and release notes agree
 
 See the implementation roadmap in [docs/roadmap.md](./docs/roadmap.md).
 For contributor-facing code structure notes, see [docs/architecture.md](./docs/architecture.md).
