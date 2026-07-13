@@ -11,10 +11,11 @@ import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt
 
 export function PromptRunHistoryPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { importRuns, runs } = usePromptRuns();
+  const { getRunById, importRuns, runs } = usePromptRuns();
   const { getNoteByRunId, importNotes } = usePromptRunNotes();
   const { getTemplateById } = usePromptTemplates();
   const { handleImportRun, importError, importStatus } = usePromptRunImport({
+    getRunById,
     importNotes,
     importRuns,
   });
@@ -133,7 +134,11 @@ export function PromptRunHistoryPage() {
 
         {importStatus ? (
           <div className="empty-state empty-state--compact" role="status">
-            <h2>Prompt run imported.</h2>
+            <h2>
+              {importStatus.replacedExistingRun
+                ? 'Prompt run replaced.'
+                : 'Prompt run imported.'}
+            </h2>
             <p>
               {importStatus.message}{' '}
               <Link to={`/runs/${importStatus.runId}`}>Open imported run</Link>

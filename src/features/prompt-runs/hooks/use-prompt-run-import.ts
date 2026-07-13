@@ -6,16 +6,19 @@ import { parsePromptRunExportImport } from '@/features/prompt-runs/lib/prompt-ru
 import type { PromptRunsContextValue } from '@/features/prompt-runs/providers/prompt-runs-context';
 
 interface UsePromptRunImportOptions {
+  getRunById: PromptRunsContextValue['getRunById'];
   importNotes: PromptRunNotesContextValue['importNotes'];
   importRuns: PromptRunsContextValue['importRuns'];
 }
 
 interface ImportStatus {
   message: string;
+  replacedExistingRun: boolean;
   runId: string;
 }
 
 export function usePromptRunImport({
+  getRunById,
   importNotes,
   importRuns,
 }: UsePromptRunImportOptions) {
@@ -31,6 +34,7 @@ export function usePromptRunImport({
 
     try {
       const payload = parsePromptRunExportImport(await file.text());
+      const replacedExistingRun = Boolean(getRunById(payload.run.id));
       importRuns([payload.run]);
 
       if (payload.note) {
@@ -38,7 +42,10 @@ export function usePromptRunImport({
       }
 
       setImportStatus({
-        message: `Imported ${payload.run.templateName} from ${file.name}.`,
+        message: replacedExistingRun
+          ? `Replaced existing ${payload.run.templateName} with data from ${file.name}.`
+          : `Imported ${payload.run.templateName} from ${file.name}.`,
+        replacedExistingRun,
         runId: payload.run.id,
       });
       setImportError('');

@@ -302,6 +302,37 @@ describe('PromptRunHistoryPage', () => {
     expect(noteRepository.snapshot()).toEqual([]);
   });
 
+  it('reports when an imported run replaces an existing local record', async () => {
+    const { runRepository } = renderRunHistory();
+    const replacementRun: PromptRunRecord = {
+      ...sampleRuns[0]!,
+      systemPrompt: 'Updated system prompt from export.',
+      userPrompt: 'Updated user prompt from export.',
+    };
+    const file = new File(
+      [
+        JSON.stringify(
+          createPromptRunExportPayload({
+            run: replacementRun,
+            exportedAt: '2026-05-10T11:00:00.000Z',
+          }),
+        ),
+      ],
+      'replacement-run.json',
+      { type: 'application/json' },
+    );
+
+    fireEvent.change(screen.getByLabelText('Import run JSON'), {
+      target: { files: [file] },
+    });
+
+    expect(await screen.findByText('Prompt run replaced.')).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Replaced existing API Design Partner with data from replacement-run.json.',
+    );
+    expect(runRepository.snapshot()).toContainEqual(replacementRun);
+  });
+
   it('filters runs by template and template name search', () => {
     renderRunHistory();
 
