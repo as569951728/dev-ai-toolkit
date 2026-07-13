@@ -15,7 +15,13 @@ const STORAGE_KEY = 'dev-ai-toolkit.prompt-runs';
 function normalizeRuns(value: unknown) {
   const runs =
     readVersionedCollection<unknown>(value)
-      ?.filter(isPromptRunRecord) ?? [];
+      ?.filter(isPromptRunRecord)
+      .map((run) => ({
+        ...run,
+        id: run.id.trim(),
+        templateId: run.templateId.trim(),
+        templateName: run.templateName.trim(),
+      })) ?? [];
 
   return keepLastByKey(runs, (run) => run.id);
 }
