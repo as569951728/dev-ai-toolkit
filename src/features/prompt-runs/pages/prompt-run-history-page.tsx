@@ -20,7 +20,14 @@ export function PromptRunHistoryPage() {
     importNotes,
     importRuns,
   });
-  const selectedTemplateId = searchParams.get('templateId') ?? 'all';
+  const requestedTemplateId = searchParams.get('templateId') ?? 'all';
+  const hasRequestedTemplate =
+    requestedTemplateId === 'all' ||
+    runs.some((run) => run.templateId === requestedTemplateId) ||
+    Boolean(getTemplateById(requestedTemplateId));
+  const selectedTemplateId = hasRequestedTemplate
+    ? requestedTemplateId
+    : 'all';
   const searchValue = searchParams.get('q') ?? '';
 
   const availableTemplates = useMemo(

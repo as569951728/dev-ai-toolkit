@@ -689,6 +689,48 @@ describe('PromptRunHistoryPage', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('ignores an unknown template filter from the route query', () => {
+    renderRunHistory({ initialEntry: '/runs?templateId=missing-template' });
+
+    expect(screen.getByLabelText('Template')).toHaveValue('all');
+    expect(
+      screen.queryByRole('button', { name: 'Clear filters' }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByText('Showing 2 of 2 saved runs.'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'API Design Partner' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'Code Review Assistant' }),
+    ).toBeInTheDocument();
+  });
+
+  it('keeps a template filter when saved runs outlive the source template', () => {
+    const orphanedRun: PromptRunRecord = {
+      id: 'orphaned-run',
+      templateId: 'deleted-template',
+      templateName: 'Deleted Template',
+      templateVersion: 1,
+      variables: {},
+      systemPrompt: 'Saved system prompt.',
+      userPrompt: 'Saved user prompt.',
+      createdAt: '2026-05-07T09:00:00.000Z',
+    };
+
+    renderRunHistory({
+      initialEntry: '/runs?templateId=deleted-template',
+      runs: [orphanedRun],
+    });
+
+    expect(screen.getByLabelText('Template')).toHaveValue('deleted-template');
+    expect(screen.getByText('Template: Deleted Template')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'Deleted Template' }),
+    ).toBeInTheDocument();
+  });
+
   it('keeps the selected template filter visible when that template has no runs yet', () => {
     renderRunHistory({
       initialEntry: `/runs?templateId=${starterPromptTemplates[1]!.id}`,

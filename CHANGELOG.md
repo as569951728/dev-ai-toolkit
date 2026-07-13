@@ -52,6 +52,8 @@ The format is intentionally lightweight and human-readable.
 
 ### Fixed
 
+- Ignored unknown Run History template query filters without hiding existing
+  saved runs
 - Removed temporary download links and revoked Blob URLs when prompt run or
   workspace backup exports fail
 - Supported dotted variable names consistently when Prompt Playground detects,
