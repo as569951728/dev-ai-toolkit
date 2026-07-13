@@ -121,8 +121,14 @@ export function createPromptRunExportFilename(run: PromptRunRecord) {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
   const nameSegment = templateName || 'prompt-run';
+  const runId = run.id
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  const runIdSegment = runId || 'run';
 
-  return `${createdDate}-${nameSegment}-${run.id}.json`;
+  return `${createdDate}-${nameSegment}-${runIdSegment}.json`;
 }
 
 export function exportPromptRunAsJson({

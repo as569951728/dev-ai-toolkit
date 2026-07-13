@@ -85,6 +85,24 @@ describe('prompt run export helpers', () => {
     );
   });
 
+  it('removes path and fragment characters from imported run IDs', () => {
+    expect(
+      createPromptRunExportFilename({
+        ...sampleRun,
+        id: ' imported/run #1 ',
+      }),
+    ).toBe('2026-05-07-api-design-partner-imported-run-1.json');
+  });
+
+  it('uses a stable fallback when a run ID has no filename-safe characters', () => {
+    expect(
+      createPromptRunExportFilename({
+        ...sampleRun,
+        id: '///###',
+      }),
+    ).toBe('2026-05-07-api-design-partner-run.json');
+  });
+
   it('cleans up the temporary download after a failed click', () => {
     const revokeObjectURL = vi.fn();
     const link = document.createElement('a');
