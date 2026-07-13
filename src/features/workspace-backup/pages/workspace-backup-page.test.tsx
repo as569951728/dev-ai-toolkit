@@ -110,10 +110,15 @@ const note: PromptRunNote = {
   updatedAt: '2026-05-03T08:00:00.000Z',
 };
 
-function renderWorkspaceBackupPage() {
-  const templateRepository = createTemplateRepository([template]);
-  const runRepository = createRunRepository([run]);
-  const noteRepository = createNoteRepository([note]);
+function renderWorkspaceBackupPage({
+  templateRepository = createTemplateRepository([template]),
+  runRepository = createRunRepository([run]),
+  noteRepository = createNoteRepository([note]),
+}: {
+  templateRepository?: ReturnType<typeof createTemplateRepository>;
+  runRepository?: ReturnType<typeof createRunRepository>;
+  noteRepository?: ReturnType<typeof createNoteRepository>;
+} = {}) {
 
   render(
     <PromptTemplatesProvider repository={templateRepository}>
@@ -268,6 +273,108 @@ describe('WorkspaceBackupPage', () => {
     ).toBeInTheDocument();
     expect(templateRepository.snapshot()).toEqual([template]);
     expect(runRepository.snapshot()).toEqual([run]);
+    expect(noteRepository.snapshot()).toEqual([note]);
+  });
+
+  it('restores earlier collections when a later backup write fails', async () => {
+    let notes = [note];
+    const noteRepository: ReturnType<typeof createNoteRepository> = {
+      loadAll: () => [...notes],
+      saveAll: (nextNotes) => {
+        if (nextNotes[0]?.body === 'Imported note body.') {
+          throw new Error('Browser storage rejected the imported notes.');
+        }
+
+        notes = [...nextNotes];
+      },
+      snapshot: () => [...notes],
+    };
+    const { runRepository, templateRepository } = renderWorkspaceBackupPage({
+      noteRepository,
+    });
+    const file = new File(
+      [
+        JSON.stringify({
+          version: 1,
+          exportedAt: '2026-06-10T08:30:00.000Z',
+          data: {
+            templates: [{ ...template, name: 'Imported Review Assistant' }],
+            runs: [{ ...run, templateName: 'Imported Review Assistant' }],
+            notes: [{ ...note, body: 'Imported note body.' }],
+            recentTemplateIds: ['template-1'],
+          },
+        }),
+      ],
+      'workspace-backup.json',
+      { type: 'application/json' },
+    );
+
+    fireEvent.change(screen.getByLabelText('Import workspace JSON'), {
+      target: { files: [file] },
+    });
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Browser storage rejected the imported notes.',
+    );
+    expect(templateRepository.snapshot()).toEqual([template]);
+    expect(runRepository.snapshot()).toEqual([run]);
+    expect(noteRepository.snapshot()).toEqual([note]);
+    expect(screen.queryByText('Workspace backup imported.')).not.toBeInTheDocument();
+  });
+
+  it('reports when a failed backup import cannot be fully restored', async () => {
+    let runs = [run];
+    const runRepository: ReturnType<typeof createRunRepository> = {
+      loadAll: () => [...runs],
+      saveAll: (nextRuns) => {
+        if (nextRuns[0]?.templateName === run.templateName) {
+          throw new Error('Browser storage rejected the run rollback.');
+        }
+
+        runs = [...nextRuns];
+      },
+      snapshot: () => [...runs],
+    };
+    const noteRepository: ReturnType<typeof createNoteRepository> = {
+      loadAll: () => [note],
+      saveAll: () => {
+        throw new Error('Browser storage rejected the imported notes.');
+      },
+      snapshot: () => [note],
+    };
+    const { templateRepository } = renderWorkspaceBackupPage({
+      noteRepository,
+      runRepository,
+    });
+    const importedRun = {
+      ...run,
+      templateName: 'Imported Review Assistant',
+    };
+    const file = new File(
+      [
+        JSON.stringify({
+          version: 1,
+          exportedAt: '2026-06-10T08:30:00.000Z',
+          data: {
+            templates: [{ ...template, name: 'Imported Review Assistant' }],
+            runs: [importedRun],
+            notes: [{ ...note, body: 'Imported note body.' }],
+          },
+        }),
+      ],
+      'workspace-backup.json',
+      { type: 'application/json' },
+    );
+
+    fireEvent.change(screen.getByLabelText('Import workspace JSON'), {
+      target: { files: [file] },
+    });
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Workspace backup import failed and previous local data could not be fully restored.',
+    );
+    expect(templateRepository.snapshot()).toEqual([template]);
+    expect(runRepository.snapshot()).toEqual([importedRun]);
     expect(noteRepository.snapshot()).toEqual([note]);
   });
 });

@@ -45,6 +45,8 @@ The format is intentionally lightweight and human-readable.
 
 ### Fixed
 
+- Rolled back completed workspace backup writes when a later collection import
+  fails
 - Reported prompt template JSON export failures and kept the export action
   available for retry
 - Reported workspace backup export failures and kept the download action

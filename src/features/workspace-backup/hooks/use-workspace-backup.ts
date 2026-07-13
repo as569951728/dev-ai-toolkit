@@ -47,6 +47,7 @@ export function useWorkspaceBackup() {
   const importWorkspaceBackupJson = useCallback(
     (rawValue: string) => {
       const backup = parseWorkspaceBackupImport(rawValue);
+      const previousRecentTemplateIds = loadRecentTemplateIds();
       const result = mergeWorkspaceBackupData(
         {
           templates,
@@ -55,13 +56,63 @@ export function useWorkspaceBackup() {
         },
         backup.data,
       );
+      let templatesImported = false;
+      let runsImported = false;
+      let notesImported = false;
+      let recentTemplateIdsImportAttempted = false;
 
-      importTemplates(backup.data.templates, result.summary.templates);
-      importRuns(backup.data.runs);
-      importNotes(backup.data.notes);
+      try {
+        importTemplates(backup.data.templates, result.summary.templates);
+        templatesImported = true;
+        importRuns(backup.data.runs);
+        runsImported = true;
+        importNotes(backup.data.notes);
+        notesImported = true;
 
-      if (result.data.recentTemplateIds) {
-        saveRecentTemplateIds(result.data.recentTemplateIds);
+        if (result.data.recentTemplateIds) {
+          recentTemplateIdsImportAttempted = true;
+          saveRecentTemplateIds(result.data.recentTemplateIds);
+        }
+      } catch (error) {
+        let rollbackFailed = false;
+        const tryRollback = (rollback: () => void) => {
+          try {
+            rollback();
+          } catch {
+            rollbackFailed = true;
+          }
+        };
+
+        if (recentTemplateIdsImportAttempted) {
+          tryRollback(() => saveRecentTemplateIds(previousRecentTemplateIds));
+        }
+
+        if (notesImported) {
+          tryRollback(() => importNotes(notes));
+        }
+
+        if (runsImported) {
+          tryRollback(() => importRuns(runs));
+        }
+
+        if (templatesImported) {
+          tryRollback(() =>
+            importTemplates(templates, {
+              created: 0,
+              updated: templates.length,
+              total: templates.length,
+            }),
+          );
+        }
+
+        if (rollbackFailed) {
+          throw new Error(
+            'Workspace backup import failed and previous local data could not be fully restored.',
+            { cause: error },
+          );
+        }
+
+        throw error;
       }
 
       return result.summary;
