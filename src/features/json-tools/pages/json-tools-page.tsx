@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import { JsonEditorPanel } from '@/features/json-tools/components/json-editor-panel';
 import { JsonResultPanel } from '@/features/json-tools/components/json-result-panel';
@@ -12,12 +13,53 @@ import {
   sampleJson,
   validateJson,
 } from '@/features/json-tools/lib/json-tools-utils';
+import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { writeClipboardText } from '@/lib/clipboard';
 
+function createInitialWorkspace(
+  requestedRunId: string | null,
+  getRunById: ReturnType<typeof usePromptRuns>['getRunById'],
+) {
+  if (!requestedRunId) {
+    return {
+      inputValue: sampleJson,
+      resultValue: sampleJson,
+      message: 'Load a sample or paste JSON to begin.',
+      loadNotice: null,
+    };
+  }
+
+  const sourceRun = getRunById(requestedRunId);
+
+  if (!sourceRun) {
+    return {
+      inputValue: sampleJson,
+      resultValue: sampleJson,
+      message: 'Load a sample or paste JSON to begin.',
+      loadNotice:
+        'The requested saved run is no longer available. Loaded the sample JSON instead.',
+    };
+  }
+
+  const variablesJson = JSON.stringify(sourceRun.variables, null, 2);
+
+  return {
+    inputValue: variablesJson,
+    resultValue: variablesJson,
+    message: `Loaded captured variables from ${sourceRun.templateName}.`,
+    loadNotice: null,
+  };
+}
+
 export function JsonToolsPage() {
-  const [inputValue, setInputValue] = useState(sampleJson);
-  const [resultValue, setResultValue] = useState(sampleJson);
-  const [message, setMessage] = useState('Load a sample or paste JSON to begin.');
+  const [searchParams] = useSearchParams();
+  const { getRunById } = usePromptRuns();
+  const [initialWorkspace] = useState(() =>
+    createInitialWorkspace(searchParams.get('runId'), getRunById),
+  );
+  const [inputValue, setInputValue] = useState(initialWorkspace.inputValue);
+  const [resultValue, setResultValue] = useState(initialWorkspace.resultValue);
+  const [message, setMessage] = useState(initialWorkspace.message);
   const [isValid, setIsValid] = useState(true);
 
   const runAction = (
@@ -60,6 +102,12 @@ export function JsonToolsPage() {
           payloads, cleaning copied responses, and preparing structured data.
         </p>
       </div>
+
+      {initialWorkspace.loadNotice ? (
+        <p className="status-banner status-banner--error" role="alert">
+          {initialWorkspace.loadNotice}
+        </p>
+      ) : null}
 
       <section className="panel json-tools-shell">
         <div className="json-tools-shell__header">

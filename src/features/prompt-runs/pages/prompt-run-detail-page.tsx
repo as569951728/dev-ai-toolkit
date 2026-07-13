@@ -12,6 +12,7 @@ import { PromptRunNotePanel } from '@/features/prompt-run-notes/components/promp
 import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
 import { exportPromptRunAsJson } from '@/features/prompt-runs/lib/prompt-run-export';
 import {
+  buildPromptRunJsonToolsPath,
   buildPromptRunPlaygroundPath,
   buildPromptRunSourceDiffUrl,
 } from '@/features/prompt-runs/lib/prompt-run-links';
@@ -319,6 +320,16 @@ export function PromptRunDetailPage() {
               <p className="eyebrow">Captured variables</p>
               <h2>Run inputs</h2>
             </div>
+            {variableEntries.length > 0 ? (
+              <div className="panel__actions">
+                <Link
+                  className="secondary-button"
+                  to={buildPromptRunJsonToolsPath(run.id)}
+                >
+                  Open variables in JSON Tools
+                </Link>
+              </div>
+            ) : null}
           </div>
 
           {variableEntries.length > 0 ? (

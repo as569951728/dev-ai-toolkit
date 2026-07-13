@@ -15,6 +15,10 @@ export function buildPromptRunDetailPath(runId: string) {
   return `/runs/${encodeURIComponent(runId)}`;
 }
 
+export function buildPromptRunJsonToolsPath(runId: string) {
+  return `/json-tools?runId=${encodeURIComponent(runId)}`;
+}
+
 export function buildPromptRunPlaygroundPath({
   runId,
   templateId,

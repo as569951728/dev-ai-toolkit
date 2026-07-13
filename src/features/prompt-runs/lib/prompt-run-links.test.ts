@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   buildPromptRunDetailPath,
+  buildPromptRunJsonToolsPath,
   buildPromptRunPlaygroundPath,
   buildPromptRunSourceDiffUrl,
 } from '@/features/prompt-runs/lib/prompt-run-links';
@@ -57,6 +58,15 @@ describe('prompt-run-links', () => {
       '/runs/imported%2Frun%20%231',
     );
     expect(buildPromptRunDetailPath('run-1')).toBe('/runs/run-1');
+  });
+
+  it('builds a JSON Tools path from a saved run ID', () => {
+    expect(buildPromptRunJsonToolsPath('imported/run #1')).toBe(
+      '/json-tools?runId=imported%2Frun%20%231',
+    );
+    expect(buildPromptRunJsonToolsPath('run-1')).toBe(
+      '/json-tools?runId=run-1',
+    );
   });
 
   it('encodes run and template IDs used to reopen a saved run', () => {

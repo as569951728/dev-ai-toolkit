@@ -116,6 +116,29 @@ test('prefills a new template from a saved prompt snapshot', async ({ page }) =>
   await expect(page.getByLabel('User prompt')).toContainText('snapshot reuse');
 });
 
+test('opens captured run variables in JSON Tools', async ({ page }) => {
+  await page.goto('/playground?templateId=code-review-assistant');
+
+  await page.getByLabel('Repository Name').fill('dev-ai-toolkit');
+  await page.getByLabel('Change Scope').fill('inspect variables');
+  await page.getByRole('button', { name: 'Save prompt snapshot' }).click();
+  await page.getByRole('link', { name: 'Open saved run' }).click();
+  await page
+    .getByRole('link', { name: 'Open variables in JSON Tools' })
+    .click();
+
+  await expect(page).toHaveURL(/\/json-tools\?runId=/);
+  await expect(page.getByRole('status')).toContainText(
+    'Loaded captured variables from Code Review Assistant.',
+  );
+  await expect(page.getByLabel('JSON input')).toContainText(
+    '"repository_name": "dev-ai-toolkit"',
+  );
+  await expect(page.getByLabel('JSON input')).toContainText(
+    '"change_scope": "inspect variables"',
+  );
+});
+
 test('resolves dotted template variables in the Playground', async ({
   page,
 }) => {

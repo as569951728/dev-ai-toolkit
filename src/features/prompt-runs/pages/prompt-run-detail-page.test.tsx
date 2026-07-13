@@ -139,6 +139,9 @@ describe('PromptRunDetailPage', () => {
     expect(screen.getByText('Snapshot content')).toBeInTheDocument();
     expect(screen.getByText('repository_name')).toBeInTheDocument();
     expect(screen.getByText('dev-ai-toolkit')).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'Open variables in JSON Tools' }),
+    ).toHaveAttribute('href', '/json-tools?runId=run-1');
     expect(screen.getByText('Review the code carefully.')).toBeInTheDocument();
     expect(
       screen.getByText('Focus on bugs and missing tests.'),
@@ -205,6 +208,9 @@ describe('PromptRunDetailPage', () => {
     expect(
       screen.getByRole('link', { name: 'Create template from snapshot' }),
     ).toHaveAttribute('href', '/create-template?runId=imported%2Frun%20%231');
+    expect(
+      screen.queryByRole('link', { name: 'Open variables in JSON Tools' }),
+    ).not.toBeInTheDocument();
   });
 
   it('encodes an imported source template ID in its detail link', () => {
