@@ -96,6 +96,13 @@ Exported backups are versioned JSON files. Importing a backup merges prompt
 templates and runs by `id`, and run notes by `runId`, so a saved run keeps at
 most one note after import.
 
+Saved runs remain valid when their source template is no longer present. Each
+run contains the composed prompts and captured variables needed for later
+review, so deleting a template does not discard its history. Run notes are
+different: a note must reference a run included in the same backup. Recent
+template shortcuts that do not match an imported or existing template are
+skipped.
+
 ## Known Limits
 
 - Data is still local to the current browser profile.

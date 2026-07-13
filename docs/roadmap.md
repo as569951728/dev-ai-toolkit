@@ -77,6 +77,8 @@ Completed since the project review:
   persistence is unavailable.
 - Kept workspace downloads importable when older local data contains orphaned
   notes, and disclosed invalid records skipped from mixed template imports.
+- Defined workspace backup relationships so saved runs can outlive source
+  templates while notes must remain attached to included runs.
 - Improved Playground variable handling for dotted and camel-case keys,
   unresolved values, and whitespace-sensitive content.
 
@@ -140,8 +142,8 @@ Tasks:
   - `PromptRunNote`
 - Reuse those codecs from local storage repositories, imports, exports, and
   workspace backup parsing.
-- Check whether runs should validate their source template relationship during
-  workspace import.
+- Keep saved runs importable without their source templates while validating
+  note-to-run relationships during workspace import.
 - Split large orchestration-heavy pages, starting with `PromptRunHistoryPage`.
 - Add one or two browser-level smoke checks for the core prompt workflow.
 

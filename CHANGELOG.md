@@ -8,6 +8,7 @@ The format is intentionally lightweight and human-readable.
 
 ### Added
 
+- Documented workspace backup relationship rules for standalone saved runs
 - Named unresolved Playground variables in the preview warning
 - Formatted camel-case Playground variable names as readable input labels
 - Disclosed invalid records skipped from mixed prompt template imports

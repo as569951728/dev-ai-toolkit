@@ -122,6 +122,24 @@ describe('workspace-backup-transfer', () => {
     expect(parsedBackup.data.recentTemplateIds).toBeUndefined();
   });
 
+  it('accepts saved runs after their source template is deleted', () => {
+    const parsedBackup = parseWorkspaceBackupImport(
+      JSON.stringify({
+        version: 1,
+        exportedAt: '2026-05-04T08:00:00.000Z',
+        data: {
+          templates: [],
+          runs: [run],
+          notes: [note],
+        },
+      }),
+    );
+
+    expect(parsedBackup.data.templates).toEqual([]);
+    expect(parsedBackup.data.runs).toEqual([run]);
+    expect(parsedBackup.data.notes).toEqual([note]);
+  });
+
   it('rejects unsupported or incomplete workspace backup payloads', () => {
     expect(() => parseWorkspaceBackupImport('{not-json')).toThrow(
       'Invalid workspace backup format.',
