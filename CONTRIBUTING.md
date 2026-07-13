@@ -32,11 +32,12 @@ npm run dev
 ```bash
 npm run audit
 npm run lint
-npm run test
+npm run test:coverage
 npm run build
 ```
 
-Use `npm run test:coverage` when a change touches shared helpers, storage parsing, or cross-page workflow behavior.
+Use `npm run test` for faster feedback while iterating. The coverage command is
+the final unit-test check and matches CI.
 
 Changes to the prompt template, Playground, or saved run flow should also pass
 the browser smoke test:

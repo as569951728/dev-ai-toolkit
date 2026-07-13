@@ -17,7 +17,14 @@ export default defineConfig({
     exclude: [...configDefaults.exclude, 'tests/e2e/**'],
     setupFiles: './src/test/setup.ts',
     coverage: {
+      include: ['src/**/*.{ts,tsx}'],
       reporter: ['text', 'html'],
+      thresholds: {
+        branches: 80,
+        functions: 80,
+        lines: 85,
+        statements: 85,
+      },
     },
   },
 });

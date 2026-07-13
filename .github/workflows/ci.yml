@@ -29,8 +29,8 @@ jobs:
       - name: Run lint
         run: npm run lint
 
-      - name: Run tests
-        run: npm run test
+      - name: Run tests with coverage
+        run: npm run test:coverage
 
       - name: Run build
         run: npm run build
@@ -38,5 +38,5 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Run prompt workflow browser smoke test
+      - name: Run browser smoke tests
         run: npm run test:e2e
