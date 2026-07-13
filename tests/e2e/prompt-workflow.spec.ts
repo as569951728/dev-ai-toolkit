@@ -178,10 +178,22 @@ test('discloses an unavailable saved-run link', async ({ page }) => {
   );
 });
 
-test('explains a missing prompt template detail link', async ({ page }) => {
+test('explains missing prompt template detail and edit links', async ({
+  page,
+}) => {
   await page.goto('/prompts/missing-template');
 
   await expect(page).toHaveURL(/\/prompts\/missing-template$/);
+  await expect(
+    page.getByRole('heading', { name: 'Template not found' }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('link', { name: 'Back to Prompt Templates' }),
+  ).toHaveAttribute('href', '/prompts');
+
+  await page.goto('/prompts/missing-template/edit');
+
+  await expect(page).toHaveURL(/\/prompts\/missing-template\/edit$/);
   await expect(
     page.getByRole('heading', { name: 'Template not found' }),
   ).toBeVisible();
