@@ -146,3 +146,15 @@ test('discloses an unavailable saved-run link', async ({ page }) => {
     'api-design-partner',
   );
 });
+
+test('explains a missing prompt template detail link', async ({ page }) => {
+  await page.goto('/prompts/missing-template');
+
+  await expect(page).toHaveURL(/\/prompts\/missing-template$/);
+  await expect(
+    page.getByRole('heading', { name: 'Template not found' }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('link', { name: 'Back to Prompt Templates' }),
+  ).toHaveAttribute('href', '/prompts');
+});

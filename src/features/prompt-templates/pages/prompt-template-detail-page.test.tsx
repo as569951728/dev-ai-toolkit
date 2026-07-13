@@ -43,6 +43,35 @@ afterEach(() => {
 });
 
 describe('PromptTemplateDetailPage', () => {
+  it('explains when a linked prompt template is not available', () => {
+    render(
+      <MemoryRouter initialEntries={['/prompts/missing-template']}>
+        <PromptTemplatesProvider repository={createTemplateRepository([])}>
+          <PromptRunsProvider repository={createRunRepository()}>
+            <Routes>
+              <Route
+                path="/prompts/:promptId"
+                element={<PromptTemplateDetailPage />}
+              />
+            </Routes>
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    expect(
+      screen.getByRole('heading', { name: 'Template not found' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'The prompt template may have been removed from local storage.',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'Back to Prompt Templates' }),
+    ).toHaveAttribute('href', '/prompts');
+  });
+
   it('opens a recent run from the template detail activity list', () => {
     const template = starterPromptTemplates[0]!;
     const run: PromptRunRecord = {
