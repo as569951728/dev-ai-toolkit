@@ -168,6 +168,46 @@ describe('Prompt playground workflow', () => {
     expect(screen.queryByText('Recently used')).not.toBeInTheDocument();
   });
 
+  it('keeps the core workflow usable when recent template storage fails', async () => {
+    const templateRepository = createTemplateRepository();
+    const runRepository = createRunRepository();
+    const nextTemplate = starterPromptTemplates[1]!;
+
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('Storage quota exceeded.');
+    });
+
+    render(
+      <MemoryRouter initialEntries={['/playground']}>
+        <PromptTemplatesProvider repository={templateRepository}>
+          <PromptRunsProvider repository={runRepository}>
+            <PlaygroundWorkflowProbe />
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.change(screen.getByLabelText('Active template'), {
+      target: { value: nextTemplate.id },
+    });
+
+    expect(screen.getByLabelText('Active template')).toHaveValue(
+      nextTemplate.id,
+    );
+    expect(screen.getByText('Recently used')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Save run snapshot' }));
+
+    expect(
+      await screen.findByText(
+        `Saved a run snapshot for ${nextTemplate.name} v${nextTemplate.version}.`,
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'Open saved run' }),
+    ).toBeInTheDocument();
+  });
+
   it('opens composed prompts in downstream review tools', () => {
     const templateRepository = createTemplateRepository();
     const runRepository = createRunRepository();

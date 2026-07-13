@@ -105,7 +105,11 @@ export function usePromptPlayground(
         ...currentIds.filter((id) => id !== templateId),
       ].slice(0, MAX_RECENT_ITEMS);
 
-      saveRecentTemplateIds(nextIds);
+      try {
+        saveRecentTemplateIds(nextIds);
+      } catch {
+        // Recent shortcuts are optional and should not block the prompt workflow.
+      }
 
       return nextIds;
     });
