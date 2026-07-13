@@ -5,7 +5,10 @@ import { PromptRunNotesProvider } from '@/features/prompt-run-notes/providers/pr
 import type { PromptRunNoteRepository } from '@/features/prompt-run-notes/repositories/prompt-run-note-repository';
 import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs-provider';
 import type { PromptRunRepository } from '@/features/prompt-runs/repositories/prompt-run-repository';
-import { saveRecentTemplateIds } from '@/features/prompt-playground/repositories/local-storage-recent-template-repository';
+import {
+  loadRecentTemplateIds,
+  saveRecentTemplateIds,
+} from '@/features/prompt-playground/repositories/local-storage-recent-template-repository';
 import { PromptTemplatesProvider } from '@/features/prompt-templates/providers/prompt-templates-provider';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
 import { downloadWorkspaceBackup } from '@/features/workspace-backup/lib/workspace-backup-download';
@@ -460,6 +463,69 @@ describe('WorkspaceBackupPage', () => {
     expect(templateRepository.snapshot()).toEqual([]);
     expect(runRepository.snapshot()).toEqual([]);
     expect(noteRepository.snapshot()).toEqual([]);
+  });
+
+  it('restores all workspace data when recent shortcuts fail to persist', async () => {
+    saveRecentTemplateIds(['template-1']);
+
+    const originalSetItem = Storage.prototype.setItem;
+    let rejectNextRecentTemplateWrite = true;
+    const setItemSpy = vi
+      .spyOn(Storage.prototype, 'setItem')
+      .mockImplementation(function (this: Storage, key, value) {
+        if (
+          key === 'dev-ai-toolkit.playground-recent-template-ids' &&
+          rejectNextRecentTemplateWrite
+        ) {
+          rejectNextRecentTemplateWrite = false;
+          throw new Error('Browser storage rejected recent shortcuts.');
+        }
+
+        originalSetItem.call(this, key, value);
+      });
+    const templateRepository = createTemplateRepository([template]);
+    const runRepository = createRunRepository([run]);
+    const noteRepository = createNoteRepository([note]);
+
+    try {
+      renderWorkspaceBackupPage({
+        templateRepository,
+        runRepository,
+        noteRepository,
+      });
+      const file = new File(
+        [
+          JSON.stringify({
+            version: 1,
+            exportedAt: '2026-06-10T08:30:00.000Z',
+            data: {
+              templates: [{ ...template, name: 'Imported Review Assistant' }],
+              runs: [{ ...run, templateName: 'Imported Review Assistant' }],
+              notes: [{ ...note, body: 'Imported note body.' }],
+              recentTemplateIds: [],
+            },
+          }),
+        ],
+        'workspace-backup.json',
+        { type: 'application/json' },
+      );
+
+      fireEvent.change(screen.getByLabelText('Import workspace JSON'), {
+        target: { files: [file] },
+      });
+
+      await confirmPendingWorkspaceImport();
+
+      expect(await screen.findByRole('alert')).toHaveTextContent(
+        'Browser storage rejected recent shortcuts.',
+      );
+      expect(templateRepository.snapshot()).toEqual([template]);
+      expect(runRepository.snapshot()).toEqual([run]);
+      expect(noteRepository.snapshot()).toEqual([note]);
+      expect(loadRecentTemplateIds()).toEqual(['template-1']);
+    } finally {
+      setItemSpy.mockRestore();
+    }
   });
 
   it('reports when a failed backup import cannot be fully restored', async () => {
