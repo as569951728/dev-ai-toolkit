@@ -137,6 +137,13 @@ test('opens captured run variables in JSON Tools', async ({ page }) => {
   await expect(page.getByLabel('JSON input')).toContainText(
     '"change_scope": "inspect variables"',
   );
+
+  await page.getByRole('link', { name: 'Back to saved run' }).click();
+
+  await expect(page).toHaveURL(/\/runs\//);
+  await expect(
+    page.getByRole('heading', { name: 'Code Review Assistant', exact: true }),
+  ).toBeVisible();
 });
 
 test('resolves dotted template variables in the Playground', async ({

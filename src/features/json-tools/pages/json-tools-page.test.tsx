@@ -50,6 +50,9 @@ describe('JsonToolsPage', () => {
       'JSON formatted successfully.',
     );
     expect(screen.getByText(/"name": "dev-ai-toolkit"/)).toBeInTheDocument();
+    expect(
+      screen.queryByRole('link', { name: 'Back to saved run' }),
+    ).not.toBeInTheDocument();
 
     fireEvent.change(input, {
       target: { value: '{bad-json' },
@@ -99,6 +102,9 @@ describe('JsonToolsPage', () => {
     expect(
       screen.getAllByText(/"change_scope": "JSON workflow"/),
     ).toHaveLength(2);
+    expect(
+      screen.getByRole('link', { name: 'Back to saved run' }),
+    ).toHaveAttribute('href', '/runs/imported%2Frun%20%231');
   });
 
   it('keeps the sample workflow available when a requested run is missing', () => {
@@ -111,5 +117,8 @@ describe('JsonToolsPage', () => {
       (screen.getByLabelText('JSON input') as HTMLTextAreaElement).value,
     ).toContain('"module": "json-tools"');
     expect(screen.getByText('Valid JSON')).toBeInTheDocument();
+    expect(
+      screen.queryByRole('link', { name: 'Back to saved run' }),
+    ).not.toBeInTheDocument();
   });
 });

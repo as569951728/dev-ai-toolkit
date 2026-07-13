@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 
 import { JsonEditorPanel } from '@/features/json-tools/components/json-editor-panel';
 import { JsonResultPanel } from '@/features/json-tools/components/json-result-panel';
@@ -14,6 +14,7 @@ import {
   validateJson,
 } from '@/features/json-tools/lib/json-tools-utils';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
+import { buildPromptRunDetailPath } from '@/features/prompt-runs/lib/prompt-run-links';
 import { writeClipboardText } from '@/lib/clipboard';
 
 function createInitialWorkspace(
@@ -26,6 +27,7 @@ function createInitialWorkspace(
       resultValue: sampleJson,
       message: 'Load a sample or paste JSON to begin.',
       loadNotice: null,
+      sourceRunId: null,
     };
   }
 
@@ -38,6 +40,7 @@ function createInitialWorkspace(
       message: 'Load a sample or paste JSON to begin.',
       loadNotice:
         'The requested saved run is no longer available. Loaded the sample JSON instead.',
+      sourceRunId: null,
     };
   }
 
@@ -48,6 +51,7 @@ function createInitialWorkspace(
     resultValue: variablesJson,
     message: `Loaded captured variables from ${sourceRun.templateName}.`,
     loadNotice: null,
+    sourceRunId: sourceRun.id,
   };
 }
 
@@ -115,6 +119,16 @@ export function JsonToolsPage() {
             <p className="eyebrow">Workflow</p>
             <h2>Operate on JSON with one focused toolset</h2>
           </div>
+          {initialWorkspace.sourceRunId ? (
+            <div className="panel__actions">
+              <Link
+                className="secondary-button"
+                to={buildPromptRunDetailPath(initialWorkspace.sourceRunId)}
+              >
+                Back to saved run
+              </Link>
+            </div>
+          ) : null}
         </div>
 
         <JsonToolsToolbar
