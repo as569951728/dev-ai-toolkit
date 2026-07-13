@@ -43,6 +43,12 @@ The format is intentionally lightweight and human-readable.
 
 ### Fixed
 
+- Preserved spaces while entering multi-word searches in Prompt Templates and
+  Prompt Run History
+- Rejected array-shaped prompt run variables in browser storage, single-run
+  imports, and workspace backups
+- Omitted orphaned run notes from workspace exports so generated backups remain
+  importable
 - Kept the full local prompt run history instead of trimming saved runs to the
   most recent 20 records
 - Ignored malformed prompt template, prompt run, and prompt run note records
@@ -118,8 +124,9 @@ The format is intentionally lightweight and human-readable.
   context, and snapshot management
 - Clarified the homepage, navigation, and README around the local-first prompt
   workflow instead of a broad AI platform
-- Reused shared Prompt Run and Run Note validation rules across browser storage
-  and Workspace Backup imports
+- Centralized Prompt Template, Prompt Run, and Run Note validation across their
+  storage and JSON import boundaries while keeping tolerant template migration
+  separate
 - Updated GitHub Actions to current action runtimes and added dependency audit
   to CI
 - Updated audited dependency resolutions for `react-router`, `react-router-dom`,
