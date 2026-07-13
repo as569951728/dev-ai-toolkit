@@ -66,6 +66,17 @@ describe('local-storage-prompt-run-repository', () => {
     });
   });
 
+  it('falls back to an empty history when browser storage cannot be read', () => {
+    const repository = createLocalStoragePromptRunRepository('runs', {
+      getItem() {
+        throw new Error('Storage access denied.');
+      },
+      setItem() {},
+    });
+
+    expect(repository.loadAll()).toEqual([]);
+  });
+
   it('ignores malformed run records from stored payloads', () => {
     const storage = createMemoryStorage({
       runs: JSON.stringify({

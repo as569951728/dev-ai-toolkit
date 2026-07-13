@@ -117,13 +117,13 @@ export function createLocalStoragePromptTemplateRepository(
         return loadStarterTemplates();
       }
 
-      const storedValue = storage.getItem(storageKey);
-
-      if (!storedValue) {
-        return loadStarterTemplates();
-      }
-
       try {
+        const storedValue = storage.getItem(storageKey);
+
+        if (!storedValue) {
+          return loadStarterTemplates();
+        }
+
         return normalizeStoredTemplates(JSON.parse(storedValue));
       } catch {
         return loadStarterTemplates();

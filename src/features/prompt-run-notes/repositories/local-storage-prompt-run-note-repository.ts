@@ -29,13 +29,13 @@ export function createLocalStoragePromptRunNoteRepository(
         return [];
       }
 
-      const storedValue = storage.getItem(storageKey);
-
-      if (!storedValue) {
-        return [];
-      }
-
       try {
+        const storedValue = storage.getItem(storageKey);
+
+        if (!storedValue) {
+          return [];
+        }
+
         return normalizeNotes(JSON.parse(storedValue));
       } catch {
         return [];

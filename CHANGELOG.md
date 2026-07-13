@@ -52,6 +52,8 @@ The format is intentionally lightweight and human-readable.
 
 ### Fixed
 
+- Kept the app usable when browser storage rejects template, run, or note reads
+  during startup
 - Ignored unknown Run History template query filters without hiding existing
   saved runs
 - Removed temporary download links and revoked Blob URLs when prompt run or

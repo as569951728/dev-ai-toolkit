@@ -76,6 +76,17 @@ describe('local-storage-prompt-template-repository', () => {
     );
   });
 
+  it('falls back to starter templates when browser storage cannot be read', () => {
+    const repository = createLocalStoragePromptTemplateRepository('templates', {
+      getItem() {
+        throw new Error('Storage access denied.');
+      },
+      setItem() {},
+    });
+
+    expect(repository.loadAll()).toEqual(starterPromptTemplates);
+  });
+
   it('keeps an intentionally saved empty template collection', () => {
     const storage = createMemoryStorage({
       templates: JSON.stringify({

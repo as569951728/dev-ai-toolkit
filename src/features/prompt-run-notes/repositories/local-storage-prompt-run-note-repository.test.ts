@@ -64,6 +64,17 @@ describe('local-storage-prompt-run-note-repository', () => {
     });
   });
 
+  it('falls back to empty notes when browser storage cannot be read', () => {
+    const repository = createLocalStoragePromptRunNoteRepository('notes', {
+      getItem() {
+        throw new Error('Storage access denied.');
+      },
+      setItem() {},
+    });
+
+    expect(repository.loadAll()).toEqual([]);
+  });
+
   it('ignores malformed note records from stored payloads', () => {
     const storage = createMemoryStorage({
       notes: JSON.stringify({
