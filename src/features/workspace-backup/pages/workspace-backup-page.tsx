@@ -107,7 +107,10 @@ export function WorkspaceBackupPage() {
           <article className="metric-card">
             <span className="metric-card__label">Saved runs</span>
             <strong>{formatCount(runs.length, 'saved run')}</strong>
-            <p>Saved prompt outputs with template references and captured variables.</p>
+            <p>
+              Prompt snapshots with source template references and captured
+              variables.
+            </p>
           </article>
           <article className="metric-card">
             <span className="metric-card__label">Run notes</span>

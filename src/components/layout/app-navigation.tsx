@@ -76,7 +76,7 @@ export function AppNavigation() {
     <header className="app-nav">
       <div>
         <p className="app-nav__eyebrow">dev-ai-toolkit</p>
-        <h1 className="app-nav__title">AI developer toolbox</h1>
+        <h1 className="app-nav__title">Local-first prompt workspace</h1>
       </div>
 
       <nav className="app-nav__groups" aria-label="Primary">

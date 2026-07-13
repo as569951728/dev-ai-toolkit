@@ -147,6 +147,11 @@ describe('WorkspaceBackupPage', () => {
     expect(screen.getByRole('heading', { name: 'Workspace backup' })).toBeInTheDocument();
     expect(screen.getByText('1 prompt template')).toBeInTheDocument();
     expect(screen.getByText('1 saved run')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Prompt snapshots with source template references and captured variables.',
+      ),
+    ).toBeInTheDocument();
     expect(screen.getByText('1 run note')).toBeInTheDocument();
     expect(screen.getByText('1 recent template')).toBeInTheDocument();
 

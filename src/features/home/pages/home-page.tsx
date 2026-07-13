@@ -7,7 +7,7 @@ const moduleGroups = [
   {
     title: 'Prompt Workflows',
     description:
-      'Manage reusable prompts, run them with variables, and compare changes when the wording evolves.',
+      'Manage reusable templates, compose prompts with variables, and review saved snapshots over time.',
     cards: [
       {
         title: 'Prompt Templates',
@@ -19,9 +19,9 @@ const moduleGroups = [
       {
         title: 'Prompt Playground',
         description:
-          'Fill variables, preview the final prompt, and save a reusable output snapshot.',
+          'Fill variables, preview composed system and user prompts, and save a local snapshot.',
         href: '/playground',
-        meta: 'Turn templates into output',
+        meta: 'Compose reusable prompts',
       },
       {
         title: 'Prompt Diff',
@@ -33,9 +33,9 @@ const moduleGroups = [
       {
         title: 'Run History',
         description:
-          'Review saved prompt runs, trace them back to template versions, and reopen output later.',
+          'Review prompt snapshots, trace them to template versions, and reopen captured variables in the playground.',
         href: '/runs',
-        meta: 'Browse saved prompt output',
+        meta: 'Browse prompt snapshots',
       },
     ],
   },
@@ -70,29 +70,29 @@ const moduleGroups = [
 ];
 
 const valuePoints = [
-  'Keep prompt templates, payload helpers, and output review in one local app.',
-  'Make repeated prompt work easier to reuse and check over time.',
+  'Keep reusable prompt templates, captured variables, and review notes in one local workspace.',
+  'Turn repeated prompt work into snapshots you can compare, reuse, and back up.',
   'Stay lightweight while the project is still browser-only and local-first.',
 ];
 
 const workflowSteps = [
   {
     step: '01',
-    title: 'Start from a workflow module',
+    title: 'Start from a prompt template',
     description:
-      'Start with the part of the job you are actually trying to finish.',
+      'Choose an existing template or create one for a repeated development task.',
   },
   {
     step: '02',
-    title: 'Prepare the task-specific details',
+    title: 'Compose the prompt',
     description:
-      'Fill prompt variables, compose request data, or clean structured payloads.',
+      'Fill the current template variables and review the composed system and user prompts.',
   },
   {
     step: '03',
-    title: 'Review the result and continue the job',
+    title: 'Review and reuse the snapshot',
     description:
-      'Review the output, compare revisions, and continue in the next tool when needed.',
+      'Save a snapshot, add review context, or reopen its captured variables for the next iteration.',
   },
 ];
 
@@ -110,20 +110,21 @@ const useCases = [
 const roadmapPhases = [
   {
     phase: 'Stage 1',
-    title: 'Toolbox framing',
-    summary: 'Make the product read clearly as a multi-workflow AI developer toolbox.',
+    title: 'Prompt workflow foundation',
+    summary:
+      'Keep the template, playground, snapshot, and run review path clear and reliable.',
   },
   {
     phase: 'Stage 2',
-    title: 'Workflow connections',
+    title: 'Review and data reliability',
     summary:
-      'Connect prompt, payload, and output modules so they feel like one system.',
+      'Improve snapshot review, local validation, backup safety, and browser-level coverage.',
   },
   {
     phase: 'Stage 3',
-    title: 'Shared knowledge layers',
+    title: 'Focused utility connections',
     summary:
-      'Prepare the data model and product direction for reusable team workflows.',
+      'Connect supporting utilities only where they make the prompt workflow easier to complete.',
   },
 ];
 
@@ -161,14 +162,14 @@ export function HomePage() {
             <p>Ready to preview, duplicate, import, and export.</p>
           </div>
           <div className="metric-card">
-            <span className="metric-card__label">Toolbox coverage</span>
-            <strong>Prompts to Payloads to Output</strong>
-            <p>A few connected modules for everyday prompt and debugging work.</p>
+            <span className="metric-card__label">Core workflow</span>
+            <strong>Template to Snapshot</strong>
+            <p>Compose, save, review, and reuse prompts without a backend.</p>
           </div>
           <div className="metric-card">
             <span className="metric-card__label">Saved prompt runs</span>
             <strong>{runs.length}</strong>
-            <p>Recent outputs can now be captured as reusable local activity history.</p>
+            <p>Snapshots stay available as reusable local activity history.</p>
           </div>
         </aside>
       </section>
@@ -176,7 +177,7 @@ export function HomePage() {
       <section className="home-section">
         <div className="home-section__heading">
           <p className="eyebrow">Start here</p>
-          <h2>Start with templates, then save and review prompt output.</h2>
+          <h2>Start with templates, then compose and review prompt snapshots.</h2>
         </div>
 
         <div className="workflow-grid">
@@ -198,8 +199,11 @@ export function HomePage() {
           </article>
           <article className="workflow-card">
             <span className="workflow-card__step">03</span>
-            <h3>Save the output trail</h3>
-            <p>Save a run snapshot, then come back to it from history when you need it again.</p>
+            <h3>Save a reviewable snapshot</h3>
+            <p>
+              Save the composed prompts, then return from history to review or
+              reuse the captured variables.
+            </p>
             <Link className="ghost-button" to="/runs">
               Open Run History
             </Link>
@@ -254,7 +258,10 @@ export function HomePage() {
       <section className="home-section">
         <div className="home-section__heading">
           <p className="eyebrow">Working pattern</p>
-          <h2>The app stays simple: prepare input, review output, and keep useful history.</h2>
+          <h2>
+            The app stays simple: compose prompts, review snapshots, and keep
+            useful context.
+          </h2>
         </div>
 
         <div className="workflow-grid">
@@ -286,7 +293,7 @@ export function HomePage() {
       <section className="home-section">
         <div className="home-section__heading">
           <p className="eyebrow">Recent activity</p>
-          <h2>Saved runs are visible on the homepage so the project feels more like a working tool.</h2>
+          <h2>Recent prompt snapshots stay visible when you return to the workspace.</h2>
         </div>
 
         {recentRuns.length > 0 ? (
@@ -308,7 +315,10 @@ export function HomePage() {
         ) : (
           <div className="empty-state empty-state--compact">
             <h2>No activity yet</h2>
-            <p>Save a run in the playground and it will appear here as part of the toolbox history.</p>
+            <p>
+              Save a prompt snapshot in the playground and it will appear here
+              for later review.
+            </p>
           </div>
         )}
       </section>
@@ -316,7 +326,10 @@ export function HomePage() {
       <section className="home-section">
         <div className="home-section__heading">
           <p className="eyebrow">Current direction</p>
-          <h2>The focus is still on connecting the existing modules before adding many more.</h2>
+          <h2>
+            The focus is improving the local prompt workflow before adding
+            broader platform features.
+          </h2>
         </div>
 
         <div className="roadmap-grid">

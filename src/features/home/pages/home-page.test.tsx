@@ -54,6 +54,18 @@ afterEach(() => {
 });
 
 describe('HomePage', () => {
+  it('presents prompt snapshots as the primary workflow', () => {
+    renderHomePage();
+
+    expect(
+      screen.getByRole('heading', {
+        name: 'Start with templates, then compose and review prompt snapshots.',
+      }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Template to Snapshot')).toBeInTheDocument();
+    expect(screen.getByText('Prompt workflow foundation')).toBeInTheDocument();
+  });
+
   it('describes API Builder outputs consistently with the current module', () => {
     renderHomePage();
 
