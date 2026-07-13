@@ -15,7 +15,12 @@ const STORAGE_KEY = 'dev-ai-toolkit.prompt-run-notes';
 function normalizeNotes(value: unknown) {
   const notes =
     readVersionedCollection<unknown>(value)
-      ?.filter(isPromptRunNote) ?? [];
+      ?.filter(isPromptRunNote)
+      .map((note) => ({
+        ...note,
+        id: note.id.trim(),
+        runId: note.runId.trim(),
+      })) ?? [];
 
   return keepLastByKey(notes, (note) => note.runId);
 }

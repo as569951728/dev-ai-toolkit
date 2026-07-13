@@ -120,13 +120,18 @@ describe('local-storage-prompt-run-note-repository', () => {
     expect(repository.loadAll()).toEqual(sampleNotes);
   });
 
-  it('keeps the last valid note when stored run ids are repeated', () => {
+  it('normalizes stored ids before keeping the last note for a run', () => {
     const storage = createMemoryStorage({
       notes: JSON.stringify({
         version: 1,
         data: [
           { ...sampleNotes[0], id: 'older-note', body: 'Older note copy.' },
-          { ...sampleNotes[0], id: 'latest-note', body: 'Latest note copy.' },
+          {
+            ...sampleNotes[0],
+            id: ' latest-note ',
+            runId: ' run-1 ',
+            body: '  Latest note copy.  ',
+          },
         ],
       }),
     });
@@ -136,7 +141,11 @@ describe('local-storage-prompt-run-note-repository', () => {
     );
 
     expect(repository.loadAll()).toEqual([
-      { ...sampleNotes[0], id: 'latest-note', body: 'Latest note copy.' },
+      {
+        ...sampleNotes[0],
+        id: 'latest-note',
+        body: '  Latest note copy.  ',
+      },
     ]);
   });
 });
