@@ -106,6 +106,53 @@ describe('workspace-backup-transfer', () => {
     expect(parsedBackup.data.recentTemplateIds).toEqual(['template-1']);
   });
 
+  it('normalizes identifiers without rewriting workspace content', () => {
+    const parsedBackup = parseWorkspaceBackupImport(
+      stringifyWorkspaceBackup({
+        templates: [
+          {
+            ...template,
+            id: ' template-1 ',
+            systemPrompt: '  Preserve template whitespace.  ',
+          },
+        ],
+        runs: [
+          {
+            ...run,
+            id: ' run-1 ',
+            templateId: ' template-1 ',
+            templateName: ' Code Review Assistant ',
+            userPrompt: '  Preserve run whitespace.  ',
+          },
+        ],
+        notes: [
+          {
+            ...note,
+            id: ' note-1 ',
+            runId: ' run-1 ',
+            body: '  Preserve note whitespace.  ',
+          },
+        ],
+      }),
+    );
+
+    expect(parsedBackup.data.templates[0]).toMatchObject({
+      id: 'template-1',
+      systemPrompt: '  Preserve template whitespace.  ',
+    });
+    expect(parsedBackup.data.runs[0]).toMatchObject({
+      id: 'run-1',
+      templateId: 'template-1',
+      templateName: 'Code Review Assistant',
+      userPrompt: '  Preserve run whitespace.  ',
+    });
+    expect(parsedBackup.data.notes[0]).toMatchObject({
+      id: 'note-1',
+      runId: 'run-1',
+      body: '  Preserve note whitespace.  ',
+    });
+  });
+
   it('parses older backups without recent template shortcuts', () => {
     const parsedBackup = parseWorkspaceBackupImport(
       JSON.stringify({
@@ -235,7 +282,7 @@ describe('workspace-backup-transfer', () => {
 
     expect(() =>
       parseData({
-        templates: [template, { ...template }],
+        templates: [template, { ...template, id: ' template-1 ' }],
         runs: [run],
         notes: [note],
       }),
@@ -244,7 +291,7 @@ describe('workspace-backup-transfer', () => {
     expect(() =>
       parseData({
         templates: [template],
-        runs: [run, { ...run }],
+        runs: [run, { ...run, id: ' run-1 ' }],
         notes: [note],
       }),
     ).toThrow('Invalid workspace backup format.');
@@ -253,7 +300,7 @@ describe('workspace-backup-transfer', () => {
       parseData({
         templates: [template],
         runs: [run],
-        notes: [note, { ...note, id: 'note-2' }],
+        notes: [note, { ...note, id: 'note-2', runId: ' run-1 ' }],
       }),
     ).toThrow('Invalid workspace backup format.');
   });

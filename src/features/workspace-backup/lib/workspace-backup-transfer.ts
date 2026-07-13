@@ -92,15 +92,31 @@ function normalizeWorkspaceBackupData(
     return null;
   }
 
+  const templates = value.templates.map((template) => ({
+    ...template,
+    id: template.id.trim(),
+  }));
+  const runs = value.runs.map((run) => ({
+    ...run,
+    id: run.id.trim(),
+    templateId: run.templateId.trim(),
+    templateName: run.templateName.trim(),
+  }));
+  const notes = value.notes.map((note) => ({
+    ...note,
+    id: note.id.trim(),
+    runId: note.runId.trim(),
+  }));
+
   if (
-    !hasUniqueKeys(value.templates, (template) => template.id) ||
-    !hasUniqueKeys(value.runs, (run) => run.id) ||
-    !hasUniqueKeys(value.notes, (note) => note.runId)
+    !hasUniqueKeys(templates, (template) => template.id) ||
+    !hasUniqueKeys(runs, (run) => run.id) ||
+    !hasUniqueKeys(notes, (note) => note.runId)
   ) {
     return null;
   }
 
-  if (!doNotesReferenceExportedRuns(value.notes, value.runs)) {
+  if (!doNotesReferenceExportedRuns(notes, runs)) {
     return null;
   }
 
@@ -113,9 +129,9 @@ function normalizeWorkspaceBackupData(
   }
 
   return {
-    templates: value.templates,
-    runs: value.runs,
-    notes: value.notes,
+    templates,
+    runs,
+    notes,
     ...(recentTemplateIds !== undefined ? { recentTemplateIds } : {}),
   };
 }
