@@ -24,9 +24,9 @@ function filterExistingTemplateIds(
 }
 
 export function useWorkspaceBackup() {
-  const { importNotes, notes } = usePromptRunNotes();
-  const { importRuns, runs } = usePromptRuns();
-  const { importTemplates, templates } = usePromptTemplates();
+  const { importNotes, notes, replaceNotes } = usePromptRunNotes();
+  const { importRuns, replaceRuns, runs } = usePromptRuns();
+  const { importTemplates, replaceTemplates, templates } = usePromptTemplates();
 
   const createWorkspaceBackupJson = useCallback(
     () => {
@@ -87,21 +87,15 @@ export function useWorkspaceBackup() {
         }
 
         if (notesImported) {
-          tryRollback(() => importNotes(notes));
+          tryRollback(() => replaceNotes(notes));
         }
 
         if (runsImported) {
-          tryRollback(() => importRuns(runs));
+          tryRollback(() => replaceRuns(runs));
         }
 
         if (templatesImported) {
-          tryRollback(() =>
-            importTemplates(templates, {
-              created: 0,
-              updated: templates.length,
-              total: templates.length,
-            }),
-          );
+          tryRollback(() => replaceTemplates(templates));
         }
 
         if (rollbackFailed) {
@@ -116,7 +110,17 @@ export function useWorkspaceBackup() {
 
       return result.summary;
     },
-    [importNotes, importRuns, importTemplates, notes, runs, templates],
+    [
+      importNotes,
+      importRuns,
+      importTemplates,
+      notes,
+      replaceNotes,
+      replaceRuns,
+      replaceTemplates,
+      runs,
+      templates,
+    ],
   );
 
   return useMemo(

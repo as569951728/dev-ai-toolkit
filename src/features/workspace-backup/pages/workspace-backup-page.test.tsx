@@ -360,6 +360,70 @@ describe('WorkspaceBackupPage', () => {
     expect(screen.queryByText('Workspace backup imported.')).not.toBeInTheDocument();
   });
 
+  it('removes newly created records when a later backup write fails', async () => {
+    const templateRepository = createTemplateRepository();
+    const runRepository = createRunRepository();
+    const noteRepository: ReturnType<typeof createNoteRepository> = {
+      loadAll: () => [],
+      saveAll: () => {
+        throw new Error('Browser storage rejected the imported notes.');
+      },
+      snapshot: () => [],
+    };
+    const importedTemplate = {
+      ...template,
+      id: 'imported-template',
+      revisions: template.revisions.map((revision) => ({
+        ...revision,
+        name: 'Imported Template',
+      })),
+      name: 'Imported Template',
+    };
+    const importedRun = {
+      ...run,
+      id: 'imported-run',
+      templateId: importedTemplate.id,
+      templateName: importedTemplate.name,
+    };
+    const importedNote = {
+      ...note,
+      id: 'imported-note',
+      runId: importedRun.id,
+    };
+
+    renderWorkspaceBackupPage({
+      templateRepository,
+      runRepository,
+      noteRepository,
+    });
+    const file = new File(
+      [
+        JSON.stringify({
+          version: 1,
+          exportedAt: '2026-06-10T08:30:00.000Z',
+          data: {
+            templates: [importedTemplate],
+            runs: [importedRun],
+            notes: [importedNote],
+          },
+        }),
+      ],
+      'workspace-backup.json',
+      { type: 'application/json' },
+    );
+
+    fireEvent.change(screen.getByLabelText('Import workspace JSON'), {
+      target: { files: [file] },
+    });
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Browser storage rejected the imported notes.',
+    );
+    expect(templateRepository.snapshot()).toEqual([]);
+    expect(runRepository.snapshot()).toEqual([]);
+    expect(noteRepository.snapshot()).toEqual([]);
+  });
+
   it('reports when a failed backup import cannot be fully restored', async () => {
     let runs = [run];
     const runRepository: ReturnType<typeof createRunRepository> = {

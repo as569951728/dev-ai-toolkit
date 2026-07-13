@@ -58,6 +58,7 @@ The format is intentionally lightweight and human-readable.
 
 ### Fixed
 
+- Restored exact local collections when workspace backup imports roll back
 - Reported partial prompt run imports when compensating run writes fail
 - Reported when a failed prompt run deletion could not restore its note
 - Preserved prompt run notes saved before the provider renders again
