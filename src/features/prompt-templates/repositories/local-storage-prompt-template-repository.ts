@@ -78,7 +78,7 @@ function normalizeStoredTemplate(value: unknown): PromptTemplate | null {
     : undefined;
 
   return ensurePromptTemplateVersioning({
-    id: value.id,
+    id: value.id.trim(),
     name: value.name,
     description: value.description,
     systemPrompt: value.systemPrompt,

@@ -121,13 +121,18 @@ describe('local-storage-prompt-template-repository', () => {
     expect(repository.loadAll()).toEqual([starterPromptTemplates[1]]);
   });
 
-  it('keeps the last valid template when stored ids are repeated', () => {
+  it('normalizes stored ids before keeping the last repeated template', () => {
     const storage = createMemoryStorage({
       templates: JSON.stringify({
         version: 1,
         data: [
           { ...starterPromptTemplates[0], name: 'Older template copy' },
-          { ...starterPromptTemplates[0], name: 'Latest template copy' },
+          {
+            ...starterPromptTemplates[0],
+            id: ` ${starterPromptTemplates[0]!.id} `,
+            name: 'Latest template copy',
+            systemPrompt: '  Preserve prompt whitespace.  ',
+          },
           starterPromptTemplates[1],
         ],
       }),
@@ -137,9 +142,15 @@ describe('local-storage-prompt-template-repository', () => {
       storage,
     );
 
-    expect(repository.loadAll().map((template) => template.name)).toEqual([
+    const loadedTemplates = repository.loadAll();
+
+    expect(loadedTemplates.map((template) => template.name)).toEqual([
       'Latest template copy',
       starterPromptTemplates[1]!.name,
     ]);
+    expect(loadedTemplates[0]).toMatchObject({
+      id: starterPromptTemplates[0]!.id,
+      systemPrompt: '  Preserve prompt whitespace.  ',
+    });
   });
 });
