@@ -151,6 +151,41 @@ describe('PromptTemplateListPage', () => {
     );
   });
 
+  it('discloses invalid records skipped from a mixed template import', async () => {
+    render(
+      <MemoryRouter>
+        <PromptTemplatesProvider repository={createMemoryRepository()}>
+          <PromptTemplateListPage />
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    const mixedFile = new File(
+      [
+        JSON.stringify([
+          {
+            ...starterPromptTemplates[0],
+            description: 'Imported template update.',
+          },
+          {
+            id: 'invalid-template',
+            name: '',
+          },
+        ]),
+      ],
+      'mixed-templates.json',
+      { type: 'application/json' },
+    );
+
+    fireEvent.change(screen.getByLabelText('Import prompt templates JSON'), {
+      target: { files: [mixedFile] },
+    });
+
+    expect(await screen.findByRole('status')).toHaveTextContent(
+      'Imported 1 template: 0 created, 1 updated. 1 skipped.',
+    );
+  });
+
   it('accepts JSON template import files by MIME type or extension', () => {
     render(
       <MemoryRouter>

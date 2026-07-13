@@ -102,9 +102,13 @@ export function PromptTemplateListPage() {
         templates,
       );
       const result = importTemplates(importedTemplates, summary);
+      const skippedMessage = result.skipped
+        ? ` ${result.skipped} skipped.`
+        : '';
+      const templateLabel = result.total === 1 ? 'template' : 'templates';
 
       setFeedback({
-        message: `Imported ${result.total} templates: ${result.created} created, ${result.updated} updated.`,
+        message: `Imported ${result.total} ${templateLabel}: ${result.created} created, ${result.updated} updated.${skippedMessage}`,
         tone: 'success',
       });
     } catch (error) {

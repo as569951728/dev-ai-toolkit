@@ -191,6 +191,7 @@ export function parsePromptTemplateImport(
   const importedTemplatesById = new Map<string, PromptTemplate>();
   const createdTemplateIds = new Set<string>();
   const updatedTemplateIds = new Set<string>();
+  let skipped = 0;
 
   for (const item of templatesSource) {
     const candidateId =
@@ -201,6 +202,7 @@ export function parsePromptTemplateImport(
     const normalizedTemplate = normalizePromptTemplate(item, existingTemplate);
 
     if (!normalizedTemplate) {
+      skipped += 1;
       continue;
     }
 
@@ -230,6 +232,7 @@ export function parsePromptTemplateImport(
 
   const summary: PromptTemplateImportSummary = {
     created,
+    skipped,
     updated,
     total: importedTemplates.length,
   };

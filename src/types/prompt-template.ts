@@ -36,6 +36,7 @@ export interface PromptTemplateFilters {
 
 export interface PromptTemplateImportSummary {
   created: number;
+  skipped?: number;
   updated: number;
   total: number;
 }

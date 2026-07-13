@@ -38,6 +38,7 @@ describe('prompt-template-transfer', () => {
 
     expect(result.summary).toEqual({
       created: 1,
+      skipped: 0,
       updated: 1,
       total: 2,
     });
@@ -121,6 +122,7 @@ describe('prompt-template-transfer', () => {
 
     expect(result.summary).toEqual({
       created: 1,
+      skipped: 0,
       updated: 0,
       total: 1,
     });
@@ -145,6 +147,34 @@ describe('prompt-template-transfer', () => {
     ).toThrow(
       'Invalid file format. Expected a template array or an exported dev-ai-toolkit payload.',
     );
+  });
+
+  it('counts invalid records skipped from a mixed template import', () => {
+    const result = parsePromptTemplateImport(
+      JSON.stringify([
+        {
+          id: 'valid-template',
+          name: 'Valid Template',
+          description: 'A template that can be imported.',
+          systemPrompt: 'You review {{subject}}.',
+          userPrompt: 'Review {{subject}}.',
+          tags: ['review'],
+        },
+        {
+          id: 'invalid-template',
+          name: '',
+          description: 'Missing required prompt fields.',
+        },
+      ]),
+      starterPromptTemplates,
+    );
+
+    expect(result.summary).toEqual({
+      created: 1,
+      skipped: 1,
+      updated: 0,
+      total: 1,
+    });
   });
 
   it('rejects unsupported exported template payload versions', () => {
@@ -186,6 +216,7 @@ describe('prompt-template-transfer', () => {
 
     expect(result.summary).toEqual({
       created: 1,
+      skipped: 0,
       updated: 0,
       total: 1,
     });
@@ -209,6 +240,7 @@ describe('prompt-template-transfer', () => {
 
     expect(result.summary).toEqual({
       created: 1,
+      skipped: 0,
       updated: 0,
       total: 1,
     });
