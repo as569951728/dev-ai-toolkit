@@ -40,12 +40,16 @@ export function downloadWorkspaceBackup(data: WorkspaceBackupData) {
     { type: 'application/json' },
   );
   const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
+  let link: HTMLAnchorElement | null = null;
 
-  link.href = url;
-  link.download = createWorkspaceBackupFilename(exportedAt);
-  document.body.append(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
+  try {
+    link = document.createElement('a');
+    link.href = url;
+    link.download = createWorkspaceBackupFilename(exportedAt);
+    document.body.append(link);
+    link.click();
+  } finally {
+    link?.remove();
+    URL.revokeObjectURL(url);
+  }
 }

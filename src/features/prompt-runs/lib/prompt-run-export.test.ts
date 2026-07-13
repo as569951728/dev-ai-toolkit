@@ -1,8 +1,9 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
   createPromptRunExportFilename,
   createPromptRunExportPayload,
+  exportPromptRunAsJson,
   parsePromptRunExportImport,
 } from '@/features/prompt-runs/lib/prompt-run-export';
 import type { PromptRunNote } from '@/types/prompt-run-note';
@@ -37,6 +38,10 @@ const sampleSourceTemplateRevision: PromptTemplateRevision = {
   userPrompt: 'Review {{endpoint}}.',
   tags: ['api'],
 };
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 describe('prompt run export helpers', () => {
   it('creates a stable export payload with run data and note context', () => {
@@ -78,6 +83,30 @@ describe('prompt run export helpers', () => {
     expect(createPromptRunExportFilename(sampleRun)).toBe(
       '2026-05-07-api-design-partner-run-1.json',
     );
+  });
+
+  it('cleans up the temporary download after a failed click', () => {
+    const revokeObjectURL = vi.fn();
+    const link = document.createElement('a');
+
+    Object.defineProperty(window.URL, 'createObjectURL', {
+      configurable: true,
+      value: vi.fn(() => 'blob:prompt-run'),
+    });
+    Object.defineProperty(window.URL, 'revokeObjectURL', {
+      configurable: true,
+      value: revokeObjectURL,
+    });
+    vi.spyOn(document, 'createElement').mockReturnValue(link);
+    vi.spyOn(link, 'click').mockImplementation(() => {
+      throw new Error('Downloads are unavailable.');
+    });
+
+    expect(() => exportPromptRunAsJson({ run: sampleRun })).toThrow(
+      'Downloads are unavailable.',
+    );
+    expect(document.body.contains(link)).toBe(false);
+    expect(revokeObjectURL).toHaveBeenCalledWith('blob:prompt-run');
   });
 
   it('parses a single prompt run export payload for import', () => {

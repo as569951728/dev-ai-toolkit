@@ -70,4 +70,28 @@ describe('workspace-backup-download', () => {
     expect(link.href).toBe('blob:workspace-backup');
     expect(revokeObjectURL).toHaveBeenCalledWith('blob:workspace-backup');
   });
+
+  it('cleans up the temporary download after a failed click', () => {
+    const revokeObjectURL = vi.fn();
+    const link = document.createElement('a');
+
+    Object.defineProperty(window.URL, 'createObjectURL', {
+      configurable: true,
+      value: vi.fn(() => 'blob:workspace-backup'),
+    });
+    Object.defineProperty(window.URL, 'revokeObjectURL', {
+      configurable: true,
+      value: revokeObjectURL,
+    });
+    vi.spyOn(document, 'createElement').mockReturnValue(link);
+    vi.spyOn(link, 'click').mockImplementation(() => {
+      throw new Error('Downloads are unavailable.');
+    });
+
+    expect(() =>
+      downloadWorkspaceBackup({ templates: [], runs: [], notes: [] }),
+    ).toThrow('Downloads are unavailable.');
+    expect(document.body.contains(link)).toBe(false);
+    expect(revokeObjectURL).toHaveBeenCalledWith('blob:workspace-backup');
+  });
 });

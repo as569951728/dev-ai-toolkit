@@ -52,6 +52,8 @@ The format is intentionally lightweight and human-readable.
 
 ### Fixed
 
+- Removed temporary download links and revoked Blob URLs when prompt run or
+  workspace backup exports fail
 - Supported dotted variable names consistently when Prompt Playground detects,
   labels, and composes template placeholders
 - Cleared stale Prompt Playground copy feedback when template variables or
