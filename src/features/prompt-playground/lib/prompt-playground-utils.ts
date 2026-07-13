@@ -27,7 +27,9 @@ export function applyVariables(
   values: Record<string, string>,
 ) {
   return replacePromptVariablePlaceholders(source, (key) => {
-    return values[key] && values[key].trim() ? values[key].trim() : `{{${key}}}`;
+    const value = values[key];
+
+    return value?.trim() ? value : `{{${key}}}`;
   });
 }
 

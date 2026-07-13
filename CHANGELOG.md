@@ -54,6 +54,7 @@ The format is intentionally lightweight and human-readable.
 
 ### Fixed
 
+- Preserved meaningful whitespace in composed Playground variable values
 - Excluded notes without a saved run from downloadable workspace backups
 - Detected read-only browser storage before users attempt to persist local data
 - Prevented restricted browser storage access from crashing local repository

@@ -39,6 +39,19 @@ describe('prompt-playground-utils', () => {
     );
   });
 
+  it('preserves meaningful whitespace in multiline variable values', () => {
+    const codeSnippet = '  const result = runPrompt();\n';
+
+    expect(
+      applyVariables('Inspect this code:\n{{code_snippet}}End of snippet.', {
+        code_snippet: codeSnippet,
+      }),
+    ).toBe(`Inspect this code:\n${codeSnippet}End of snippet.`);
+    expect(
+      applyVariables('Inspect {{code_snippet}}.', { code_snippet: '   ' }),
+    ).toBe('Inspect {{code_snippet}}.');
+  });
+
   it('detects and replaces dotted variable names', () => {
     const dottedTemplate = {
       ...template,
