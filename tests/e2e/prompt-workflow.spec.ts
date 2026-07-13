@@ -154,6 +154,56 @@ test('protects unsaved prompt template changes', async ({ page }) => {
   ).toBeVisible();
 });
 
+test('restores a historical template as a new current version', async ({
+  page,
+}) => {
+  await page.goto('/prompts/code-review-assistant/edit');
+  await page
+    .getByLabel('Description')
+    .fill('Updated description for the browser restore flow.');
+  await page.getByRole('button', { name: 'Save changes' }).click();
+
+  await expect(page).toHaveURL(/\/prompts$/);
+  const templateCard = page.getByRole('article').filter({
+    has: page.getByRole('heading', { name: 'Code Review Assistant' }),
+  });
+
+  await templateCard.getByRole('button', { name: 'Preview' }).click();
+
+  await expect(page).toHaveURL(/\/prompts\/code-review-assistant$/);
+  await expect(page.getByText('Current version v2')).toBeVisible();
+
+  const versionOneCard = page.getByRole('article').filter({
+    has: page.getByRole('heading', { name: 'Version v1' }),
+  });
+
+  await versionOneCard
+    .getByRole('button', { name: 'Restore as current' })
+    .click();
+
+  const restoreDialog = versionOneCard.getByRole('dialog', {
+    name: 'Restore version v1?',
+  });
+
+  await expect(restoreDialog).toBeVisible();
+  await expect(
+    restoreDialog.getByRole('button', { name: 'Cancel' }),
+  ).toBeFocused();
+  await expect(page.getByText('Current version v2')).toBeVisible();
+
+  await restoreDialog
+    .getByRole('button', { name: 'Restore version v1' })
+    .click();
+
+  await expect(page.getByText('Current version v3')).toBeVisible();
+  await expect(
+    page.getByText(
+      'Review pull request changes with a focus on bugs, risks, and missing test coverage.',
+      { exact: true },
+    ).first(),
+  ).toBeVisible();
+});
+
 test('discloses an unavailable Playground template link', async ({ page }) => {
   await page.goto('/playground?templateId=missing-template');
 
