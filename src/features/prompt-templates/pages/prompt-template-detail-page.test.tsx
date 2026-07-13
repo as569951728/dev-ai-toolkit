@@ -169,9 +169,21 @@ describe('PromptTemplateDetailPage', () => {
     ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
     expect(
+      screen.getByText(
+        'Deleting this template will not remove its saved run snapshots from Run History.',
+      ),
+    ).toBeInTheDocument();
+    expect(
       templateRepository.snapshot().some((template) => template.id === templateId),
     ).toBe(true);
 
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+
+    expect(
+      screen.queryByText(/will not remove its saved run snapshots/),
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
     fireEvent.click(screen.getByRole('button', { name: 'Confirm delete' }));
 
     expect(screen.getByText('Prompt List Destination')).toBeInTheDocument();

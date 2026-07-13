@@ -118,6 +118,10 @@ export function PromptTemplateDetail({
           )}
           {isConfirmingDelete ? (
             <>
+              <span className="run-history-note">
+                Deleting this template will not remove its saved run snapshots
+                from Run History.
+              </span>
               <button
                 className="danger-button"
                 type="button"
