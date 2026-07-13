@@ -113,6 +113,18 @@ describe('prompt run export helpers', () => {
         JSON.stringify({
           schemaVersion: 1,
           exportedAt: '2026-05-09T10:00:00.000Z',
+          run: { ...sampleRun, variables: ['endpoint'] },
+          note: null,
+          sourceTemplateRevision: null,
+        }),
+      ),
+    ).toThrow('Invalid prompt run export format.');
+
+    expect(() =>
+      parsePromptRunExportImport(
+        JSON.stringify({
+          schemaVersion: 1,
+          exportedAt: '2026-05-09T10:00:00.000Z',
           run: sampleRun,
           note: { ...sampleNote, runId: 'other-run' },
           sourceTemplateRevision: null,

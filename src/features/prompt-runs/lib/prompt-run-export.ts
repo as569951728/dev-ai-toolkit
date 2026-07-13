@@ -1,3 +1,5 @@
+import { isPromptRunNote } from '@/features/prompt-run-notes/lib/prompt-run-note-schema';
+import { isPromptRunRecord } from '@/features/prompt-runs/lib/prompt-run-schema';
 import type { PromptRunNote } from '@/types/prompt-run-note';
 import type { PromptRunRecord } from '@/types/prompt-run';
 import type { PromptTemplateRevision } from '@/types/prompt-template';
@@ -46,40 +48,8 @@ function isPositiveInteger(value: unknown): value is number {
   return typeof value === 'number' && Number.isInteger(value) && value > 0;
 }
 
-function isStringRecord(value: unknown): value is Record<string, string> {
-  return (
-    isRecord(value) &&
-    Object.values(value).every((item) => typeof item === 'string')
-  );
-}
-
 function isStringArray(value: unknown): value is string[] {
   return Array.isArray(value) && value.every((item) => typeof item === 'string');
-}
-
-function isValidPromptRun(value: unknown): value is PromptRunRecord {
-  return (
-    isRecord(value) &&
-    isNonEmptyString(value.id) &&
-    isNonEmptyString(value.templateId) &&
-    isNonEmptyString(value.templateName) &&
-    isPositiveInteger(value.templateVersion) &&
-    isStringRecord(value.variables) &&
-    isNonEmptyString(value.systemPrompt) &&
-    isNonEmptyString(value.userPrompt) &&
-    isValidDateString(value.createdAt)
-  );
-}
-
-function isValidPromptRunNote(value: unknown): value is PromptRunNote {
-  return (
-    isRecord(value) &&
-    isNonEmptyString(value.id) &&
-    isNonEmptyString(value.runId) &&
-    isNonEmptyString(value.body) &&
-    isValidDateString(value.createdAt) &&
-    isValidDateString(value.updatedAt)
-  );
 }
 
 function isValidPromptTemplateRevision(
@@ -112,7 +82,7 @@ export function parsePromptRunExportImport(
     !isRecord(parsedValue) ||
     parsedValue.schemaVersion !== 1 ||
     !isValidDateString(parsedValue.exportedAt) ||
-    !isValidPromptRun(parsedValue.run)
+    !isPromptRunRecord(parsedValue.run)
   ) {
     throw new Error('Invalid prompt run export format.');
   }
@@ -120,7 +90,7 @@ export function parsePromptRunExportImport(
   const note = parsedValue.note ?? null;
   const sourceTemplateRevision = parsedValue.sourceTemplateRevision ?? null;
 
-  if (note !== null && !isValidPromptRunNote(note)) {
+  if (note !== null && !isPromptRunNote(note)) {
     throw new Error('Invalid prompt run export format.');
   }
 
