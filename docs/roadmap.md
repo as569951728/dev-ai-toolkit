@@ -68,11 +68,15 @@ Completed since the project review:
 - Split Run History card, filter, and import responsibilities out of the page.
 - Added a Chromium smoke test for the template-to-saved-run path.
 - Aligned GitHub issue and release labels with repository templates.
+- Added user-facing failure and retry feedback for the main local storage writes
+  and JSON export actions.
+- Added compensating rollback for related run data and multi-collection
+  workspace imports.
 
 Still open:
 
 - Verify that the public Vercel demo tracks the current `main` branch (#14).
-- Finish consistent browser storage failure feedback for remaining write paths.
+- Keep local import, export, and recovery coverage aligned with schema changes.
 - Decide which supporting utility actions belong in the prompt workflow.
 - Prepare `v0.2.0` only after the demo, CI, docs, and release notes agree.
 

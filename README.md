@@ -232,7 +232,7 @@ Current maintenance priorities:
 Current next steps include:
 
 - Verify the public demo after the current `main` changes are pushed
-- Finish consistent browser storage failure feedback for remaining write paths
+- Keep regression coverage around local import, export, and recovery behavior
 - Decide which supporting utility actions should connect to the prompt workflow
 - Prepare `v0.2.0` after CI, demo, documentation, and release notes agree
 
