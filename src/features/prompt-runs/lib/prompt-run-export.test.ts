@@ -120,6 +120,41 @@ describe('prompt run export helpers', () => {
     expect(parsePromptRunExportImport(JSON.stringify(payload))).toEqual(payload);
   });
 
+  it('normalizes imported identifiers without rewriting saved content', () => {
+    const parsedPayload = parsePromptRunExportImport(
+      JSON.stringify({
+        schemaVersion: 1,
+        exportedAt: '2026-05-09T10:00:00.000Z',
+        run: {
+          ...sampleRun,
+          id: ' run-1 ',
+          templateId: ' template-1 ',
+          templateName: ' API Design Partner ',
+          systemPrompt: '  Preserve prompt whitespace.  ',
+        },
+        note: {
+          ...sampleNote,
+          id: ' note-1 ',
+          runId: ' run-1 ',
+          body: '  Preserve note whitespace.  ',
+        },
+        sourceTemplateRevision: sampleSourceTemplateRevision,
+      }),
+    );
+
+    expect(parsedPayload.run).toMatchObject({
+      id: 'run-1',
+      templateId: 'template-1',
+      templateName: 'API Design Partner',
+      systemPrompt: '  Preserve prompt whitespace.  ',
+    });
+    expect(parsedPayload.note).toMatchObject({
+      id: 'note-1',
+      runId: 'run-1',
+      body: '  Preserve note whitespace.  ',
+    });
+  });
+
   it('rejects malformed prompt run import payloads', () => {
     expect(() => parsePromptRunExportImport('{not-json')).toThrow(
       'Invalid prompt run export format.',

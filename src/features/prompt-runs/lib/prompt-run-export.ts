@@ -65,14 +65,28 @@ export function parsePromptRunExportImport(
     throw new Error('Invalid prompt run export format.');
   }
 
-  const note = parsedValue.note ?? null;
+  const rawNote = parsedValue.note ?? null;
   const sourceTemplateRevision = parsedValue.sourceTemplateRevision ?? null;
 
-  if (note !== null && !isPromptRunNote(note)) {
+  if (rawNote !== null && !isPromptRunNote(rawNote)) {
     throw new Error('Invalid prompt run export format.');
   }
 
-  if (note !== null && note.runId !== parsedValue.run.id) {
+  const run: PromptRunRecord = {
+    ...parsedValue.run,
+    id: parsedValue.run.id.trim(),
+    templateId: parsedValue.run.templateId.trim(),
+    templateName: parsedValue.run.templateName.trim(),
+  };
+  const note: PromptRunNote | null = rawNote
+    ? {
+        ...rawNote,
+        id: rawNote.id.trim(),
+        runId: rawNote.runId.trim(),
+      }
+    : null;
+
+  if (note !== null && note.runId !== run.id) {
     throw new Error('Prompt run note does not match the exported run.');
   }
 
@@ -85,7 +99,7 @@ export function parsePromptRunExportImport(
 
   if (
     sourceTemplateRevision !== null &&
-    sourceTemplateRevision.version !== parsedValue.run.templateVersion
+    sourceTemplateRevision.version !== run.templateVersion
   ) {
     throw new Error('Source template revision does not match the exported run.');
   }
@@ -93,7 +107,7 @@ export function parsePromptRunExportImport(
   return {
     schemaVersion: 1,
     exportedAt: parsedValue.exportedAt,
-    run: parsedValue.run,
+    run,
     note,
     sourceTemplateRevision,
   };

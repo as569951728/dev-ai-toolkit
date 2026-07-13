@@ -607,7 +607,12 @@ describe('PromptRunHistoryPage', () => {
       [
         JSON.stringify(
           createPromptRunExportPayload({
-            run: replacementRun,
+            run: {
+              ...replacementRun,
+              id: ` ${replacementRun.id} `,
+              templateId: ` ${replacementRun.templateId} `,
+              templateName: ` ${replacementRun.templateName} `,
+            },
             exportedAt: '2026-05-10T11:00:00.000Z',
           }),
         ),
