@@ -9,8 +9,8 @@
 当前项目主要围绕几类日常开发场景展开：
 
 - 维护和复用 prompt 模板
-- 预览带变量的 prompt 输出
-- 保存 prompt 运行记录并回看历史
+- 预览替换变量后的 system prompt 和 user prompt
+- 保存 prompt 快照并回看历史
 - 处理 JSON、接口草稿和文本输出
 - 手动备份和恢复当前浏览器里的本地工作区数据
 
@@ -19,7 +19,7 @@
 这个仓库更适合下面这些场景：
 
 - 为代码审查、接口设计、问题排查等重复任务维护 prompt 模板
-- 在本地整理 prompt 输入、变量和输出结果
+- 在本地整理 prompt 模板、变量和已保存快照
 - 用 JSON Tools、API Builder、Code Viewer 处理相邻的开发辅助工作
 
 目前它还是一个纯前端、本地优先的工具，没有后端和账号系统。
@@ -51,7 +51,7 @@
   - 从历史列表直接进入 Prompt Diff 和源模板对比
   - 导出单条 run 的 JSON 文件
   - 删除不再需要的本地 run
-  - 跳回模板详情或继续在下游工具中查看输出
+  - 跳回模板详情或继续在下游工具中查看已保存的 prompts
 - JSON Tools
   - 格式化、压缩、校验、复制
 - API Builder
@@ -176,9 +176,9 @@ npm run audit
 | --- | --- | --- | --- |
 | Core | Overview | 介绍模块分组、主路径和当前阶段方向 | 首页入口 |
 | Prompt Workflows | Prompt Templates | 创建、编辑、复制、归档、恢复、删除、筛选、导入、导出模板 | 活跃模板可以进入 Playground，所有模板都可以查看过滤后的 Run History |
-| Prompt Workflows | Prompt Playground | 选择模板、填变量、预览输出、保存 run、保留最近使用模板 | 当前主工作流入口 |
+| Prompt Workflows | Prompt Playground | 选择模板、填变量、预览组合后的 prompts、保存 run snapshot、保留最近使用模板 | 当前主工作流入口 |
 | Prompt Workflows | Prompt Diff | 比较 prompt 文本、变量变化和行级差异 | 适合做模板改写后的复核 |
-| Prompt Workflows | Prompt Run History | 浏览 runs、按模板过滤、预览捕获变量、搜索 prompt 文本、变量或备注、查看详情、添加备注、导出或删除单条 run、和源模板对比、继续在下游工具查看输出 | 已保存 prompt 输出的历史视图 |
+| Prompt Workflows | Prompt Run History | 浏览 runs、按模板过滤、预览捕获变量、搜索 prompt 文本、变量或备注、查看详情、添加备注、导出或删除单条 run、和源模板对比、继续在下游工具查看已保存的 prompts | 已保存 prompt 快照的历史视图 |
 | Developer Utilities | JSON Tools | 格式化、校验、压缩、复制、加载示例 | 适合调试 JSON 载荷 |
 | Developer Utilities | API Builder | 组织请求参数并生成 `fetch` 代码和 cURL 命令 | 本地请求草稿工具 |
 | Developer Utilities | Code Viewer | 单栏 / 双栏查看文本和代码输出 | 适合审阅 prompt 或生成结果 |
@@ -189,9 +189,9 @@ npm run audit
 当前比较完整的一条路径是：
 
 1. 在 `Prompt Templates` 中创建或整理模板
-2. 进入 `Prompt Playground` 填变量并预览输出
+2. 进入 `Prompt Playground` 填变量并预览组合后的 prompts
 3. 保存 run snapshot
-4. 在 `Prompt Run History` 里回看某个模板的输出历史，也可以按 prompt 文本、变量或备注内容找回旧结果
+4. 在 `Prompt Run History` 里回看某个模板的 prompt 快照，也可以按 prompt 文本、变量或备注内容找回旧记录
 5. 在列表中查看捕获变量，和源模板进入 `Prompt Diff` 对比；也可以打开单条 run 详情，补充维护备注，必要时导出 JSON，或删除过期 run，再进入 `Code Viewer` 继续检查结果
 6. 需要迁移或清理浏览器数据前，到 `Workspace Backup` 导出当前本地工作区
 

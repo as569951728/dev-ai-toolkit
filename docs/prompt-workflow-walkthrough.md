@@ -32,8 +32,9 @@ the template text and shows a form for filling them.
 Use this step to:
 
 - Check the final system and user prompt before using it elsewhere.
-- Keep the prompt output tied to a template version.
-- Save a prompt run when the output is useful enough to review later.
+- Keep the composed prompts tied to a template version.
+- Save a prompt snapshot when the composed prompts are useful enough to review
+  later.
 
 ## 3. Save And Review Prompt Runs
 
@@ -47,7 +48,7 @@ Run History supports:
 - Searching by template name, saved prompt text, captured variable, and note
   content.
 - Opening a detail page for a saved run.
-- Reopening output in Code Viewer.
+- Reopening saved prompts in Code Viewer.
 - Comparing a saved run with its source template in Prompt Diff from the list
   or detail page.
 
@@ -59,7 +60,7 @@ with the matching source template revision when it is still available locally.
 The Run History page can import one of those JSON files later, including its
 saved note when the note belongs to the exported run.
 
-This is useful for small review loops where the prompt output needs context but
+This is useful for small review loops where a prompt snapshot needs context but
 does not yet need a backend or shared account model.
 
 ## 5. Back Up The Local Workspace
