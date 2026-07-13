@@ -168,6 +168,32 @@ describe('WorkspaceBackupPage', () => {
     );
   });
 
+  it('reports a failed workspace export and allows retrying', () => {
+    downloadWorkspaceBackupMock
+      .mockImplementationOnce(() => {
+        throw new Error('Downloads are unavailable.');
+      })
+      .mockImplementationOnce(() => undefined);
+    renderWorkspaceBackupPage();
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Export workspace JSON' }),
+    );
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Failed to export the workspace backup. Please try again.',
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Export workspace JSON' }),
+    );
+
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Workspace backup exported as JSON.',
+    );
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
   it('imports a workspace backup JSON file and shows a summary', async () => {
     const { noteRepository, runRepository, templateRepository } =
       renderWorkspaceBackupPage();

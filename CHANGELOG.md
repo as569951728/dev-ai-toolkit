@@ -45,6 +45,8 @@ The format is intentionally lightweight and human-readable.
 
 ### Fixed
 
+- Reported workspace backup export failures and kept the download action
+  available for retry
 - Reported prompt run JSON export failures on Run Detail and kept the action
   available for retry
 - Kept Prompt Playground template selection and snapshot saving usable when the

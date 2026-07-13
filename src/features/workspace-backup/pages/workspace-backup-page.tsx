@@ -9,6 +9,11 @@ import { useWorkspaceBackup } from '@/features/workspace-backup/hooks/use-worksp
 import { downloadWorkspaceBackup } from '@/features/workspace-backup/lib/workspace-backup-download';
 import type { WorkspaceBackupImportSummary } from '@/features/workspace-backup/lib/workspace-backup-merge';
 
+type ExportFeedback = {
+  message: string;
+  tone: 'success' | 'error';
+};
+
 function formatCount(count: number, singularLabel: string) {
   return `${count} ${singularLabel}${count === 1 ? '' : 's'}`;
 }
@@ -18,7 +23,9 @@ export function WorkspaceBackupPage() {
   const { runs } = usePromptRuns();
   const { templates } = usePromptTemplates();
   const { importWorkspaceBackupJson } = useWorkspaceBackup();
-  const [exportStatusMessage, setExportStatusMessage] = useState('');
+  const [exportFeedback, setExportFeedback] = useState<ExportFeedback | null>(
+    null,
+  );
   const [importError, setImportError] = useState('');
   const [recentTemplateIds, setRecentTemplateIds] = useState(() =>
     loadRecentTemplateIds(),
@@ -30,13 +37,23 @@ export function WorkspaceBackupPage() {
   );
 
   const handleExportWorkspace = () => {
-    downloadWorkspaceBackup({
-      templates,
-      runs,
-      notes,
-      recentTemplateIds: currentRecentTemplateIds,
-    });
-    setExportStatusMessage('Workspace backup exported as JSON.');
+    try {
+      downloadWorkspaceBackup({
+        templates,
+        runs,
+        notes,
+        recentTemplateIds: currentRecentTemplateIds,
+      });
+      setExportFeedback({
+        message: 'Workspace backup exported as JSON.',
+        tone: 'success',
+      });
+    } catch {
+      setExportFeedback({
+        message: 'Failed to export the workspace backup. Please try again.',
+        tone: 'error',
+      });
+    }
   };
 
   const handleImportWorkspace = async (
@@ -85,9 +102,14 @@ export function WorkspaceBackupPage() {
           </button>
         </div>
 
-        {exportStatusMessage ? (
-          <p className="status-banner" role="status">
-            {exportStatusMessage}
+        {exportFeedback ? (
+          <p
+            className={`status-banner${
+              exportFeedback.tone === 'error' ? ' status-banner--error' : ''
+            }`}
+            role={exportFeedback.tone === 'error' ? 'alert' : 'status'}
+          >
+            {exportFeedback.message}
           </p>
         ) : null}
       </section>
