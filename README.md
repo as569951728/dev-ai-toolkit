@@ -190,9 +190,9 @@ set of developer utilities.
 | --- | --- | --- | --- |
 | Core | Overview | Introduces the module groups, main workflow, and near-term direction | Landing page for first-time users |
 | Prompt Workflows | Prompt Templates | Create, edit, duplicate, archive, restore, delete, filter, import, and export templates | Active templates can open in the playground; all templates can open filtered run history |
-| Prompt Workflows | Prompt Playground | Select templates, fill variables, preview composed prompts, save run snapshots, and keep recent template usage | Main path for composing reusable prompts |
+| Prompt Workflows | Prompt Playground | Select templates, fill variables, preview or copy labeled composed prompts, save run snapshots, and keep recent template usage | Main path for composing reusable prompts |
 | Prompt Workflows | Prompt Diff | Compare prompt revisions, detect variable drift, and inspect line-level wording changes | Best used after editing or templating changes |
-| Prompt Workflows | Prompt Run History | Browse saved runs, filter by template, preview captured variables, search saved prompt text and notes, open run details, add notes, import or export a single run, compare with source templates, delete stale runs, and reopen saved prompts in downstream tools | Dedicated history view for saved prompt snapshots |
+| Prompt Workflows | Prompt Run History | Browse saved runs, filter by template, preview captured variables, search saved prompt text and notes, open run details, copy full saved prompts, add notes, import or export a single run, compare with source templates, delete stale runs, and reopen saved prompts in downstream tools | Dedicated history view for saved prompt snapshots |
 | Developer Utilities | JSON Tools | Format, validate, minify, copy, and sample JSON payloads | Useful for debugging and payload cleanup |
 | Developer Utilities | API Builder | Draft request URLs, headers, query params, JSON bodies, `fetch` snippets, and cURL commands | Local request scaffolding only |
 | Developer Utilities | Code Viewer | Inspect generated text or code in single or compare mode | Supports prompt and output review workflows |
@@ -210,7 +210,8 @@ The current storage model is intentionally local-first:
 The most complete workflow in the current version looks like this:
 
 1. Start in `Prompt Templates` and move into `Prompt Playground`
-2. Save a prompt run from the playground
+2. Copy the composed prompt into an external AI tool, or save it as a local run
+   snapshot for later review
 3. Open filtered `Prompt Run History` for the active template
 4. Search saved runs by template name, saved prompt text, captured variable, or note content when reviewing older snapshots
 5. Review captured variables from the list, compare a run with its source template, add a short note, import or export a run as JSON, or delete stale local runs
