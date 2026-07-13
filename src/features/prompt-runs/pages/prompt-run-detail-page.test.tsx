@@ -522,6 +522,71 @@ describe('PromptRunDetailPage', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('warns when a failed run deletion also loses its note rollback', () => {
+    const run: PromptRunRecord = {
+      id: 'run-1',
+      templateId: starterPromptTemplates[0]!.id,
+      templateName: starterPromptTemplates[0]!.name,
+      templateVersion: starterPromptTemplates[0]!.version,
+      variables: {},
+      systemPrompt: 'System',
+      userPrompt: 'User',
+      createdAt: '2026-05-07T09:00:00.000Z',
+    };
+    const note: PromptRunNote = {
+      id: 'note-1',
+      runId: run.id,
+      body: 'This note cannot be restored.',
+      createdAt: '2026-05-08T09:00:00.000Z',
+      updatedAt: '2026-05-08T09:00:00.000Z',
+    };
+    const runRepository: PromptRunRepository = {
+      loadAll: () => [run],
+      saveAll: () => {
+        throw new Error('Run deletion failed.');
+      },
+    };
+    let notes = [note];
+    const noteRepository: PromptRunNoteRepository = {
+      loadAll: () => [...notes],
+      saveAll: (nextNotes) => {
+        if (nextNotes.length > 0) {
+          throw new Error('Note rollback failed.');
+        }
+
+        notes = [...nextNotes];
+      },
+    };
+
+    render(
+      <MemoryRouter initialEntries={['/runs/run-1']}>
+        <PromptTemplatesProvider repository={createTemplateRepository()}>
+          <PromptRunsProvider repository={runRepository}>
+            <PromptRunNotesProvider repository={noteRepository}>
+              <Routes>
+                <Route path="/runs/:runId" element={<PromptRunDetailPage />} />
+                <Route
+                  path="/runs"
+                  element={<div>Run History Destination</div>}
+                />
+              </Routes>
+            </PromptRunNotesProvider>
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete run' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm delete' }));
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'The snapshot remains in Run History, but the note may be missing.',
+    );
+    expect(
+      screen.getByRole('heading', { name: 'Code Review Assistant' }),
+    ).toBeInTheDocument();
+  });
+
   it('shows a not-found state when the run is missing', () => {
     renderRunDetail('/runs/missing-run', []);
 

@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { PromptRunNotesProvider } from '@/features/prompt-run-notes/providers/prompt-run-notes-provider';
 import type { PromptRunNoteRepository } from '@/features/prompt-run-notes/repositories/prompt-run-note-repository';
 import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs-provider';
 import type { PromptRunRepository } from '@/features/prompt-runs/repositories/prompt-run-repository';
-import { usePromptRunWorkflowActions } from '@/features/prompt-workflows/hooks/use-prompt-run-workflow-actions';
+import {
+  PromptRunNoteRollbackError,
+  usePromptRunWorkflowActions,
+} from '@/features/prompt-workflows/hooks/use-prompt-run-workflow-actions';
 import type { PromptRunNote } from '@/types/prompt-run-note';
 import type { PromptRunRecord } from '@/types/prompt-run';
 
@@ -38,7 +41,13 @@ function createNoteRepository(
   };
 }
 
-function TestConsumer({ runId }: { runId: string }) {
+function TestConsumer({
+  runId,
+  onError,
+}: {
+  runId: string;
+  onError?: (error: unknown) => void;
+}) {
   const { deleteRunWithRelatedData } = usePromptRunWorkflowActions();
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -49,8 +58,13 @@ function TestConsumer({ runId }: { runId: string }) {
         onClick={() => {
           try {
             deleteRunWithRelatedData(runId);
-          } catch {
-            setErrorMessage('Delete failed.');
+          } catch (error) {
+            onError?.(error);
+            setErrorMessage(
+              error instanceof PromptRunNoteRollbackError
+                ? error.message
+                : 'Delete failed.',
+            );
           }
         }}
       >
@@ -145,5 +159,70 @@ describe('usePromptRunWorkflowActions', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('Delete failed.');
     expect(runRepository.snapshot()).toEqual([run]);
     expect(noteRepository.snapshot()).toEqual([note]);
+  });
+
+  it('reports when the note cannot be restored after run deletion fails', () => {
+    const run: PromptRunRecord = {
+      id: 'run-1',
+      templateId: 'template-1',
+      templateName: 'Code Review Assistant',
+      templateVersion: 2,
+      variables: {},
+      systemPrompt: 'System',
+      userPrompt: 'User',
+      createdAt: '2026-05-07T09:00:00.000Z',
+    };
+    const note: PromptRunNote = {
+      id: 'note-1',
+      runId: 'run-1',
+      body: 'This note cannot be restored.',
+      createdAt: '2026-05-08T09:00:00.000Z',
+      updatedAt: '2026-05-08T09:00:00.000Z',
+    };
+    const runRepository: PromptRunRepository = {
+      loadAll: () => [run],
+      saveAll: () => {
+        throw new Error('Run deletion failed.');
+      },
+    };
+    let notes = [note];
+    const noteRepository: PromptRunNoteRepository & {
+      snapshot: () => PromptRunNote[];
+    } = {
+      loadAll: () => [...notes],
+      saveAll: (nextNotes) => {
+        if (nextNotes.length > 0) {
+          throw new Error('Note rollback failed.');
+        }
+
+        notes = [...nextNotes];
+      },
+      snapshot: () => [...notes],
+    };
+    const onError = vi.fn();
+
+    render(
+      <PromptRunsProvider repository={runRepository}>
+        <PromptRunNotesProvider repository={noteRepository}>
+          <TestConsumer runId="run-1" onError={onError} />
+        </PromptRunNotesProvider>
+      </PromptRunsProvider>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete workflow run' }));
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'The prompt snapshot could not be deleted, and its note could not be restored.',
+    );
+    const workflowError = onError.mock.calls[0]?.[0];
+
+    expect(workflowError).toBeInstanceOf(PromptRunNoteRollbackError);
+    expect((workflowError as PromptRunNoteRollbackError).cause).toMatchObject({
+      message: 'Run deletion failed.',
+    });
+    expect(
+      (workflowError as PromptRunNoteRollbackError).rollbackCause,
+    ).toMatchObject({ message: 'Note rollback failed.' });
+    expect(noteRepository.snapshot()).toEqual([]);
   });
 });

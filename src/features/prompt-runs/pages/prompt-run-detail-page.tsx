@@ -8,7 +8,10 @@ import { exportPromptRunAsJson } from '@/features/prompt-runs/lib/prompt-run-exp
 import { buildPromptRunSourceDiffUrl } from '@/features/prompt-runs/lib/prompt-run-links';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
-import { usePromptRunWorkflowActions } from '@/features/prompt-workflows/hooks/use-prompt-run-workflow-actions';
+import {
+  PromptRunNoteRollbackError,
+  usePromptRunWorkflowActions,
+} from '@/features/prompt-workflows/hooks/use-prompt-run-workflow-actions';
 import { writeClipboardText } from '@/lib/clipboard';
 import { formatPromptSections } from '@/lib/prompt-sections';
 
@@ -66,9 +69,11 @@ export function PromptRunDetailPage() {
     try {
       deleteRunWithRelatedData(run.id);
       navigate('/runs');
-    } catch {
+    } catch (error) {
       setDeleteErrorMessage(
-        'Failed to delete this prompt snapshot. Check that browser storage is available and try again.',
+        error instanceof PromptRunNoteRollbackError
+          ? error.message
+          : 'Failed to delete this prompt snapshot. Check that browser storage is available and try again.',
       );
     }
   };
