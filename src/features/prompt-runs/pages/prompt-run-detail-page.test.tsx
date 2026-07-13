@@ -147,7 +147,10 @@ describe('PromptRunDetailPage', () => {
     ).toHaveAttribute('href', `/prompts/${starterPromptTemplates[0]!.id}`);
     expect(
       screen.getByRole('link', { name: 'Reopen in Playground' }),
-    ).toHaveAttribute('href', '/playground?runId=run-1');
+    ).toHaveAttribute(
+      'href',
+      `/playground?runId=run-1&templateId=${starterPromptTemplates[0]!.id}`,
+    );
     const codeViewerUrl = new URL(
       screen
         .getByRole('link', { name: 'Open saved prompts in Code Viewer' })

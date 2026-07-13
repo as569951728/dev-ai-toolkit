@@ -171,7 +171,7 @@ export function PromptRunDetailPage() {
           {sourceTemplate && !sourceTemplate.archivedAt ? (
             <Link
               className="primary-button"
-              to={`/playground?runId=${encodeURIComponent(run.id)}`}
+              to={`/playground?runId=${encodeURIComponent(run.id)}&templateId=${encodeURIComponent(run.templateId)}`}
             >
               Reopen in Playground
             </Link>
