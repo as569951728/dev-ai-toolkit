@@ -73,7 +73,10 @@ note to explain why the run was kept and what should be reviewed later.
 Individual runs can also be exported as JSON with the matching source template
 revision when it is still available locally. The Run History page can import
 one of those JSON files later, including its saved note when the note belongs to
-the exported run.
+the exported run. A single-run import restores the prompt snapshot and note
+only. Any embedded source revision is validated as provenance context; it does
+not create or replace a template in the local library. Use Workspace Backup
+when templates and run history need to move together.
 
 This is useful for small review loops where a prompt snapshot needs context but
 does not yet need a backend or shared account model.
