@@ -9,6 +9,7 @@ import {
   buildPromptRunDetailPath,
   buildPromptRunSourceDiffUrl,
 } from '@/features/prompt-runs/lib/prompt-run-links';
+import { buildPromptTemplateDetailPath } from '@/features/prompt-templates/lib/prompt-template-links';
 import type { PromptRunRecord } from '@/types/prompt-run';
 import type { PromptRunNote } from '@/types/prompt-run-note';
 import type { PromptTemplate } from '@/types/prompt-template';
@@ -92,7 +93,10 @@ export function PromptRunHistoryCard({
           </Link>
         ) : null}
         {sourceTemplate ? (
-          <Link className="ghost-button" to={`/prompts/${run.templateId}`}>
+          <Link
+            className="ghost-button"
+            to={buildPromptTemplateDetailPath(run.templateId)}
+          >
             View source template
           </Link>
         ) : (

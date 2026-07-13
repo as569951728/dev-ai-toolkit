@@ -238,6 +238,27 @@ describe('PromptRunHistoryPage', () => {
     ).toBeInTheDocument();
   });
 
+  it('encodes an imported source template ID in its detail link', () => {
+    const template = {
+      ...starterPromptTemplates[0]!,
+      id: 'imported/template #1',
+    };
+    const run: PromptRunRecord = {
+      ...sampleRuns[0]!,
+      templateId: template.id,
+      templateName: template.name,
+    };
+
+    renderRunHistory({
+      runs: [run],
+      templateRepository: createTemplateRepository([template]),
+    });
+
+    expect(
+      screen.getByRole('link', { name: 'View source template' }),
+    ).toHaveAttribute('href', '/prompts/imported%2Ftemplate%20%231');
+  });
+
   it('summarizes captured variables when a run has several values', () => {
     renderRunHistory({
       runs: [

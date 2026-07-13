@@ -204,6 +204,33 @@ describe('PromptRunDetailPage', () => {
     expect(screen.getByText('Imported user prompt.')).toBeInTheDocument();
   });
 
+  it('encodes an imported source template ID in its detail link', () => {
+    const template = {
+      ...starterPromptTemplates[0]!,
+      id: 'imported/template #1',
+    };
+    const run: PromptRunRecord = {
+      id: 'run-with-imported-template',
+      templateId: template.id,
+      templateName: template.name,
+      templateVersion: template.version,
+      variables: {},
+      systemPrompt: template.systemPrompt,
+      userPrompt: template.userPrompt,
+      createdAt: '2026-05-07T09:00:00.000Z',
+    };
+
+    renderRunDetail(
+      buildPromptRunDetailPath(run.id),
+      [run],
+      createTemplateRepository([template]),
+    );
+
+    expect(
+      screen.getByRole('link', { name: 'View source template' }),
+    ).toHaveAttribute('href', '/prompts/imported%2Ftemplate%20%231');
+  });
+
   it('saves a maintenance note for the current run', () => {
     const { noteRepository } = renderRunDetail('/runs/run-1', [
       {

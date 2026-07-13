@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
 import { starterPromptTemplates } from '@/features/prompt-templates/seed/prompt-templates';
+import { buildPromptTemplateDetailPath } from '@/features/prompt-templates/lib/prompt-template-links';
 import { PromptTemplateDetailPage } from '@/features/prompt-templates/pages/prompt-template-detail-page';
 import { PromptTemplatesProvider } from '@/features/prompt-templates/providers/prompt-templates-provider';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
@@ -43,6 +44,32 @@ afterEach(() => {
 });
 
 describe('PromptTemplateDetailPage', () => {
+  it('opens a template whose ID contains URL-sensitive characters', () => {
+    const template = {
+      ...starterPromptTemplates[0]!,
+      id: 'imported/template #1',
+    };
+
+    render(
+      <MemoryRouter initialEntries={[buildPromptTemplateDetailPath(template.id)]}>
+        <PromptTemplatesProvider repository={createTemplateRepository([template])}>
+          <PromptRunsProvider repository={createRunRepository()}>
+            <Routes>
+              <Route
+                path="/prompts/:promptId"
+                element={<PromptTemplateDetailPage />}
+              />
+            </Routes>
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    expect(
+      screen.getByRole('heading', { name: template.name }),
+    ).toBeInTheDocument();
+  });
+
   it('explains when a linked prompt template is not available', () => {
     render(
       <MemoryRouter initialEntries={['/prompts/missing-template']}>

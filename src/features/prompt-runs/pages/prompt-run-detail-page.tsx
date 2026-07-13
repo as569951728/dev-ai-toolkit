@@ -14,6 +14,7 @@ import { exportPromptRunAsJson } from '@/features/prompt-runs/lib/prompt-run-exp
 import { buildPromptRunSourceDiffUrl } from '@/features/prompt-runs/lib/prompt-run-links';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
+import { buildPromptTemplateDetailPath } from '@/features/prompt-templates/lib/prompt-template-links';
 import {
   PromptRunNoteRollbackError,
   usePromptRunWorkflowActions,
@@ -187,7 +188,10 @@ export function PromptRunDetailPage() {
             </span>
           ) : null}
           {sourceTemplate ? (
-            <Link className="ghost-button" to={`/prompts/${run.templateId}`}>
+            <Link
+              className="ghost-button"
+              to={buildPromptTemplateDetailPath(run.templateId)}
+            >
               View source template
             </Link>
           ) : (
