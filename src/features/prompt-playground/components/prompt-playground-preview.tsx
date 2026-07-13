@@ -66,7 +66,7 @@ export function PromptPlaygroundPreview({
       <div className="playground-panel__header">
         <div>
           <p className="eyebrow">Preview</p>
-          <h2>Generated prompt output</h2>
+          <h2>Composed prompt preview</h2>
           <p className="panel__summary">
             Review the final composed prompt before you copy it into your AI
             workflow.
@@ -155,7 +155,7 @@ export function PromptPlaygroundPreview({
       ) : (
         <div className="empty-state">
           <h2>Nothing to preview yet</h2>
-          <p>Select a template to see the generated prompt output.</p>
+          <p>Select a template to preview the composed prompts.</p>
         </div>
       )}
     </section>

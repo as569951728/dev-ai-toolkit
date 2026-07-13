@@ -137,7 +137,7 @@ describe('Prompt playground workflow', () => {
     expect(await screen.findByText('Run from v1')).toBeInTheDocument();
   });
 
-  it('opens generated prompt output in downstream review tools', () => {
+  it('opens composed prompts in downstream review tools', () => {
     const templateRepository = createTemplateRepository();
     const runRepository = createRunRepository();
     const templateId = starterPromptTemplates[0]!.id;
@@ -155,6 +155,10 @@ describe('Prompt playground workflow', () => {
         </PromptTemplatesProvider>
       </MemoryRouter>,
     );
+
+    expect(
+      screen.getByRole('heading', { name: 'Composed prompt preview' }),
+    ).toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText('Repository Name'), {
       target: { value: 'dev-ai-toolkit' },
