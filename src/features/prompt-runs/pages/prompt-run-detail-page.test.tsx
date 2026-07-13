@@ -505,7 +505,7 @@ describe('PromptRunDetailPage', () => {
     expect(
       screen.getByRole('button', { name: 'Confirm delete' }),
     ).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Cancel' })).toHaveFocus();
     expect(screen.getByRole('status')).toHaveTextContent(
       'The unsaved note draft will also be discarded.',
     );
