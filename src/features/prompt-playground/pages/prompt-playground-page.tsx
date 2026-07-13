@@ -7,6 +7,7 @@ import { PromptPlaygroundTemplatePicker } from '@/features/prompt-playground/com
 import { PromptPlaygroundVariableForm } from '@/features/prompt-playground/components/prompt-playground-variable-form';
 import { usePromptPlayground } from '@/features/prompt-playground/hooks/use-prompt-playground';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
+import { buildPromptRunDetailPath } from '@/features/prompt-runs/lib/prompt-run-links';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
 import { formatPromptSections } from '@/lib/prompt-sections';
 
@@ -134,7 +135,9 @@ function PromptPlaygroundWorkspace({
       {sourceRunId ? (
         <p className="status-banner" role="status">
           Loaded captured variables from a{' '}
-          <Link to={`/runs/${sourceRunId}`}>saved prompt snapshot</Link>. Changes
+          <Link to={buildPromptRunDetailPath(sourceRunId)}>
+            saved prompt snapshot
+          </Link>. Changes
           here will create a new snapshot and leave the original unchanged.
         </p>
       ) : null}

@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { PromptTemplateDetail } from '@/features/prompt-templates/components/prompt-template-detail';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
+import { buildPromptRunDetailPath } from '@/features/prompt-runs/lib/prompt-run-links';
 
 export function PromptTemplateDetailPage() {
   const navigate = useNavigate();
@@ -58,7 +59,7 @@ export function PromptTemplateDetailPage() {
       onBack={() => navigate('/prompts')}
       onOpenInPlayground={(id) => navigate(`/playground?templateId=${id}`)}
       onOpenRunHistory={(id) => navigate(`/runs?templateId=${id}`)}
-      onOpenRunDetail={(id) => navigate(`/runs/${id}`)}
+      onOpenRunDetail={(id) => navigate(buildPromptRunDetailPath(id))}
       onEdit={(id) => navigate(`/prompts/${id}/edit`)}
       onDuplicate={(id) => {
         const duplicatedTemplate = runTemplateAction(() =>

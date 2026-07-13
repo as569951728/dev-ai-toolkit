@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
+import { buildPromptRunDetailPath } from '@/features/prompt-runs/lib/prompt-run-links';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
 
 const moduleGroups = [
@@ -306,7 +307,10 @@ export function HomePage() {
                   Saved from template version v{run.templateVersion} with{' '}
                   {Object.keys(run.variables).length} captured variables.
                 </p>
-                <Link className="ghost-button" to={`/runs/${run.id}`}>
+                <Link
+                  className="ghost-button"
+                  to={buildPromptRunDetailPath(run.id)}
+                >
                   Open run detail
                 </Link>
               </article>

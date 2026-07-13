@@ -80,7 +80,7 @@ describe('HomePage', () => {
     renderHomePage({
       runs: [
         {
-          id: 'run-1',
+          id: 'imported/run #1',
           templateId: 'code-review-assistant',
           templateName: 'Code Review Assistant',
           templateVersion: 2,
@@ -94,6 +94,6 @@ describe('HomePage', () => {
 
     expect(
       screen.getByRole('link', { name: 'Open run detail' }),
-    ).toHaveAttribute('href', '/runs/run-1');
+    ).toHaveAttribute('href', '/runs/imported%2Frun%20%231');
   });
 });

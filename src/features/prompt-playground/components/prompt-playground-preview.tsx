@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import type { PromptPlaygroundVariable } from '@/features/prompt-playground/lib/prompt-playground-utils';
+import { buildPromptRunDetailPath } from '@/features/prompt-runs/lib/prompt-run-links';
 import { writeClipboardText } from '@/lib/clipboard';
 import { formatPromptSections } from '@/lib/prompt-sections';
 import type { PromptTemplate } from '@/types/prompt-template';
@@ -163,7 +164,9 @@ export function PromptPlaygroundPreview({
           {savedRunId ? (
             <span className="status-banner__actions">
               <span>Next: review it, add a note, or browse history.</span>
-              <Link to={`/runs/${savedRunId}`}>Open saved run</Link>
+              <Link to={buildPromptRunDetailPath(savedRunId)}>
+                Open saved run
+              </Link>
               <Link to="/runs">Browse run history</Link>
             </span>
           ) : null}

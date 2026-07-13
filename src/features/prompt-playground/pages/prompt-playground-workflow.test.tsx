@@ -503,7 +503,7 @@ describe('Prompt playground workflow', () => {
     const template = starterPromptTemplates[0]!;
     const runRepository = createRunRepository([
       {
-        id: 'run-1',
+        id: 'imported/run #1',
         templateId: template.id,
         templateName: template.name,
         templateVersion: template.version,
@@ -518,7 +518,9 @@ describe('Prompt playground workflow', () => {
     ]);
 
     render(
-      <MemoryRouter initialEntries={['/playground?runId=run-1']}>
+      <MemoryRouter
+        initialEntries={['/playground?runId=imported%2Frun%20%231']}
+      >
         <PromptTemplatesProvider repository={templateRepository}>
           <PromptRunsProvider repository={runRepository}>
             <PlaygroundWorkflowProbe />
@@ -539,7 +541,7 @@ describe('Prompt playground workflow', () => {
     );
     expect(
       screen.getByRole('link', { name: 'saved prompt snapshot' }),
-    ).toHaveAttribute('href', '/runs/run-1');
+    ).toHaveAttribute('href', '/runs/imported%2Frun%20%231');
   });
 
   it('copies generated prompt sections and announces the result', async () => {

@@ -75,7 +75,7 @@ describe('PromptTemplateDetailPage', () => {
   it('opens a recent run from the template detail activity list', () => {
     const template = starterPromptTemplates[0]!;
     const run: PromptRunRecord = {
-      id: 'run-from-template-detail',
+      id: 'imported/run #1',
       templateId: template.id,
       templateName: template.name,
       templateVersion: template.version,
