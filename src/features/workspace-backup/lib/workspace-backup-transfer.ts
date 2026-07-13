@@ -3,6 +3,7 @@ import type { PromptRunRecord } from '@/types/prompt-run';
 import type { PromptTemplate } from '@/types/prompt-template';
 import { isPromptRunNote } from '@/features/prompt-run-notes/lib/prompt-run-note-schema';
 import { isPromptRunRecord } from '@/features/prompt-runs/lib/prompt-run-schema';
+import { isPromptTemplate } from '@/features/prompt-templates/lib/prompt-template-schema';
 
 const WORKSPACE_BACKUP_VERSION = 1;
 
@@ -31,10 +32,6 @@ function isValidDateString(value: unknown): value is string {
   return isNonEmptyString(value) && !Number.isNaN(new Date(value).getTime());
 }
 
-function isPositiveInteger(value: unknown): value is number {
-  return typeof value === 'number' && Number.isInteger(value) && value > 0;
-}
-
 function isStringArray(value: unknown): value is string[] {
   return Array.isArray(value) && value.every((item) => typeof item === 'string');
 }
@@ -53,64 +50,6 @@ function normalizeRecentTemplateIds(value: unknown) {
       value.map((templateId) => templateId.trim()).filter(Boolean),
     ),
   ];
-}
-
-function isValidPromptTemplateRevision(value: unknown) {
-  return (
-    isRecord(value) &&
-    isPositiveInteger(value.version) &&
-    isValidDateString(value.updatedAt) &&
-    isNonEmptyString(value.name) &&
-    isNonEmptyString(value.description) &&
-    isNonEmptyString(value.systemPrompt) &&
-    isNonEmptyString(value.userPrompt) &&
-    isStringArray(value.tags)
-  );
-}
-
-function hasCurrentTemplateRevision(value: unknown) {
-  if (!isRecord(value) || !Array.isArray(value.revisions)) {
-    return false;
-  }
-
-  return value.revisions.some(
-    (revision) => isRecord(revision) && revision.version === value.version,
-  );
-}
-
-function hasUniqueTemplateRevisions(value: unknown) {
-  if (!isRecord(value) || !Array.isArray(value.revisions)) {
-    return false;
-  }
-
-  const revisionVersions = value.revisions
-    .filter(isRecord)
-    .map((revision) => revision.version);
-
-  return revisionVersions.length === new Set(revisionVersions).size;
-}
-
-function isValidPromptTemplate(value: unknown): value is PromptTemplate {
-  if (
-    !(
-    isRecord(value) &&
-    isNonEmptyString(value.id) &&
-    isNonEmptyString(value.name) &&
-    isNonEmptyString(value.description) &&
-    isNonEmptyString(value.systemPrompt) &&
-    isNonEmptyString(value.userPrompt) &&
-    isStringArray(value.tags) &&
-    isPositiveInteger(value.version) &&
-    Array.isArray(value.revisions) &&
-    value.revisions.every(isValidPromptTemplateRevision) &&
-    (isValidDateString(value.archivedAt) || value.archivedAt === null) &&
-    isValidDateString(value.updatedAt)
-    )
-  ) {
-    return false;
-  }
-
-  return hasCurrentTemplateRevision(value) && hasUniqueTemplateRevisions(value);
 }
 
 function doNotesReferenceExportedRuns(
@@ -135,7 +74,7 @@ function normalizeWorkspaceBackupData(
   }
 
   if (
-    !value.templates.every(isValidPromptTemplate) ||
+    !value.templates.every(isPromptTemplate) ||
     !value.runs.every(isPromptRunRecord) ||
     !value.notes.every(isPromptRunNote)
   ) {
@@ -198,8 +137,7 @@ export function parseWorkspaceBackupImport(
   const data = normalizeWorkspaceBackupData(parsedValue.data);
 
   if (
-    typeof parsedValue.exportedAt !== 'string' ||
-    Number.isNaN(new Date(parsedValue.exportedAt).getTime()) ||
+    !isValidDateString(parsedValue.exportedAt) ||
     data === null
   ) {
     throw new Error('Invalid workspace backup format.');

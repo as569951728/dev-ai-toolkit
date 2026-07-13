@@ -1,5 +1,6 @@
 import { isPromptRunNote } from '@/features/prompt-run-notes/lib/prompt-run-note-schema';
 import { isPromptRunRecord } from '@/features/prompt-runs/lib/prompt-run-schema';
+import { isPromptTemplateRevision } from '@/features/prompt-templates/lib/prompt-template-schema';
 import type { PromptRunNote } from '@/types/prompt-run-note';
 import type { PromptRunRecord } from '@/types/prompt-run';
 import type { PromptTemplateRevision } from '@/types/prompt-template';
@@ -44,29 +45,6 @@ function isValidDateString(value: unknown): value is string {
   return isNonEmptyString(value) && !Number.isNaN(new Date(value).getTime());
 }
 
-function isPositiveInteger(value: unknown): value is number {
-  return typeof value === 'number' && Number.isInteger(value) && value > 0;
-}
-
-function isStringArray(value: unknown): value is string[] {
-  return Array.isArray(value) && value.every((item) => typeof item === 'string');
-}
-
-function isValidPromptTemplateRevision(
-  value: unknown,
-): value is PromptTemplateRevision {
-  return (
-    isRecord(value) &&
-    isPositiveInteger(value.version) &&
-    isValidDateString(value.updatedAt) &&
-    isNonEmptyString(value.name) &&
-    isNonEmptyString(value.description) &&
-    isNonEmptyString(value.systemPrompt) &&
-    isNonEmptyString(value.userPrompt) &&
-    isStringArray(value.tags)
-  );
-}
-
 export function parsePromptRunExportImport(
   rawValue: string,
 ): PromptRunExportPayload {
@@ -100,7 +78,7 @@ export function parsePromptRunExportImport(
 
   if (
     sourceTemplateRevision !== null &&
-    !isValidPromptTemplateRevision(sourceTemplateRevision)
+    !isPromptTemplateRevision(sourceTemplateRevision)
   ) {
     throw new Error('Invalid prompt run export format.');
   }
