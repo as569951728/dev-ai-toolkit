@@ -186,6 +186,49 @@ describe('PromptTemplateListPage', () => {
     );
   });
 
+  it('discloses duplicate IDs resolved inside a template import', async () => {
+    render(
+      <MemoryRouter>
+        <PromptTemplatesProvider repository={createMemoryRepository()}>
+          <PromptTemplateListPage />
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    const duplicateFile = new File(
+      [
+        JSON.stringify([
+          {
+            id: 'imported-template',
+            name: 'Imported Template',
+            description: 'Earlier valid record.',
+            systemPrompt: 'Review {{subject}}.',
+            userPrompt: 'Summarize {{subject}}.',
+            tags: ['review'],
+          },
+          {
+            id: 'imported-template',
+            name: 'Imported Template',
+            description: 'Last valid record.',
+            systemPrompt: 'Review {{subject}} carefully.',
+            userPrompt: 'Summarize {{subject}} with risks.',
+            tags: ['review', 'risk'],
+          },
+        ]),
+      ],
+      'duplicate-templates.json',
+      { type: 'application/json' },
+    );
+
+    fireEvent.change(screen.getByLabelText('Import prompt templates JSON'), {
+      target: { files: [duplicateFile] },
+    });
+
+    expect(await screen.findByRole('status')).toHaveTextContent(
+      'Imported 1 template: 1 created, 0 updated. 1 duplicate ID resolved using the last valid record.',
+    );
+  });
+
   it('accepts JSON template import files by MIME type or extension', () => {
     render(
       <MemoryRouter>

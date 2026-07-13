@@ -216,6 +216,7 @@ describe('prompt-template-transfer', () => {
 
     expect(result.summary).toEqual({
       created: 1,
+      duplicates: 1,
       skipped: 0,
       updated: 0,
       total: 1,

@@ -194,6 +194,7 @@ export function parsePromptTemplateImport(
   const importedTemplatesById = new Map<string, PromptTemplate>();
   const createdTemplateIds = new Set<string>();
   const updatedTemplateIds = new Set<string>();
+  let duplicates = 0;
   let skipped = 0;
 
   for (const item of templatesSource) {
@@ -211,7 +212,9 @@ export function parsePromptTemplateImport(
 
     const alreadyImported = importedTemplatesById.has(normalizedTemplate.id);
 
-    if (!alreadyImported) {
+    if (alreadyImported) {
+      duplicates += 1;
+    } else {
       if (existingTemplate) {
         updatedTemplateIds.add(normalizedTemplate.id);
       } else {
@@ -235,6 +238,7 @@ export function parsePromptTemplateImport(
 
   const summary: PromptTemplateImportSummary = {
     created,
+    ...(duplicates > 0 ? { duplicates } : {}),
     skipped,
     updated,
     total: importedTemplates.length,

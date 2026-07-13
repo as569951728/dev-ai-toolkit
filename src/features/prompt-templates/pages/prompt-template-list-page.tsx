@@ -105,10 +105,13 @@ export function PromptTemplateListPage() {
       const skippedMessage = result.skipped
         ? ` ${result.skipped} skipped.`
         : '';
+      const duplicateMessage = result.duplicates
+        ? ` ${result.duplicates} duplicate ID${result.duplicates === 1 ? '' : 's'} resolved using the last valid record.`
+        : '';
       const templateLabel = result.total === 1 ? 'template' : 'templates';
 
       setFeedback({
-        message: `Imported ${result.total} ${templateLabel}: ${result.created} created, ${result.updated} updated.${skippedMessage}`,
+        message: `Imported ${result.total} ${templateLabel}: ${result.created} created, ${result.updated} updated.${skippedMessage}${duplicateMessage}`,
         tone: 'success',
       });
     } catch (error) {
