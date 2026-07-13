@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import { starterPromptTemplates } from '@/features/prompt-templates/seed/prompt-templates';
+import { toPromptTemplateInput } from '@/features/prompt-templates/lib/prompt-template-versioning';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
 import {
   archivePromptTemplate,
@@ -196,5 +197,26 @@ describe('prompt-template-service', () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+
+  it('skips persistence and revision creation for an unchanged update', () => {
+    const template = starterPromptTemplates[0]!;
+    const saveAll = vi.fn();
+    const repository: PromptTemplateRepository = {
+      loadAll: () => starterPromptTemplates,
+      saveAll,
+    };
+    const result = updatePromptTemplate(
+      repository,
+      starterPromptTemplates,
+      template.id,
+      toPromptTemplateInput(template),
+    );
+
+    expect(result.template).toBe(template);
+    expect(result.templates).toBe(starterPromptTemplates);
+    expect(result.template?.version).toBe(template.version);
+    expect(result.template?.revisions).toBe(template.revisions);
+    expect(saveAll).not.toHaveBeenCalled();
   });
 });

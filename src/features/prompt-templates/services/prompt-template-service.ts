@@ -32,6 +32,20 @@ function persistTemplates(
   return templates;
 }
 
+function arePromptTemplateInputsEqual(
+  left: PromptTemplateInput,
+  right: PromptTemplateInput,
+) {
+  return (
+    left.name === right.name &&
+    left.description === right.description &&
+    left.systemPrompt === right.systemPrompt &&
+    left.userPrompt === right.userPrompt &&
+    left.tags.length === right.tags.length &&
+    left.tags.every((tag, index) => tag === right.tags[index])
+  );
+}
+
 export function createPromptTemplate(
   repository: PromptTemplateRepository,
   templates: PromptTemplate[],
@@ -59,32 +73,45 @@ export function updatePromptTemplate(
   id: string,
   input: PromptTemplateInput,
 ) {
-  let updatedTemplate: PromptTemplate | null = null;
+  const currentTemplate = templates.find((template) => template.id === id);
 
+  if (!currentTemplate) {
+    return {
+      template: null,
+      templates,
+    };
+  }
+
+  if (
+    arePromptTemplateInputsEqual(
+      toPromptTemplateInput(currentTemplate),
+      input,
+    )
+  ) {
+    return {
+      template: currentTemplate,
+      templates,
+    };
+  }
+
+  const updatedAt = new Date().toISOString();
+  const version = currentTemplate.version + 1;
+  const updatedTemplate = buildPromptTemplateFromInput({
+    id: currentTemplate.id,
+    input,
+    version,
+    updatedAt,
+    archivedAt: currentTemplate.archivedAt,
+    revisions: [
+      ...currentTemplate.revisions,
+      createPromptTemplateRevision(input, version, updatedAt),
+    ],
+  });
   const nextTemplates = persistTemplates(
     repository,
-    templates.map((template) => {
-      if (template.id !== id) {
-        return template;
-      }
-
-      const updatedAt = new Date().toISOString();
-      const version = template.version + 1;
-
-      updatedTemplate = buildPromptTemplateFromInput({
-        id: template.id,
-        input,
-        version,
-        updatedAt,
-        archivedAt: template.archivedAt,
-        revisions: [
-          ...template.revisions,
-          createPromptTemplateRevision(input, version, updatedAt),
-        ],
-      });
-
-      return updatedTemplate;
-    }),
+    templates.map((template) =>
+      template.id === id ? updatedTemplate : template,
+    ),
   );
 
   return {
