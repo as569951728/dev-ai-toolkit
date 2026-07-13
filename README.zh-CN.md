@@ -133,6 +133,13 @@ npm run build
 npm run test
 ```
 
+浏览器冒烟测试覆盖核心 Prompt 工作流。首次运行前安装 Chromium：
+
+```bash
+npx playwright install chromium
+npm run test:e2e
+```
+
 ### 代码检查
 
 ```bash

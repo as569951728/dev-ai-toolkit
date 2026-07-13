@@ -38,6 +38,14 @@ npm run build
 
 Use `npm run test:coverage` when a change touches shared helpers, storage parsing, or cross-page workflow behavior.
 
+Changes to the prompt template, Playground, or saved run flow should also pass
+the browser smoke test:
+
+```bash
+npx playwright install chromium
+npm run test:e2e
+```
+
 ## Contribution Scope
 
 Good first contributions include:

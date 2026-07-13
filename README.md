@@ -125,6 +125,14 @@ npm run build
 npm run test
 ```
 
+The browser smoke test covers the main prompt workflow. Install its Chromium
+runtime once, then run it with:
+
+```bash
+npx playwright install chromium
+npm run test:e2e
+```
+
 ### Lint The Codebase
 
 ```bash

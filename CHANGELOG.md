@@ -8,6 +8,8 @@ The format is intentionally lightweight and human-readable.
 
 ### Added
 
+- Added a Chromium smoke test for saving a prompt snapshot and opening its Run
+  Detail page
 - Added Run Detail actions for copying saved system and user prompts
 - Added a Run Detail shortcut for reopening captured variables in Prompt
   Playground
