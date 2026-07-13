@@ -146,6 +146,59 @@ describe('Prompt playground workflow', () => {
     ).toBeInTheDocument();
   });
 
+  it('discloses when a linked template is missing and names the fallback', () => {
+    render(
+      <MemoryRouter initialEntries={['/playground?templateId=missing-template']}>
+        <PromptTemplatesProvider repository={createTemplateRepository()}>
+          <PromptRunsProvider repository={createRunRepository()}>
+            <PlaygroundWorkflowProbe />
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'The requested prompt template is not available in this browser. Showing Code Review Assistant instead.',
+    );
+    expect(screen.getByLabelText('Active template')).toHaveValue(
+      starterPromptTemplates[0]!.id,
+    );
+  });
+
+  it('discloses when a linked template is archived and names the fallback', () => {
+    const archivedTemplate = {
+      ...starterPromptTemplates[0]!,
+      archivedAt: '2026-05-08T09:00:00.000Z',
+    };
+    const activeTemplate = starterPromptTemplates[1]!;
+
+    render(
+      <MemoryRouter
+        initialEntries={[
+          `/playground?templateId=${archivedTemplate.id}`,
+        ]}
+      >
+        <PromptTemplatesProvider
+          repository={createTemplateRepository([
+            archivedTemplate,
+            activeTemplate,
+          ])}
+        >
+          <PromptRunsProvider repository={createRunRepository()}>
+            <PlaygroundWorkflowProbe />
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      `The requested prompt template is archived. Showing ${activeTemplate.name} instead.`,
+    );
+    expect(screen.getByLabelText('Active template')).toHaveValue(
+      activeTemplate.id,
+    );
+  });
+
   it('saves a run snapshot and exposes it in template history', async () => {
     const templateRepository = createTemplateRepository();
     const runRepository = createRunRepository();

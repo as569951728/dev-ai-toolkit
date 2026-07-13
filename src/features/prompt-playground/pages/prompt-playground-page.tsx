@@ -13,6 +13,7 @@ import { formatPromptSections } from '@/lib/prompt-sections';
 type PromptPlaygroundWorkspaceProps = {
   initialTemplateId?: string;
   initialVariableValues?: Record<string, string>;
+  loadNotice?: string;
   sourceRunId?: string;
 };
 
@@ -40,6 +41,7 @@ function buildPreviewContextKey(
 function PromptPlaygroundWorkspace({
   initialTemplateId,
   initialVariableValues,
+  loadNotice,
   sourceRunId,
 }: PromptPlaygroundWorkspaceProps) {
   const navigate = useNavigate();
@@ -114,6 +116,12 @@ function PromptPlaygroundWorkspace({
           output before you take it into your coding or debugging workflow.
         </p>
       </div>
+
+      {loadNotice ? (
+        <p className="status-banner status-banner--error" role="alert">
+          {loadNotice}
+        </p>
+      ) : null}
 
       {sourceRunId ? (
         <p className="status-banner" role="status">
@@ -213,7 +221,7 @@ function PromptPlaygroundWorkspace({
 export function PromptPlaygroundPage() {
   const [searchParams] = useSearchParams();
   const { getRunById } = usePromptRuns();
-  const { getTemplateById } = usePromptTemplates();
+  const { getTemplateById, templates } = usePromptTemplates();
   const requestedRunId = searchParams.get('runId') ?? undefined;
   const requestedRun = requestedRunId ? getRunById(requestedRunId) : undefined;
   const requestedRunTemplate = requestedRun
@@ -222,11 +230,34 @@ export function PromptPlaygroundPage() {
   const canLoadRequestedRun = Boolean(
     requestedRun && requestedRunTemplate && !requestedRunTemplate.archivedAt,
   );
+  const requestedTemplateId = searchParams.get('templateId') ?? undefined;
+  const requestedTemplate = requestedTemplateId
+    ? getTemplateById(requestedTemplateId)
+    : null;
+  const canLoadRequestedTemplate = Boolean(
+    requestedTemplate && !requestedTemplate.archivedAt,
+  );
+  const fallbackTemplate =
+    templates.find((template) => !template.archivedAt) ?? null;
   const initialTemplateId = canLoadRequestedRun
     ? requestedRun?.templateId
-    : (searchParams.get('templateId') ?? undefined);
+    : canLoadRequestedTemplate
+      ? requestedTemplateId
+      : undefined;
   const sourceRunId = canLoadRequestedRun ? requestedRun?.id : undefined;
   const workspaceKey = sourceRunId ?? initialTemplateId ?? 'default-playground';
+  const loadNotice =
+    !requestedRunId && requestedTemplateId && !canLoadRequestedTemplate
+      ? `${
+          requestedTemplate
+            ? 'The requested prompt template is archived.'
+            : 'The requested prompt template is not available in this browser.'
+        } ${
+          fallbackTemplate
+            ? `Showing ${fallbackTemplate.name} instead.`
+            : 'No active prompt template is available.'
+        }`
+      : undefined;
 
   return (
     <PromptPlaygroundWorkspace
@@ -235,6 +266,7 @@ export function PromptPlaygroundPage() {
       initialVariableValues={
         canLoadRequestedRun ? requestedRun?.variables : undefined
       }
+      loadNotice={loadNotice}
       sourceRunId={sourceRunId}
     />
   );

@@ -122,3 +122,14 @@ test('protects unsaved prompt template changes', async ({ page }) => {
     page.getByRole('heading', { name: 'Manage reusable AI prompts' }),
   ).toBeVisible();
 });
+
+test('discloses an unavailable Playground template link', async ({ page }) => {
+  await page.goto('/playground?templateId=missing-template');
+
+  await expect(page.getByRole('alert')).toContainText(
+    'The requested prompt template is not available in this browser. Showing Code Review Assistant instead.',
+  );
+  await expect(page.getByLabel('Active template')).toHaveValue(
+    'code-review-assistant',
+  );
+});
