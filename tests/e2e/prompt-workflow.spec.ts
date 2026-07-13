@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('saves a prompt snapshot and opens it for review', async ({
+test('saves a prompt snapshot and protects its review note draft', async ({
   context,
   page,
 }) => {
@@ -52,6 +52,34 @@ test('saves a prompt snapshot and opens it for review', async ({
   expect(clipboardText).toContain('User prompt');
   expect(clipboardText).toContain('dev-ai-toolkit');
   expect(clipboardText).toContain('frontend workflow');
+
+  const noteEditor = page.getByRole('textbox', {
+    name: 'Note',
+    exact: true,
+  });
+
+  await noteEditor.fill('Keep this review context.');
+  await page.getByRole('link', { name: 'Back to Run History' }).click();
+
+  await expect(
+    page.getByRole('heading', { name: 'Discard unsaved note changes?' }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Continue editing' }),
+  ).toBeFocused();
+
+  await page.getByRole('button', { name: 'Continue editing' }).click();
+
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(noteEditor).toHaveValue('Keep this review context.');
+
+  await page.getByRole('link', { name: 'Back to Run History' }).click();
+  await page.getByRole('button', { name: 'Discard draft' }).click();
+
+  await expect(page).toHaveURL(/\/runs$/);
+  await expect(
+    page.getByRole('heading', { name: 'Recent prompt runs' }),
+  ).toBeVisible();
 });
 
 test('resolves dotted template variables in the Playground', async ({

@@ -1,5 +1,5 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { PromptRunNotePanel } from '@/features/prompt-run-notes/components/prompt-run-note-panel';
 import { PromptRunNotesProvider } from '@/features/prompt-run-notes/providers/prompt-run-notes-provider';
@@ -23,10 +23,14 @@ function renderNotePanel(
   runId: string,
   notes: PromptRunNote[],
   repository = createNoteRepository(notes),
+  onDirtyChange?: (isDirty: boolean) => void,
 ) {
   const result = render(
     <PromptRunNotesProvider repository={repository}>
-      <PromptRunNotePanel runId={runId} />
+      <PromptRunNotePanel
+        runId={runId}
+        onDirtyChange={onDirtyChange}
+      />
     </PromptRunNotesProvider>,
   );
 
@@ -113,5 +117,28 @@ describe('PromptRunNotePanel', () => {
     expect(screen.getByLabelText('Note')).toHaveValue(
       'Keep this draft visible.',
     );
+  });
+
+  it('reports whether the editor differs from the saved note', () => {
+    const handleDirtyChange = vi.fn();
+
+    renderNotePanel(
+      'run-1',
+      [],
+      createNoteRepository(),
+      handleDirtyChange,
+    );
+
+    expect(handleDirtyChange).toHaveBeenLastCalledWith(false);
+
+    fireEvent.change(screen.getByLabelText('Note'), {
+      target: { value: 'Unsaved review context.' },
+    });
+
+    expect(handleDirtyChange).toHaveBeenLastCalledWith(true);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Save note' }));
+
+    expect(handleDirtyChange).toHaveBeenLastCalledWith(false);
   });
 });

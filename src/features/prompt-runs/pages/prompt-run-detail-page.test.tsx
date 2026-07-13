@@ -6,7 +6,7 @@ import {
   waitFor,
 } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 
 import { PromptRunNotesProvider } from '@/features/prompt-run-notes/providers/prompt-run-notes-provider';
 import type { PromptRunNoteRepository } from '@/features/prompt-run-notes/repositories/prompt-run-note-repository';
@@ -77,26 +77,36 @@ function renderRunDetail(
   initialRuns: PromptRunRecord[],
   templateRepository = createTemplateRepository(),
   noteRepository = createNoteRepository(),
+  runRepository = createRunRepository(initialRuns),
 ) {
-  const runRepository = createRunRepository(initialRuns);
-
-  render(
-    <MemoryRouter initialEntries={[initialEntry]}>
-      <PromptTemplatesProvider repository={templateRepository}>
-        <PromptRunsProvider repository={runRepository}>
-          <PromptRunNotesProvider repository={noteRepository}>
-            <Routes>
-              <Route path="/runs/:runId" element={<PromptRunDetailPage />} />
-              <Route path="/runs" element={<div>Run History Destination</div>} />
-            </Routes>
-          </PromptRunNotesProvider>
-        </PromptRunsProvider>
-      </PromptTemplatesProvider>
-    </MemoryRouter>,
+  const router = createMemoryRouter(
+    [
+      {
+        path: '/runs/:runId',
+        element: (
+          <PromptTemplatesProvider repository={templateRepository}>
+            <PromptRunsProvider repository={runRepository}>
+              <PromptRunNotesProvider repository={noteRepository}>
+                <PromptRunDetailPage />
+              </PromptRunNotesProvider>
+            </PromptRunsProvider>
+          </PromptTemplatesProvider>
+        ),
+      },
+      {
+        path: '/runs',
+        element: <div>Run History Destination</div>,
+      },
+    ],
+    { initialEntries: [initialEntry] },
   );
+
+  render(<RouterProvider router={router} />);
 
   return {
     noteRepository,
+    router,
+    runRepository,
   };
 }
 
@@ -405,19 +415,69 @@ describe('PromptRunDetailPage', () => {
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
+  it('protects an unsaved note draft during navigation', async () => {
+    const run: PromptRunRecord = {
+      id: 'run-1',
+      templateId: starterPromptTemplates[0]!.id,
+      templateName: starterPromptTemplates[0]!.name,
+      templateVersion: starterPromptTemplates[0]!.version,
+      variables: {},
+      systemPrompt: 'System',
+      userPrompt: 'User',
+      createdAt: '2026-05-07T09:00:00.000Z',
+    };
+
+    renderRunDetail('/runs/run-1', [run]);
+
+    fireEvent.change(screen.getByLabelText('Note'), {
+      target: { value: 'Keep this draft visible.' },
+    });
+
+    const beforeUnloadEvent = new Event('beforeunload', { cancelable: true });
+    window.dispatchEvent(beforeUnloadEvent);
+
+    expect(beforeUnloadEvent.defaultPrevented).toBe(true);
+
+    fireEvent.click(screen.getByRole('link', { name: 'Back to Run History' }));
+
+    expect(
+      await screen.findByRole('heading', {
+        name: 'Discard unsaved note changes?',
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Continue editing' }),
+    ).toHaveFocus();
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Continue editing' }),
+    );
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Note')).toHaveValue(
+      'Keep this draft visible.',
+    );
+
+    fireEvent.click(screen.getByRole('link', { name: 'Back to Run History' }));
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Discard draft' }),
+    );
+
+    expect(await screen.findByText('Run History Destination')).toBeInTheDocument();
+  });
+
   it('asks for confirmation before deleting the current run and its saved note', () => {
-    const runRepository = createRunRepository([
-      {
-        id: 'run-1',
-        templateId: starterPromptTemplates[0]!.id,
-        templateName: starterPromptTemplates[0]!.name,
-        templateVersion: starterPromptTemplates[0]!.version,
-        variables: {},
-        systemPrompt: 'System',
-        userPrompt: 'User',
-        createdAt: '2026-05-07T09:00:00.000Z',
-      },
-    ]);
+    const run: PromptRunRecord = {
+      id: 'run-1',
+      templateId: starterPromptTemplates[0]!.id,
+      templateName: starterPromptTemplates[0]!.name,
+      templateVersion: starterPromptTemplates[0]!.version,
+      variables: {},
+      systemPrompt: 'System',
+      userPrompt: 'User',
+      createdAt: '2026-05-07T09:00:00.000Z',
+    };
+    const runRepository = createRunRepository([run]);
     const noteRepository = createNoteRepository([
       {
         id: 'note-1',
@@ -428,20 +488,17 @@ describe('PromptRunDetailPage', () => {
       },
     ]);
 
-    render(
-      <MemoryRouter initialEntries={['/runs/run-1']}>
-        <PromptTemplatesProvider repository={createTemplateRepository()}>
-          <PromptRunsProvider repository={runRepository}>
-            <PromptRunNotesProvider repository={noteRepository}>
-              <Routes>
-                <Route path="/runs/:runId" element={<PromptRunDetailPage />} />
-                <Route path="/runs" element={<div>Run History Destination</div>} />
-              </Routes>
-            </PromptRunNotesProvider>
-          </PromptRunsProvider>
-        </PromptTemplatesProvider>
-      </MemoryRouter>,
+    renderRunDetail(
+      '/runs/run-1',
+      [run],
+      createTemplateRepository(),
+      noteRepository,
+      runRepository,
     );
+
+    fireEvent.change(screen.getByLabelText('Note'), {
+      target: { value: 'Unsaved replacement note.' },
+    });
 
     fireEvent.click(screen.getByRole('button', { name: 'Delete run' }));
 
@@ -449,6 +506,9 @@ describe('PromptRunDetailPage', () => {
       screen.getByRole('button', { name: 'Confirm delete' }),
     ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'The unsaved note draft will also be discarded.',
+    );
     expect(runRepository.loadAll()).toHaveLength(1);
     expect(noteRepository.snapshot()).toHaveLength(1);
 
@@ -486,22 +546,12 @@ describe('PromptRunDetailPage', () => {
       },
     ]);
 
-    render(
-      <MemoryRouter initialEntries={['/runs/run-1']}>
-        <PromptTemplatesProvider repository={createTemplateRepository()}>
-          <PromptRunsProvider repository={runRepository}>
-            <PromptRunNotesProvider repository={noteRepository}>
-              <Routes>
-                <Route path="/runs/:runId" element={<PromptRunDetailPage />} />
-                <Route
-                  path="/runs"
-                  element={<div>Run History Destination</div>}
-                />
-              </Routes>
-            </PromptRunNotesProvider>
-          </PromptRunsProvider>
-        </PromptTemplatesProvider>
-      </MemoryRouter>,
+    renderRunDetail(
+      '/runs/run-1',
+      [run],
+      createTemplateRepository(),
+      noteRepository,
+      runRepository,
     );
 
     fireEvent.click(screen.getByRole('button', { name: 'Delete run' }));
@@ -547,7 +597,9 @@ describe('PromptRunDetailPage', () => {
       },
     };
     let notes = [note];
-    const noteRepository: PromptRunNoteRepository = {
+    const noteRepository: PromptRunNoteRepository & {
+      snapshot: () => PromptRunNote[];
+    } = {
       loadAll: () => [...notes],
       saveAll: (nextNotes) => {
         if (nextNotes.length > 0) {
@@ -556,24 +608,15 @@ describe('PromptRunDetailPage', () => {
 
         notes = [...nextNotes];
       },
+      snapshot: () => [...notes],
     };
 
-    render(
-      <MemoryRouter initialEntries={['/runs/run-1']}>
-        <PromptTemplatesProvider repository={createTemplateRepository()}>
-          <PromptRunsProvider repository={runRepository}>
-            <PromptRunNotesProvider repository={noteRepository}>
-              <Routes>
-                <Route path="/runs/:runId" element={<PromptRunDetailPage />} />
-                <Route
-                  path="/runs"
-                  element={<div>Run History Destination</div>}
-                />
-              </Routes>
-            </PromptRunNotesProvider>
-          </PromptRunsProvider>
-        </PromptTemplatesProvider>
-      </MemoryRouter>,
+    renderRunDetail(
+      '/runs/run-1',
+      [run],
+      createTemplateRepository(),
+      noteRepository,
+      runRepository,
     );
 
     fireEvent.click(screen.getByRole('button', { name: 'Delete run' }));

@@ -1,5 +1,11 @@
-import { useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useRef, useState } from 'react';
+import {
+  Link,
+  useBeforeUnload,
+  useBlocker,
+  useNavigate,
+  useParams,
+} from 'react-router-dom';
 
 import { buildCodeViewerUrl } from '@/features/code-viewer/lib/code-viewer-utils';
 import { PromptRunNotePanel } from '@/features/prompt-run-notes/components/prompt-run-note-panel';
@@ -37,6 +43,8 @@ export function PromptRunDetailPage() {
   const { getNoteByRunId } = usePromptRunNotes();
   const { getTemplateById } = usePromptTemplates();
   const { deleteRunWithRelatedData } = usePromptRunWorkflowActions();
+  const allowNavigationRef = useRef(false);
+  const [isNoteDirty, setIsNoteDirty] = useState(false);
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const [deleteErrorMessage, setDeleteErrorMessage] = useState('');
   const [exportFeedback, setExportFeedback] = useState<ActionFeedback | null>(
@@ -44,6 +52,21 @@ export function PromptRunDetailPage() {
   );
   const [copyFeedback, setCopyFeedback] = useState<ActionFeedback | null>(
     null,
+  );
+  const navigationBlocker = useBlocker(
+    () => isNoteDirty && !allowNavigationRef.current,
+  );
+
+  useBeforeUnload(
+    (event) => {
+      if (!isNoteDirty || allowNavigationRef.current) {
+        return;
+      }
+
+      event.preventDefault();
+      event.returnValue = '';
+    },
+    { capture: true },
   );
 
   const run = runId ? getRunById(runId) : undefined;
@@ -65,11 +88,13 @@ export function PromptRunDetailPage() {
   const variableEntries = Object.entries(run.variables);
   const handleDeleteRun = () => {
     setDeleteErrorMessage('');
+    allowNavigationRef.current = true;
 
     try {
       deleteRunWithRelatedData(run.id);
       navigate('/runs');
     } catch (error) {
+      allowNavigationRef.current = false;
       setDeleteErrorMessage(
         error instanceof PromptRunNoteRollbackError
           ? error.message
@@ -171,6 +196,38 @@ export function PromptRunDetailPage() {
         </div>
       </div>
 
+      {navigationBlocker.state === 'blocked' ? (
+        <div
+          aria-describedby="unsaved-run-note-description"
+          aria-labelledby="unsaved-run-note-title"
+          className="status-banner status-banner--error"
+          role="dialog"
+        >
+          <h2 id="unsaved-run-note-title">Discard unsaved note changes?</h2>
+          <p id="unsaved-run-note-description">
+            This note draft has not been saved. You can keep editing or discard
+            it and continue to the requested page.
+          </p>
+          <div className="detail-actions detail-actions--inline">
+            <button
+              autoFocus
+              className="secondary-button"
+              type="button"
+              onClick={() => navigationBlocker.reset()}
+            >
+              Continue editing
+            </button>
+            <button
+              className="danger-button"
+              type="button"
+              onClick={() => navigationBlocker.proceed()}
+            >
+              Discard draft
+            </button>
+          </div>
+        </div>
+      ) : null}
+
       <section className="panel">
         <div className="panel__header">
           <div>
@@ -258,7 +315,10 @@ export function PromptRunDetailPage() {
           )}
         </section>
 
-        <PromptRunNotePanel runId={run.id} />
+        <PromptRunNotePanel
+          runId={run.id}
+          onDirtyChange={setIsNoteDirty}
+        />
       </div>
 
       <section className="panel">
@@ -287,6 +347,12 @@ export function PromptRunDetailPage() {
         {deleteErrorMessage ? (
           <p className="status-banner status-banner--error" role="alert">
             {deleteErrorMessage}
+          </p>
+        ) : null}
+
+        {isConfirmingDelete && isNoteDirty ? (
+          <p className="status-banner" role="status">
+            The unsaved note draft will also be discarded.
           </p>
         ) : null}
 

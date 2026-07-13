@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
 
 interface PromptRunNotePanelProps {
+  onDirtyChange?: (isDirty: boolean) => void;
   runId: string;
 }
 
@@ -11,10 +12,14 @@ interface NoteSaveFeedback {
   tone: 'success' | 'error';
 }
 
-export function PromptRunNotePanel({ runId }: PromptRunNotePanelProps) {
+export function PromptRunNotePanel({
+  onDirtyChange,
+  runId,
+}: PromptRunNotePanelProps) {
   const { getNoteByRunId, saveNote } = usePromptRunNotes();
   const savedNote = getNoteByRunId(runId);
-  const [body, setBody] = useState(savedNote?.body ?? '');
+  const savedBody = savedNote?.body ?? '';
+  const [body, setBody] = useState(savedBody);
   const [saveFeedback, setSaveFeedback] = useState<NoteSaveFeedback | null>(
     null,
   );
@@ -22,11 +27,15 @@ export function PromptRunNotePanel({ runId }: PromptRunNotePanelProps) {
 
   useEffect(() => {
     if (previousRunId.current !== runId) {
-      setBody(savedNote?.body ?? '');
+      setBody(savedBody);
       setSaveFeedback(null);
       previousRunId.current = runId;
     }
-  }, [runId, savedNote?.body]);
+  }, [runId, savedBody]);
+
+  useEffect(() => {
+    onDirtyChange?.(body !== savedBody);
+  }, [body, onDirtyChange, savedBody]);
 
   const handleSave = () => {
     try {
