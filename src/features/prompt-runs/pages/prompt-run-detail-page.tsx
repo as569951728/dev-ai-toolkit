@@ -34,6 +34,7 @@ export function PromptRunDetailPage() {
   const { getTemplateById } = usePromptTemplates();
   const { deleteRunWithRelatedData } = usePromptRunWorkflowActions();
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
+  const [deleteErrorMessage, setDeleteErrorMessage] = useState('');
   const [exportStatusMessage, setExportStatusMessage] = useState('');
   const [copyFeedback, setCopyFeedback] = useState<ActionFeedback | null>(
     null,
@@ -57,8 +58,16 @@ export function PromptRunDetailPage() {
   const note = getNoteByRunId(run.id);
   const variableEntries = Object.entries(run.variables);
   const handleDeleteRun = () => {
-    deleteRunWithRelatedData(run.id);
-    navigate('/runs');
+    setDeleteErrorMessage('');
+
+    try {
+      deleteRunWithRelatedData(run.id);
+      navigate('/runs');
+    } catch {
+      setDeleteErrorMessage(
+        'Failed to delete this prompt snapshot. Check that browser storage is available and try again.',
+      );
+    }
   };
   const codeViewerUrl = buildCodeViewerUrl({
     left: run.systemPrompt,
@@ -238,6 +247,12 @@ export function PromptRunDetailPage() {
           </p>
         ) : null}
 
+        {deleteErrorMessage ? (
+          <p className="status-banner status-banner--error" role="alert">
+            {deleteErrorMessage}
+          </p>
+        ) : null}
+
         <div className="detail-actions detail-actions--inline">
           <button
             className="ghost-button"
@@ -258,7 +273,10 @@ export function PromptRunDetailPage() {
               <button
                 className="ghost-button"
                 type="button"
-                onClick={() => setIsConfirmingDelete(false)}
+                onClick={() => {
+                  setIsConfirmingDelete(false);
+                  setDeleteErrorMessage('');
+                }}
               >
                 Cancel
               </button>

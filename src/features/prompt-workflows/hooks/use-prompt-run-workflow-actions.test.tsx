@@ -1,5 +1,6 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { useState } from 'react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it } from 'vitest';
 
 import { PromptRunNotesProvider } from '@/features/prompt-run-notes/providers/prompt-run-notes-provider';
 import type { PromptRunNoteRepository } from '@/features/prompt-run-notes/repositories/prompt-run-note-repository';
@@ -39,13 +40,30 @@ function createNoteRepository(
 
 function TestConsumer({ runId }: { runId: string }) {
   const { deleteRunWithRelatedData } = usePromptRunWorkflowActions();
+  const [errorMessage, setErrorMessage] = useState('');
 
   return (
-    <button type="button" onClick={() => deleteRunWithRelatedData(runId)}>
-      Delete workflow run
-    </button>
+    <>
+      <button
+        type="button"
+        onClick={() => {
+          try {
+            deleteRunWithRelatedData(runId);
+          } catch {
+            setErrorMessage('Delete failed.');
+          }
+        }}
+      >
+        Delete workflow run
+      </button>
+      {errorMessage ? <p role="alert">{errorMessage}</p> : null}
+    </>
   );
 }
+
+afterEach(() => {
+  cleanup();
+});
 
 describe('usePromptRunWorkflowActions', () => {
   it('deletes a prompt run and its saved note together', () => {
@@ -83,5 +101,49 @@ describe('usePromptRunWorkflowActions', () => {
 
     expect(runRepository.snapshot()).toEqual([]);
     expect(noteRepository.snapshot()).toEqual([]);
+  });
+
+  it('restores the note when deleting the run fails', () => {
+    const run: PromptRunRecord = {
+      id: 'run-1',
+      templateId: 'template-1',
+      templateName: 'Code Review Assistant',
+      templateVersion: 2,
+      variables: {},
+      systemPrompt: 'System',
+      userPrompt: 'User',
+      createdAt: '2026-05-07T09:00:00.000Z',
+    };
+    const note: PromptRunNote = {
+      id: 'note-1',
+      runId: 'run-1',
+      body: 'Keep this context if deletion fails.',
+      createdAt: '2026-05-08T09:00:00.000Z',
+      updatedAt: '2026-05-08T09:00:00.000Z',
+    };
+    const runRepository: PromptRunRepository & {
+      snapshot: () => PromptRunRecord[];
+    } = {
+      loadAll: () => [run],
+      saveAll: () => {
+        throw new Error('Storage quota exceeded.');
+      },
+      snapshot: () => [run],
+    };
+    const noteRepository = createNoteRepository([note]);
+
+    render(
+      <PromptRunsProvider repository={runRepository}>
+        <PromptRunNotesProvider repository={noteRepository}>
+          <TestConsumer runId="run-1" />
+        </PromptRunNotesProvider>
+      </PromptRunsProvider>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete workflow run' }));
+
+    expect(screen.getByRole('alert')).toHaveTextContent('Delete failed.');
+    expect(runRepository.snapshot()).toEqual([run]);
+    expect(noteRepository.snapshot()).toEqual([note]);
   });
 });

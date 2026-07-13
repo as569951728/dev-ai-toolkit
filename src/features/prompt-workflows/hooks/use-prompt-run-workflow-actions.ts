@@ -4,15 +4,26 @@ import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 
 export function usePromptRunWorkflowActions() {
-  const { deleteNoteByRunId } = usePromptRunNotes();
+  const { deleteNoteByRunId, getNoteByRunId, importNotes } = usePromptRunNotes();
   const { deleteRun } = usePromptRuns();
 
   const deleteRunWithRelatedData = useCallback(
     (runId: string) => {
+      const note = getNoteByRunId(runId);
+
       deleteNoteByRunId(runId);
-      deleteRun(runId);
+
+      try {
+        deleteRun(runId);
+      } catch (error) {
+        if (note) {
+          importNotes([note]);
+        }
+
+        throw error;
+      }
     },
-    [deleteNoteByRunId, deleteRun],
+    [deleteNoteByRunId, deleteRun, getNoteByRunId, importNotes],
   );
 
   return useMemo(

@@ -411,6 +411,69 @@ describe('PromptRunDetailPage', () => {
     expect(noteRepository.snapshot()).toEqual([]);
   });
 
+  it('keeps the run detail open when browser storage rejects deletion', () => {
+    const run: PromptRunRecord = {
+      id: 'run-1',
+      templateId: starterPromptTemplates[0]!.id,
+      templateName: starterPromptTemplates[0]!.name,
+      templateVersion: starterPromptTemplates[0]!.version,
+      variables: {},
+      systemPrompt: 'System',
+      userPrompt: 'User',
+      createdAt: '2026-05-07T09:00:00.000Z',
+    };
+    const runRepository: PromptRunRepository = {
+      loadAll: () => [run],
+      saveAll: () => {
+        throw new Error('Storage quota exceeded.');
+      },
+    };
+    const noteRepository = createNoteRepository([
+      {
+        id: 'note-1',
+        runId: 'run-1',
+        body: 'Keep this note after a failed delete.',
+        createdAt: '2026-05-08T09:00:00.000Z',
+        updatedAt: '2026-05-08T09:00:00.000Z',
+      },
+    ]);
+
+    render(
+      <MemoryRouter initialEntries={['/runs/run-1']}>
+        <PromptTemplatesProvider repository={createTemplateRepository()}>
+          <PromptRunsProvider repository={runRepository}>
+            <PromptRunNotesProvider repository={noteRepository}>
+              <Routes>
+                <Route path="/runs/:runId" element={<PromptRunDetailPage />} />
+                <Route
+                  path="/runs"
+                  element={<div>Run History Destination</div>}
+                />
+              </Routes>
+            </PromptRunNotesProvider>
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete run' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm delete' }));
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Failed to delete this prompt snapshot. Check that browser storage is available and try again.',
+    );
+    expect(
+      screen.getByRole('heading', { name: 'Code Review Assistant' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Confirm delete' }),
+    ).toBeInTheDocument();
+    expect(noteRepository.snapshot()).toHaveLength(1);
+    expect(
+      screen.queryByText('Run History Destination'),
+    ).not.toBeInTheDocument();
+  });
+
   it('shows a not-found state when the run is missing', () => {
     renderRunDetail('/runs/missing-run', []);
 

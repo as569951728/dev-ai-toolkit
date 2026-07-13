@@ -45,6 +45,8 @@ The format is intentionally lightweight and human-readable.
 
 ### Fixed
 
+- Restored a saved run note when deleting its prompt snapshot fails after note
+  cleanup
 - Kept Prompt Template Detail open and reported browser storage failures for
   duplicate, archive, restore, revision restore, and delete actions
 - Kept prompt template form values available for retry when browser storage
