@@ -1,7 +1,14 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 
+import { sampleJson } from '@/features/json-tools/lib/json-tools-utils';
 import { JsonToolsPage } from '@/features/json-tools/pages/json-tools-page';
 import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs-provider';
 import type { PromptRunRepository } from '@/features/prompt-runs/repositories/prompt-run-repository';
@@ -32,6 +39,7 @@ function renderJsonTools({
 
 afterEach(() => {
   cleanup();
+  Reflect.deleteProperty(navigator, 'clipboard');
 });
 
 describe('JsonToolsPage', () => {
@@ -105,6 +113,58 @@ describe('JsonToolsPage', () => {
     expect(
       screen.getByRole('link', { name: 'Back to saved run' }),
     ).toHaveAttribute('href', '/runs/imported%2Frun%20%231');
+  });
+
+  it('minifies input and restores the sample workspace', () => {
+    renderJsonTools();
+
+    const input = screen.getByLabelText('JSON input');
+    fireEvent.change(input, {
+      target: { value: '{\n  "name": "dev-ai-toolkit"\n}' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Minify' }));
+
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'JSON minified successfully.',
+    );
+    expect(screen.getByText('{"name":"dev-ai-toolkit"}')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Load sample' }));
+
+    expect(input).toHaveValue(sampleJson);
+    expect(screen.getByRole('status')).toHaveTextContent('Loaded sample JSON.');
+  });
+
+  it('copies the current result and announces success', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText },
+    });
+    renderJsonTools();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Copy result' }));
+
+    await waitFor(() => {
+      expect(writeText).toHaveBeenCalledWith(sampleJson);
+    });
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Result copied to clipboard.',
+    );
+  });
+
+  it('announces copy failures when the clipboard is unavailable', async () => {
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: undefined,
+    });
+    renderJsonTools();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Copy result' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Failed to copy result.',
+    );
   });
 
   it('keeps the sample workflow available when a requested run is missing', () => {
