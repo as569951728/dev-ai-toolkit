@@ -235,7 +235,7 @@ export function PromptTemplateDetail({
                       <h3>Run from v{run.templateVersion}</h3>
                       <p>{formatUpdatedAt(run.createdAt)}</p>
                     </div>
-                    <span className="revision-badge">Saved output</span>
+                    <span className="revision-badge">Prompt snapshot</span>
                   </div>
 
                   <p className="revision-card__description">

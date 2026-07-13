@@ -35,8 +35,8 @@ export function PromptRunNotePanel({ runId }: PromptRunNotePanelProps) {
           <p className="eyebrow">Run notes</p>
           <h2>Maintenance note</h2>
           <p className="panel__summary">
-            Keep a short note about why this saved output was useful or what to
-            adjust next time.
+            Keep a short note about why this prompt snapshot was useful or what
+            to adjust next time.
           </p>
         </div>
       </div>

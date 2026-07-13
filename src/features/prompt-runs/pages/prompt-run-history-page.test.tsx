@@ -153,6 +153,11 @@ describe('PromptRunHistoryPage', () => {
 
     const headings = screen.getAllByRole('heading', { level: 3 });
 
+    expect(
+      screen.getByRole('heading', {
+        name: 'Review saved prompt snapshots in a local activity history.',
+      }),
+    ).toBeInTheDocument();
     expect(headings[0]).toHaveTextContent('API Design Partner');
     expect(headings[1]).toHaveTextContent('Code Review Assistant');
     expect(
@@ -162,11 +167,13 @@ describe('PromptRunHistoryPage', () => {
       screen.getAllByRole('link', { name: 'View details' })[0],
     ).toHaveAttribute('href', '/runs/run-2');
     expect(
-      screen.getAllByRole('link', { name: 'Open output in Code Viewer' }),
+      screen.getAllByRole('link', {
+        name: 'Open saved prompts in Code Viewer',
+      }),
     ).toHaveLength(2);
     const codeViewerUrl = new URL(
       screen
-        .getAllByRole('link', { name: 'Open output in Code Viewer' })[0]!
+        .getAllByRole('link', { name: 'Open saved prompts in Code Viewer' })[0]!
         .getAttribute('href') ?? '',
       'https://example.test',
     );

@@ -152,7 +152,7 @@ export function PromptRunHistoryPage() {
     <section className="playground-layout">
       <div className="playground-hero panel">
         <p className="eyebrow">Prompt Run History</p>
-        <h1>Review saved prompt output as reusable local activity history.</h1>
+        <h1>Review saved prompt snapshots in a local activity history.</h1>
         <p className="panel__summary">
           Browse saved runs, inspect which template version produced them, and
           jump back to the source template when you want to refine the workflow.
@@ -354,7 +354,7 @@ export function PromptRunHistoryPage() {
                             language: 'markdown',
                           })}
                         >
-                          Open output in Code Viewer
+                          Open saved prompts in Code Viewer
                         </Link>
                         {promptDiffUrl ? (
                           <Link className="ghost-button" to={promptDiffUrl}>

@@ -116,6 +116,8 @@ describe('PromptRunDetailPage', () => {
     expect(
       screen.getByRole('heading', { name: 'Code Review Assistant' }),
     ).toBeInTheDocument();
+    expect(screen.getByText('Saved prompt snapshot')).toBeInTheDocument();
+    expect(screen.getByText('Snapshot content')).toBeInTheDocument();
     expect(screen.getByText('repository_name')).toBeInTheDocument();
     expect(screen.getByText('dev-ai-toolkit')).toBeInTheDocument();
     expect(screen.getByText('Review the code carefully.')).toBeInTheDocument();
@@ -127,7 +129,7 @@ describe('PromptRunDetailPage', () => {
     ).toHaveAttribute('href', `/prompts/${starterPromptTemplates[0]!.id}`);
     const codeViewerUrl = new URL(
       screen
-        .getByRole('link', { name: 'Open output in Code Viewer' })
+        .getByRole('link', { name: 'Open saved prompts in Code Viewer' })
         .getAttribute('href') ?? '',
       'https://example.test',
     );

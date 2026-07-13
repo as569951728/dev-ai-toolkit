@@ -74,7 +74,7 @@ export function PromptRunDetailPage() {
   return (
     <section className="playground-layout">
       <div className="playground-hero panel">
-        <p className="eyebrow">Prompt Run Detail</p>
+        <p className="eyebrow">Saved prompt snapshot</p>
         <h1>{run.templateName}</h1>
         <p className="panel__summary">
           Saved {formatCreatedAt(run.createdAt)} from template v
@@ -95,7 +95,7 @@ export function PromptRunDetailPage() {
             </span>
           )}
           <Link className="ghost-button" to={codeViewerUrl}>
-            Open output in Code Viewer
+            Open saved prompts in Code Viewer
           </Link>
           <button
             className="ghost-button"
@@ -175,7 +175,7 @@ export function PromptRunDetailPage() {
       <section className="panel">
         <div className="panel__header">
           <div>
-            <p className="eyebrow">Prompt output</p>
+            <p className="eyebrow">Snapshot content</p>
             <h2>Saved prompts</h2>
           </div>
         </div>
