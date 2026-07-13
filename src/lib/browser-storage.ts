@@ -1,5 +1,7 @@
 export type StorageLike = Pick<Storage, 'getItem' | 'setItem'>;
 
+type StorageProbeLike = StorageLike & Partial<Pick<Storage, 'removeItem'>>;
+
 type BrowserStorageHost = {
   readonly localStorage: StorageLike;
 };
@@ -28,15 +30,23 @@ export function resolveBrowserStorage(
   }
 }
 
-export function canReadBrowserStorage(
-  storage: StorageLike | null = resolveBrowserStorage(),
+export function canUseBrowserStorage(
+  storage: StorageProbeLike | null = resolveBrowserStorage(),
 ) {
   if (!storage) {
     return false;
   }
 
   try {
-    storage.getItem('dev-ai-toolkit.storage-health-check');
+    const storageKey = 'dev-ai-toolkit.storage-health-check';
+    const previousValue = storage.getItem(storageKey);
+
+    storage.setItem(storageKey, previousValue ?? 'available');
+
+    if (previousValue === null) {
+      storage.removeItem?.(storageKey);
+    }
+
     return true;
   } catch {
     return false;

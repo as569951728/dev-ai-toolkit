@@ -53,6 +53,7 @@ The format is intentionally lightweight and human-readable.
 
 ### Fixed
 
+- Detected read-only browser storage before users attempt to persist local data
 - Prevented restricted browser storage access from crashing local repository
   initialization
 - Kept the app usable when browser storage rejects template, run, or note reads

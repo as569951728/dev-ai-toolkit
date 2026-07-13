@@ -1,5 +1,5 @@
 import {
-  canReadBrowserStorage,
+  canUseBrowserStorage,
   type StorageLike,
 } from '@/lib/browser-storage';
 
@@ -10,12 +10,12 @@ interface BrowserStorageNoticeProps {
 export function BrowserStorageNotice({
   storage,
 }: BrowserStorageNoticeProps) {
-  const canReadStorage =
+  const canUseStorage =
     storage === undefined
-      ? canReadBrowserStorage()
-      : canReadBrowserStorage(storage);
+      ? canUseBrowserStorage()
+      : canUseBrowserStorage(storage);
 
-  if (canReadStorage) {
+  if (canUseStorage) {
     return null;
   }
 

@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import {
-  canReadBrowserStorage,
+  canUseBrowserStorage,
   resolveBrowserStorage,
   type StorageLike,
 } from '@/lib/browser-storage';
@@ -37,23 +37,47 @@ describe('browser-storage', () => {
     );
   });
 
-  it('reports whether browser storage can be read', () => {
+  it('reports when browser storage can be read and written', () => {
+    const setItem = vi.fn();
+    const removeItem = vi.fn();
+
     expect(
-      canReadBrowserStorage({
+      canUseBrowserStorage({
         getItem() {
           return null;
         },
-        setItem() {},
+        setItem,
+        removeItem,
       }),
     ).toBe(true);
+    expect(setItem).toHaveBeenCalledWith(
+      'dev-ai-toolkit.storage-health-check',
+      'available',
+    );
+    expect(removeItem).toHaveBeenCalledWith(
+      'dev-ai-toolkit.storage-health-check',
+    );
+  });
+
+  it('reports when browser storage reads or writes are blocked', () => {
     expect(
-      canReadBrowserStorage({
+      canUseBrowserStorage({
         getItem() {
           throw new DOMException('Access denied.', 'SecurityError');
         },
         setItem() {},
       }),
     ).toBe(false);
-    expect(canReadBrowserStorage(null)).toBe(false);
+    expect(
+      canUseBrowserStorage({
+        getItem() {
+          return null;
+        },
+        setItem() {
+          throw new DOMException('Quota exceeded.', 'QuotaExceededError');
+        },
+      }),
+    ).toBe(false);
+    expect(canUseBrowserStorage(null)).toBe(false);
   });
 });
