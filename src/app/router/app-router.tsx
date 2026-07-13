@@ -7,6 +7,7 @@ import {
 
 import { AppNavigation } from '@/components/layout/app-navigation';
 import { BrowserStorageNotice } from '@/components/layout/browser-storage-notice';
+import { ScrollToTop } from '@/components/layout/scroll-to-top';
 import { ApiBuilderPage } from '@/features/api-builder/pages/api-builder-page';
 import { CodeViewerPage } from '@/features/code-viewer/pages/code-viewer-page';
 import { HomePage } from '@/features/home/pages/home-page';
@@ -30,6 +31,7 @@ function RootLayout() {
     <PromptTemplatesProvider>
       <PromptRunsProvider>
         <PromptRunNotesProvider>
+          <ScrollToTop />
           <main className="app-shell">
             <div className="page-frame">
               <AppNavigation />

@@ -17,9 +17,11 @@ test('saves a prompt snapshot and protects its review note draft', async ({
     'Saved a prompt snapshot for Code Review Assistant v1.',
   );
 
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
   await page.getByRole('link', { name: 'Open saved run' }).click();
 
   await expect(page).toHaveURL(/\/runs\/[^/]+$/);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
   await expect(
     page.getByRole('heading', { name: 'Code Review Assistant', level: 1 }),
   ).toBeVisible();
