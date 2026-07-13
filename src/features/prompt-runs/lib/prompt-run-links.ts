@@ -6,6 +6,10 @@ interface BuildPromptRunSourceDiffUrlInput {
   sourceTemplate: PromptTemplate | null | undefined;
 }
 
+export function buildPromptRunDetailPath(runId: string) {
+  return `/runs/${encodeURIComponent(runId)}`;
+}
+
 export function buildPromptRunSourceDiffUrl({
   run,
   sourceTemplate,

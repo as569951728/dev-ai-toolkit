@@ -5,7 +5,10 @@ import {
   formatCapturedVariableCount,
   getCapturedVariablePreview,
 } from '@/features/prompt-runs/lib/prompt-run-display';
-import { buildPromptRunSourceDiffUrl } from '@/features/prompt-runs/lib/prompt-run-links';
+import {
+  buildPromptRunDetailPath,
+  buildPromptRunSourceDiffUrl,
+} from '@/features/prompt-runs/lib/prompt-run-links';
 import type { PromptRunRecord } from '@/types/prompt-run';
 import type { PromptRunNote } from '@/types/prompt-run-note';
 import type { PromptTemplate } from '@/types/prompt-template';
@@ -77,7 +80,7 @@ export function PromptRunHistoryCard({
       ) : null}
 
       <div className="detail-actions detail-actions--inline">
-        <Link className="ghost-button" to={`/runs/${run.id}`}>
+        <Link className="ghost-button" to={buildPromptRunDetailPath(run.id)}>
           View details
         </Link>
         {sourceTemplate && !sourceTemplate.archivedAt ? (

@@ -6,6 +6,7 @@ import { PromptRunHistoryCard } from '@/features/prompt-runs/components/prompt-r
 import { PromptRunHistoryFilters } from '@/features/prompt-runs/components/prompt-run-history-filters';
 import { usePromptRunImport } from '@/features/prompt-runs/hooks/use-prompt-run-import';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
+import { buildPromptRunDetailPath } from '@/features/prompt-runs/lib/prompt-run-links';
 import { matchesPromptRunSearch } from '@/features/prompt-runs/lib/prompt-run-search';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
 
@@ -170,7 +171,9 @@ export function PromptRunHistoryPage() {
             </h2>
             <p>
               {importStatus.message}{' '}
-              <Link to={`/runs/${importStatus.runId}`}>Open imported run</Link>
+              <Link to={buildPromptRunDetailPath(importStatus.runId)}>
+                Open imported run
+              </Link>
             </p>
           </div>
         ) : null}

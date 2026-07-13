@@ -383,7 +383,7 @@ describe('PromptRunHistoryPage', () => {
   it('imports a single prompt run JSON export with note context', async () => {
     const { noteRepository, runRepository } = renderRunHistory({ runs: [] });
     const importedRun: PromptRunRecord = {
-      id: 'imported-run',
+      id: 'imported/run #1',
       templateId: starterPromptTemplates[0]!.id,
       templateName: starterPromptTemplates[0]!.name,
       templateVersion: 1,
@@ -423,7 +423,11 @@ describe('PromptRunHistoryPage', () => {
     );
     expect(
       screen.getByRole('link', { name: 'Open imported run' }),
-    ).toHaveAttribute('href', '/runs/imported-run');
+    ).toHaveAttribute('href', '/runs/imported%2Frun%20%231');
+    expect(screen.getByRole('link', { name: 'View details' })).toHaveAttribute(
+      'href',
+      '/runs/imported%2Frun%20%231',
+    );
     expect(
       screen.getByRole('heading', { name: 'Code Review Assistant' }),
     ).toBeInTheDocument();

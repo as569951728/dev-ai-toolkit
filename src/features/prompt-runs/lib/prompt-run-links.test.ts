@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildPromptRunSourceDiffUrl } from '@/features/prompt-runs/lib/prompt-run-links';
+import {
+  buildPromptRunDetailPath,
+  buildPromptRunSourceDiffUrl,
+} from '@/features/prompt-runs/lib/prompt-run-links';
 import type { PromptRunRecord } from '@/types/prompt-run';
 import type { PromptTemplate } from '@/types/prompt-template';
 
@@ -48,6 +51,13 @@ const run: PromptRunRecord = {
 };
 
 describe('prompt-run-links', () => {
+  it('encodes a run ID as one URL path segment', () => {
+    expect(buildPromptRunDetailPath('imported/run #1')).toBe(
+      '/runs/imported%2Frun%20%231',
+    );
+    expect(buildPromptRunDetailPath('run-1')).toBe('/runs/run-1');
+  });
+
   it('builds a Prompt Diff URL using the matching source template revision', () => {
     const url = new URL(
       buildPromptRunSourceDiffUrl({ run, sourceTemplate: template }) ?? '',

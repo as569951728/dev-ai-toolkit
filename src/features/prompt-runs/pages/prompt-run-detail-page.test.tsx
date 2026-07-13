@@ -14,6 +14,7 @@ import { starterPromptTemplates } from '@/features/prompt-templates/seed/prompt-
 import { PromptTemplatesProvider } from '@/features/prompt-templates/providers/prompt-templates-provider';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
 import { exportPromptRunAsJson } from '@/features/prompt-runs/lib/prompt-run-export';
+import { buildPromptRunDetailPath } from '@/features/prompt-runs/lib/prompt-run-links';
 import { PromptRunDetailPage } from '@/features/prompt-runs/pages/prompt-run-detail-page';
 import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs-provider';
 import type { PromptRunRepository } from '@/features/prompt-runs/repositories/prompt-run-repository';
@@ -180,6 +181,27 @@ describe('PromptRunDetailPage', () => {
       'Maintenance note',
       'Snapshot management',
     ]);
+  });
+
+  it('opens a run whose ID contains URL-sensitive characters', () => {
+    const run: PromptRunRecord = {
+      id: 'imported/run #1',
+      templateId: starterPromptTemplates[0]!.id,
+      templateName: starterPromptTemplates[0]!.name,
+      templateVersion: starterPromptTemplates[0]!.version,
+      variables: {},
+      systemPrompt: 'Imported system prompt.',
+      userPrompt: 'Imported user prompt.',
+      createdAt: '2026-05-07T09:00:00.000Z',
+    };
+
+    renderRunDetail(buildPromptRunDetailPath(run.id), [run]);
+
+    expect(
+      screen.getByRole('heading', { name: 'Code Review Assistant' }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Imported system prompt.')).toBeInTheDocument();
+    expect(screen.getByText('Imported user prompt.')).toBeInTheDocument();
   });
 
   it('saves a maintenance note for the current run', () => {
