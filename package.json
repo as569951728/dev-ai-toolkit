@@ -2,7 +2,7 @@
   "name": "dev-ai-toolkit",
   "version": "0.1.0",
   "private": false,
-  "description": "Local-first developer tools for prompt templates, saved runs, JSON cleanup, and API request drafts.",
+  "description": "Local-first prompt workflows with supporting JSON, API request, and code review utilities.",
   "type": "module",
   "scripts": {
     "dev": "vite",
