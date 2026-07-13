@@ -62,6 +62,8 @@ Run History supports:
 - Searching by template name, saved prompt text, captured variable, and note
   content.
 - Opening a detail page for a saved run.
+- Reopening a snapshot from its Run History card with the captured variables
+  when the source template is still active.
 - Reopening saved prompts in Code Viewer.
 - Comparing a saved run with its source template in Prompt Diff from the list
   or detail page.
