@@ -69,6 +69,14 @@ collection when a failed import created new records, because those records have
 no matching item in the earlier snapshot to overwrite. Workspace backup
 rollback therefore uses exact replacement.
 
+Workspace backup imports add a read-only step before those provider mutations.
+The selected file is parsed, relationship-checked, and merged in memory to
+produce a change summary. No repository is written until the user confirms the
+preview. Imported backups must contain unique template IDs, unique run IDs, and
+at most one note for each run ID; duplicate recent-template shortcuts are
+normalized instead because that collection is only an ordered convenience
+list.
+
 Provider mutations write to the repository before updating the provider's
 latest-value ref and React state. If a repository write throws, the in-memory
 collection remains unchanged. Multi-collection workflows still use explicit

@@ -94,7 +94,16 @@ The workspace backup currently includes:
 
 Exported backups are versioned JSON files. Importing a backup merges prompt
 templates and runs by `id`, and run notes by `runId`, so a saved run keeps at
-most one note after import.
+most one note after import. Selecting a valid file first shows the number of
+records that will be created or updated. The local workspace is not changed
+until that preview is confirmed.
+
+Workspace backups use stricter input rules than the general template importer:
+template IDs and run IDs must be unique, and the file can contain only one note
+for each run. This keeps the preview counts unambiguous. A backup can omit the
+recent-template shortcut collection; when it includes that collection, the
+confirmed import replaces the local shortcut list after removing duplicates
+and references to unavailable templates.
 
 Saved runs remain valid when their source template is no longer present. Each
 run contains the composed prompts and captured variables needed for later
