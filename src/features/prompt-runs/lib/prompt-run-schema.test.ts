@@ -24,6 +24,7 @@ describe('prompt-run-schema', () => {
     ['invalid template version', { ...run, templateVersion: 0 }],
     ['non-integer template version', { ...run, templateVersion: 1.5 }],
     ['non-string variable', { ...run, variables: { diff: 42 } }],
+    ['array variables', { ...run, variables: ['src/App.tsx'] }],
     ['invalid creation date', { ...run, createdAt: 'not-a-date' }],
   ])('rejects a snapshot with %s', (_label, candidate) => {
     expect(isPromptRunRecord(candidate)).toBe(false);
