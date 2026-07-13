@@ -56,6 +56,7 @@ The format is intentionally lightweight and human-readable.
 
 ### Fixed
 
+- Preserved prompt templates created before the provider renders again
 - Preserved prompt runs created before the provider renders again
 - Preserved meaningful whitespace in composed Playground variable values
 - Excluded notes without a saved run from downloadable workspace backups

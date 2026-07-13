@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import type { PropsWithChildren } from 'react';
 
 import {
@@ -40,46 +40,90 @@ export function PromptTemplatesProvider({
   const [templates, setTemplates] = useState<PromptTemplate[]>(() =>
     repository.loadAll(),
   );
+  const templatesRef = useRef(templates);
+
+  const commitTemplates = useCallback((nextTemplates: PromptTemplate[]) => {
+    templatesRef.current = nextTemplates;
+    setTemplates(nextTemplates);
+  }, []);
 
   const sortedTemplates = useMemo(() => sortPromptTemplates(templates), [templates]);
 
   const tags = useMemo(() => collectPromptTemplateTags(sortedTemplates), [sortedTemplates]);
 
-  const createTemplate = useCallback((input: PromptTemplateInput) => {
-    const result = createPromptTemplate(repository, templates, input);
-    setTemplates(result.templates);
-    return result.template;
-  }, [repository, templates]);
+  const createTemplate = useCallback(
+    (input: PromptTemplateInput) => {
+      const result = createPromptTemplate(
+        repository,
+        templatesRef.current,
+        input,
+      );
+      commitTemplates(result.templates);
+      return result.template;
+    },
+    [commitTemplates, repository],
+  );
 
-  const updateTemplate = useCallback((id: string, input: PromptTemplateInput) => {
-    const result = updatePromptTemplate(repository, templates, id, input);
-    setTemplates(result.templates);
-    return result.template;
-  }, [repository, templates]);
+  const updateTemplate = useCallback(
+    (id: string, input: PromptTemplateInput) => {
+      const result = updatePromptTemplate(
+        repository,
+        templatesRef.current,
+        id,
+        input,
+      );
+      commitTemplates(result.templates);
+      return result.template;
+    },
+    [commitTemplates, repository],
+  );
 
-  const archiveTemplate = useCallback((id: string) => {
-    const result = archivePromptTemplate(repository, templates, id);
-    setTemplates(result.templates);
-    return result.template;
-  }, [repository, templates]);
+  const archiveTemplate = useCallback(
+    (id: string) => {
+      const result = archivePromptTemplate(
+        repository,
+        templatesRef.current,
+        id,
+      );
+      commitTemplates(result.templates);
+      return result.template;
+    },
+    [commitTemplates, repository],
+  );
 
-  const restoreArchivedTemplate = useCallback((id: string) => {
-    const result = restoreArchivedPromptTemplate(repository, templates, id);
-    setTemplates(result.templates);
-    return result.template;
-  }, [repository, templates]);
+  const restoreArchivedTemplate = useCallback(
+    (id: string) => {
+      const result = restoreArchivedPromptTemplate(
+        repository,
+        templatesRef.current,
+        id,
+      );
+      commitTemplates(result.templates);
+      return result.template;
+    },
+    [commitTemplates, repository],
+  );
 
-  const deleteTemplate = useCallback((id: string) => {
-    setTemplates(deletePromptTemplate(repository, templates, id));
-  }, [repository, templates]);
+  const deleteTemplate = useCallback(
+    (id: string) => {
+      commitTemplates(
+        deletePromptTemplate(repository, templatesRef.current, id),
+      );
+    },
+    [commitTemplates, repository],
+  );
 
   const duplicateTemplate = useCallback(
     (id: string) => {
-      const result = duplicatePromptTemplate(repository, templates, id);
-      setTemplates(result.templates);
+      const result = duplicatePromptTemplate(
+        repository,
+        templatesRef.current,
+        id,
+      );
+      commitTemplates(result.templates);
       return result.template;
     },
-    [repository, templates],
+    [commitTemplates, repository],
   );
 
   const getTemplateById = useCallback(
@@ -94,28 +138,28 @@ export function PromptTemplatesProvider({
     ) => {
       const result = importPromptTemplates(
         repository,
-        templates,
+        templatesRef.current,
         importedTemplates,
         summary,
       );
-      setTemplates(result.templates);
+      commitTemplates(result.templates);
       return result.summary;
     },
-    [repository, templates],
+    [commitTemplates, repository],
   );
 
   const restoreTemplateRevisionAction = useCallback(
     (templateId: string, revisionVersion: number) => {
       const result = restorePromptTemplateRevision(
         repository,
-        templates,
+        templatesRef.current,
         templateId,
         revisionVersion,
       );
-      setTemplates(result.templates);
+      commitTemplates(result.templates);
       return result.template;
     },
-    [repository, templates],
+    [commitTemplates, repository],
   );
 
   const value = useMemo<PromptTemplatesContextValue>(

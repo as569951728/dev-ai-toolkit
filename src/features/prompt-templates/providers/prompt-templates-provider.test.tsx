@@ -1,5 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it } from 'vitest';
 
 import { starterPromptTemplates } from '@/features/prompt-templates/seed/prompt-templates';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
@@ -51,6 +51,22 @@ function TestConsumer() {
       <button
         type="button"
         onClick={() => {
+          for (const name of ['First Template', 'Second Template']) {
+            createTemplate({
+              name,
+              description: `${name} description.`,
+              systemPrompt: 'System',
+              userPrompt: 'User',
+              tags: [],
+            });
+          }
+        }}
+      >
+        Create Two Templates
+      </button>
+      <button
+        type="button"
+        onClick={() => {
           duplicateTemplate(starterPromptTemplates[0]!.id);
         }}
       >
@@ -75,6 +91,10 @@ function TestConsumer() {
     </div>
   );
 }
+
+afterEach(() => {
+  cleanup();
+});
 
 describe('PromptTemplatesProvider', () => {
   it('uses the injected repository and persists state changes through context actions', () => {
@@ -114,5 +134,26 @@ describe('PromptTemplatesProvider', () => {
       repository.snapshot().find((template) => template.id === starterPromptTemplates[0]!.id)
         ?.archivedAt,
     ).toBeNull();
+  });
+
+  it('preserves templates created before the provider renders again', () => {
+    const repository = createMemoryRepository([]);
+
+    render(
+      <PromptTemplatesProvider repository={repository}>
+        <TestConsumer />
+      </PromptTemplatesProvider>,
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Create Two Templates' }),
+    );
+
+    expect(screen.getByTestId('count')).toHaveTextContent('2');
+    expect(repository.snapshot()).toHaveLength(2);
+    expect(repository.snapshot().map((template) => template.name)).toEqual([
+      'Second Template',
+      'First Template',
+    ]);
   });
 });
