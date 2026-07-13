@@ -66,12 +66,19 @@ Completed since the project review:
 - Improved the Playground post-save actions and Run Detail review flow.
 - Reused shared validators across prompt templates, runs, notes, and imports.
 - Split Run History card, filter, and import responsibilities out of the page.
-- Added a Chromium smoke test for the template-to-saved-run path.
+- Expanded Chrome smoke coverage across template-to-run, variable composition,
+  blocked storage, and workspace backup paths.
 - Aligned GitHub issue and release labels with repository templates.
 - Added user-facing failure and retry feedback for the main local storage writes
   and JSON export actions.
 - Added compensating rollback for related run data and multi-collection
   workspace imports.
+- Guarded browser storage initialization and added an early warning when local
+  persistence is unavailable.
+- Kept workspace downloads importable when older local data contains orphaned
+  notes, and disclosed invalid records skipped from mixed template imports.
+- Improved Playground variable handling for dotted and camel-case keys,
+  unresolved values, and whitespace-sensitive content.
 
 Still open:
 

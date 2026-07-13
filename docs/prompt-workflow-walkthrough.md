@@ -29,13 +29,15 @@ but they are not offered as active Playground templates.
 Open **Prompt Playground** from a template. The playground detects variables in
 the template text and shows a form for filling them.
 
-Variable names can use letters, numbers, underscores, hyphens, and dots. For
-example, `{{repository_name}}` and `{{pull-request.title}}` both become editable
-fields. Dotted names remain flat keys; they do not create nested data.
+Variable names can use letters, numbers, underscores, hyphens, dots, and
+camel-case naming. For example, `{{repository_name}}`, `{{repositoryName}}`,
+and `{{pull-request.title}}` all become editable fields. Dotted names remain
+flat keys; they do not create nested data.
 
 An empty or whitespace-only value leaves the original placeholder in the
 composed prompt. The preview shows how many variables are unresolved, but it
-does not block copying or saving a partial prompt snapshot.
+does not block copying or saving a partial prompt snapshot. Non-empty values
+keep their entered whitespace so code, logs, and diffs are not reformatted.
 
 Use this step to:
 
