@@ -357,6 +357,39 @@ describe('PromptRunDetailPage', () => {
     );
   });
 
+  it('reports a failed run export and allows retrying', () => {
+    const run: PromptRunRecord = {
+      id: 'run-1',
+      templateId: starterPromptTemplates[0]!.id,
+      templateName: starterPromptTemplates[0]!.name,
+      templateVersion: starterPromptTemplates[0]!.version,
+      variables: {},
+      systemPrompt: 'System',
+      userPrompt: 'User',
+      createdAt: '2026-05-07T09:00:00.000Z',
+    };
+
+    exportPromptRunAsJsonMock
+      .mockImplementationOnce(() => {
+        throw new Error('Downloads are unavailable.');
+      })
+      .mockImplementationOnce(() => undefined);
+    renderRunDetail('/runs/run-1', [run]);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Export run JSON' }));
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Failed to export this run as JSON. Please try again.',
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Export run JSON' }));
+
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Run exported as JSON.',
+    );
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
   it('asks for confirmation before deleting the current run and its saved note', () => {
     const runRepository = createRunRepository([
       {

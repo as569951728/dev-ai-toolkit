@@ -35,7 +35,9 @@ export function PromptRunDetailPage() {
   const { deleteRunWithRelatedData } = usePromptRunWorkflowActions();
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const [deleteErrorMessage, setDeleteErrorMessage] = useState('');
-  const [exportStatusMessage, setExportStatusMessage] = useState('');
+  const [exportFeedback, setExportFeedback] = useState<ActionFeedback | null>(
+    null,
+  );
   const [copyFeedback, setCopyFeedback] = useState<ActionFeedback | null>(
     null,
   );
@@ -81,12 +83,22 @@ export function PromptRunDetailPage() {
     ) ?? null;
   const promptDiffUrl = buildPromptRunSourceDiffUrl({ run, sourceTemplate });
   const handleExportRun = () => {
-    exportPromptRunAsJson({
-      run,
-      note,
-      sourceTemplateRevision: sourceRevision,
-    });
-    setExportStatusMessage('Run exported as JSON.');
+    try {
+      exportPromptRunAsJson({
+        run,
+        note,
+        sourceTemplateRevision: sourceRevision,
+      });
+      setExportFeedback({
+        message: 'Run exported as JSON.',
+        tone: 'success',
+      });
+    } catch {
+      setExportFeedback({
+        message: 'Failed to export this run as JSON. Please try again.',
+        tone: 'error',
+      });
+    }
   };
   const handleCopyPrompt = async (
     label: 'system' | 'user',
@@ -241,9 +253,14 @@ export function PromptRunDetailPage() {
           </div>
         </div>
 
-        {exportStatusMessage ? (
-          <p className="status-banner" role="status">
-            {exportStatusMessage}
+        {exportFeedback ? (
+          <p
+            className={`status-banner${
+              exportFeedback.tone === 'error' ? ' status-banner--error' : ''
+            }`}
+            role={exportFeedback.tone === 'error' ? 'alert' : 'status'}
+          >
+            {exportFeedback.message}
           </p>
         ) : null}
 
