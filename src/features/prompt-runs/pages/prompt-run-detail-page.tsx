@@ -9,6 +9,12 @@ import { buildPromptRunSourceDiffUrl } from '@/features/prompt-runs/lib/prompt-r
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
 import { usePromptRunWorkflowActions } from '@/features/prompt-workflows/hooks/use-prompt-run-workflow-actions';
+import { writeClipboardText } from '@/lib/clipboard';
+
+type ActionFeedback = {
+  message: string;
+  tone: 'success' | 'error';
+};
 
 function formatCreatedAt(createdAt: string) {
   return new Intl.DateTimeFormat('en', {
@@ -29,6 +35,9 @@ export function PromptRunDetailPage() {
   const { deleteRunWithRelatedData } = usePromptRunWorkflowActions();
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const [exportStatusMessage, setExportStatusMessage] = useState('');
+  const [copyFeedback, setCopyFeedback] = useState<ActionFeedback | null>(
+    null,
+  );
 
   const run = runId ? getRunById(runId) : undefined;
 
@@ -69,6 +78,23 @@ export function PromptRunDetailPage() {
       sourceTemplateRevision: sourceRevision,
     });
     setExportStatusMessage('Run exported as JSON.');
+  };
+  const handleCopyPrompt = async (
+    label: 'system' | 'user',
+    value: string,
+  ) => {
+    try {
+      await writeClipboardText(value);
+      setCopyFeedback({
+        message: `${label === 'system' ? 'System' : 'User'} prompt copied.`,
+        tone: 'success',
+      });
+    } catch {
+      setCopyFeedback({
+        message: `Failed to copy ${label} prompt.`,
+        tone: 'error',
+      });
+    }
   };
 
   return (
@@ -180,13 +206,44 @@ export function PromptRunDetailPage() {
           </div>
         </div>
 
+        {copyFeedback ? (
+          <p
+            className={
+              copyFeedback.tone === 'error'
+                ? 'status-banner status-banner--error'
+                : 'status-banner'
+            }
+            role={copyFeedback.tone === 'error' ? 'alert' : 'status'}
+          >
+            {copyFeedback.message}
+          </p>
+        ) : null}
+
         <div className="code-compare-grid">
           <article>
-            <h3>System prompt</h3>
+            <div className="detail-card__header">
+              <h3>System prompt</h3>
+              <button
+                className="ghost-button"
+                type="button"
+                onClick={() => handleCopyPrompt('system', run.systemPrompt)}
+              >
+                Copy system prompt
+              </button>
+            </div>
             <pre className="code-block">{run.systemPrompt}</pre>
           </article>
           <article>
-            <h3>User prompt</h3>
+            <div className="detail-card__header">
+              <h3>User prompt</h3>
+              <button
+                className="ghost-button"
+                type="button"
+                onClick={() => handleCopyPrompt('user', run.userPrompt)}
+              >
+                Copy user prompt
+              </button>
+            </div>
             <pre className="code-block">{run.userPrompt}</pre>
           </article>
         </div>

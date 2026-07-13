@@ -1,4 +1,10 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
@@ -96,6 +102,7 @@ function renderRunDetail(
 afterEach(() => {
   cleanup();
   vi.clearAllMocks();
+  Reflect.deleteProperty(navigator, 'clipboard');
 });
 
 describe('PromptRunDetailPage', () => {
@@ -173,6 +180,64 @@ describe('PromptRunDetailPage', () => {
       runId: 'run-1',
       body: 'Good baseline for future review prompts.',
     });
+  });
+
+  it('copies a saved prompt from the run detail', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText },
+    });
+
+    renderRunDetail('/runs/run-1', [
+      {
+        id: 'run-1',
+        templateId: starterPromptTemplates[0]!.id,
+        templateName: starterPromptTemplates[0]!.name,
+        templateVersion: starterPromptTemplates[0]!.version,
+        variables: {},
+        systemPrompt: 'System prompt to reuse.',
+        userPrompt: 'User prompt to reuse.',
+        createdAt: '2026-05-07T09:00:00.000Z',
+      },
+    ]);
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Copy system prompt' }),
+    );
+
+    await waitFor(() => {
+      expect(writeText).toHaveBeenCalledWith('System prompt to reuse.');
+    });
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'System prompt copied.',
+    );
+  });
+
+  it('announces when a saved prompt cannot be copied', async () => {
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: undefined,
+    });
+
+    renderRunDetail('/runs/run-1', [
+      {
+        id: 'run-1',
+        templateId: starterPromptTemplates[0]!.id,
+        templateName: starterPromptTemplates[0]!.name,
+        templateVersion: starterPromptTemplates[0]!.version,
+        variables: {},
+        systemPrompt: 'System prompt.',
+        userPrompt: 'User prompt.',
+        createdAt: '2026-05-07T09:00:00.000Z',
+      },
+    ]);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Copy user prompt' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Failed to copy user prompt.',
+    );
   });
 
   it('compares a saved run with the matching source template revision', () => {
