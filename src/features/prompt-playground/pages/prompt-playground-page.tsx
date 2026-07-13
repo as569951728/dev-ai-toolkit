@@ -38,6 +38,14 @@ function buildPreviewContextKey(
   });
 }
 
+function describeFallback(message: string, fallbackTemplateName?: string) {
+  return `${message} ${
+    fallbackTemplateName
+      ? `Showing ${fallbackTemplateName} instead.`
+      : 'No active prompt template is available.'
+  }`;
+}
+
 function PromptPlaygroundWorkspace({
   initialTemplateId,
   initialVariableValues,
@@ -237,8 +245,11 @@ export function PromptPlaygroundPage() {
   const canLoadRequestedTemplate = Boolean(
     requestedTemplate && !requestedTemplate.archivedAt,
   );
-  const fallbackTemplate =
+  const defaultTemplate =
     templates.find((template) => !template.archivedAt) ?? null;
+  const fallbackTemplate = canLoadRequestedTemplate
+    ? requestedTemplate
+    : defaultTemplate;
   const initialTemplateId = canLoadRequestedRun
     ? requestedRun?.templateId
     : canLoadRequestedTemplate
@@ -246,18 +257,24 @@ export function PromptPlaygroundPage() {
       : undefined;
   const sourceRunId = canLoadRequestedRun ? requestedRun?.id : undefined;
   const workspaceKey = sourceRunId ?? initialTemplateId ?? 'default-playground';
-  const loadNotice =
-    !requestedRunId && requestedTemplateId && !canLoadRequestedTemplate
-      ? `${
-          requestedTemplate
-            ? 'The requested prompt template is archived.'
-            : 'The requested prompt template is not available in this browser.'
-        } ${
-          fallbackTemplate
-            ? `Showing ${fallbackTemplate.name} instead.`
-            : 'No active prompt template is available.'
-        }`
-      : undefined;
+  let loadNotice: string | undefined;
+
+  if (requestedRunId && !canLoadRequestedRun) {
+    const message = !requestedRun
+      ? 'The requested prompt snapshot is not available in this browser.'
+      : !requestedRunTemplate
+        ? 'The requested prompt snapshot cannot be reopened because its source template is not available.'
+        : 'The requested prompt snapshot cannot be reopened because its source template is archived.';
+
+    loadNotice = describeFallback(message, fallbackTemplate?.name);
+  } else if (requestedTemplateId && !canLoadRequestedTemplate) {
+    loadNotice = describeFallback(
+      requestedTemplate
+        ? 'The requested prompt template is archived.'
+        : 'The requested prompt template is not available in this browser.',
+      fallbackTemplate?.name,
+    );
+  }
 
   return (
     <PromptPlaygroundWorkspace

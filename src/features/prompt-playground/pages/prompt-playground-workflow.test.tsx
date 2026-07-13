@@ -67,6 +67,22 @@ function LocationProbe() {
   );
 }
 
+function renderPlayground(
+  initialEntry: string,
+  templateRepository = createTemplateRepository(),
+  runRepository = createRunRepository(),
+) {
+  render(
+    <MemoryRouter initialEntries={[initialEntry]}>
+      <PromptTemplatesProvider repository={templateRepository}>
+        <PromptRunsProvider repository={runRepository}>
+          <PlaygroundWorkflowProbe />
+        </PromptRunsProvider>
+      </PromptTemplatesProvider>
+    </MemoryRouter>,
+  );
+}
+
 afterEach(() => {
   cleanup();
   window.localStorage.clear();
@@ -196,6 +212,78 @@ describe('Prompt playground workflow', () => {
     );
     expect(screen.getByLabelText('Active template')).toHaveValue(
       activeTemplate.id,
+    );
+  });
+
+  it('discloses a missing saved run and uses a requested fallback template', () => {
+    const fallbackTemplate = starterPromptTemplates[1]!;
+
+    renderPlayground(
+      `/playground?runId=missing-run&templateId=${fallbackTemplate.id}`,
+    );
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      `The requested prompt snapshot is not available in this browser. Showing ${fallbackTemplate.name} instead.`,
+    );
+    expect(screen.getByLabelText('Active template')).toHaveValue(
+      fallbackTemplate.id,
+    );
+  });
+
+  it('discloses when a saved run source template is missing', () => {
+    const run: PromptRunRecord = {
+      id: 'orphaned-run',
+      templateId: 'deleted-template',
+      templateName: 'Deleted Template',
+      templateVersion: 1,
+      variables: {},
+      systemPrompt: 'Saved system prompt.',
+      userPrompt: 'Saved user prompt.',
+      createdAt: '2026-05-08T09:00:00.000Z',
+    };
+
+    renderPlayground(
+      '/playground?runId=orphaned-run',
+      createTemplateRepository(),
+      createRunRepository([run]),
+    );
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'The requested prompt snapshot cannot be reopened because its source template is not available. Showing Code Review Assistant instead.',
+    );
+    expect(screen.getByLabelText('Active template')).toHaveValue(
+      starterPromptTemplates[0]!.id,
+    );
+  });
+
+  it('discloses when a saved run source template is archived', () => {
+    const archivedTemplate = {
+      ...starterPromptTemplates[0]!,
+      archivedAt: '2026-05-08T09:00:00.000Z',
+    };
+    const fallbackTemplate = starterPromptTemplates[1]!;
+    const run: PromptRunRecord = {
+      id: 'archived-template-run',
+      templateId: archivedTemplate.id,
+      templateName: archivedTemplate.name,
+      templateVersion: archivedTemplate.version,
+      variables: {},
+      systemPrompt: 'Saved system prompt.',
+      userPrompt: 'Saved user prompt.',
+      createdAt: '2026-05-08T09:00:00.000Z',
+    };
+
+    renderPlayground(
+      '/playground?runId=archived-template-run',
+      createTemplateRepository([archivedTemplate, fallbackTemplate]),
+      createRunRepository([run]),
+    );
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      `The requested prompt snapshot cannot be reopened because its source template is archived. Showing ${fallbackTemplate.name} instead.`,
+    );
+    expect(screen.getByLabelText('Active template')).toHaveValue(
+      fallbackTemplate.id,
     );
   });
 

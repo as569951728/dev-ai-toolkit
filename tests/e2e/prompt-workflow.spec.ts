@@ -133,3 +133,16 @@ test('discloses an unavailable Playground template link', async ({ page }) => {
     'code-review-assistant',
   );
 });
+
+test('discloses an unavailable saved-run link', async ({ page }) => {
+  await page.goto(
+    '/playground?runId=missing-run&templateId=api-design-partner',
+  );
+
+  await expect(page.getByRole('alert')).toContainText(
+    'The requested prompt snapshot is not available in this browser. Showing API Design Partner instead.',
+  );
+  await expect(page.getByLabel('Active template')).toHaveValue(
+    'api-design-partner',
+  );
+});
