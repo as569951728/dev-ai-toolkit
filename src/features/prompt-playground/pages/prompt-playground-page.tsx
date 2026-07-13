@@ -19,7 +19,8 @@ type PromptPlaygroundWorkspaceProps = {
 type SaveStatus = {
   contextKey: string;
   message: string;
-  runId: string;
+  runId: string | null;
+  tone: 'success' | 'error';
 };
 
 function buildPreviewContextKey(
@@ -97,6 +98,10 @@ function PromptPlaygroundWorkspace({
     saveStatus && saveStatus.contextKey === currentPreviewContextKey
       ? saveStatus.runId
       : null;
+  const saveStatusTone =
+    saveStatus && saveStatus.contextKey === currentPreviewContextKey
+      ? saveStatus.tone
+      : null;
 
   return (
     <section className="playground-layout">
@@ -136,30 +141,47 @@ function PromptPlaygroundWorkspace({
           selectedTemplate={selectedTemplate}
           preview={preview}
           saveStatusMessage={saveStatusMessage}
+          saveStatusTone={saveStatusTone}
           onSaveRun={() => {
             if (!selectedTemplate || !preview) {
               return;
             }
 
-            const savedRun = createRun({
-              templateId: selectedTemplate.id,
-              templateName: selectedTemplate.name,
-              templateVersion: selectedTemplate.version,
-              variables: variableValues,
-              systemPrompt: preview.systemPrompt,
-              userPrompt: preview.userPrompt,
-            });
+            const contextKey = buildPreviewContextKey(
+              selectedTemplate.id,
+              selectedTemplate.version,
+              preview.systemPrompt,
+              preview.userPrompt,
+            );
+            let savedRun;
+
+            try {
+              savedRun = createRun({
+                templateId: selectedTemplate.id,
+                templateName: selectedTemplate.name,
+                templateVersion: selectedTemplate.version,
+                variables: variableValues,
+                systemPrompt: preview.systemPrompt,
+                userPrompt: preview.userPrompt,
+              });
+            } catch {
+              setSaveStatus({
+                contextKey,
+                message:
+                  'Failed to save this prompt snapshot. Check that browser storage is available and try again.',
+                runId: null,
+                tone: 'error',
+              });
+              return;
+            }
+
             markTemplateAsRecent(selectedTemplate.id);
 
             setSaveStatus({
-              contextKey: buildPreviewContextKey(
-                selectedTemplate.id,
-                selectedTemplate.version,
-                preview.systemPrompt,
-                preview.userPrompt,
-              ),
+              contextKey,
               message: `Saved a run snapshot for ${selectedTemplate.name} v${selectedTemplate.version}.`,
               runId: savedRun.id,
+              tone: 'success',
             });
           }}
           onReviewInPromptDiff={() => {

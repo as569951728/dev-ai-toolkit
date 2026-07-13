@@ -17,6 +17,7 @@ interface PromptPlaygroundPreviewProps {
   onSaveRun: () => void;
   savedRunId: string | null;
   saveStatusMessage: string | null;
+  saveStatusTone: 'success' | 'error' | null;
 }
 
 type CopyFeedback = {
@@ -32,6 +33,7 @@ export function PromptPlaygroundPreview({
   onSaveRun,
   savedRunId,
   saveStatusMessage,
+  saveStatusTone,
 }: PromptPlaygroundPreviewProps) {
   const [copiedSection, setCopiedSection] = useState<'system' | 'user' | null>(
     null,
@@ -97,7 +99,14 @@ export function PromptPlaygroundPreview({
       </div>
 
       {saveStatusMessage ? (
-        <p className="status-banner" role="status">
+        <p
+          className={
+            saveStatusTone === 'error'
+              ? 'status-banner status-banner--error'
+              : 'status-banner'
+          }
+          role={saveStatusTone === 'error' ? 'alert' : 'status'}
+        >
           <span>{saveStatusMessage}</span>
           {savedRunId ? (
             <span className="status-banner__actions">

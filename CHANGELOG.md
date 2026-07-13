@@ -45,6 +45,8 @@ The format is intentionally lightweight and human-readable.
 
 ### Fixed
 
+- Reported browser storage failures when saving prompt snapshots instead of
+  leaving the Playground without feedback
 - Reported when a single run JSON import replaces an existing saved run with
   the same ID
 - Preserved spaces while entering multi-word searches in Prompt Templates and

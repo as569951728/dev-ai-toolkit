@@ -137,6 +137,37 @@ describe('Prompt playground workflow', () => {
     expect(await screen.findByText('Run from v1')).toBeInTheDocument();
   });
 
+  it('reports when browser storage rejects a prompt snapshot', async () => {
+    const templateRepository = createTemplateRepository();
+    const runRepository: PromptRunRepository = {
+      loadAll: () => [],
+      saveAll: () => {
+        throw new Error('Storage quota exceeded.');
+      },
+    };
+    const templateId = starterPromptTemplates[0]!.id;
+
+    render(
+      <MemoryRouter initialEntries={[`/playground?templateId=${templateId}`]}>
+        <PromptTemplatesProvider repository={templateRepository}>
+          <PromptRunsProvider repository={runRepository}>
+            <PlaygroundWorkflowProbe />
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Save run snapshot' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Failed to save this prompt snapshot. Check that browser storage is available and try again.',
+    );
+    expect(
+      screen.queryByRole('link', { name: 'Open saved run' }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('Recently used')).not.toBeInTheDocument();
+  });
+
   it('opens composed prompts in downstream review tools', () => {
     const templateRepository = createTemplateRepository();
     const runRepository = createRunRepository();
