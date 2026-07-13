@@ -22,8 +22,16 @@ interface PromptPlaygroundPreviewProps {
 }
 
 type CopyFeedback = {
+  contextKey: string;
   message: string;
   tone: 'success' | 'error';
+};
+
+type CopySection = 'system' | 'user' | 'full';
+
+type CopiedSection = {
+  contextKey: string;
+  section: CopySection;
 };
 
 export function PromptPlaygroundPreview({
@@ -36,15 +44,20 @@ export function PromptPlaygroundPreview({
   saveStatusMessage,
   saveStatusTone,
 }: PromptPlaygroundPreviewProps) {
-  const [copiedSection, setCopiedSection] = useState<
-    'system' | 'user' | 'full' | null
-  >(null);
+  const [copiedSection, setCopiedSection] = useState<CopiedSection | null>(null);
   const [copyFeedback, setCopyFeedback] = useState<CopyFeedback | null>(null);
+  const copyContextKey = preview ? formatPromptSections(preview) : null;
+  const activeCopiedSection =
+    copiedSection?.contextKey === copyContextKey ? copiedSection.section : null;
+  const activeCopyFeedback =
+    copyFeedback?.contextKey === copyContextKey ? copyFeedback : null;
 
-  const handleCopy = async (
-    section: 'system' | 'user' | 'full',
-    value: string,
-  ) => {
+  const handleCopy = async (section: CopySection, value: string) => {
+    if (!copyContextKey) {
+      return;
+    }
+
+    const contextKey = copyContextKey;
     const sectionLabel =
       section === 'full'
         ? 'Full prompt'
@@ -52,20 +65,25 @@ export function PromptPlaygroundPreview({
 
     try {
       await writeClipboardText(value);
-      setCopiedSection(section);
+      setCopiedSection({ contextKey, section });
       setCopyFeedback({
+        contextKey,
         message: `${sectionLabel} copied.`,
         tone: 'success',
       });
 
       window.setTimeout(() => {
-        setCopiedSection((currentSection) =>
-          currentSection === section ? null : currentSection,
-        );
+        setCopiedSection((currentSection) => {
+          return currentSection?.contextKey === contextKey &&
+            currentSection.section === section
+            ? null
+            : currentSection;
+        });
       }, 1600);
     } catch {
       setCopiedSection(null);
       setCopyFeedback({
+        contextKey,
         message: `Failed to copy ${sectionLabel.toLowerCase()}.`,
         tone: 'error',
       });
@@ -94,7 +112,9 @@ export function PromptPlaygroundPreview({
               type="button"
               onClick={() => handleCopy('full', formatPromptSections(preview))}
             >
-              {copiedSection === 'full' ? 'Copied full prompt' : 'Copy full prompt'}
+              {activeCopiedSection === 'full'
+                ? 'Copied full prompt'
+                : 'Copy full prompt'}
             </button>
             <button
               className="secondary-button"
@@ -134,16 +154,16 @@ export function PromptPlaygroundPreview({
         </p>
       ) : null}
 
-      {copyFeedback ? (
+      {activeCopyFeedback ? (
         <p
           className={
-            copyFeedback.tone === 'error'
+            activeCopyFeedback.tone === 'error'
               ? 'status-banner status-banner--error'
               : 'status-banner'
           }
-          role={copyFeedback.tone === 'error' ? 'alert' : 'status'}
+          role={activeCopyFeedback.tone === 'error' ? 'alert' : 'status'}
         >
-          {copyFeedback.message}
+          {activeCopyFeedback.message}
         </p>
       ) : null}
 
@@ -157,7 +177,7 @@ export function PromptPlaygroundPreview({
                 type="button"
                 onClick={() => handleCopy('system', preview.systemPrompt)}
               >
-                {copiedSection === 'system' ? 'Copied' : 'Copy'}
+                {activeCopiedSection === 'system' ? 'Copied' : 'Copy'}
               </button>
             </div>
             <pre className="prompt-preview">{preview.systemPrompt}</pre>
@@ -171,7 +191,7 @@ export function PromptPlaygroundPreview({
                 type="button"
                 onClick={() => handleCopy('user', preview.userPrompt)}
               >
-                {copiedSection === 'user' ? 'Copied' : 'Copy'}
+                {activeCopiedSection === 'user' ? 'Copied' : 'Copy'}
               </button>
             </div>
             <pre className="prompt-preview">{preview.userPrompt}</pre>

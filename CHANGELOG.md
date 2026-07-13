@@ -48,6 +48,8 @@ The format is intentionally lightweight and human-readable.
 
 ### Fixed
 
+- Cleared stale Prompt Playground copy feedback when template variables or
+  preview text change
 - Rolled back completed workspace backup writes when a later collection import
   fails
 - Reported prompt template JSON export failures and kept the export action

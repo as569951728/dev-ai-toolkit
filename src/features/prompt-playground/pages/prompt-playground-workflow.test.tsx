@@ -370,6 +370,15 @@ describe('Prompt playground workflow', () => {
     expect(await screen.findByRole('status')).toHaveTextContent(
       'Full prompt copied.',
     );
+
+    fireEvent.change(screen.getByLabelText('Repository Name'), {
+      target: { value: 'updated-repository' },
+    });
+
+    expect(screen.queryByText('Full prompt copied.')).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Copy full prompt' }),
+    ).toBeInTheDocument();
   });
 
   it('announces full prompt copy failures when the clipboard is unavailable', async () => {
