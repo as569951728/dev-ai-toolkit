@@ -219,6 +219,45 @@ describe('workspace-backup-transfer', () => {
     ).toThrow('Invalid workspace backup format.');
   });
 
+  it('rejects duplicate primary records before workspace preview', () => {
+    const parseData = (data: {
+      templates: PromptTemplate[];
+      runs: PromptRunRecord[];
+      notes: PromptRunNote[];
+    }) =>
+      parseWorkspaceBackupImport(
+        JSON.stringify({
+          version: 1,
+          exportedAt: '2026-05-04T08:00:00.000Z',
+          data,
+        }),
+      );
+
+    expect(() =>
+      parseData({
+        templates: [template, { ...template }],
+        runs: [run],
+        notes: [note],
+      }),
+    ).toThrow('Invalid workspace backup format.');
+
+    expect(() =>
+      parseData({
+        templates: [template],
+        runs: [run, { ...run }],
+        notes: [note],
+      }),
+    ).toThrow('Invalid workspace backup format.');
+
+    expect(() =>
+      parseData({
+        templates: [template],
+        runs: [run],
+        notes: [note, { ...note, id: 'note-2' }],
+      }),
+    ).toThrow('Invalid workspace backup format.');
+  });
+
   it('rejects workspace backups with malformed template revisions', () => {
     expect(() =>
       parseWorkspaceBackupImport(

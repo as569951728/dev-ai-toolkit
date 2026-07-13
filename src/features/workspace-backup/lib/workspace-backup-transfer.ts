@@ -36,6 +36,10 @@ function isStringArray(value: unknown): value is string[] {
   return Array.isArray(value) && value.every((item) => typeof item === 'string');
 }
 
+function hasUniqueKeys<T>(items: T[], getKey: (item: T) => string) {
+  return new Set(items.map(getKey)).size === items.length;
+}
+
 function normalizeRecentTemplateIds(value: unknown) {
   if (value === undefined) {
     return undefined;
@@ -84,6 +88,14 @@ function normalizeWorkspaceBackupData(
     !value.templates.every(isPromptTemplate) ||
     !value.runs.every(isPromptRunRecord) ||
     !value.notes.every(isPromptRunNote)
+  ) {
+    return null;
+  }
+
+  if (
+    !hasUniqueKeys(value.templates, (template) => template.id) ||
+    !hasUniqueKeys(value.runs, (run) => run.id) ||
+    !hasUniqueKeys(value.notes, (note) => note.runId)
   ) {
     return null;
   }
