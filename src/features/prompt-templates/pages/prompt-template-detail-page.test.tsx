@@ -59,6 +59,10 @@ describe('PromptTemplateDetailPage', () => {
                 path="/prompts/:promptId"
                 element={<PromptTemplateDetailPage />}
               />
+              <Route
+                path="/prompts/:promptId/edit"
+                element={<div>Template Edit Destination</div>}
+              />
             </Routes>
           </PromptRunsProvider>
         </PromptTemplatesProvider>
@@ -68,6 +72,10 @@ describe('PromptTemplateDetailPage', () => {
     expect(
       screen.getByRole('heading', { name: template.name }),
     ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
+
+    expect(screen.getByText('Template Edit Destination')).toBeInTheDocument();
   });
 
   it('explains when a linked prompt template is not available', () => {

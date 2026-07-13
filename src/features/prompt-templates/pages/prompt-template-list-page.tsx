@@ -8,6 +8,10 @@ import {
 } from '@/features/prompt-templates/lib/prompt-template-transfer';
 import { PromptTemplateList } from '@/features/prompt-templates/components/prompt-template-list';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
+import {
+  buildPromptTemplateDetailPath,
+  buildPromptTemplateEditPath,
+} from '@/features/prompt-templates/lib/prompt-template-links';
 import { collectPromptTemplateTags } from '@/features/prompt-templates/services/prompt-template-service';
 import type { PromptTemplateFilters } from '@/types/prompt-template';
 
@@ -147,8 +151,8 @@ export function PromptTemplateListPage() {
         archivedCount={archivedCount}
         showArchived={showArchived}
         onCreate={() => navigate('/prompts/new')}
-        onView={(id) => navigate(`/prompts/${id}`)}
-        onEdit={(id) => navigate(`/prompts/${id}/edit`)}
+        onView={(id) => navigate(buildPromptTemplateDetailPath(id))}
+        onEdit={(id) => navigate(buildPromptTemplateEditPath(id))}
         onOpenInPlayground={(id) => navigate(`/playground?templateId=${id}`)}
         onOpenRunHistory={(id) => navigate(`/runs?templateId=${id}`)}
         onFiltersChange={(nextFilters) =>

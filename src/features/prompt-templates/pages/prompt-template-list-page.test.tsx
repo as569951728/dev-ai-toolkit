@@ -46,6 +46,32 @@ afterEach(() => {
 });
 
 describe('PromptTemplateListPage', () => {
+  it('encodes imported template IDs in detail and edit navigation', () => {
+    const template = {
+      ...starterPromptTemplates[0]!,
+      id: 'imported/template #1',
+    };
+    mockNavigate.mockReset();
+
+    render(
+      <MemoryRouter>
+        <PromptTemplatesProvider repository={createMemoryRepository([template])}>
+          <PromptTemplateListPage />
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Preview' }));
+    expect(mockNavigate).toHaveBeenLastCalledWith(
+      '/prompts/imported%2Ftemplate%20%231',
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
+    expect(mockNavigate).toHaveBeenLastCalledWith(
+      '/prompts/imported%2Ftemplate%20%231/edit',
+    );
+  });
+
   it('announces template export feedback', () => {
     const createObjectURL = vi.fn(() => 'blob:prompt-template-export');
     const revokeObjectURL = vi.fn();

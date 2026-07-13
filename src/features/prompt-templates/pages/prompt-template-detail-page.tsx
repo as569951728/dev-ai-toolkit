@@ -5,6 +5,10 @@ import { PromptTemplateDetail } from '@/features/prompt-templates/components/pro
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { buildPromptRunDetailPath } from '@/features/prompt-runs/lib/prompt-run-links';
+import {
+  buildPromptTemplateDetailPath,
+  buildPromptTemplateEditPath,
+} from '@/features/prompt-templates/lib/prompt-template-links';
 
 export function PromptTemplateDetailPage() {
   const navigate = useNavigate();
@@ -60,14 +64,14 @@ export function PromptTemplateDetailPage() {
       onOpenInPlayground={(id) => navigate(`/playground?templateId=${id}`)}
       onOpenRunHistory={(id) => navigate(`/runs?templateId=${id}`)}
       onOpenRunDetail={(id) => navigate(buildPromptRunDetailPath(id))}
-      onEdit={(id) => navigate(`/prompts/${id}/edit`)}
+      onEdit={(id) => navigate(buildPromptTemplateEditPath(id))}
       onDuplicate={(id) => {
         const duplicatedTemplate = runTemplateAction(() =>
           duplicateTemplate(id),
         );
 
         if (duplicatedTemplate) {
-          navigate(`/prompts/${duplicatedTemplate.id}`);
+          navigate(buildPromptTemplateDetailPath(duplicatedTemplate.id));
         }
       }}
       onDelete={(id) => {
