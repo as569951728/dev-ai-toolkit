@@ -65,6 +65,9 @@ Run History supports:
 - Reopening a snapshot from its Run History card with the captured variables
   when the source template is still active.
 - Reopening saved prompts in Code Viewer.
+- Opening the captured variable object in JSON Tools from Run Detail. JSON
+  Tools loads the local run by ID and starts with its saved variables as
+  formatted JSON; the run itself is not changed.
 - Comparing a saved run with its source template in Prompt Diff from the list
   or detail page.
 

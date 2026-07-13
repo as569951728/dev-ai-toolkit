@@ -36,7 +36,8 @@ The current version includes:
   unresolved-placeholder guidance, and live prompt preview
 - Prompt Diff for comparing prompt revisions and variable drift
 - Prompt Run History for browsing, filtering, previewing variables, searching prompt text and notes, comparing with source templates, importing/exporting run JSON, deleting local runs, and reusing saved prompt runs as Playground inputs or new template drafts
-- JSON Tools for formatting, validating, and minifying payloads
+- JSON Tools for formatting, validating, and minifying payloads, including
+  captured variables opened from a saved run
 - API Builder for drafting request configurations, fetch snippets, and cURL commands
 - Code Viewer for reading code or generated output in single or compare mode
 - Workspace Backup for exporting and importing local templates, saved runs, notes, and recent playground shortcuts as JSON
@@ -194,7 +195,7 @@ set of developer utilities.
 | Prompt Workflows | Prompt Playground | Select templates, fill variables, preview or copy labeled composed prompts, save run snapshots, and keep recent template usage | Main path for composing reusable prompts |
 | Prompt Workflows | Prompt Diff | Compare prompt revisions, detect variable drift, and inspect line-level wording changes | Best used after editing or templating changes |
 | Prompt Workflows | Prompt Run History | Browse saved runs, filter by template, preview captured variables, search saved prompt text and notes, open run details, copy full saved prompts, add notes, import or export a single run, compare with source templates, delete stale runs, and reuse saved prompts in the Playground or a new template draft | Dedicated history view for saved prompt snapshots |
-| Developer Utilities | JSON Tools | Format, validate, minify, copy, and sample JSON payloads | Useful for debugging and payload cleanup |
+| Developer Utilities | JSON Tools | Format, validate, minify, copy, and sample JSON payloads, or load the captured variable object from Run Detail | Useful for debugging saved inputs and other payloads |
 | Developer Utilities | API Builder | Draft request URLs, headers, query params, JSON bodies, `fetch` snippets, and cURL commands | Local request scaffolding only |
 | Developer Utilities | Code Viewer | Inspect generated text or code in single or compare mode | Supports prompt and output review workflows |
 | Workspace | Workspace Backup | Export and import local templates, saved runs, notes, and recent playground shortcuts as versioned JSON | Manual backup for the current browser profile |
@@ -217,10 +218,10 @@ The most complete workflow in the current version looks like this:
    snapshot for later review
 3. Open filtered `Prompt Run History` for the active template
 4. Search saved runs by template name, saved prompt text, captured variable, or note content when reviewing older snapshots
-5. Review captured variables from the list, compare a run with its source template, add a short note, import or export a run as JSON, or start a new editable template draft from the saved prompts
+5. Review captured variables from the list or open them in `JSON Tools`, compare a run with its source template, add a short note, import or export a run as JSON, or start a new editable template draft from the saved prompts
 6. Continue into `Prompt Diff` or `Code Viewer`
 
-Other modules such as `JSON Tools` and `API Builder` are available as supporting utilities.
+Other modules such as `API Builder` remain available as supporting utilities.
 
 ## Development Notes
 
@@ -237,7 +238,7 @@ Current next steps include:
 
 - Verify the public demo after the current `main` changes are pushed
 - Keep regression coverage around local import, export, and recovery behavior
-- Decide which supporting utility actions should connect to the prompt workflow
+- Decide whether another small supporting utility action belongs in the prompt workflow
 - Prepare `v0.2.0` after CI, demo, documentation, and release notes agree
 
 See the implementation roadmap in [docs/roadmap.md](./docs/roadmap.md).

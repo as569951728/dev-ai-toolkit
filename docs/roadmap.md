@@ -88,12 +88,15 @@ Completed since the project review:
   unresolved values, and whitespace-sensitive content.
 - Added an explicit review-to-reuse path that prefills a new template draft
   from a saved prompt snapshot without changing the source run.
+- Connected Run Detail to JSON Tools so captured variables can be inspected as
+  formatted JSON without copying them into the URL or changing the saved run.
 
 Still open:
 
 - Verify that the public Vercel demo tracks the current `main` branch (#14).
 - Keep local import, export, and recovery coverage aligned with schema changes.
-- Decide which supporting utility actions belong in the prompt workflow.
+- Decide whether another small supporting utility action belongs in the prompt
+  workflow.
 - Prepare `v0.2.0` only after the demo, CI, docs, and release notes agree.
 
 ### Week 1: Positioning And Open-Source Hygiene
@@ -165,8 +168,8 @@ Make supporting tools feel connected without expanding the scope too broadly.
 
 Tasks:
 
-- Decide which JSON Tools and API Builder actions should connect into the
-  prompt workflow.
+- Review whether one API Builder handoff would support the prompt workflow;
+  keep JSON Tools limited to inspecting captured run variables for now.
 - Keep unsupported utility ideas in a backlog instead of adding more pages.
 - Close or update stale issues that no longer match the roadmap.
 - Publish `v0.2.0` once the demo, docs, and core workflow improvements are in a
