@@ -45,6 +45,8 @@ The format is intentionally lightweight and human-readable.
 
 ### Fixed
 
+- Kept prompt template form values available for retry when browser storage
+  rejects a create or edit operation
 - Preserved prompt run note drafts and reported browser storage failures when
   saving from Run Detail
 - Reported browser storage failures when saving prompt snapshots instead of

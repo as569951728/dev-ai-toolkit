@@ -61,7 +61,7 @@ export function PromptTemplateForm({
   const [formState, setFormState] = useState<FormState>(() =>
     createInitialState(initialValue),
   );
-  const [validationMessage, setValidationMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleChange =
     (field: keyof FormState) =>
@@ -69,7 +69,7 @@ export function PromptTemplateForm({
       event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     ) => {
       const value = event.target.value;
-      setValidationMessage(null);
+      setErrorMessage(null);
       setFormState((currentState) => ({
         ...currentState,
         [field]: value,
@@ -95,12 +95,19 @@ export function PromptTemplateForm({
     ].filter((field): field is string => field !== null);
 
     if (missingFields.length > 0) {
-      setValidationMessage(formatRequiredMessage(missingFields));
+      setErrorMessage(formatRequiredMessage(missingFields));
       return;
     }
 
-    setValidationMessage(null);
-    onSubmit(payload);
+    setErrorMessage(null);
+
+    try {
+      onSubmit(payload);
+    } catch {
+      setErrorMessage(
+        'Failed to save this template. Check that browser storage is available and try again.',
+      );
+    }
   };
 
   return (
@@ -122,9 +129,9 @@ export function PromptTemplateForm({
         </button>
       </div>
 
-      {validationMessage ? (
+      {errorMessage ? (
         <p className="status-banner status-banner--error" role="alert">
-          {validationMessage}
+          {errorMessage}
         </p>
       ) : null}
 

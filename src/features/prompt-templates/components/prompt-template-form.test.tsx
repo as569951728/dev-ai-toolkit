@@ -109,4 +109,39 @@ describe('PromptTemplateForm', () => {
       tags: ['debugging', 'api'],
     });
   });
+
+  it('keeps form values when saving to browser storage fails', () => {
+    render(
+      <PromptTemplateForm
+        mode="create"
+        onCancel={vi.fn()}
+        onSubmit={() => {
+          throw new Error('Storage quota exceeded.');
+        }}
+      />,
+    );
+
+    fireEvent.change(screen.getByLabelText('Name'), {
+      target: { value: 'Debug Helper' },
+    });
+    fireEvent.change(screen.getByLabelText('Description'), {
+      target: { value: 'Debug a failing workflow' },
+    });
+    fireEvent.change(screen.getByLabelText('System prompt'), {
+      target: { value: 'You are helping debug {{issue}}.' },
+    });
+    fireEvent.change(screen.getByLabelText('User prompt'), {
+      target: { value: 'Investigate {{issue}}.' },
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Create template' }));
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Failed to save this template. Check that browser storage is available and try again.',
+    );
+    expect(screen.getByLabelText('Name')).toHaveValue('Debug Helper');
+    expect(screen.getByLabelText('User prompt')).toHaveValue(
+      'Investigate {{issue}}.',
+    );
+  });
 });
