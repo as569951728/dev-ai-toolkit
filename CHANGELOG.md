@@ -53,6 +53,7 @@ The format is intentionally lightweight and human-readable.
 
 ### Fixed
 
+- Excluded notes without a saved run from downloadable workspace backups
 - Detected read-only browser storage before users attempt to persist local data
 - Prevented restricted browser storage access from crashing local repository
   initialization

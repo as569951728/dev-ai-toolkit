@@ -8,6 +8,7 @@ import { loadRecentTemplateIds } from '@/features/prompt-playground/repositories
 import { useWorkspaceBackup } from '@/features/workspace-backup/hooks/use-workspace-backup';
 import { downloadWorkspaceBackup } from '@/features/workspace-backup/lib/workspace-backup-download';
 import type { WorkspaceBackupImportSummary } from '@/features/workspace-backup/lib/workspace-backup-merge';
+import { filterNotesForWorkspaceBackup } from '@/features/workspace-backup/lib/workspace-backup-transfer';
 
 type ExportFeedback = {
   message: string;
@@ -35,13 +36,15 @@ export function WorkspaceBackupPage() {
   const currentRecentTemplateIds = recentTemplateIds.filter((templateId) =>
     templates.some((template) => template.id === templateId),
   );
+  const exportableNotes = filterNotesForWorkspaceBackup(notes, runs);
+  const skippedNoteCount = notes.length - exportableNotes.length;
 
   const handleExportWorkspace = () => {
     try {
       downloadWorkspaceBackup({
         templates,
         runs,
-        notes,
+        notes: exportableNotes,
         recentTemplateIds: currentRecentTemplateIds,
       });
       setExportFeedback({
@@ -136,8 +139,12 @@ export function WorkspaceBackupPage() {
           </article>
           <article className="metric-card">
             <span className="metric-card__label">Run notes</span>
-            <strong>{formatCount(notes.length, 'run note')}</strong>
-            <p>Notes attached to saved prompt runs for later review.</p>
+            <strong>{formatCount(exportableNotes.length, 'run note')}</strong>
+            <p>
+              {skippedNoteCount > 0
+                ? `${formatCount(skippedNoteCount, 'unattached note')} excluded because no matching saved run exists.`
+                : 'Notes attached to saved prompt runs for later review.'}
+            </p>
           </article>
           <article className="metric-card">
             <span className="metric-card__label">Recent templates</span>

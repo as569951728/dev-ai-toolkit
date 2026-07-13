@@ -52,13 +52,20 @@ function normalizeRecentTemplateIds(value: unknown) {
   ];
 }
 
-function doNotesReferenceExportedRuns(
+export function filterNotesForWorkspaceBackup(
   notes: PromptRunNote[],
   runs: PromptRunRecord[],
 ) {
   const runIds = new Set(runs.map((run) => run.id));
 
-  return notes.every((note) => runIds.has(note.runId));
+  return notes.filter((note) => runIds.has(note.runId));
+}
+
+function doNotesReferenceExportedRuns(
+  notes: PromptRunNote[],
+  runs: PromptRunRecord[],
+) {
+  return filterNotesForWorkspaceBackup(notes, runs).length === notes.length;
 }
 
 function normalizeWorkspaceBackupData(

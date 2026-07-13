@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   buildWorkspaceBackup,
+  filterNotesForWorkspaceBackup,
   parseWorkspaceBackupImport,
   stringifyWorkspaceBackup,
 } from '@/features/workspace-backup/lib/workspace-backup-transfer';
@@ -61,6 +62,18 @@ const note: PromptRunNote = {
 };
 
 describe('workspace-backup-transfer', () => {
+  it('keeps only notes that reference exported runs', () => {
+    const orphanedNote = {
+      ...note,
+      id: 'orphaned-note',
+      runId: 'missing-run',
+    };
+
+    expect(filterNotesForWorkspaceBackup([note, orphanedNote], [run])).toEqual([
+      note,
+    ]);
+  });
+
   it('builds a versioned workspace backup payload', () => {
     const backup = buildWorkspaceBackup({
       templates: [template],

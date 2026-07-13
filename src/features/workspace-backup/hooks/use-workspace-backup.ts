@@ -9,6 +9,7 @@ import {
 } from '@/features/prompt-playground/repositories/local-storage-recent-template-repository';
 import { mergeWorkspaceBackupData } from '@/features/workspace-backup/lib/workspace-backup-merge';
 import {
+  filterNotesForWorkspaceBackup,
   parseWorkspaceBackupImport,
   stringifyWorkspaceBackup,
 } from '@/features/workspace-backup/lib/workspace-backup-transfer';
@@ -29,12 +30,10 @@ export function useWorkspaceBackup() {
 
   const createWorkspaceBackupJson = useCallback(
     () => {
-      const runIds = new Set(runs.map((run) => run.id));
-
       return stringifyWorkspaceBackup({
         templates,
         runs,
-        notes: notes.filter((note) => runIds.has(note.runId)),
+        notes: filterNotesForWorkspaceBackup(notes, runs),
         recentTemplateIds: filterExistingTemplateIds(
           loadRecentTemplateIds(),
           templates.map((template) => template.id),

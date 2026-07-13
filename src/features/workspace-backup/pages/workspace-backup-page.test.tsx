@@ -9,6 +9,10 @@ import { saveRecentTemplateIds } from '@/features/prompt-playground/repositories
 import { PromptTemplatesProvider } from '@/features/prompt-templates/providers/prompt-templates-provider';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
 import { downloadWorkspaceBackup } from '@/features/workspace-backup/lib/workspace-backup-download';
+import {
+  parseWorkspaceBackupImport,
+  stringifyWorkspaceBackup,
+} from '@/features/workspace-backup/lib/workspace-backup-transfer';
 import { WorkspaceBackupPage } from '@/features/workspace-backup/pages/workspace-backup-page';
 import type { PromptRunNote } from '@/types/prompt-run-note';
 import type { PromptRunRecord } from '@/types/prompt-run';
@@ -197,6 +201,40 @@ describe('WorkspaceBackupPage', () => {
       'Workspace backup exported as JSON.',
     );
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('excludes orphaned notes from a downloadable workspace backup', () => {
+    const orphanedNote: PromptRunNote = {
+      ...note,
+      id: 'orphaned-note',
+      runId: 'missing-run',
+    };
+
+    renderWorkspaceBackupPage({
+      noteRepository: createNoteRepository([note, orphanedNote]),
+    });
+
+    expect(screen.getByText('1 run note')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        '1 unattached note excluded because no matching saved run exists.',
+      ),
+    ).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Export workspace JSON' }),
+    );
+
+    const exportedData = downloadWorkspaceBackupMock.mock.calls.at(-1)?.[0];
+
+    expect(exportedData?.notes).toEqual([note]);
+    expect(
+      parseWorkspaceBackupImport(
+        stringifyWorkspaceBackup(
+          exportedData ?? { templates: [], runs: [], notes: [] },
+        ),
+      ).data.notes,
+    ).toEqual([note]);
   });
 
   it('imports a workspace backup JSON file and shows a summary', async () => {
