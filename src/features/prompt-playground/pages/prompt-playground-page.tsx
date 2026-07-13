@@ -197,7 +197,7 @@ function PromptPlaygroundWorkspace({
 
             setSaveStatus({
               contextKey,
-              message: `Saved a run snapshot for ${selectedTemplate.name} v${selectedTemplate.version}.`,
+              message: `Saved a prompt snapshot for ${selectedTemplate.name} v${selectedTemplate.version}.`,
               runId: savedRun.id,
               tone: 'success',
             });

@@ -309,15 +309,15 @@ describe('Prompt playground workflow', () => {
       target: { value: 'frontend workflow' },
     });
 
-    fireEvent.click(screen.getByRole('button', { name: 'Save run snapshot' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save prompt snapshot' }));
 
     expect(
       await screen.findByText(
-        'Saved a run snapshot for Code Review Assistant v1.',
+        'Saved a prompt snapshot for Code Review Assistant v1.',
       ),
     ).toBeInTheDocument();
     expect(screen.getByRole('status')).toHaveTextContent(
-      'Saved a run snapshot for Code Review Assistant v1.',
+      'Saved a prompt snapshot for Code Review Assistant v1.',
     );
     expect(
       screen.getByRole('link', { name: 'Open saved run' }).getAttribute('href'),
@@ -371,7 +371,7 @@ describe('Prompt playground workflow', () => {
       </MemoryRouter>,
     );
 
-    fireEvent.click(screen.getByRole('button', { name: 'Save run snapshot' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save prompt snapshot' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'Failed to save this prompt snapshot. Check that browser storage is available and try again.',
@@ -410,11 +410,11 @@ describe('Prompt playground workflow', () => {
     );
     expect(screen.getByText('Recently used')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Save run snapshot' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save prompt snapshot' }));
 
     expect(
       await screen.findByText(
-        `Saved a run snapshot for ${nextTemplate.name} v${nextTemplate.version}.`,
+        `Saved a prompt snapshot for ${nextTemplate.name} v${nextTemplate.version}.`,
       ),
     ).toBeInTheDocument();
     expect(
@@ -636,11 +636,11 @@ describe('Prompt playground workflow', () => {
       </MemoryRouter>,
     );
 
-    fireEvent.click(screen.getByRole('button', { name: 'Save run snapshot' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save prompt snapshot' }));
 
     expect(
       await screen.findByText(
-        'Saved a run snapshot for Code Review Assistant v1.',
+        'Saved a prompt snapshot for Code Review Assistant v1.',
       ),
     ).toBeInTheDocument();
 
@@ -649,7 +649,7 @@ describe('Prompt playground workflow', () => {
     });
 
     expect(
-      screen.queryByText('Saved a run snapshot for Code Review Assistant v1.'),
+      screen.queryByText('Saved a prompt snapshot for Code Review Assistant v1.'),
     ).not.toBeInTheDocument();
   });
 
@@ -672,11 +672,11 @@ describe('Prompt playground workflow', () => {
       target: { value: 'dev-ai-toolkit' },
     });
 
-    fireEvent.click(screen.getByRole('button', { name: 'Save run snapshot' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save prompt snapshot' }));
 
     expect(
       await screen.findByText(
-        'Saved a run snapshot for Code Review Assistant v1.',
+        'Saved a prompt snapshot for Code Review Assistant v1.',
       ),
     ).toBeInTheDocument();
 
@@ -685,7 +685,7 @@ describe('Prompt playground workflow', () => {
     });
 
     expect(
-      screen.queryByText('Saved a run snapshot for Code Review Assistant v1.'),
+      screen.queryByText('Saved a prompt snapshot for Code Review Assistant v1.'),
     ).not.toBeInTheDocument();
   });
 

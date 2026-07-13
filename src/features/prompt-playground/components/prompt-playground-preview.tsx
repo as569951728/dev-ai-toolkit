@@ -121,7 +121,7 @@ export function PromptPlaygroundPreview({
         {selectedTemplate && preview ? (
           <div className="panel__actions">
             <button className="primary-button" type="button" onClick={onSaveRun}>
-              Save run snapshot
+              Save prompt snapshot
             </button>
             <button
               className="secondary-button"

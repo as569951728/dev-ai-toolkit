@@ -11,10 +11,10 @@ test('saves a prompt snapshot and protects its review note draft', async ({
 
   await page.getByLabel('Repository Name').fill('dev-ai-toolkit');
   await page.getByLabel('Change Scope').fill('frontend workflow');
-  await page.getByRole('button', { name: 'Save run snapshot' }).click();
+  await page.getByRole('button', { name: 'Save prompt snapshot' }).click();
 
   await expect(page.getByRole('status')).toContainText(
-    'Saved a run snapshot for Code Review Assistant v1.',
+    'Saved a prompt snapshot for Code Review Assistant v1.',
   );
 
   await page.getByRole('link', { name: 'Open saved run' }).click();
