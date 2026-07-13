@@ -8,6 +8,9 @@ The format is intentionally lightweight and human-readable.
 
 ### Added
 
+- Added Run Detail actions for copying saved system and user prompts
+- Added a Run Detail shortcut for reopening captured variables in Prompt
+  Playground
 - Added single prompt run JSON import from the Run History page, including
   saved note context when present
 - Added cURL command previews to API Builder alongside the existing fetch
@@ -111,6 +114,12 @@ The format is intentionally lightweight and human-readable.
 
 ### Changed
 
+- Reorganized Run Detail around prompt review actions, saved prompts, review
+  context, and snapshot management
+- Clarified the homepage, navigation, and README around the local-first prompt
+  workflow instead of a broad AI platform
+- Reused shared Prompt Run and Run Note validation rules across browser storage
+  and Workspace Backup imports
 - Updated GitHub Actions to current action runtimes and added dependency audit
   to CI
 - Updated audited dependency resolutions for `react-router`, `react-router-dom`,
