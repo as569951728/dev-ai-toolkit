@@ -28,16 +28,19 @@ export function useWorkspaceBackup() {
   const { importTemplates, templates } = usePromptTemplates();
 
   const createWorkspaceBackupJson = useCallback(
-    () =>
-      stringifyWorkspaceBackup({
+    () => {
+      const runIds = new Set(runs.map((run) => run.id));
+
+      return stringifyWorkspaceBackup({
         templates,
         runs,
-        notes,
+        notes: notes.filter((note) => runIds.has(note.runId)),
         recentTemplateIds: filterExistingTemplateIds(
           loadRecentTemplateIds(),
           templates.map((template) => template.id),
         ),
-      }),
+      });
+    },
     [notes, runs, templates],
   );
 

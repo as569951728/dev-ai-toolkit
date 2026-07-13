@@ -12,7 +12,10 @@ import {
 import { PromptTemplatesProvider } from '@/features/prompt-templates/providers/prompt-templates-provider';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
 import { useWorkspaceBackup } from '@/features/workspace-backup/hooks/use-workspace-backup';
-import type { WorkspaceBackupPayload } from '@/features/workspace-backup/lib/workspace-backup-transfer';
+import {
+  parseWorkspaceBackupImport,
+  type WorkspaceBackupPayload,
+} from '@/features/workspace-backup/lib/workspace-backup-transfer';
 import type { PromptRunNote } from '@/types/prompt-run-note';
 import type { PromptRunRecord } from '@/types/prompt-run';
 import type { PromptTemplate } from '@/types/prompt-template';
@@ -110,9 +113,10 @@ function TestConsumer() {
       <button
         type="button"
         onClick={() => {
-          const backup = JSON.parse(
-            createWorkspaceBackupJson(),
-          ) as WorkspaceBackupPayload;
+          const rawBackup = createWorkspaceBackupJson();
+          const backup = JSON.parse(rawBackup) as WorkspaceBackupPayload;
+
+          window.localStorage.setItem('workspace-backup-json-test', rawBackup);
           window.localStorage.setItem(
             'workspace-backup-test',
             `${backup.data.runs[0]!.id}:${backup.data.recentTemplateIds?.join(
@@ -175,6 +179,33 @@ describe('useWorkspaceBackup', () => {
     expect(window.localStorage.getItem('workspace-backup-test')).toBe(
       'run-1:template-1',
     );
+  });
+
+  it('omits orphaned notes so exported backups remain importable', () => {
+    const orphanedNote: PromptRunNote = {
+      ...note,
+      id: 'orphaned-note',
+      runId: 'missing-run',
+    };
+
+    render(
+      <PromptTemplatesProvider repository={createTemplateRepository([template])}>
+        <PromptRunsProvider repository={createRunRepository([run])}>
+          <PromptRunNotesProvider
+            repository={createNoteRepository([note, orphanedNote])}
+          >
+            <TestConsumer />
+          </PromptRunNotesProvider>
+        </PromptRunsProvider>
+      </PromptTemplatesProvider>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Create backup' }));
+
+    const rawBackup = window.localStorage.getItem('workspace-backup-json-test');
+
+    expect(rawBackup).not.toBeNull();
+    expect(parseWorkspaceBackupImport(rawBackup ?? '').data.notes).toEqual([note]);
   });
 
   it('imports a workspace backup JSON string into current app state', () => {
