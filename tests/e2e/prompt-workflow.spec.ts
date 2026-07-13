@@ -99,3 +99,26 @@ test('resolves dotted template variables in the Playground', async ({
   );
   await expect(userPromptPreview).not.toContainText('{{pull_request.title}}');
 });
+
+test('protects unsaved prompt template changes', async ({ page }) => {
+  await page.goto('/prompts/new');
+  await page.getByLabel('Name').fill('Work in progress');
+  await page.getByRole('button', { name: 'Back to list' }).click();
+
+  await expect(
+    page.getByRole('heading', { name: 'Discard unsaved changes?' }),
+  ).toBeVisible();
+
+  await page.getByRole('button', { name: 'Continue editing' }).click();
+
+  await expect(page).toHaveURL(/\/prompts\/new$/);
+  await expect(page.getByLabel('Name')).toHaveValue('Work in progress');
+
+  await page.getByRole('button', { name: 'Cancel' }).click();
+  await page.getByRole('button', { name: 'Discard changes' }).click();
+
+  await expect(page).toHaveURL(/\/prompts$/);
+  await expect(
+    page.getByRole('heading', { name: 'Manage reusable AI prompts' }),
+  ).toBeVisible();
+});

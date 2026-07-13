@@ -1,23 +1,79 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import {
+  createMemoryRouter,
+  RouterProvider,
+  useNavigate,
+} from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { PromptTemplateForm } from '@/features/prompt-templates/components/prompt-template-form';
+import type { PromptTemplateInput } from '@/types/prompt-template';
 
 afterEach(() => {
   cleanup();
 });
 
+function PromptTemplateFormHarness({
+  onSubmit,
+}: {
+  onSubmit: (value: PromptTemplateInput) => void;
+}) {
+  const navigate = useNavigate();
+
+  return (
+    <PromptTemplateForm
+      mode="create"
+      onCancel={() => navigate('/prompts')}
+      onSubmit={(value) => {
+        onSubmit(value);
+        navigate('/prompts');
+      }}
+    />
+  );
+}
+
+function renderForm(
+  onSubmit: (value: PromptTemplateInput) => void = vi.fn(),
+) {
+  const router = createMemoryRouter(
+    [
+      {
+        path: '/prompts/new',
+        element: <PromptTemplateFormHarness onSubmit={onSubmit} />,
+      },
+      {
+        path: '/prompts',
+        element: <h1>Prompt template list</h1>,
+      },
+    ],
+    { initialEntries: ['/prompts/new'] },
+  );
+
+  render(<RouterProvider router={router} />);
+
+  return router;
+}
+
+function fillRequiredFields() {
+  fireEvent.change(screen.getByLabelText('Name'), {
+    target: { value: 'Debug Helper' },
+  });
+  fireEvent.change(screen.getByLabelText('Description'), {
+    target: { value: 'Debug a failing workflow' },
+  });
+  fireEvent.change(screen.getByLabelText('System prompt'), {
+    target: { value: 'You are helping debug {{issue}}.' },
+  });
+  fireEvent.change(screen.getByLabelText('User prompt'), {
+    target: { value: 'Investigate {{issue}}.' },
+  });
+}
+
 describe('PromptTemplateForm', () => {
   it('blocks submission when required fields are blank after trimming', () => {
     const handleSubmit = vi.fn();
 
-    render(
-      <PromptTemplateForm
-        mode="create"
-        onCancel={vi.fn()}
-        onSubmit={handleSubmit}
-      />,
-    );
+    renderForm(handleSubmit);
 
     fireEvent.change(screen.getByLabelText('Name'), {
       target: { value: '   ' },
@@ -41,13 +97,7 @@ describe('PromptTemplateForm', () => {
   });
 
   it('clears validation feedback when the user edits the form again', () => {
-    render(
-      <PromptTemplateForm
-        mode="create"
-        onCancel={vi.fn()}
-        onSubmit={vi.fn()}
-      />,
-    );
+    renderForm();
 
     fireEvent.change(screen.getByLabelText('Name'), {
       target: { value: '   ' },
@@ -75,13 +125,7 @@ describe('PromptTemplateForm', () => {
   it('trims and deduplicates submitted tags', () => {
     const handleSubmit = vi.fn();
 
-    render(
-      <PromptTemplateForm
-        mode="create"
-        onCancel={vi.fn()}
-        onSubmit={handleSubmit}
-      />,
-    );
+    renderForm(handleSubmit);
 
     fireEvent.change(screen.getByLabelText('Name'), {
       target: { value: 'Debug Helper' },
@@ -111,15 +155,9 @@ describe('PromptTemplateForm', () => {
   });
 
   it('keeps form values when saving to browser storage fails', () => {
-    render(
-      <PromptTemplateForm
-        mode="create"
-        onCancel={vi.fn()}
-        onSubmit={() => {
-          throw new Error('Storage quota exceeded.');
-        }}
-      />,
-    );
+    renderForm(() => {
+      throw new Error('Storage quota exceeded.');
+    });
 
     fireEvent.change(screen.getByLabelText('Name'), {
       target: { value: 'Debug Helper' },
@@ -143,5 +181,62 @@ describe('PromptTemplateForm', () => {
     expect(screen.getByLabelText('User prompt')).toHaveValue(
       'Investigate {{issue}}.',
     );
+  });
+
+  it('lets the user stay on a dirty form or explicitly discard changes', async () => {
+    renderForm();
+
+    fireEvent.change(screen.getByLabelText('Name'), {
+      target: { value: 'Work in progress' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Back to list' }));
+
+    expect(await screen.findByRole('alertdialog')).toHaveTextContent(
+      'Discard unsaved changes?',
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Continue editing' }));
+
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Name')).toHaveValue('Work in progress');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Back to list' }));
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Discard changes' }),
+    );
+
+    expect(
+      await screen.findByRole('heading', { name: 'Prompt template list' }),
+    ).toBeInTheDocument();
+  });
+
+  it('guards browser unload while the form has unsaved changes', () => {
+    renderForm();
+
+    const cleanUnloadEvent = new Event('beforeunload', { cancelable: true });
+    window.dispatchEvent(cleanUnloadEvent);
+
+    expect(cleanUnloadEvent.defaultPrevented).toBe(false);
+
+    fireEvent.change(screen.getByLabelText('Name'), {
+      target: { value: 'Work in progress' },
+    });
+    const dirtyUnloadEvent = new Event('beforeunload', { cancelable: true });
+    window.dispatchEvent(dirtyUnloadEvent);
+
+    expect(dirtyUnloadEvent.defaultPrevented).toBe(true);
+  });
+
+  it('does not block navigation after a successful save', async () => {
+    const handleSubmit = vi.fn();
+
+    renderForm(handleSubmit);
+    fillRequiredFields();
+    fireEvent.click(screen.getByRole('button', { name: 'Create template' }));
+
+    expect(handleSubmit).toHaveBeenCalledOnce();
+    expect(
+      await screen.findByRole('heading', { name: 'Prompt template list' }),
+    ).toBeInTheDocument();
   });
 });

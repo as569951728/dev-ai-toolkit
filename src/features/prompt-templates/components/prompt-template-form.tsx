@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { useBeforeUnload, useBlocker } from 'react-router-dom';
 
 import type {
   PromptTemplate,
@@ -58,10 +59,32 @@ export function PromptTemplateForm({
   onSubmit,
   onCancel,
 }: PromptTemplateFormProps) {
-  const [formState, setFormState] = useState<FormState>(() =>
+  const allowNavigationRef = useRef(false);
+  const [initialFormState] = useState<FormState>(() =>
     createInitialState(initialValue),
   );
+  const [formState, setFormState] = useState<FormState>(
+    initialFormState,
+  );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const isDirty = Object.entries(formState).some(
+    ([field, value]) =>
+      value !== initialFormState[field as keyof FormState],
+  );
+  const navigationBlocker = useBlocker(
+    () => isDirty && !allowNavigationRef.current,
+  );
+
+  useBeforeUnload(
+    (event) => {
+      if (!isDirty || allowNavigationRef.current) {
+        return;
+      }
+
+      event.preventDefault();
+    },
+    { capture: true },
+  );
 
   const handleChange =
     (field: keyof FormState) =>
@@ -100,14 +123,21 @@ export function PromptTemplateForm({
     }
 
     setErrorMessage(null);
+    allowNavigationRef.current = true;
 
     try {
       onSubmit(payload);
     } catch {
+      allowNavigationRef.current = false;
       setErrorMessage(
         'Failed to save this template. Check that browser storage is available and try again.',
       );
+      return;
     }
+
+    queueMicrotask(() => {
+      allowNavigationRef.current = false;
+    });
   };
 
   return (
@@ -133,6 +163,39 @@ export function PromptTemplateForm({
         <p className="status-banner status-banner--error" role="alert">
           {errorMessage}
         </p>
+      ) : null}
+
+      {navigationBlocker.state === 'blocked' ? (
+        <div
+          aria-describedby="unsaved-template-changes-description"
+          aria-labelledby="unsaved-template-changes-title"
+          className="status-banner status-banner--error"
+          role="alertdialog"
+        >
+          <h2 id="unsaved-template-changes-title">Discard unsaved changes?</h2>
+          <p id="unsaved-template-changes-description">
+            This template has changes that have not been saved in this browser.
+          </p>
+          <div className="detail-actions detail-actions--inline">
+            <button
+              className="secondary-button"
+              type="button"
+              onClick={() => navigationBlocker.reset()}
+            >
+              Continue editing
+            </button>
+            <button
+              className="danger-button"
+              type="button"
+              onClick={() => {
+                allowNavigationRef.current = true;
+                navigationBlocker.proceed();
+              }}
+            >
+              Discard changes
+            </button>
+          </div>
+        </div>
       ) : null}
 
       <form className="prompt-form" onSubmit={handleSubmit}>
