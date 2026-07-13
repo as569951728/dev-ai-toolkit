@@ -180,6 +180,11 @@ export function PromptRunDetailPage() {
             <Link className="secondary-button" to={promptDiffUrl}>
               Compare with source
             </Link>
+          ) : sourceTemplate ? (
+            <span className="run-history-note">
+              Template v{run.templateVersion} is no longer available in local
+              revision history, so source comparison is unavailable.
+            </span>
           ) : null}
           {sourceTemplate ? (
             <Link className="ghost-button" to={`/prompts/${run.templateId}`}>

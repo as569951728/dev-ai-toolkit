@@ -346,6 +346,50 @@ describe('PromptRunDetailPage', () => {
     );
   });
 
+  it('explains when the saved source revision is no longer available', () => {
+    const baseTemplate = starterPromptTemplates[0]!;
+    const currentRevision = {
+      ...baseTemplate.revisions[0]!,
+      version: 2,
+      updatedAt: '2026-05-07T09:00:00.000Z',
+    };
+    const template: PromptTemplate = {
+      ...baseTemplate,
+      version: currentRevision.version,
+      updatedAt: currentRevision.updatedAt,
+      revisions: [currentRevision],
+    };
+
+    renderRunDetail(
+      '/runs/run-1',
+      [
+        {
+          id: 'run-1',
+          templateId: template.id,
+          templateName: template.name,
+          templateVersion: 1,
+          variables: {},
+          systemPrompt: 'Saved system prompt.',
+          userPrompt: 'Saved user prompt.',
+          createdAt: '2026-05-08T09:00:00.000Z',
+        },
+      ],
+      createTemplateRepository([template]),
+    );
+
+    expect(
+      screen.queryByRole('link', { name: 'Compare with source' }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Template v1 is no longer available in local revision history, so source comparison is unavailable.',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'View source template' }),
+    ).toHaveAttribute('href', `/prompts/${template.id}`);
+  });
+
   it('exports the current run with saved note context', () => {
     const sourceTemplateRevision = starterPromptTemplates[0]!.revisions[0]!;
     const run: PromptRunRecord = {
