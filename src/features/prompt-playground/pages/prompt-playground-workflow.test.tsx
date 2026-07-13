@@ -74,6 +74,42 @@ afterEach(() => {
 });
 
 describe('Prompt playground workflow', () => {
+  it('composes templates with dotted variable names', () => {
+    const dottedTemplate = {
+      ...starterPromptTemplates[0]!,
+      id: 'pull-request-review',
+      name: 'Pull Request Review',
+      systemPrompt: 'Review {{pull_request.title}} carefully.',
+      userPrompt: 'Focus on {{pull_request.change_scope}}.',
+    };
+
+    render(
+      <MemoryRouter initialEntries={['/playground']}>
+        <PromptTemplatesProvider
+          repository={createTemplateRepository([dottedTemplate])}
+        >
+          <PromptRunsProvider repository={createRunRepository()}>
+            <PlaygroundWorkflowProbe />
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.change(screen.getByLabelText('Pull Request Title'), {
+      target: { value: 'Preserve prompt context' },
+    });
+    fireEvent.change(screen.getByLabelText('Pull Request Change Scope'), {
+      target: { value: 'storage regressions' },
+    });
+
+    expect(
+      screen.getByText('Review Preserve prompt context carefully.'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('Focus on storage regressions.'),
+    ).toBeInTheDocument();
+  });
+
   it('saves a run snapshot and exposes it in template history', async () => {
     const templateRepository = createTemplateRepository();
     const runRepository = createRunRepository();

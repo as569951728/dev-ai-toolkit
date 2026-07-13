@@ -38,6 +38,30 @@ describe('prompt-playground-utils', () => {
     );
   });
 
+  it('detects and replaces dotted variable names', () => {
+    const dottedTemplate = {
+      ...template,
+      systemPrompt: 'Review pull request {{pull_request.title}}.',
+      userPrompt: 'Focus on {{pull_request.change-scope}}.',
+    };
+
+    expect(extractVariables(dottedTemplate)).toEqual([
+      {
+        key: 'pull_request.title',
+        label: 'Pull Request Title',
+      },
+      {
+        key: 'pull_request.change-scope',
+        label: 'Pull Request Change Scope',
+      },
+    ]);
+    expect(
+      applyVariables(dottedTemplate.systemPrompt, {
+        'pull_request.title': 'Preserve prompt context',
+      }),
+    ).toBe('Review pull request Preserve prompt context.');
+  });
+
   it('builds a prompt preview from template variables', () => {
     const preview = buildPromptPreview(template, {
       repository_name: 'dev-ai-toolkit',

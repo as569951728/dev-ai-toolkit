@@ -50,6 +50,8 @@ The format is intentionally lightweight and human-readable.
 
 ### Fixed
 
+- Supported dotted variable names consistently when Prompt Playground detects,
+  labels, and composes template placeholders
 - Cleared stale Prompt Playground copy feedback when template variables or
   preview text change
 - Rolled back completed workspace backup writes when a later collection import

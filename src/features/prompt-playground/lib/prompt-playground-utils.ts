@@ -5,7 +5,7 @@ export interface PromptPlaygroundVariable {
   label: string;
 }
 
-const VARIABLE_PATTERN = /\{\{\s*([a-zA-Z0-9_-]+)\s*\}\}/g;
+const VARIABLE_PATTERN = /\{\{\s*([a-zA-Z0-9_.-]+)\s*\}\}/g;
 
 export function extractVariables(template: PromptTemplate) {
   const variables = new Set<string>();
@@ -23,7 +23,7 @@ export function extractVariables(template: PromptTemplate) {
   return [...variables].map<PromptPlaygroundVariable>((key) => ({
     key,
     label: key
-      .split(/[-_]/g)
+      .split(/[._-]/g)
       .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
       .join(' '),
   }));
