@@ -4,7 +4,6 @@ import {
   applyVariables,
   buildPromptPreview,
   extractVariables,
-  formatPromptSections,
 } from '@/features/prompt-playground/lib/prompt-playground-utils';
 import { starterPromptTemplates } from '@/features/prompt-templates/seed/prompt-templates';
 
@@ -39,7 +38,7 @@ describe('prompt-playground-utils', () => {
     );
   });
 
-  it('builds prompt preview and formats the result for downstream tools', () => {
+  it('builds a prompt preview from template variables', () => {
     const preview = buildPromptPreview(template, {
       repository_name: 'dev-ai-toolkit',
       change_scope: 'frontend',
@@ -47,7 +46,5 @@ describe('prompt-playground-utils', () => {
 
     expect(preview.systemPrompt).toContain('dev-ai-toolkit');
     expect(preview.userPrompt).toContain('frontend');
-    expect(formatPromptSections(preview)).toContain('System prompt');
-    expect(formatPromptSections(preview)).toContain('User prompt');
   });
 });

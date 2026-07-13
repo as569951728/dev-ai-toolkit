@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import { formatPromptSections } from '@/features/prompt-playground/lib/prompt-playground-utils';
 import { writeClipboardText } from '@/lib/clipboard';
+import { formatPromptSections } from '@/lib/prompt-sections';
 import type { PromptTemplate } from '@/types/prompt-template';
 
 interface PromptPlaygroundPreviewProps {

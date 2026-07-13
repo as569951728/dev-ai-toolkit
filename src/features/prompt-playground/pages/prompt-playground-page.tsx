@@ -5,10 +5,10 @@ import { buildCodeViewerUrl } from '@/features/code-viewer/lib/code-viewer-utils
 import { PromptPlaygroundPreview } from '@/features/prompt-playground/components/prompt-playground-preview';
 import { PromptPlaygroundTemplatePicker } from '@/features/prompt-playground/components/prompt-playground-template-picker';
 import { PromptPlaygroundVariableForm } from '@/features/prompt-playground/components/prompt-playground-variable-form';
-import { formatPromptSections } from '@/features/prompt-playground/lib/prompt-playground-utils';
 import { usePromptPlayground } from '@/features/prompt-playground/hooks/use-prompt-playground';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
+import { formatPromptSections } from '@/lib/prompt-sections';
 
 type PromptPlaygroundWorkspaceProps = {
   initialTemplateId?: string;

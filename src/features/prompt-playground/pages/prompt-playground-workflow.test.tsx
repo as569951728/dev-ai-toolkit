@@ -4,7 +4,6 @@ import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 
 import { PromptPlaygroundPage } from '@/features/prompt-playground/pages/prompt-playground-page';
-import { formatPromptSections } from '@/features/prompt-playground/lib/prompt-playground-utils';
 import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs-provider';
 import type { PromptRunRepository } from '@/features/prompt-runs/repositories/prompt-run-repository';
 import type { PromptRunRecord } from '@/types/prompt-run';
@@ -13,6 +12,7 @@ import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt
 import { PromptTemplatesProvider } from '@/features/prompt-templates/providers/prompt-templates-provider';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
 import { PromptTemplateDetailPage } from '@/features/prompt-templates/pages/prompt-template-detail-page';
+import { formatPromptSections } from '@/lib/prompt-sections';
 
 function createTemplateRepository(
   initialTemplates = starterPromptTemplates,
