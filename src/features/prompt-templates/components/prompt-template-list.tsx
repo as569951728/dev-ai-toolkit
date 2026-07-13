@@ -56,7 +56,8 @@ export function PromptTemplateList({
           <h1>Manage reusable AI prompts</h1>
           <p className="panel__summary">
             Keep reusable prompt templates in local storage, then open them in
-            the playground or review their saved run history.
+            the playground or review their saved run history. Imported
+            templates with matching IDs replace the local records.
           </p>
         </div>
 

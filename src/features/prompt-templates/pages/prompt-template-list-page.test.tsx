@@ -198,6 +198,11 @@ describe('PromptTemplateListPage', () => {
     expect(
       screen.getByLabelText('Import prompt templates JSON'),
     ).toHaveAttribute('accept', 'application/json,.json');
+    expect(
+      screen.getByText(
+        /Imported templates with matching IDs replace the local records/,
+      ),
+    ).toBeInTheDocument();
   });
 
   it('hides archived templates by default and reveals them on demand', () => {
