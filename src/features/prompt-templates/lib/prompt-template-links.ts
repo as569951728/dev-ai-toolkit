@@ -5,3 +5,11 @@ export function buildPromptTemplateDetailPath(templateId: string) {
 export function buildPromptTemplateEditPath(templateId: string) {
   return `${buildPromptTemplateDetailPath(templateId)}/edit`;
 }
+
+export function buildPromptTemplatePlaygroundPath(templateId: string) {
+  return `/playground?templateId=${encodeURIComponent(templateId)}`;
+}
+
+export function buildPromptTemplateRunHistoryPath(templateId: string) {
+  return `/runs?templateId=${encodeURIComponent(templateId)}`;
+}

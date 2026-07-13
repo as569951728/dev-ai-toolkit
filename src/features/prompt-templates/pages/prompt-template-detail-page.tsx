@@ -8,6 +8,8 @@ import { buildPromptRunDetailPath } from '@/features/prompt-runs/lib/prompt-run-
 import {
   buildPromptTemplateDetailPath,
   buildPromptTemplateEditPath,
+  buildPromptTemplatePlaygroundPath,
+  buildPromptTemplateRunHistoryPath,
 } from '@/features/prompt-templates/lib/prompt-template-links';
 
 export function PromptTemplateDetailPage() {
@@ -61,8 +63,12 @@ export function PromptTemplateDetailPage() {
       template={template}
       recentRuns={recentRuns}
       onBack={() => navigate('/prompts')}
-      onOpenInPlayground={(id) => navigate(`/playground?templateId=${id}`)}
-      onOpenRunHistory={(id) => navigate(`/runs?templateId=${id}`)}
+      onOpenInPlayground={(id) =>
+        navigate(buildPromptTemplatePlaygroundPath(id))
+      }
+      onOpenRunHistory={(id) =>
+        navigate(buildPromptTemplateRunHistoryPath(id))
+      }
       onOpenRunDetail={(id) => navigate(buildPromptRunDetailPath(id))}
       onEdit={(id) => navigate(buildPromptTemplateEditPath(id))}
       onDuplicate={(id) => {
