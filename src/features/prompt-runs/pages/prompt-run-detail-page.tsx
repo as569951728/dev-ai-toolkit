@@ -10,6 +10,7 @@ import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
 import { usePromptRunWorkflowActions } from '@/features/prompt-workflows/hooks/use-prompt-run-workflow-actions';
 import { writeClipboardText } from '@/lib/clipboard';
+import { formatPromptSections } from '@/lib/prompt-sections';
 
 type ActionFeedback = {
   message: string;
@@ -101,18 +102,23 @@ export function PromptRunDetailPage() {
     }
   };
   const handleCopyPrompt = async (
-    label: 'system' | 'user',
+    label: 'system' | 'user' | 'full',
     value: string,
   ) => {
+    const promptLabel =
+      label === 'full'
+        ? 'Full prompt'
+        : `${label === 'system' ? 'System' : 'User'} prompt`;
+
     try {
       await writeClipboardText(value);
       setCopyFeedback({
-        message: `${label === 'system' ? 'System' : 'User'} prompt copied.`,
+        message: `${promptLabel} copied.`,
         tone: 'success',
       });
     } catch {
       setCopyFeedback({
-        message: `Failed to copy ${label} prompt.`,
+        message: `Failed to copy ${promptLabel.toLowerCase()}.`,
         tone: 'error',
       });
     }
@@ -165,6 +171,15 @@ export function PromptRunDetailPage() {
           <div>
             <p className="eyebrow">Snapshot content</p>
             <h2>Saved prompts</h2>
+          </div>
+          <div className="panel__actions">
+            <button
+              className="secondary-button"
+              type="button"
+              onClick={() => handleCopyPrompt('full', formatPromptSections(run))}
+            >
+              Copy full prompt
+            </button>
           </div>
         </div>
 

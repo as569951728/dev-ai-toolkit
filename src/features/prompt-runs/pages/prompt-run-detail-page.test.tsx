@@ -20,6 +20,7 @@ import type { PromptRunRepository } from '@/features/prompt-runs/repositories/pr
 import type { PromptRunNote } from '@/types/prompt-run-note';
 import type { PromptRunRecord } from '@/types/prompt-run';
 import type { PromptTemplate } from '@/types/prompt-template';
+import { formatPromptSections } from '@/lib/prompt-sections';
 
 vi.mock('@/features/prompt-runs/lib/prompt-run-export', async (importOriginal) => {
   const actual =
@@ -225,9 +226,23 @@ describe('PromptRunDetailPage', () => {
     expect(screen.getByRole('status')).toHaveTextContent(
       'System prompt copied.',
     );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Copy full prompt' }));
+
+    await waitFor(() => {
+      expect(writeText).toHaveBeenLastCalledWith(
+        formatPromptSections({
+          systemPrompt: 'System prompt to reuse.',
+          userPrompt: 'User prompt to reuse.',
+        }),
+      );
+    });
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Full prompt copied.',
+    );
   });
 
-  it('announces when a saved prompt cannot be copied', async () => {
+  it('announces when a full saved prompt cannot be copied', async () => {
     Object.defineProperty(navigator, 'clipboard', {
       configurable: true,
       value: undefined,
@@ -246,10 +261,10 @@ describe('PromptRunDetailPage', () => {
       },
     ]);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Copy user prompt' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Copy full prompt' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Failed to copy user prompt.',
+      'Failed to copy full prompt.',
     );
   });
 

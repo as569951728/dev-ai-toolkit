@@ -8,6 +8,7 @@ The format is intentionally lightweight and human-readable.
 
 ### Added
 
+- Added a Run Detail action for copying a full labeled saved prompt in one step
 - Added a Prompt Playground action for copying the full labeled system and user
   prompt in one step
 - Added a Chromium smoke test for saving a prompt snapshot and opening its Run
