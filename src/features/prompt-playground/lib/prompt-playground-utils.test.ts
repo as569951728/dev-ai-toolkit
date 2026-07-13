@@ -76,6 +76,23 @@ describe('prompt-playground-utils', () => {
     ).toBe('Review pull request Preserve prompt context.');
   });
 
+  it('formats camel-case variable names as readable labels', () => {
+    const camelCaseTemplate = {
+      ...template,
+      systemPrompt: 'Review {{repositoryName}}.',
+      userPrompt: 'Focus on {{pullRequest.changeScope}} and {{apiURL}}.',
+    };
+
+    expect(extractVariables(camelCaseTemplate)).toEqual([
+      { key: 'repositoryName', label: 'Repository Name' },
+      {
+        key: 'pullRequest.changeScope',
+        label: 'Pull Request Change Scope',
+      },
+      { key: 'apiURL', label: 'Api URL' },
+    ]);
+  });
+
   it('counts empty and whitespace-only variables as unresolved', () => {
     const variables = extractVariables(template);
 

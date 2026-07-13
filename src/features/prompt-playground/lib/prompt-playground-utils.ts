@@ -9,16 +9,27 @@ export interface PromptPlaygroundVariable {
   label: string;
 }
 
+function formatVariableLabel(key: string) {
+  return key
+    .split(/[._-]/g)
+    .flatMap((segment) =>
+      segment
+        .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+        .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2')
+        .split(' '),
+    )
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
 export function extractVariables(template: PromptTemplate) {
   return extractPromptVariableKeys(
     template.systemPrompt,
     template.userPrompt,
   ).map<PromptPlaygroundVariable>((key) => ({
     key,
-    label: key
-      .split(/[._-]/g)
-      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-      .join(' '),
+    label: formatVariableLabel(key),
   }));
 }
 
