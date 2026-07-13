@@ -8,6 +8,7 @@ The format is intentionally lightweight and human-readable.
 
 ### Added
 
+- Documented local collection merge and rollback boundaries for contributors
 - Explained saved-run retention before prompt template deletion
 - Documented workspace backup relationship rules for standalone saved runs
 - Named unresolved Playground variables in the preview warning

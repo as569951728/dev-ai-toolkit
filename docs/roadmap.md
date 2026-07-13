@@ -73,6 +73,11 @@ Completed since the project review:
   and JSON export actions.
 - Added compensating rollback for related run data and multi-collection
   workspace imports.
+- Made provider writes use the latest persisted collection so synchronous local
+  actions do not overwrite one another.
+- Restored exact pre-import collections when workspace backup compensation runs,
+  including removal of records created by a failed import.
+- Reported partial local state when a compensating run or note write also fails.
 - Guarded browser storage initialization and added an early warning when local
   persistence is unavailable.
 - Kept workspace downloads importable when older local data contains orphaned

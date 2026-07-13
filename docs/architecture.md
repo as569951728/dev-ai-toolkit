@@ -54,6 +54,26 @@ Examples:
 
 They are the main bridge between React pages/components and the lower-level service or repository layer.
 
+#### Collection mutation semantics
+
+Template, run, and run-note providers expose two different collection
+operations:
+
+- Import actions merge incoming records by their domain key. They are used for
+  normal template, run, note, and workspace imports.
+- Replace actions persist an exact collection. They are reserved for restoring
+  a previously captured local snapshot after a multi-collection write fails.
+
+These operations are not interchangeable. A merge cannot restore an earlier
+collection when a failed import created new records, because those records have
+no matching item in the earlier snapshot to overwrite. Workspace backup
+rollback therefore uses exact replacement.
+
+Provider mutations write to the repository before updating the provider's
+latest-value ref and React state. If a repository write throws, the in-memory
+collection remains unchanged. Multi-collection workflows still use explicit
+compensating writes because browser storage does not provide transactions.
+
 ### Services
 
 Services are used when the project needs a small domain layer rather than pushing all behavior into components or providers.
@@ -154,3 +174,5 @@ If you are adding to the project, try to follow these current rules:
 - prefer small service or repository additions over pushing persistence logic into components
 - keep docs aligned with the actual product state
 - avoid adding new standalone tools when an existing workflow needs more polish first
+- use merge actions for normal imports and exact replacement only when restoring
+  a complete collection snapshot
