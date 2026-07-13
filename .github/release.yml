@@ -3,7 +3,6 @@ changelog:
     - title: Features
       labels:
         - enhancement
-        - feature
     - title: Bug fixes
       labels:
         - bug
@@ -13,7 +12,6 @@ changelog:
     - title: Documentation
       labels:
         - documentation
-        - docs
     - title: Maintenance
       labels:
         - chore
