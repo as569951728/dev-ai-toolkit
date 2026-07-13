@@ -45,6 +45,8 @@ The format is intentionally lightweight and human-readable.
 
 ### Fixed
 
+- Rolled back a single prompt run JSON import when its related note cannot be
+  written to browser storage
 - Restored a saved run note when deleting its prompt snapshot fails after note
   cleanup
 - Kept Prompt Template Detail open and reported browser storage failures for

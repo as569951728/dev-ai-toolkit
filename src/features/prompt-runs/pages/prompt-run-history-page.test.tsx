@@ -56,6 +56,18 @@ function createNoteRepository(
   };
 }
 
+function createFailingNoteRepository(
+  initialNotes: PromptRunNote[] = [],
+): PromptRunNoteRepository & { snapshot: () => PromptRunNote[] } {
+  return {
+    loadAll: () => [...initialNotes],
+    saveAll: () => {
+      throw new Error('Browser storage rejected the imported note.');
+    },
+    snapshot: () => [...initialNotes],
+  };
+}
+
 const sampleRuns: PromptRunRecord[] = [
   {
     id: 'run-2',
@@ -83,15 +95,21 @@ function renderRunHistory({
   initialEntry = '/',
   runs = sampleRuns,
   notes = [],
+  runRepository: runRepositoryProp,
+  noteRepository: noteRepositoryProp,
   templateRepository = createTemplateRepository(),
 }: {
   initialEntry?: string;
   runs?: PromptRunRecord[];
   notes?: PromptRunNote[];
+  runRepository?: PromptRunRepository & { snapshot: () => PromptRunRecord[] };
+  noteRepository?: PromptRunNoteRepository & {
+    snapshot: () => PromptRunNote[];
+  };
   templateRepository?: PromptTemplateRepository;
 } = {}) {
-  const runRepository = createRunRepository(runs);
-  const noteRepository = createNoteRepository(notes);
+  const runRepository = runRepositoryProp ?? createRunRepository(runs);
+  const noteRepository = noteRepositoryProp ?? createNoteRepository(notes);
 
   render(
     <MemoryRouter initialEntries={[initialEntry]}>
@@ -300,6 +318,104 @@ describe('PromptRunHistoryPage', () => {
     );
     expect(runRepository.snapshot()).toEqual([]);
     expect(noteRepository.snapshot()).toEqual([]);
+  });
+
+  it('rolls back a new run when its note cannot be stored', async () => {
+    const noteRepository = createFailingNoteRepository();
+    const { runRepository } = renderRunHistory({
+      runs: [],
+      noteRepository,
+    });
+    const importedRun: PromptRunRecord = {
+      id: 'imported-run',
+      templateId: starterPromptTemplates[0]!.id,
+      templateName: starterPromptTemplates[0]!.name,
+      templateVersion: 1,
+      variables: {},
+      systemPrompt: 'Imported system prompt.',
+      userPrompt: 'Imported user prompt.',
+      createdAt: '2026-05-10T09:00:00.000Z',
+    };
+    const file = new File(
+      [
+        JSON.stringify(
+          createPromptRunExportPayload({
+            run: importedRun,
+            note: {
+              id: 'note-imported-run',
+              runId: importedRun.id,
+              body: 'Imported note.',
+              createdAt: '2026-05-10T10:00:00.000Z',
+              updatedAt: '2026-05-10T10:00:00.000Z',
+            },
+            exportedAt: '2026-05-10T11:00:00.000Z',
+          }),
+        ),
+      ],
+      'prompt-run.json',
+      { type: 'application/json' },
+    );
+
+    fireEvent.change(screen.getByLabelText('Import run JSON'), {
+      target: { files: [file] },
+    });
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Browser storage rejected the imported note.',
+    );
+    expect(runRepository.snapshot()).toEqual([]);
+    expect(noteRepository.snapshot()).toEqual([]);
+    expect(screen.getByText('No saved runs yet')).toBeInTheDocument();
+  });
+
+  it('restores a replaced run when its imported note cannot be stored', async () => {
+    const existingRun = sampleRuns[0]!;
+    const replacementRun: PromptRunRecord = {
+      ...existingRun,
+      systemPrompt: 'Replacement system prompt.',
+      userPrompt: 'Replacement user prompt.',
+    };
+    const noteRepository = createFailingNoteRepository();
+    const { runRepository } = renderRunHistory({
+      runs: [existingRun],
+      noteRepository,
+    });
+    const file = new File(
+      [
+        JSON.stringify(
+          createPromptRunExportPayload({
+            run: replacementRun,
+            note: {
+              id: 'note-run-2',
+              runId: replacementRun.id,
+              body: 'Replacement note.',
+              createdAt: '2026-05-10T10:00:00.000Z',
+              updatedAt: '2026-05-10T10:00:00.000Z',
+            },
+            exportedAt: '2026-05-10T11:00:00.000Z',
+          }),
+        ),
+      ],
+      'replacement-run.json',
+      { type: 'application/json' },
+    );
+
+    fireEvent.change(screen.getByLabelText('Import run JSON'), {
+      target: { files: [file] },
+    });
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Browser storage rejected the imported note.',
+    );
+    expect(runRepository.snapshot()).toEqual([existingRun]);
+    const codeViewerUrl = new URL(
+      screen
+        .getByRole('link', { name: 'Open saved prompts in Code Viewer' })
+        .getAttribute('href') ?? '',
+      'https://example.test',
+    );
+    expect(codeViewerUrl.searchParams.get('left')).toBe('System B');
+    expect(codeViewerUrl.searchParams.get('right')).toBe('User B');
   });
 
   it('reports when an imported run replaces an existing local record', async () => {

@@ -11,10 +11,11 @@ import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt
 
 export function PromptRunHistoryPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { getRunById, importRuns, runs } = usePromptRuns();
+  const { deleteRun, getRunById, importRuns, runs } = usePromptRuns();
   const { getNoteByRunId, importNotes } = usePromptRunNotes();
   const { getTemplateById } = usePromptTemplates();
   const { handleImportRun, importError, importStatus } = usePromptRunImport({
+    deleteRun,
     getRunById,
     importNotes,
     importRuns,

@@ -6,6 +6,7 @@ import { parsePromptRunExportImport } from '@/features/prompt-runs/lib/prompt-ru
 import type { PromptRunsContextValue } from '@/features/prompt-runs/providers/prompt-runs-context';
 
 interface UsePromptRunImportOptions {
+  deleteRun: PromptRunsContextValue['deleteRun'];
   getRunById: PromptRunsContextValue['getRunById'];
   importNotes: PromptRunNotesContextValue['importNotes'];
   importRuns: PromptRunsContextValue['importRuns'];
@@ -18,6 +19,7 @@ interface ImportStatus {
 }
 
 export function usePromptRunImport({
+  deleteRun,
   getRunById,
   importNotes,
   importRuns,
@@ -34,11 +36,22 @@ export function usePromptRunImport({
 
     try {
       const payload = parsePromptRunExportImport(await file.text());
-      const replacedExistingRun = Boolean(getRunById(payload.run.id));
+      const existingRun = getRunById(payload.run.id);
+      const replacedExistingRun = Boolean(existingRun);
       importRuns([payload.run]);
 
       if (payload.note) {
-        importNotes([payload.note]);
+        try {
+          importNotes([payload.note]);
+        } catch (error) {
+          if (existingRun) {
+            importRuns([existingRun]);
+          } else {
+            deleteRun(payload.run.id);
+          }
+
+          throw error;
+        }
       }
 
       setImportStatus({
