@@ -1,14 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { useBeforeUnload, useBlocker } from 'react-router-dom';
 
-import type {
-  PromptTemplate,
-  PromptTemplateInput,
-} from '@/types/prompt-template';
+import type { PromptTemplateInput } from '@/types/prompt-template';
 
 interface PromptTemplateFormProps {
   mode: 'create' | 'edit';
-  initialValue?: PromptTemplate | null;
+  initialValue?: PromptTemplateInput | null;
   onSubmit: (value: PromptTemplateInput) => void;
   onCancel: () => void;
 }
@@ -21,7 +18,9 @@ interface FormState {
   tags: string;
 }
 
-function createInitialState(initialValue?: PromptTemplate | null): FormState {
+function createInitialState(
+  initialValue?: PromptTemplateInput | null,
+): FormState {
   return {
     name: initialValue?.name ?? '',
     description: initialValue?.description ?? '',

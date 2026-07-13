@@ -15,6 +15,10 @@ export function buildPromptRunDetailPath(runId: string) {
   return `/runs/${encodeURIComponent(runId)}`;
 }
 
+export function buildPromptTemplateCreateFromRunPath(runId: string) {
+  return `/prompts/new?runId=${encodeURIComponent(runId)}`;
+}
+
 export function buildPromptRunPlaygroundPath({
   runId,
   templateId,

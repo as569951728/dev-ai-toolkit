@@ -92,6 +92,30 @@ test('saves a prompt snapshot and protects its review note draft', async ({
   );
 });
 
+test('prefills a new template from a saved prompt snapshot', async ({ page }) => {
+  await page.goto('/playground?templateId=code-review-assistant');
+
+  await page.getByLabel('Repository Name').fill('dev-ai-toolkit');
+  await page.getByLabel('Change Scope').fill('snapshot reuse');
+  await page.getByRole('button', { name: 'Save prompt snapshot' }).click();
+  await page.getByRole('link', { name: 'Open saved run' }).click();
+  await page
+    .getByRole('link', { name: 'Create template from snapshot' })
+    .click();
+
+  await expect(page).toHaveURL(/\/prompts\/new\?runId=/);
+  await expect(page.getByRole('status')).toContainText(
+    'Prefilled from a saved prompt snapshot.',
+  );
+  await expect(page.getByLabel('Name')).toHaveValue(
+    'Code Review Assistant snapshot',
+  );
+  await expect(page.getByLabel('System prompt')).toContainText(
+    'dev-ai-toolkit',
+  );
+  await expect(page.getByLabel('User prompt')).toContainText('snapshot reuse');
+});
+
 test('resolves dotted template variables in the Playground', async ({
   page,
 }) => {

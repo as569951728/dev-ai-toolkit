@@ -14,6 +14,7 @@ import { exportPromptRunAsJson } from '@/features/prompt-runs/lib/prompt-run-exp
 import {
   buildPromptRunPlaygroundPath,
   buildPromptRunSourceDiffUrl,
+  buildPromptTemplateCreateFromRunPath,
 } from '@/features/prompt-runs/lib/prompt-run-links';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
@@ -205,6 +206,12 @@ export function PromptRunDetailPage() {
               Source template is no longer available.
             </span>
           )}
+          <Link
+            className="ghost-button"
+            to={buildPromptTemplateCreateFromRunPath(run.id)}
+          >
+            Create template from snapshot
+          </Link>
           <Link className="ghost-button" to={codeViewerUrl}>
             Open saved prompts in Code Viewer
           </Link>
