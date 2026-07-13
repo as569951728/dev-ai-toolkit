@@ -8,6 +8,7 @@ The format is intentionally lightweight and human-readable.
 
 ### Added
 
+- Added an application-level warning when browser storage cannot be read
 - Added a non-blocking unresolved-variable count before Playground prompts are
   copied or saved
 - Preserved an active template selection when Run History offers a first-run

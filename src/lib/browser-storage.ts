@@ -27,3 +27,18 @@ export function resolveBrowserStorage(
     return unavailableBrowserStorage;
   }
 }
+
+export function canReadBrowserStorage(
+  storage: StorageLike | null = resolveBrowserStorage(),
+) {
+  if (!storage) {
+    return false;
+  }
+
+  try {
+    storage.getItem('dev-ai-toolkit.storage-health-check');
+    return true;
+  } catch {
+    return false;
+  }
+}

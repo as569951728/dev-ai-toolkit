@@ -6,6 +6,7 @@ import {
 } from 'react-router-dom';
 
 import { AppNavigation } from '@/components/layout/app-navigation';
+import { BrowserStorageNotice } from '@/components/layout/browser-storage-notice';
 import { ApiBuilderPage } from '@/features/api-builder/pages/api-builder-page';
 import { CodeViewerPage } from '@/features/code-viewer/pages/code-viewer-page';
 import { HomePage } from '@/features/home/pages/home-page';
@@ -32,6 +33,7 @@ function RootLayout() {
           <main className="app-shell">
             <div className="page-frame">
               <AppNavigation />
+              <BrowserStorageNotice />
               <Outlet />
             </div>
           </main>

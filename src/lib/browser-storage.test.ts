@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  canReadBrowserStorage,
   resolveBrowserStorage,
   type StorageLike,
 } from '@/lib/browser-storage';
@@ -34,5 +35,25 @@ describe('browser-storage', () => {
     expect(() => storage?.setItem('templates', '[]')).toThrow(
       'Browser storage is unavailable.',
     );
+  });
+
+  it('reports whether browser storage can be read', () => {
+    expect(
+      canReadBrowserStorage({
+        getItem() {
+          return null;
+        },
+        setItem() {},
+      }),
+    ).toBe(true);
+    expect(
+      canReadBrowserStorage({
+        getItem() {
+          throw new DOMException('Access denied.', 'SecurityError');
+        },
+        setItem() {},
+      }),
+    ).toBe(false);
+    expect(canReadBrowserStorage(null)).toBe(false);
   });
 });
