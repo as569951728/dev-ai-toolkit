@@ -103,7 +103,10 @@ The current browser-stored collections use a lightweight versioned payload shape
 - legacy format: a raw array
 - current format: `{ version: 1, data: [...] }`
 
-This is handled in `src/lib/local-storage-schema.ts`.
+Collection encoding is handled in `src/lib/local-storage-schema.ts`. Access to
+the browser storage object is resolved separately through
+`src/lib/browser-storage.ts` so restricted browser contexts do not crash while
+the repositories are being created.
 
 Repositories for prompt templates, prompt runs, prompt run notes, and recent prompt usage follow the same basic rules:
 
@@ -118,6 +121,8 @@ The current migration strategy is intentionally simple:
 - compatibility is handled at the repository boundary
 - providers and UI components should not know about storage schema versions
 - invalid or unreadable payloads fall back to a safe local default
+- blocked browser storage reads use the same safe defaults
+- blocked writes remain errors so the UI does not report data as persisted
 - new schema versions should be introduced only when the stored shape actually changes
 
 In practice that means:
@@ -129,7 +134,7 @@ In practice that means:
 
 ## Testing approach
 
-The test suite is still intentionally small.
+The test suite is intentionally focused on product and persistence boundaries.
 
 Current coverage focuses on:
 
