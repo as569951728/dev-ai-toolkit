@@ -32,7 +32,8 @@ The current version includes:
 - Prompt template list, create, edit, detail, duplicate, archive, restore, and delete flows
 - Prompt template search and tag filtering
 - Prompt template import and export via JSON
-- Prompt Playground with variable detection and live prompt preview
+- Prompt Playground with dotted, underscored, and hyphenated variable names,
+  unresolved-placeholder guidance, and live prompt preview
 - Prompt Diff for comparing prompt revisions and variable drift
 - Prompt Run History for browsing, filtering, previewing variables, searching prompt text and notes, comparing with source templates, importing/exporting run JSON, deleting local runs, and reusing saved prompt runs
 - JSON Tools for formatting, validating, and minifying payloads

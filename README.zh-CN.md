@@ -33,8 +33,9 @@
   - JSON 导入 / 导出
 - Prompt Playground
   - 选择模板
-  - 识别 `{{variable}}`
+  - 识别 `{{variable_name}}`、`{{pull-request.title}}` 等变量
   - 填写变量并实时预览
+  - 变量未填写时保留占位符并提示剩余数量，不阻止复制或保存
   - 保存最近使用模板
   - 保存 run snapshot
 - Prompt Diff
