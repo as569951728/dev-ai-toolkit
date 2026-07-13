@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import type { PropsWithChildren } from 'react';
 
 import { PromptRunNotesContext, type PromptRunNotesContextValue } from '@/features/prompt-run-notes/providers/prompt-run-notes-context';
@@ -27,6 +27,12 @@ export function PromptRunNotesProvider({
   const [notes, setNotes] = useState<PromptRunNote[]>(() =>
     repository.loadAll(),
   );
+  const notesRef = useRef(notes);
+
+  const commitNotes = useCallback((nextNotes: PromptRunNote[]) => {
+    notesRef.current = nextNotes;
+    setNotes(nextNotes);
+  }, []);
 
   const getNoteByRunId = useCallback(
     (runId: string) => getNoteForRun(notes, runId),
@@ -35,25 +41,32 @@ export function PromptRunNotesProvider({
 
   const saveNote = useCallback(
     (runId: string, body: string) => {
-      const result = saveNoteForRun(repository, notes, runId, body);
-      setNotes(result.notes);
+      const result = saveNoteForRun(
+        repository,
+        notesRef.current,
+        runId,
+        body,
+      );
+      commitNotes(result.notes);
       return result.note;
     },
-    [repository, notes],
+    [commitNotes, repository],
   );
 
   const deleteNoteByRunId = useCallback(
     (runId: string) => {
-      setNotes(deleteNoteForRun(repository, notes, runId));
+      commitNotes(deleteNoteForRun(repository, notesRef.current, runId));
     },
-    [repository, notes],
+    [commitNotes, repository],
   );
 
   const importNotes = useCallback(
     (importedNotes: PromptRunNote[]) => {
-      setNotes(importPromptRunNotes(repository, notes, importedNotes));
+      commitNotes(
+        importPromptRunNotes(repository, notesRef.current, importedNotes),
+      );
     },
-    [repository, notes],
+    [commitNotes, repository],
   );
 
   const value = useMemo<PromptRunNotesContextValue>(

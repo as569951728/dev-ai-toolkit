@@ -21,17 +21,27 @@ function createMemoryRepository(
 }
 
 function TestConsumer() {
-  const { getNoteByRunId, importNotes, saveNote } = usePromptRunNotes();
+  const { getNoteByRunId, importNotes, notes, saveNote } = usePromptRunNotes();
   const note = getNoteByRunId('run-1');
 
   return (
     <div>
+      <span data-testid="note-count">{notes.length}</span>
       <span data-testid="note-body">{note?.body ?? 'missing'}</span>
       <button
         type="button"
         onClick={() => saveNote('run-1', 'Needs a clearer variable value.')}
       >
         Save note
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          saveNote('run-1', 'First note.');
+          saveNote('run-2', 'Second note.');
+        }}
+      >
+        Save two notes
       </button>
       <button
         type="button"
@@ -95,5 +105,24 @@ describe('PromptRunNotesProvider', () => {
       id: 'imported-note',
       body: 'Imported note body.',
     });
+  });
+
+  it('preserves notes saved before the provider renders again', () => {
+    const repository = createMemoryRepository();
+
+    render(
+      <PromptRunNotesProvider repository={repository}>
+        <TestConsumer />
+      </PromptRunNotesProvider>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Save two notes' }));
+
+    expect(screen.getByTestId('note-count')).toHaveTextContent('2');
+    expect(repository.snapshot()).toHaveLength(2);
+    expect(repository.snapshot().map((note) => note.runId)).toEqual([
+      'run-2',
+      'run-1',
+    ]);
   });
 });
