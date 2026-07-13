@@ -318,6 +318,28 @@ describe('PromptRunHistoryPage', () => {
     ).toBeInTheDocument();
   });
 
+  it('preserves spaces while entering a multi-word search', () => {
+    renderRunHistory();
+
+    const searchInput = screen.getByLabelText('Search runs');
+
+    fireEvent.change(searchInput, {
+      target: { value: 'code ' },
+    });
+
+    expect(searchInput).toHaveValue('code ');
+    expect(screen.getByText('Search: code')).toBeInTheDocument();
+
+    fireEvent.change(searchInput, {
+      target: { value: 'code review' },
+    });
+
+    expect(searchInput).toHaveValue('code review');
+    expect(
+      screen.getByRole('heading', { name: 'Code Review Assistant' }),
+    ).toBeInTheDocument();
+  });
+
   it('deduplicates template filter options when saved runs keep older template names', () => {
     const templateId = starterPromptTemplates[0]!.id;
 

@@ -94,7 +94,7 @@ export function PromptRunHistoryPage() {
     }
 
     if (normalizedNextSearchValue) {
-      nextSearchParams.set('q', normalizedNextSearchValue);
+      nextSearchParams.set('q', nextSearchValue);
     }
 
     setSearchParams(nextSearchParams, { replace: true });
