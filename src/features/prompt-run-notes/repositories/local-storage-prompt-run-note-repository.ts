@@ -5,10 +5,12 @@ import {
 import { keepLastByKey } from '@/lib/collection-utils';
 import { isPromptRunNote } from '@/features/prompt-run-notes/lib/prompt-run-note-schema';
 import type { PromptRunNoteRepository } from '@/features/prompt-run-notes/repositories/prompt-run-note-repository';
+import {
+  resolveBrowserStorage,
+  type StorageLike,
+} from '@/lib/browser-storage';
 
 const STORAGE_KEY = 'dev-ai-toolkit.prompt-run-notes';
-
-type StorageLike = Pick<Storage, 'getItem' | 'setItem'>;
 
 function normalizeNotes(value: unknown) {
   const notes =
@@ -20,8 +22,7 @@ function normalizeNotes(value: unknown) {
 
 export function createLocalStoragePromptRunNoteRepository(
   storageKey = STORAGE_KEY,
-  storage: StorageLike | null =
-    typeof window !== 'undefined' ? window.localStorage : null,
+  storage: StorageLike | null = resolveBrowserStorage(),
 ): PromptRunNoteRepository {
   return {
     loadAll() {

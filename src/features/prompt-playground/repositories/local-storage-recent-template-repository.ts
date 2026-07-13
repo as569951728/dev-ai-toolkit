@@ -2,10 +2,12 @@ import {
   readVersionedCollection,
   writeVersionedCollection,
 } from '@/lib/local-storage-schema';
+import {
+  resolveBrowserStorage,
+  type StorageLike,
+} from '@/lib/browser-storage';
 
 const STORAGE_KEY = 'dev-ai-toolkit.playground-recent-template-ids';
-
-type StorageLike = Pick<Storage, 'getItem' | 'setItem'>;
 
 function normalizeRecentTemplateIds(value: unknown) {
   const templateIds = readVersionedCollection<string>(value);
@@ -25,8 +27,7 @@ function normalizeRecentTemplateIds(value: unknown) {
 
 export function loadRecentTemplateIds(
   storageKey = STORAGE_KEY,
-  storage: StorageLike | null =
-    typeof window !== 'undefined' ? window.localStorage : null,
+  storage: StorageLike | null = resolveBrowserStorage(),
 ) {
   if (!storage) {
     return [] as string[];
@@ -48,8 +49,7 @@ export function loadRecentTemplateIds(
 export function saveRecentTemplateIds(
   templateIds: string[],
   storageKey = STORAGE_KEY,
-  storage: StorageLike | null =
-    typeof window !== 'undefined' ? window.localStorage : null,
+  storage: StorageLike | null = resolveBrowserStorage(),
 ) {
   if (!storage) {
     return;

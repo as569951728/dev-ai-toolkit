@@ -6,14 +6,16 @@ import type {
   PromptTemplateRevision,
 } from '@/types/prompt-template';
 import {
+  resolveBrowserStorage,
+  type StorageLike,
+} from '@/lib/browser-storage';
+import {
   readVersionedCollection,
   writeVersionedCollection,
 } from '@/lib/local-storage-schema';
 import { keepLastByKey } from '@/lib/collection-utils';
 
 const STORAGE_KEY = 'dev-ai-toolkit.prompt-templates';
-
-type StorageLike = Pick<Storage, 'getItem' | 'setItem'>;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
@@ -108,8 +110,7 @@ function normalizeStoredTemplates(value: unknown) {
 
 export function createLocalStoragePromptTemplateRepository(
   storageKey = STORAGE_KEY,
-  storage: StorageLike | null =
-    typeof window !== 'undefined' ? window.localStorage : null,
+  storage: StorageLike | null = resolveBrowserStorage(),
 ): PromptTemplateRepository {
   return {
     loadAll() {

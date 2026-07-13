@@ -52,6 +52,8 @@ The format is intentionally lightweight and human-readable.
 
 ### Fixed
 
+- Prevented restricted browser storage access from crashing local repository
+  initialization
 - Kept the app usable when browser storage rejects template, run, or note reads
   during startup
 - Ignored unknown Run History template query filters without hiding existing
