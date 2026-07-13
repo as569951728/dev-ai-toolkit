@@ -45,6 +45,8 @@ The format is intentionally lightweight and human-readable.
 
 ### Fixed
 
+- Preserved prompt run note drafts and reported browser storage failures when
+  saving from Run Detail
 - Reported browser storage failures when saving prompt snapshots instead of
   leaving the Playground without feedback
 - Reported when a single run JSON import replaces an existing saved run with

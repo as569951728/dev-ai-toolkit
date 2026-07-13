@@ -6,26 +6,44 @@ interface PromptRunNotePanelProps {
   runId: string;
 }
 
+interface NoteSaveFeedback {
+  message: string;
+  tone: 'success' | 'error';
+}
+
 export function PromptRunNotePanel({ runId }: PromptRunNotePanelProps) {
   const { getNoteByRunId, saveNote } = usePromptRunNotes();
   const savedNote = getNoteByRunId(runId);
   const [body, setBody] = useState(savedNote?.body ?? '');
-  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [saveFeedback, setSaveFeedback] = useState<NoteSaveFeedback | null>(
+    null,
+  );
   const previousRunId = useRef(runId);
 
   useEffect(() => {
     if (previousRunId.current !== runId) {
       setBody(savedNote?.body ?? '');
-      setStatusMessage(null);
+      setSaveFeedback(null);
       previousRunId.current = runId;
     }
   }, [runId, savedNote?.body]);
 
   const handleSave = () => {
-    const note = saveNote(runId, body);
+    try {
+      const note = saveNote(runId, body);
 
-    setBody(note?.body ?? '');
-    setStatusMessage(note ? 'Note saved.' : 'Note cleared.');
+      setBody(note?.body ?? '');
+      setSaveFeedback({
+        message: note ? 'Note saved.' : 'Note cleared.',
+        tone: 'success',
+      });
+    } catch {
+      setSaveFeedback({
+        message:
+          'Failed to save this note. Check that browser storage is available and try again.',
+        tone: 'error',
+      });
+    }
   };
 
   return (
@@ -41,9 +59,16 @@ export function PromptRunNotePanel({ runId }: PromptRunNotePanelProps) {
         </div>
       </div>
 
-      {statusMessage ? (
-        <p className="status-banner" role="status">
-          {statusMessage}
+      {saveFeedback ? (
+        <p
+          className={
+            saveFeedback.tone === 'error'
+              ? 'status-banner status-banner--error'
+              : 'status-banner'
+          }
+          role={saveFeedback.tone === 'error' ? 'alert' : 'status'}
+        >
+          {saveFeedback.message}
         </p>
       ) : null}
 
@@ -54,7 +79,7 @@ export function PromptRunNotePanel({ runId }: PromptRunNotePanelProps) {
           placeholder="Add a note for this saved run"
           onChange={(event) => {
             setBody(event.target.value);
-            setStatusMessage(null);
+            setSaveFeedback(null);
           }}
         />
       </label>

@@ -19,8 +19,11 @@ function createNoteRepository(
   };
 }
 
-function renderNotePanel(runId: string, notes: PromptRunNote[]) {
-  const repository = createNoteRepository(notes);
+function renderNotePanel(
+  runId: string,
+  notes: PromptRunNote[],
+  repository = createNoteRepository(notes),
+) {
   const result = render(
     <PromptRunNotesProvider repository={repository}>
       <PromptRunNotePanel runId={runId} />
@@ -87,5 +90,28 @@ describe('PromptRunNotePanel', () => {
     expect(screen.getByText('Note cleared.')).toBeInTheDocument();
     expect(screen.getByRole('status')).toHaveTextContent('Note cleared.');
     expect(repository.loadAll()).toEqual([]);
+  });
+
+  it('keeps the draft and reports when browser storage rejects the note', () => {
+    const repository: PromptRunNoteRepository = {
+      loadAll: () => [],
+      saveAll: () => {
+        throw new Error('Storage quota exceeded.');
+      },
+    };
+
+    renderNotePanel('run-1', [], repository);
+
+    fireEvent.change(screen.getByLabelText('Note'), {
+      target: { value: 'Keep this draft visible.' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Save note' }));
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Failed to save this note. Check that browser storage is available and try again.',
+    );
+    expect(screen.getByLabelText('Note')).toHaveValue(
+      'Keep this draft visible.',
+    );
   });
 });
