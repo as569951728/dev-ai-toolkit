@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useBeforeUnload, useBlocker } from 'react-router-dom';
 
 import type {
@@ -60,6 +60,7 @@ export function PromptTemplateForm({
   onCancel,
 }: PromptTemplateFormProps) {
   const allowNavigationRef = useRef(false);
+  const continueEditingButtonRef = useRef<HTMLButtonElement | null>(null);
   const [initialFormState] = useState<FormState>(() =>
     createInitialState(initialValue),
   );
@@ -74,6 +75,12 @@ export function PromptTemplateForm({
   const navigationBlocker = useBlocker(
     () => isDirty && !allowNavigationRef.current,
   );
+
+  useEffect(() => {
+    if (navigationBlocker.state === 'blocked') {
+      continueEditingButtonRef.current?.focus();
+    }
+  }, [navigationBlocker.state]);
 
   useBeforeUnload(
     (event) => {
@@ -170,7 +177,7 @@ export function PromptTemplateForm({
           aria-describedby="unsaved-template-changes-description"
           aria-labelledby="unsaved-template-changes-title"
           className="status-banner status-banner--error"
-          role="alertdialog"
+          role="dialog"
         >
           <h2 id="unsaved-template-changes-title">Discard unsaved changes?</h2>
           <p id="unsaved-template-changes-description">
@@ -178,6 +185,7 @@ export function PromptTemplateForm({
           </p>
           <div className="detail-actions detail-actions--inline">
             <button
+              ref={continueEditingButtonRef}
               className="secondary-button"
               type="button"
               onClick={() => navigationBlocker.reset()}

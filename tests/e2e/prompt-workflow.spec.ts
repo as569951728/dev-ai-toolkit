@@ -108,6 +108,9 @@ test('protects unsaved prompt template changes', async ({ page }) => {
   await expect(
     page.getByRole('heading', { name: 'Discard unsaved changes?' }),
   ).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Continue editing' }),
+  ).toBeFocused();
 
   await page.getByRole('button', { name: 'Continue editing' }).click();
 

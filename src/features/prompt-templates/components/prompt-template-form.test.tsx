@@ -191,13 +191,16 @@ describe('PromptTemplateForm', () => {
     });
     fireEvent.click(screen.getByRole('button', { name: 'Back to list' }));
 
-    expect(await screen.findByRole('alertdialog')).toHaveTextContent(
+    expect(await screen.findByRole('dialog')).toHaveTextContent(
       'Discard unsaved changes?',
     );
+    expect(
+      screen.getByRole('button', { name: 'Continue editing' }),
+    ).toHaveFocus();
 
     fireEvent.click(screen.getByRole('button', { name: 'Continue editing' }));
 
-    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(screen.getByLabelText('Name')).toHaveValue('Work in progress');
 
     fireEvent.click(screen.getByRole('button', { name: 'Back to list' }));
