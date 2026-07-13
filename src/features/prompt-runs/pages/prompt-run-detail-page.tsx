@@ -10,9 +10,13 @@ import {
 import { buildCodeViewerUrl } from '@/features/code-viewer/lib/code-viewer-utils';
 import { PromptRunNotePanel } from '@/features/prompt-run-notes/components/prompt-run-note-panel';
 import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
+import { PromptRunInputsPanel } from '@/features/prompt-runs/components/prompt-run-inputs-panel';
+import {
+  PromptRunPromptsPanel,
+  type PromptRunCopyTarget,
+} from '@/features/prompt-runs/components/prompt-run-prompts-panel';
 import { exportPromptRunAsJson } from '@/features/prompt-runs/lib/prompt-run-export';
 import {
-  buildPromptRunJsonToolsPath,
   buildPromptRunPlaygroundPath,
   buildPromptRunSourceDiffUrl,
 } from '@/features/prompt-runs/lib/prompt-run-links';
@@ -27,7 +31,6 @@ import {
   usePromptRunWorkflowActions,
 } from '@/features/prompt-workflows/hooks/use-prompt-run-workflow-actions';
 import { writeClipboardText } from '@/lib/clipboard';
-import { formatPromptSections } from '@/lib/prompt-sections';
 
 type ActionFeedback = {
   message: string;
@@ -93,7 +96,6 @@ export function PromptRunDetailPage() {
 
   const sourceTemplate = getTemplateById(run.templateId);
   const note = getNoteByRunId(run.id);
-  const variableEntries = Object.entries(run.variables);
   const handleDeleteRun = () => {
     setDeleteErrorMessage('');
     allowNavigationRef.current = true;
@@ -140,7 +142,7 @@ export function PromptRunDetailPage() {
     }
   };
   const handleCopyPrompt = async (
-    label: 'system' | 'user' | 'full',
+    label: PromptRunCopyTarget,
     value: string,
   ) => {
     const promptLabel =
@@ -253,102 +255,14 @@ export function PromptRunDetailPage() {
         </div>
       ) : null}
 
-      <section className="panel">
-        <div className="panel__header">
-          <div>
-            <p className="eyebrow">Snapshot content</p>
-            <h2>Saved prompts</h2>
-          </div>
-          <div className="panel__actions">
-            <button
-              className="secondary-button"
-              type="button"
-              onClick={() => handleCopyPrompt('full', formatPromptSections(run))}
-            >
-              Copy full prompt
-            </button>
-          </div>
-        </div>
-
-        {copyFeedback ? (
-          <p
-            className={
-              copyFeedback.tone === 'error'
-                ? 'status-banner status-banner--error'
-                : 'status-banner'
-            }
-            role={copyFeedback.tone === 'error' ? 'alert' : 'status'}
-          >
-            {copyFeedback.message}
-          </p>
-        ) : null}
-
-        <div className="code-compare-grid">
-          <article>
-            <div className="detail-card__header">
-              <h3>System prompt</h3>
-              <button
-                className="ghost-button"
-                type="button"
-                onClick={() => handleCopyPrompt('system', run.systemPrompt)}
-              >
-                Copy system prompt
-              </button>
-            </div>
-            <pre className="code-block">{run.systemPrompt}</pre>
-          </article>
-          <article>
-            <div className="detail-card__header">
-              <h3>User prompt</h3>
-              <button
-                className="ghost-button"
-                type="button"
-                onClick={() => handleCopyPrompt('user', run.userPrompt)}
-              >
-                Copy user prompt
-              </button>
-            </div>
-            <pre className="code-block">{run.userPrompt}</pre>
-          </article>
-        </div>
-      </section>
+      <PromptRunPromptsPanel
+        copyFeedback={copyFeedback}
+        onCopyPrompt={handleCopyPrompt}
+        run={run}
+      />
 
       <div className="detail-grid">
-        <section className="panel">
-          <div className="panel__header">
-            <div>
-              <p className="eyebrow">Captured variables</p>
-              <h2>Run inputs</h2>
-            </div>
-            {variableEntries.length > 0 ? (
-              <div className="panel__actions">
-                <Link
-                  className="secondary-button"
-                  to={buildPromptRunJsonToolsPath(run.id)}
-                >
-                  Open variables in JSON Tools
-                </Link>
-              </div>
-            ) : null}
-          </div>
-
-          {variableEntries.length > 0 ? (
-            <div className="revision-list">
-              {variableEntries.map(([name, value]) => (
-                <article className="revision-card" key={name}>
-                  <div className="revision-card__header">
-                    <h3>{name}</h3>
-                  </div>
-                  <p className="revision-card__description">{value}</p>
-                </article>
-              ))}
-            </div>
-          ) : (
-            <p className="panel__summary">
-              This run did not capture any template variables.
-            </p>
-          )}
-        </section>
+        <PromptRunInputsPanel run={run} />
 
         <PromptRunNotePanel
           runId={run.id}
