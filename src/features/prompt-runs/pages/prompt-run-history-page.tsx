@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 
 import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
 import { PromptRunHistoryCard } from '@/features/prompt-runs/components/prompt-run-history-card';
+import { PromptRunHistoryFilters } from '@/features/prompt-runs/components/prompt-run-history-filters';
 import { usePromptRunImport } from '@/features/prompt-runs/hooks/use-prompt-run-import';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { matchesPromptRunSearch } from '@/features/prompt-runs/lib/prompt-run-search';
@@ -19,8 +20,6 @@ export function PromptRunHistoryPage() {
   });
   const selectedTemplateId = searchParams.get('templateId') ?? 'all';
   const searchValue = searchParams.get('q') ?? '';
-  const hasActiveFilters =
-    selectedTemplateId !== 'all' || searchValue.trim().length > 0;
 
   const availableTemplates = useMemo(
     () => {
@@ -58,7 +57,6 @@ export function PromptRunHistoryPage() {
       ? null
       : availableTemplates.find((template) => template.id === selectedTemplateId)
           ?.name ?? null;
-  const normalizedSearchValue = searchValue.trim();
 
   const updateFilters = ({
     nextSearchValue = searchValue,
@@ -152,69 +150,23 @@ export function PromptRunHistoryPage() {
 
         {runs.length > 0 ? (
           <>
-            <div className="toolbar">
-              <label className="toolbar__search">
-                <span>Search runs</span>
-                <input
-                  type="search"
-                  value={searchValue}
-                  placeholder="Search by template, prompt text, variable, or note"
-                  onChange={(event) =>
-                    updateFilters({ nextSearchValue: event.target.value })
-                  }
-                />
-              </label>
-
-              <label className="toolbar__filter">
-                <span>Template</span>
-                <select
-                  value={selectedTemplateId}
-                  onChange={(event) =>
-                    updateFilters({ nextTemplateId: event.target.value })
-                  }
-                >
-                  <option value="all">All templates</option>
-                  {availableTemplates.map((template) => (
-                    <option key={template.id} value={template.id}>
-                      {template.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              {hasActiveFilters ? (
-                <button
-                  className="ghost-button"
-                  type="button"
-                  onClick={() =>
-                    setSearchParams(new URLSearchParams(), { replace: true })
-                  }
-                >
-                  Clear filters
-                </button>
-              ) : null}
-            </div>
-
-            <p className="panel__summary">
-              {selectedTemplateName
-                ? `Showing ${filteredRuns.length} of ${runs.length} saved runs for ${selectedTemplateName}.`
-                : `Showing ${filteredRuns.length} of ${runs.length} saved runs.`}
-            </p>
-
-            {hasActiveFilters ? (
-              <div className="run-history-filter-list">
-                {selectedTemplateName ? (
-                  <span className="run-history-filter-chip">
-                    Template: {selectedTemplateName}
-                  </span>
-                ) : null}
-                {normalizedSearchValue ? (
-                  <span className="run-history-filter-chip">
-                    Search: {normalizedSearchValue}
-                  </span>
-                ) : null}
-              </div>
-            ) : null}
+            <PromptRunHistoryFilters
+              availableTemplates={availableTemplates}
+              filteredRunCount={filteredRuns.length}
+              onClear={() =>
+                setSearchParams(new URLSearchParams(), { replace: true })
+              }
+              onSearchChange={(nextSearchValue) =>
+                updateFilters({ nextSearchValue })
+              }
+              onTemplateChange={(nextTemplateId) =>
+                updateFilters({ nextTemplateId })
+              }
+              searchValue={searchValue}
+              selectedTemplateId={selectedTemplateId}
+              selectedTemplateName={selectedTemplateName}
+              totalRunCount={runs.length}
+            />
 
             {filteredRuns.length > 0 ? (
               <div className="revision-list">
