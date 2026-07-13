@@ -111,6 +111,19 @@ export function PromptRunDetailPage() {
           <Link className="ghost-button" to="/runs">
             Back to Run History
           </Link>
+          {sourceTemplate && !sourceTemplate.archivedAt ? (
+            <Link
+              className="primary-button"
+              to={`/playground?runId=${encodeURIComponent(run.id)}`}
+            >
+              Reopen in Playground
+            </Link>
+          ) : null}
+          {promptDiffUrl ? (
+            <Link className="secondary-button" to={promptDiffUrl}>
+              Compare with source
+            </Link>
+          ) : null}
           {sourceTemplate ? (
             <Link className="ghost-button" to={`/prompts/${run.templateId}`}>
               View source template
@@ -120,91 +133,11 @@ export function PromptRunDetailPage() {
               Source template is no longer available.
             </span>
           )}
-          {sourceTemplate && !sourceTemplate.archivedAt ? (
-            <Link
-              className="ghost-button"
-              to={`/playground?runId=${encodeURIComponent(run.id)}`}
-            >
-              Reopen in Playground
-            </Link>
-          ) : null}
           <Link className="ghost-button" to={codeViewerUrl}>
             Open saved prompts in Code Viewer
           </Link>
-          <button
-            className="ghost-button"
-            type="button"
-            onClick={handleExportRun}
-          >
-            Export run JSON
-          </button>
-          {promptDiffUrl ? (
-            <Link className="ghost-button" to={promptDiffUrl}>
-              Compare with source
-            </Link>
-          ) : null}
-          {isConfirmingDelete ? (
-            <>
-              <button
-                className="danger-button"
-                type="button"
-                onClick={handleDeleteRun}
-              >
-                Confirm delete
-              </button>
-              <button
-                className="ghost-button"
-                type="button"
-                onClick={() => setIsConfirmingDelete(false)}
-              >
-                Cancel
-              </button>
-            </>
-          ) : (
-            <button
-              className="danger-button"
-              type="button"
-              onClick={() => setIsConfirmingDelete(true)}
-            >
-              Delete run
-            </button>
-          )}
         </div>
-
-        {exportStatusMessage ? (
-          <p className="status-banner" role="status">
-            {exportStatusMessage}
-          </p>
-        ) : null}
       </div>
-
-      <section className="panel">
-        <div className="panel__header">
-          <div>
-            <p className="eyebrow">Captured variables</p>
-            <h2>Run inputs</h2>
-          </div>
-        </div>
-
-        {variableEntries.length > 0 ? (
-          <div className="revision-list">
-            {variableEntries.map(([name, value]) => (
-              <article className="revision-card" key={name}>
-                <div className="revision-card__header">
-                  <h3>{name}</h3>
-                </div>
-                <p className="revision-card__description">{value}</p>
-              </article>
-            ))}
-          </div>
-        ) : (
-          <p className="panel__summary">
-            This run did not capture any template variables.
-          </p>
-        )}
-      </section>
-
-      <PromptRunNotePanel runId={run.id} />
 
       <section className="panel">
         <div className="panel__header">
@@ -254,6 +187,91 @@ export function PromptRunDetailPage() {
             </div>
             <pre className="code-block">{run.userPrompt}</pre>
           </article>
+        </div>
+      </section>
+
+      <div className="detail-grid">
+        <section className="panel">
+          <div className="panel__header">
+            <div>
+              <p className="eyebrow">Captured variables</p>
+              <h2>Run inputs</h2>
+            </div>
+          </div>
+
+          {variableEntries.length > 0 ? (
+            <div className="revision-list">
+              {variableEntries.map(([name, value]) => (
+                <article className="revision-card" key={name}>
+                  <div className="revision-card__header">
+                    <h3>{name}</h3>
+                  </div>
+                  <p className="revision-card__description">{value}</p>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p className="panel__summary">
+              This run did not capture any template variables.
+            </p>
+          )}
+        </section>
+
+        <PromptRunNotePanel runId={run.id} />
+      </div>
+
+      <section className="panel">
+        <div className="panel__header">
+          <div>
+            <p className="eyebrow">Local snapshot</p>
+            <h2>Snapshot management</h2>
+            <p className="panel__summary">
+              Export a portable JSON copy or remove this snapshot and its note
+              from the current browser.
+            </p>
+          </div>
+        </div>
+
+        {exportStatusMessage ? (
+          <p className="status-banner" role="status">
+            {exportStatusMessage}
+          </p>
+        ) : null}
+
+        <div className="detail-actions detail-actions--inline">
+          <button
+            className="ghost-button"
+            type="button"
+            onClick={handleExportRun}
+          >
+            Export run JSON
+          </button>
+          {isConfirmingDelete ? (
+            <>
+              <button
+                className="danger-button"
+                type="button"
+                onClick={handleDeleteRun}
+              >
+                Confirm delete
+              </button>
+              <button
+                className="ghost-button"
+                type="button"
+                onClick={() => setIsConfirmingDelete(false)}
+              >
+                Cancel
+              </button>
+            </>
+          ) : (
+            <button
+              className="danger-button"
+              type="button"
+              onClick={() => setIsConfirmingDelete(true)}
+            >
+              Delete run
+            </button>
+          )}
         </div>
       </section>
     </section>

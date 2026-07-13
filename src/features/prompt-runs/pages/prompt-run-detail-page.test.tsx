@@ -156,6 +156,16 @@ describe('PromptRunDetailPage', () => {
     expect(
       screen.getByRole('link', { name: 'Compare with source' }),
     ).toHaveAttribute('href', expect.stringContaining('/prompt-diff?left='));
+    expect(
+      screen
+        .getAllByRole('heading', { level: 2 })
+        .map((heading) => heading.textContent),
+    ).toEqual([
+      'Saved prompts',
+      'Run inputs',
+      'Maintenance note',
+      'Snapshot management',
+    ]);
   });
 
   it('saves a maintenance note for the current run', () => {
