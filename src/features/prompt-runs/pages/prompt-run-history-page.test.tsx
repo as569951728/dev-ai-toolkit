@@ -285,6 +285,23 @@ describe('PromptRunHistoryPage', () => {
     expect(noteRepository.snapshot()).toEqual([importedNote]);
   });
 
+  it('reports invalid run imports without changing local data', async () => {
+    const { noteRepository, runRepository } = renderRunHistory({ runs: [] });
+    const file = new File(['not valid json'], 'broken-run.json', {
+      type: 'application/json',
+    });
+
+    fireEvent.change(screen.getByLabelText('Import run JSON'), {
+      target: { files: [file] },
+    });
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Invalid prompt run export format.',
+    );
+    expect(runRepository.snapshot()).toEqual([]);
+    expect(noteRepository.snapshot()).toEqual([]);
+  });
+
   it('filters runs by template and template name search', () => {
     renderRunHistory();
 

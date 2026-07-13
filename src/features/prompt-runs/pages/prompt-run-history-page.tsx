@@ -1,26 +1,22 @@
-import { useMemo, useState } from 'react';
-import type { ChangeEvent } from 'react';
+import { useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 
 import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
 import { PromptRunHistoryCard } from '@/features/prompt-runs/components/prompt-run-history-card';
+import { usePromptRunImport } from '@/features/prompt-runs/hooks/use-prompt-run-import';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
-import { parsePromptRunExportImport } from '@/features/prompt-runs/lib/prompt-run-export';
 import { matchesPromptRunSearch } from '@/features/prompt-runs/lib/prompt-run-search';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
-
-type ImportStatus = {
-  message: string;
-  runId: string;
-};
 
 export function PromptRunHistoryPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { importRuns, runs } = usePromptRuns();
   const { getNoteByRunId, importNotes } = usePromptRunNotes();
   const { getTemplateById } = usePromptTemplates();
-  const [importError, setImportError] = useState('');
-  const [importStatus, setImportStatus] = useState<ImportStatus | null>(null);
+  const { handleImportRun, importError, importStatus } = usePromptRunImport({
+    importNotes,
+    importRuns,
+  });
   const selectedTemplateId = searchParams.get('templateId') ?? 'all';
   const searchValue = searchParams.get('q') ?? '';
   const hasActiveFilters =
@@ -83,38 +79,6 @@ export function PromptRunHistoryPage() {
     }
 
     setSearchParams(nextSearchParams, { replace: true });
-  };
-
-  const handleImportRun = async (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-
-    if (!file) {
-      return;
-    }
-
-    try {
-      const payload = parsePromptRunExportImport(await file.text());
-      importRuns([payload.run]);
-
-      if (payload.note) {
-        importNotes([payload.note]);
-      }
-
-      setImportStatus({
-        message: `Imported ${payload.run.templateName} from ${file.name}.`,
-        runId: payload.run.id,
-      });
-      setImportError('');
-    } catch (error) {
-      setImportStatus(null);
-      setImportError(
-        error instanceof Error
-          ? error.message
-          : 'Unable to import the selected prompt run JSON.',
-      );
-    } finally {
-      event.target.value = '';
-    }
   };
 
   const filteredRuns = useMemo(() => {
