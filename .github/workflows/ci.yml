@@ -34,3 +34,9 @@ jobs:
 
       - name: Run build
         run: npm run build
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run prompt workflow browser smoke test
+        run: npm run test:e2e
