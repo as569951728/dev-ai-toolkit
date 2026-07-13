@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import type { PropsWithChildren } from 'react';
 
 import { PromptRunsContext, type PromptRunsContextValue } from '@/features/prompt-runs/providers/prompt-runs-context';
@@ -29,28 +29,36 @@ export function PromptRunsProvider({
   const [runs, setRuns] = useState<PromptRunRecord[]>(() =>
     sortPromptRuns(repository.loadAll()),
   );
+  const runsRef = useRef(runs);
+
+  const commitRuns = useCallback((nextRuns: PromptRunRecord[]) => {
+    runsRef.current = nextRuns;
+    setRuns(nextRuns);
+  }, []);
 
   const createRun = useCallback(
     (input: Omit<PromptRunRecord, 'id' | 'createdAt'>) => {
-      const result = createPromptRunRecord(repository, runs, input);
-      setRuns(result.runs);
+      const result = createPromptRunRecord(repository, runsRef.current, input);
+      commitRuns(result.runs);
       return result.record;
     },
-    [repository, runs],
+    [commitRuns, repository],
   );
 
   const deleteRun = useCallback(
     (runId: string) => {
-      setRuns(deletePromptRunRecord(repository, runs, runId));
+      commitRuns(deletePromptRunRecord(repository, runsRef.current, runId));
     },
-    [repository, runs],
+    [commitRuns, repository],
   );
 
   const importRuns = useCallback(
     (importedRuns: PromptRunRecord[]) => {
-      setRuns(importPromptRunRecords(repository, runs, importedRuns));
+      commitRuns(
+        importPromptRunRecords(repository, runsRef.current, importedRuns),
+      );
     },
-    [repository, runs],
+    [commitRuns, repository],
   );
 
   const getRunsByTemplateId = useCallback(

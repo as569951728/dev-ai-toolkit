@@ -49,6 +49,23 @@ function TestConsumer() {
       <button
         type="button"
         onClick={() => {
+          for (const templateName of ['First Run', 'Second Run']) {
+            createRun({
+              templateId: 'template-1',
+              templateName,
+              templateVersion: 1,
+              variables: {},
+              systemPrompt: 'System',
+              userPrompt: 'User',
+            });
+          }
+        }}
+      >
+        Save Two Runs
+      </button>
+      <button
+        type="button"
+        onClick={() => {
           importRuns([
             {
               id: 'imported-run',
@@ -122,5 +139,24 @@ describe('PromptRunsProvider', () => {
       id: 'imported-run',
       templateName: 'Imported Run',
     });
+  });
+
+  it('preserves prompt runs created before the provider renders again', () => {
+    const repository = createMemoryRepository();
+
+    render(
+      <PromptRunsProvider repository={repository}>
+        <TestConsumer />
+      </PromptRunsProvider>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Save Two Runs' }));
+
+    expect(screen.getByTestId('run-count')).toHaveTextContent('2');
+    expect(repository.snapshot()).toHaveLength(2);
+    expect(repository.snapshot().map((run) => run.templateName)).toEqual([
+      'Second Run',
+      'First Run',
+    ]);
   });
 });
