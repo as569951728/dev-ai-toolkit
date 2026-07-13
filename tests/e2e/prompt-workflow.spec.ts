@@ -82,7 +82,7 @@ test('resolves dotted template variables in the Playground', async ({
 
   await expect(
     page.getByText(/1 template variable is unresolved/),
-  ).toBeVisible();
+  ).toContainText('Missing: Pull Request Title.');
   await page
     .getByLabel('Pull Request Title')
     .fill('Keep storage reads resilient');

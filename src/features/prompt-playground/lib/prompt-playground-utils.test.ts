@@ -5,6 +5,7 @@ import {
   buildPromptPreview,
   countUnresolvedVariables,
   extractVariables,
+  getUnresolvedVariables,
 } from '@/features/prompt-playground/lib/prompt-playground-utils';
 import { starterPromptTemplates } from '@/features/prompt-templates/seed/prompt-templates';
 
@@ -95,13 +96,15 @@ describe('prompt-playground-utils', () => {
 
   it('counts empty and whitespace-only variables as unresolved', () => {
     const variables = extractVariables(template);
+    const values = {
+      repository_name: 'dev-ai-toolkit',
+      change_scope: '   ',
+    };
 
-    expect(
-      countUnresolvedVariables(variables, {
-        repository_name: 'dev-ai-toolkit',
-        change_scope: '   ',
-      }),
-    ).toBe(1);
+    expect(countUnresolvedVariables(variables, values)).toBe(1);
+    expect(getUnresolvedVariables(variables, values)).toEqual([
+      { key: 'change_scope', label: 'Change Scope' },
+    ]);
     expect(
       countUnresolvedVariables(variables, {
         repository_name: 'dev-ai-toolkit',

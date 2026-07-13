@@ -87,7 +87,7 @@ describe('Prompt playground workflow', () => {
 
     expect(
       screen.getByText(
-        '2 template variables are unresolved. Their placeholders will remain in copied and saved prompts.',
+        '2 template variables are unresolved. Their placeholders will remain in copied and saved prompts. Missing: Repository Name, Change Scope.',
       ),
     ).toBeInTheDocument();
 
@@ -97,7 +97,7 @@ describe('Prompt playground workflow', () => {
 
     expect(
       screen.getByText(
-        '1 template variable is unresolved. Its placeholder will remain in copied and saved prompts.',
+        '1 template variable is unresolved. Its placeholder will remain in copied and saved prompts. Missing: Change Scope.',
       ),
     ).toBeInTheDocument();
 

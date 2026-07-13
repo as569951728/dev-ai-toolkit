@@ -2,8 +2,8 @@ import { useMemo, useState } from 'react';
 
 import {
   buildPromptPreview,
-  countUnresolvedVariables,
   extractVariables,
+  getUnresolvedVariables,
 } from '@/features/prompt-playground/lib/prompt-playground-utils';
 import {
   loadRecentTemplateIds,
@@ -84,7 +84,7 @@ export function usePromptPlayground(
         : null,
     [selectedTemplate, variableValues],
   );
-  const unresolvedVariableCount = countUnresolvedVariables(
+  const unresolvedVariables = getUnresolvedVariables(
     variables,
     variableValues,
   );
@@ -128,7 +128,7 @@ export function usePromptPlayground(
     variableValues,
     preview,
     recentTemplates,
-    unresolvedVariableCount,
+    unresolvedVariables,
     setSelectedTemplateId: (nextTemplateId: string) => {
       const nextTemplate = findTemplateById(activeTemplates, nextTemplateId);
 

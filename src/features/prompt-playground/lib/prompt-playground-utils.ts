@@ -48,7 +48,14 @@ export function countUnresolvedVariables(
   variables: PromptPlaygroundVariable[],
   values: Record<string, string>,
 ) {
-  return variables.filter((variable) => !values[variable.key]?.trim()).length;
+  return getUnresolvedVariables(variables, values).length;
+}
+
+export function getUnresolvedVariables(
+  variables: PromptPlaygroundVariable[],
+  values: Record<string, string>,
+) {
+  return variables.filter((variable) => !values[variable.key]?.trim());
 }
 
 export function buildPromptPreview(

@@ -8,6 +8,7 @@ The format is intentionally lightweight and human-readable.
 
 ### Added
 
+- Named unresolved Playground variables in the preview warning
 - Formatted camel-case Playground variable names as readable input labels
 - Disclosed invalid records skipped from mixed prompt template imports
 - Added an application-level warning when browser storage cannot be read
