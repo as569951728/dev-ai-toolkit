@@ -4,6 +4,7 @@ import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 
 import { PromptPlaygroundPage } from '@/features/prompt-playground/pages/prompt-playground-page';
+import { formatPromptSections } from '@/features/prompt-playground/lib/prompt-playground-utils';
 import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs-provider';
 import type { PromptRunRepository } from '@/features/prompt-runs/repositories/prompt-run-repository';
 import type { PromptRunRecord } from '@/types/prompt-run';
@@ -357,9 +358,21 @@ describe('Prompt playground workflow', () => {
     expect(await screen.findByRole('status')).toHaveTextContent(
       'System prompt copied.',
     );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Copy full prompt' }));
+
+    expect(writeText).toHaveBeenLastCalledWith(
+      formatPromptSections({
+        systemPrompt: starterPromptTemplates[0]!.systemPrompt,
+        userPrompt: starterPromptTemplates[0]!.userPrompt,
+      }),
+    );
+    expect(await screen.findByRole('status')).toHaveTextContent(
+      'Full prompt copied.',
+    );
   });
 
-  it('announces prompt copy failures when the clipboard is unavailable', async () => {
+  it('announces full prompt copy failures when the clipboard is unavailable', async () => {
     const templateRepository = createTemplateRepository();
     const runRepository = createRunRepository();
     const templateId = starterPromptTemplates[0]!.id;
@@ -379,10 +392,10 @@ describe('Prompt playground workflow', () => {
       </MemoryRouter>,
     );
 
-    fireEvent.click(screen.getAllByRole('button', { name: 'Copy' })[0]!);
+    fireEvent.click(screen.getByRole('button', { name: 'Copy full prompt' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Failed to copy system prompt.',
+      'Failed to copy full prompt.',
     );
   });
 

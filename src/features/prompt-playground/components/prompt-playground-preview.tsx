@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import { formatPromptSections } from '@/features/prompt-playground/lib/prompt-playground-utils';
 import { writeClipboardText } from '@/lib/clipboard';
 import type { PromptTemplate } from '@/types/prompt-template';
 
@@ -35,17 +36,25 @@ export function PromptPlaygroundPreview({
   saveStatusMessage,
   saveStatusTone,
 }: PromptPlaygroundPreviewProps) {
-  const [copiedSection, setCopiedSection] = useState<'system' | 'user' | null>(
-    null,
-  );
+  const [copiedSection, setCopiedSection] = useState<
+    'system' | 'user' | 'full' | null
+  >(null);
   const [copyFeedback, setCopyFeedback] = useState<CopyFeedback | null>(null);
 
-  const handleCopy = async (section: 'system' | 'user', value: string) => {
+  const handleCopy = async (
+    section: 'system' | 'user' | 'full',
+    value: string,
+  ) => {
+    const sectionLabel =
+      section === 'full'
+        ? 'Full prompt'
+        : `${section === 'system' ? 'System' : 'User'} prompt`;
+
     try {
       await writeClipboardText(value);
       setCopiedSection(section);
       setCopyFeedback({
-        message: `${section === 'system' ? 'System' : 'User'} prompt copied.`,
+        message: `${sectionLabel} copied.`,
         tone: 'success',
       });
 
@@ -57,7 +66,7 @@ export function PromptPlaygroundPreview({
     } catch {
       setCopiedSection(null);
       setCopyFeedback({
-        message: `Failed to copy ${section} prompt.`,
+        message: `Failed to copy ${sectionLabel.toLowerCase()}.`,
         tone: 'error',
       });
     }
@@ -79,6 +88,13 @@ export function PromptPlaygroundPreview({
           <div className="panel__actions">
             <button className="primary-button" type="button" onClick={onSaveRun}>
               Save run snapshot
+            </button>
+            <button
+              className="secondary-button"
+              type="button"
+              onClick={() => handleCopy('full', formatPromptSections(preview))}
+            >
+              {copiedSection === 'full' ? 'Copied full prompt' : 'Copy full prompt'}
             </button>
             <button
               className="secondary-button"
