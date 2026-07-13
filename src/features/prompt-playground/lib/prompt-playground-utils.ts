@@ -1,3 +1,7 @@
+import {
+  extractPromptVariableKeys,
+  replacePromptVariablePlaceholders,
+} from '@/lib/prompt-variables';
 import type { PromptTemplate } from '@/types/prompt-template';
 
 export interface PromptPlaygroundVariable {
@@ -5,22 +9,11 @@ export interface PromptPlaygroundVariable {
   label: string;
 }
 
-const VARIABLE_PATTERN = /\{\{\s*([a-zA-Z0-9_.-]+)\s*\}\}/g;
-
 export function extractVariables(template: PromptTemplate) {
-  const variables = new Set<string>();
-
-  for (const source of [template.systemPrompt, template.userPrompt]) {
-    for (const match of source.matchAll(VARIABLE_PATTERN)) {
-      const variableKey = match[1]?.trim();
-
-      if (variableKey) {
-        variables.add(variableKey);
-      }
-    }
-  }
-
-  return [...variables].map<PromptPlaygroundVariable>((key) => ({
+  return extractPromptVariableKeys(
+    template.systemPrompt,
+    template.userPrompt,
+  ).map<PromptPlaygroundVariable>((key) => ({
     key,
     label: key
       .split(/[._-]/g)
@@ -33,9 +26,7 @@ export function applyVariables(
   source: string,
   values: Record<string, string>,
 ) {
-  return source.replaceAll(VARIABLE_PATTERN, (_, rawKey: string) => {
-    const key = rawKey.trim();
-
+  return replacePromptVariablePlaceholders(source, (key) => {
     return values[key] && values[key].trim() ? values[key].trim() : `{{${key}}}`;
   });
 }

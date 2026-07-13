@@ -1,3 +1,5 @@
+import { extractPromptVariableKeys } from '@/lib/prompt-variables';
+
 export const promptDiffSampleLeft = `You are a senior frontend reviewer.
 
 Review the pull request for {{repositoryName}}.
@@ -19,12 +21,6 @@ Focus on:
 
 Return the answer in Chinese with concise, ranked findings first.`;
 
-const variablePattern = /\{\{\s*([a-zA-Z0-9_.-]+)\s*\}\}/g;
-
-function uniqueValues(values: string[]) {
-  return [...new Set(values)];
-}
-
 export function countPromptCharacters(value: string) {
   return value.length;
 }
@@ -38,10 +34,7 @@ export function countPromptLines(value: string) {
 }
 
 export function extractPromptVariables(value: string) {
-  const matches = [...value.matchAll(variablePattern)]
-    .map((match) => match[1])
-    .filter((match): match is string => Boolean(match));
-  return uniqueValues(matches);
+  return extractPromptVariableKeys(value);
 }
 
 export function splitPromptLines(value: string) {
