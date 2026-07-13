@@ -130,6 +130,7 @@ export function PromptTemplateDetail({
                 Confirm delete
               </button>
               <button
+                autoFocus
                 className="ghost-button"
                 type="button"
                 onClick={() => setIsConfirmingDelete(false)}

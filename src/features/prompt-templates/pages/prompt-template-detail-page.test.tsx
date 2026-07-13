@@ -196,7 +196,7 @@ describe('PromptTemplateDetailPage', () => {
     expect(
       screen.getByRole('button', { name: 'Confirm delete' }),
     ).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Cancel' })).toHaveFocus();
     expect(
       screen.getByText(
         'Deleting this template will not remove its saved run snapshots from Run History.',
