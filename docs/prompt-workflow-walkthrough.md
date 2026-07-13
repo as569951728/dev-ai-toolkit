@@ -41,6 +41,8 @@ Use this step to:
 Saved runs appear in **Run History**. This is the current activity trail for
 prompt work in the app.
 
+![Prompt run detail with review actions and saved prompts](./assets/prompt-run-detail.jpg)
+
 Run History supports:
 
 - Filtering runs by source template.
