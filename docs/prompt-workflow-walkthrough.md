@@ -72,6 +72,11 @@ Run History supports:
 
 On a run detail page, you can copy the full labeled prompt again or add a short
 note to explain why the run was kept and what should be reviewed later.
+You can also start a new template draft from the saved system and user prompts.
+The create form is prefilled but does not save automatically. Because a run
+stores resolved prompt text, review the draft and add any reusable variable
+placeholders again before creating the template.
+
 Individual runs can also be exported as JSON with the matching source template
 revision when it is still available locally. The Run History page can import
 one of those JSON files later, including its saved note when the note belongs to

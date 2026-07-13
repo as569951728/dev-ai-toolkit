@@ -35,7 +35,7 @@ The current version includes:
 - Prompt Playground with dotted, underscored, and hyphenated variable names,
   unresolved-placeholder guidance, and live prompt preview
 - Prompt Diff for comparing prompt revisions and variable drift
-- Prompt Run History for browsing, filtering, previewing variables, searching prompt text and notes, comparing with source templates, importing/exporting run JSON, deleting local runs, and reusing saved prompt runs
+- Prompt Run History for browsing, filtering, previewing variables, searching prompt text and notes, comparing with source templates, importing/exporting run JSON, deleting local runs, and reusing saved prompt runs as Playground inputs or new template drafts
 - JSON Tools for formatting, validating, and minifying payloads
 - API Builder for drafting request configurations, fetch snippets, and cURL commands
 - Code Viewer for reading code or generated output in single or compare mode
@@ -193,7 +193,7 @@ set of developer utilities.
 | Prompt Workflows | Prompt Templates | Create, edit, duplicate, archive, restore, delete, filter, import, and export templates | Active templates can open in the playground; all templates can open filtered run history |
 | Prompt Workflows | Prompt Playground | Select templates, fill variables, preview or copy labeled composed prompts, save run snapshots, and keep recent template usage | Main path for composing reusable prompts |
 | Prompt Workflows | Prompt Diff | Compare prompt revisions, detect variable drift, and inspect line-level wording changes | Best used after editing or templating changes |
-| Prompt Workflows | Prompt Run History | Browse saved runs, filter by template, preview captured variables, search saved prompt text and notes, open run details, copy full saved prompts, add notes, import or export a single run, compare with source templates, delete stale runs, and reopen saved prompts in downstream tools | Dedicated history view for saved prompt snapshots |
+| Prompt Workflows | Prompt Run History | Browse saved runs, filter by template, preview captured variables, search saved prompt text and notes, open run details, copy full saved prompts, add notes, import or export a single run, compare with source templates, delete stale runs, and reuse saved prompts in the Playground or a new template draft | Dedicated history view for saved prompt snapshots |
 | Developer Utilities | JSON Tools | Format, validate, minify, copy, and sample JSON payloads | Useful for debugging and payload cleanup |
 | Developer Utilities | API Builder | Draft request URLs, headers, query params, JSON bodies, `fetch` snippets, and cURL commands | Local request scaffolding only |
 | Developer Utilities | Code Viewer | Inspect generated text or code in single or compare mode | Supports prompt and output review workflows |
@@ -217,7 +217,7 @@ The most complete workflow in the current version looks like this:
    snapshot for later review
 3. Open filtered `Prompt Run History` for the active template
 4. Search saved runs by template name, saved prompt text, captured variable, or note content when reviewing older snapshots
-5. Review captured variables from the list, compare a run with its source template, add a short note, import or export a run as JSON, or delete stale local runs
+5. Review captured variables from the list, compare a run with its source template, add a short note, import or export a run as JSON, or start a new editable template draft from the saved prompts
 6. Continue into `Prompt Diff` or `Code Viewer`
 
 Other modules such as `JSON Tools` and `API Builder` are available as supporting utilities.

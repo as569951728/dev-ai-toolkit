@@ -86,6 +86,8 @@ Completed since the project review:
   templates while notes must remain attached to included runs.
 - Improved Playground variable handling for dotted and camel-case keys,
   unresolved values, and whitespace-sensitive content.
+- Added an explicit review-to-reuse path that prefills a new template draft
+  from a saved prompt snapshot without changing the source run.
 
 Still open:
 

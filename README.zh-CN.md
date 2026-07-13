@@ -52,7 +52,7 @@
   - 从历史列表直接进入 Prompt Diff 和源模板对比
   - 导出单条 run 的 JSON 文件
   - 删除不再需要的本地 run
-  - 跳回模板详情或继续在下游工具中查看已保存的 prompts
+  - 跳回模板详情、在 Playground 重开，或把已保存 prompts 带入新的模板草稿
 - JSON Tools
   - 格式化、压缩、校验、复制
 - API Builder
@@ -187,7 +187,7 @@ npm run audit
 | Prompt Workflows | Prompt Templates | 创建、编辑、复制、归档、恢复、删除、筛选、导入、导出模板 | 活跃模板可以进入 Playground，所有模板都可以查看过滤后的 Run History |
 | Prompt Workflows | Prompt Playground | 选择模板、填变量、预览或复制带分段标签的完整 prompt、保存 run snapshot、保留最近使用模板 | 当前主工作流入口 |
 | Prompt Workflows | Prompt Diff | 比较 prompt 文本、变量变化和行级差异 | 适合做模板改写后的复核 |
-| Prompt Workflows | Prompt Run History | 浏览 runs、按模板过滤、预览捕获变量、搜索 prompt 文本、变量或备注、查看详情、复制完整 prompt、添加备注、导出或删除单条 run、和源模板对比、继续在下游工具查看已保存的 prompts | 已保存 prompt 快照的历史视图 |
+| Prompt Workflows | Prompt Run History | 浏览 runs、按模板过滤、预览捕获变量、搜索 prompt 文本、变量或备注、查看详情、复制完整 prompt、添加备注、导出或删除单条 run、和源模板对比、在 Playground 或新模板草稿中复用已保存 prompts | 已保存 prompt 快照的历史视图 |
 | Developer Utilities | JSON Tools | 格式化、校验、压缩、复制、加载示例 | 适合调试 JSON 载荷 |
 | Developer Utilities | API Builder | 组织请求参数并生成 `fetch` 代码和 cURL 命令 | 本地请求草稿工具 |
 | Developer Utilities | Code Viewer | 单栏 / 双栏查看文本和代码输出 | 适合审阅 prompt 或生成结果 |
@@ -201,7 +201,7 @@ npm run audit
 2. 进入 `Prompt Playground` 填变量并预览组合后的 prompts，可以复制到外部 AI 工具
 3. 将有复用价值的内容保存为 run snapshot
 4. 在 `Prompt Run History` 里回看某个模板的 prompt 快照，也可以按 prompt 文本、变量或备注内容找回旧记录
-5. 在列表中查看捕获变量，和源模板进入 `Prompt Diff` 对比；也可以打开单条 run 详情，补充维护备注，必要时导出 JSON，或删除过期 run，再进入 `Code Viewer` 继续检查结果
+5. 在列表中查看捕获变量，和源模板进入 `Prompt Diff` 对比；也可以打开单条 run 详情，补充维护备注，必要时导出 JSON，或把已保存 prompts 带入新的模板草稿后再编辑保存
 6. 需要迁移或清理浏览器数据前，到 `Workspace Backup` 导出当前本地工作区
 
 ## 当前限制
