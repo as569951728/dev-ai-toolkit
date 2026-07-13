@@ -277,6 +277,32 @@ describe('PromptTemplateListPage', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('preserves spaces while entering a multi-word search', () => {
+    render(
+      <MemoryRouter>
+        <PromptTemplatesProvider repository={createMemoryRepository()}>
+          <PromptTemplateListPage />
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    const searchInput = screen.getByLabelText('Search prompt templates');
+
+    fireEvent.change(searchInput, {
+      target: { value: 'code ' },
+    });
+
+    expect(searchInput).toHaveValue('code ');
+    expect(screen.getByText('Search: code')).toBeInTheDocument();
+
+    fireEvent.change(searchInput, {
+      target: { value: 'code review' },
+    });
+
+    expect(searchInput).toHaveValue('code review');
+    expect(screen.getByText('Code Review Assistant')).toBeInTheDocument();
+  });
+
   it('clears active filters from the empty state and restores the default list', () => {
     const repository = createMemoryRepository([
       starterPromptTemplates[0]!,

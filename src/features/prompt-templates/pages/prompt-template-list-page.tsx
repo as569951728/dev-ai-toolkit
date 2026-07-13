@@ -43,7 +43,7 @@ export function PromptTemplateListPage() {
     const normalizedSearchValue = nextFilters.search.trim();
 
     if (normalizedSearchValue) {
-      nextSearchParams.set('search', normalizedSearchValue);
+      nextSearchParams.set('search', nextFilters.search);
     }
 
     if (nextFilters.tag !== 'all') {
