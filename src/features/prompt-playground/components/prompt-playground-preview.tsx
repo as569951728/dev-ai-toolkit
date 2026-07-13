@@ -98,9 +98,13 @@ export function PromptPlaygroundPreview({
 
       {saveStatusMessage ? (
         <p className="status-banner" role="status">
-          {saveStatusMessage}{' '}
+          <span>{saveStatusMessage}</span>
           {savedRunId ? (
-            <Link to={`/runs/${savedRunId}`}>Open saved run</Link>
+            <span className="status-banner__actions">
+              <span>Next: review it, add a note, or browse history.</span>
+              <Link to={`/runs/${savedRunId}`}>Open saved run</Link>
+              <Link to="/runs">Browse run history</Link>
+            </span>
           ) : null}
         </p>
       ) : null}

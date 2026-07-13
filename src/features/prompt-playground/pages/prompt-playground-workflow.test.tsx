@@ -108,6 +108,12 @@ describe('Prompt playground workflow', () => {
     expect(
       screen.getByRole('link', { name: 'Open saved run' }).getAttribute('href'),
     ).toMatch(/^\/runs\/.+/);
+    expect(
+      screen.getByText('Next: review it, add a note, or browse history.'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'Browse run history' }),
+    ).toHaveAttribute('href', '/runs');
     expect(screen.getByText('Recently used')).toBeInTheDocument();
     expect(
       screen.getByRole('button', { name: /Code Review Assistant/ }),
