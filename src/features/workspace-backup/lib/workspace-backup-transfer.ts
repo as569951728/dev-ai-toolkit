@@ -1,6 +1,7 @@
 import type { PromptRunNote } from '@/types/prompt-run-note';
 import type { PromptRunRecord } from '@/types/prompt-run';
 import type { PromptTemplate } from '@/types/prompt-template';
+import { isPromptRunNote } from '@/features/prompt-run-notes/lib/prompt-run-note-schema';
 import { isPromptRunRecord } from '@/features/prompt-runs/lib/prompt-run-schema';
 
 const WORKSPACE_BACKUP_VERSION = 1;
@@ -112,17 +113,6 @@ function isValidPromptTemplate(value: unknown): value is PromptTemplate {
   return hasCurrentTemplateRevision(value) && hasUniqueTemplateRevisions(value);
 }
 
-function isValidPromptRunNote(value: unknown): value is PromptRunNote {
-  return (
-    isRecord(value) &&
-    isNonEmptyString(value.id) &&
-    isNonEmptyString(value.runId) &&
-    isNonEmptyString(value.body) &&
-    isValidDateString(value.createdAt) &&
-    isValidDateString(value.updatedAt)
-  );
-}
-
 function doNotesReferenceExportedRuns(
   notes: PromptRunNote[],
   runs: PromptRunRecord[],
@@ -147,7 +137,7 @@ function normalizeWorkspaceBackupData(
   if (
     !value.templates.every(isValidPromptTemplate) ||
     !value.runs.every(isPromptRunRecord) ||
-    !value.notes.every(isValidPromptRunNote)
+    !value.notes.every(isPromptRunNote)
   ) {
     return null;
   }
