@@ -168,6 +168,67 @@ describe('PromptTemplateDetailPage', () => {
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
+  it('confirms before restoring a historical template revision', () => {
+    const baseTemplate = starterPromptTemplates[0]!;
+    const currentRevision = {
+      ...baseTemplate.revisions[0]!,
+      version: 2,
+      updatedAt: '2026-05-08T08:00:00.000Z',
+      description: 'Current template description.',
+    };
+    const template: PromptTemplate = {
+      ...baseTemplate,
+      version: currentRevision.version,
+      updatedAt: currentRevision.updatedAt,
+      description: currentRevision.description,
+      revisions: [...baseTemplate.revisions, currentRevision],
+    };
+    const templateRepository = createTemplateRepository([template]);
+
+    render(
+      <MemoryRouter initialEntries={[`/prompts/${template.id}`]}>
+        <PromptTemplatesProvider repository={templateRepository}>
+          <PromptRunsProvider repository={createRunRepository()}>
+            <Routes>
+              <Route
+                path="/prompts/:promptId"
+                element={<PromptTemplateDetailPage />}
+              />
+            </Routes>
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Restore as current' }),
+    );
+
+    expect(
+      screen.getByRole('dialog', { name: 'Restore version v1?' }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Cancel' })).toHaveFocus();
+    expect(templateRepository.snapshot()[0]?.version).toBe(2);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(templateRepository.snapshot()[0]?.version).toBe(2);
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Restore as current' }),
+    );
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Restore version v1' }),
+    );
+
+    expect(templateRepository.snapshot()[0]).toMatchObject({
+      version: 3,
+      description: baseTemplate.description,
+    });
+    expect(screen.getByText('Current version v3')).toBeInTheDocument();
+  });
+
   it('asks for confirmation before deleting a prompt template', () => {
     const templateRepository = createTemplateRepository();
     const templateId = starterPromptTemplates[0]!.id;

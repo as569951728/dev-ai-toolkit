@@ -86,7 +86,11 @@ export function PromptTemplateDetailPage() {
         runTemplateAction(() => restoreArchivedTemplate(id));
       }}
       onRestoreRevision={(id, revisionVersion) => {
-        runTemplateAction(() => restoreTemplateRevision(id, revisionVersion));
+        return Boolean(
+          runTemplateAction(() =>
+            restoreTemplateRevision(id, revisionVersion),
+          ),
+        );
       }}
     />
   );

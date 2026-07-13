@@ -22,7 +22,7 @@ interface PromptTemplateDetailProps {
   onRestoreRevision: (
     templateId: string,
     revisionVersion: PromptTemplateRevision['version'],
-  ) => void;
+  ) => boolean;
   recentRuns: PromptRunRecord[];
 }
 
@@ -52,6 +52,9 @@ export function PromptTemplateDetail({
   recentRuns,
 }: PromptTemplateDetailProps) {
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
+  const [pendingRestoreVersion, setPendingRestoreVersion] = useState<
+    PromptTemplateRevision['version'] | null
+  >(null);
   const revisionHistory = [...template.revisions].sort(
     (left, right) => right.version - left.version,
   );
@@ -202,6 +205,10 @@ export function PromptTemplateDetail({
           <div className="revision-list">
             {revisionHistory.map((revision) => {
               const isCurrent = revision.version === template.version;
+              const isConfirmingRestore =
+                revision.version === pendingRestoreVersion;
+              const confirmationTitleId = `restore-revision-${revision.version}-title`;
+              const confirmationDescriptionId = `restore-revision-${revision.version}-description`;
 
               return (
                 <article className="revision-card" key={revision.version}>
@@ -213,16 +220,62 @@ export function PromptTemplateDetail({
 
                     {isCurrent ? (
                       <span className="revision-badge">Current</span>
-                    ) : (
+                    ) : !isConfirmingRestore ? (
                       <button
                         className="ghost-button"
                         type="button"
-                        onClick={() => onRestoreRevision(template.id, revision.version)}
+                        onClick={() => setPendingRestoreVersion(revision.version)}
                       >
                         Restore as current
                       </button>
-                    )}
+                    ) : null}
                   </div>
+
+                  {isConfirmingRestore ? (
+                    <div
+                      aria-describedby={confirmationDescriptionId}
+                      aria-labelledby={confirmationTitleId}
+                      className="status-banner"
+                      role="dialog"
+                    >
+                      <span id={confirmationTitleId}>
+                        Restore version v{revision.version}?
+                      </span>
+                      <p
+                        className="run-history-note"
+                        id={confirmationDescriptionId}
+                      >
+                        Its content will be saved as the new current version v
+                        {template.version + 1}.
+                      </p>
+                      <div className="status-banner__actions">
+                        <button
+                          autoFocus
+                          className="secondary-button"
+                          type="button"
+                          onClick={() => setPendingRestoreVersion(null)}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          className="primary-button"
+                          type="button"
+                          onClick={() => {
+                            const restored = onRestoreRevision(
+                              template.id,
+                              revision.version,
+                            );
+
+                            if (restored) {
+                              setPendingRestoreVersion(null);
+                            }
+                          }}
+                        >
+                          Restore version v{revision.version}
+                        </button>
+                      </div>
+                    </div>
+                  ) : null}
 
                   <p className="revision-card__description">
                     {revision.description}
