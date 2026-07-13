@@ -114,7 +114,10 @@ export function parsePromptRunExportImport(
 }
 
 export function createPromptRunExportFilename(run: PromptRunRecord) {
-  const createdDate = run.createdAt.slice(0, 10) || 'undated';
+  const parsedCreatedAt = new Date(run.createdAt);
+  const createdDate = Number.isNaN(parsedCreatedAt.getTime())
+    ? 'undated'
+    : parsedCreatedAt.toISOString().slice(0, 10);
   const templateName = run.templateName
     .trim()
     .toLowerCase()

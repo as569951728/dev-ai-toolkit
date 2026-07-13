@@ -103,6 +103,24 @@ describe('prompt run export helpers', () => {
     ).toBe('2026-05-07-api-design-partner-run.json');
   });
 
+  it('normalizes parseable run dates before using them in a filename', () => {
+    expect(
+      createPromptRunExportFilename({
+        ...sampleRun,
+        createdAt: 'Thu, 07 May 2026 09:00:00 GMT',
+      }),
+    ).toBe('2026-05-07-api-design-partner-run-1.json');
+  });
+
+  it('uses an undated fallback for invalid internal run dates', () => {
+    expect(
+      createPromptRunExportFilename({
+        ...sampleRun,
+        createdAt: 'not-a-date',
+      }),
+    ).toBe('undated-api-design-partner-run-1.json');
+  });
+
   it('cleans up the temporary download after a failed click', () => {
     const revokeObjectURL = vi.fn();
     const link = document.createElement('a');
