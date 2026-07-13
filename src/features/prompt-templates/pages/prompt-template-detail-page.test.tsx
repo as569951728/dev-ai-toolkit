@@ -110,6 +110,35 @@ describe('PromptTemplateDetailPage', () => {
     expect(screen.getByRole('button', { name: 'Restore' })).toBeInTheDocument();
   });
 
+  it('archives a prompt template from the detail page', () => {
+    const templateId = starterPromptTemplates[0]!.id;
+    const templateRepository = createTemplateRepository();
+
+    render(
+      <MemoryRouter initialEntries={[`/prompts/${templateId}`]}>
+        <PromptTemplatesProvider repository={templateRepository}>
+          <PromptRunsProvider repository={createRunRepository()}>
+            <Routes>
+              <Route
+                path="/prompts/:promptId"
+                element={<PromptTemplateDetailPage />}
+              />
+            </Routes>
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Archive' }));
+
+    expect(screen.getByRole('button', { name: 'Restore' })).toBeInTheDocument();
+    expect(
+      templateRepository.snapshot().find((template) => template.id === templateId)
+        ?.archivedAt,
+    ).not.toBeNull();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
   it('asks for confirmation before deleting a prompt template', () => {
     const templateRepository = createTemplateRepository();
     const templateId = starterPromptTemplates[0]!.id;
@@ -149,5 +178,50 @@ describe('PromptTemplateDetailPage', () => {
     expect(
       templateRepository.snapshot().some((template) => template.id === templateId),
     ).toBe(false);
+  });
+
+  it('keeps the detail open when browser storage rejects a delete', () => {
+    const templateId = starterPromptTemplates[0]!.id;
+    const templateRepository: PromptTemplateRepository = {
+      loadAll: () => [...starterPromptTemplates],
+      saveAll: () => {
+        throw new Error('Storage quota exceeded.');
+      },
+    };
+
+    render(
+      <MemoryRouter initialEntries={[`/prompts/${templateId}`]}>
+        <PromptTemplatesProvider repository={templateRepository}>
+          <PromptRunsProvider repository={createRunRepository()}>
+            <Routes>
+              <Route
+                path="/prompts/:promptId"
+                element={<PromptTemplateDetailPage />}
+              />
+              <Route
+                path="/prompts"
+                element={<div>Prompt List Destination</div>}
+              />
+            </Routes>
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm delete' }));
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Failed to update this template. Check that browser storage is available and try again.',
+    );
+    expect(
+      screen.getByRole('heading', { name: 'Code Review Assistant' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Confirm delete' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText('Prompt List Destination'),
+    ).not.toBeInTheDocument();
   });
 });

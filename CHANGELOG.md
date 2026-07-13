@@ -45,6 +45,8 @@ The format is intentionally lightweight and human-readable.
 
 ### Fixed
 
+- Kept Prompt Template Detail open and reported browser storage failures for
+  duplicate, archive, restore, revision restore, and delete actions
 - Kept prompt template form values available for retry when browser storage
   rejects a create or edit operation
 - Preserved prompt run note drafts and reported browser storage failures when

@@ -8,6 +8,7 @@ import type { PromptRunRecord } from '@/types/prompt-run';
 import { formatCapturedVariableCount } from '@/features/prompt-runs/lib/prompt-run-display';
 
 interface PromptTemplateDetailProps {
+  actionErrorMessage: string | null;
   template: PromptTemplate;
   onBack: () => void;
   onEdit: (id: string) => void;
@@ -36,6 +37,7 @@ function formatUpdatedAt(updatedAt: string) {
 }
 
 export function PromptTemplateDetail({
+  actionErrorMessage,
   template,
   onBack,
   onEdit,
@@ -142,6 +144,12 @@ export function PromptTemplateDetail({
           )}
         </div>
       </div>
+
+      {actionErrorMessage ? (
+        <p className="status-banner status-banner--error" role="alert">
+          {actionErrorMessage}
+        </p>
+      ) : null}
 
       <div className="detail-grid">
         <article className="detail-card">

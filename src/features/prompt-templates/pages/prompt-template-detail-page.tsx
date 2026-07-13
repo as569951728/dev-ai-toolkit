@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 
 import { PromptTemplateDetail } from '@/features/prompt-templates/components/prompt-template-detail';
@@ -7,6 +8,9 @@ import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 export function PromptTemplateDetailPage() {
   const navigate = useNavigate();
   const { promptId } = useParams();
+  const [actionErrorMessage, setActionErrorMessage] = useState<string | null>(
+    null,
+  );
   const { getRunsByTemplateId } = usePromptRuns();
   const {
     archiveTemplate,
@@ -25,8 +29,22 @@ export function PromptTemplateDetailPage() {
 
   const recentRuns = getRunsByTemplateId(template.id, 5);
 
+  function runTemplateAction<T>(action: () => T): T | null {
+    setActionErrorMessage(null);
+
+    try {
+      return action();
+    } catch {
+      setActionErrorMessage(
+        'Failed to update this template. Check that browser storage is available and try again.',
+      );
+      return null;
+    }
+  }
+
   return (
     <PromptTemplateDetail
+      actionErrorMessage={actionErrorMessage}
       template={template}
       recentRuns={recentRuns}
       onBack={() => navigate('/prompts')}
@@ -35,24 +53,32 @@ export function PromptTemplateDetailPage() {
       onOpenRunDetail={(id) => navigate(`/runs/${id}`)}
       onEdit={(id) => navigate(`/prompts/${id}/edit`)}
       onDuplicate={(id) => {
-        const duplicatedTemplate = duplicateTemplate(id);
+        const duplicatedTemplate = runTemplateAction(() =>
+          duplicateTemplate(id),
+        );
 
         if (duplicatedTemplate) {
           navigate(`/prompts/${duplicatedTemplate.id}`);
         }
       }}
       onDelete={(id) => {
-        deleteTemplate(id);
-        navigate('/prompts');
+        const deleted = runTemplateAction(() => {
+          deleteTemplate(id);
+          return true;
+        });
+
+        if (deleted) {
+          navigate('/prompts');
+        }
       }}
       onArchive={(id) => {
-        archiveTemplate(id);
+        runTemplateAction(() => archiveTemplate(id));
       }}
       onRestoreArchive={(id) => {
-        restoreArchivedTemplate(id);
+        runTemplateAction(() => restoreArchivedTemplate(id));
       }}
       onRestoreRevision={(id, revisionVersion) => {
-        restoreTemplateRevision(id, revisionVersion);
+        runTemplateAction(() => restoreTemplateRevision(id, revisionVersion));
       }}
     />
   );
