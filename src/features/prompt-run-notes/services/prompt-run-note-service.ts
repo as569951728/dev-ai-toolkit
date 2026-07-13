@@ -15,12 +15,26 @@ export function saveNoteForRun(
   const normalizedBody = body.trim();
 
   if (!normalizedBody) {
+    if (!existingNote) {
+      return {
+        note: null,
+        notes,
+      };
+    }
+
     const nextNotes = notes.filter((note) => note.runId !== runId);
     repository.saveAll(nextNotes);
 
     return {
       note: null,
       notes: nextNotes,
+    };
+  }
+
+  if (existingNote?.body === normalizedBody) {
+    return {
+      note: existingNote,
+      notes,
     };
   }
 

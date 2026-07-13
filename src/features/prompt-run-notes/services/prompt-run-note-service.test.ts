@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import type { PromptRunNoteRepository } from '@/features/prompt-run-notes/repositories/prompt-run-note-repository';
 import {
@@ -47,18 +47,51 @@ describe('prompt-run-note-service', () => {
   });
 
   it('does not create a new note for a blank body', () => {
-    const repository = createMemoryRepository();
+    const notes: PromptRunNote[] = [];
+    const saveAll = vi.fn();
+    const repository: PromptRunNoteRepository = {
+      loadAll: () => notes,
+      saveAll,
+    };
 
     const result = saveNoteForRun(
       repository,
-      repository.loadAll(),
+      notes,
       'run-1',
       '',
     );
 
     expect(result.note).toBeNull();
-    expect(result.notes).toEqual([]);
-    expect(repository.snapshot()).toEqual([]);
+    expect(result.notes).toBe(notes);
+    expect(saveAll).not.toHaveBeenCalled();
+  });
+
+  it('does not rewrite an unchanged note', () => {
+    const note: PromptRunNote = {
+      id: 'note-1',
+      runId: 'run-1',
+      body: 'Keep the original timestamp',
+      createdAt: '2026-05-08T09:00:00.000Z',
+      updatedAt: '2026-05-08T09:00:00.000Z',
+    };
+    const notes = [note];
+    const saveAll = vi.fn();
+    const repository: PromptRunNoteRepository = {
+      loadAll: () => notes,
+      saveAll,
+    };
+
+    const result = saveNoteForRun(
+      repository,
+      notes,
+      note.runId,
+      `  ${note.body}  `,
+    );
+
+    expect(result.note).toBe(note);
+    expect(result.notes).toBe(notes);
+    expect(result.note?.updatedAt).toBe('2026-05-08T09:00:00.000Z');
+    expect(saveAll).not.toHaveBeenCalled();
   });
 
   it('deletes the note attached to a saved run', () => {
