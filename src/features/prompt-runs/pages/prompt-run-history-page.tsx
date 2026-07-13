@@ -9,6 +9,7 @@ import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { buildPromptRunDetailPath } from '@/features/prompt-runs/lib/prompt-run-links';
 import { matchesPromptRunSearch } from '@/features/prompt-runs/lib/prompt-run-search';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
+import { buildPromptTemplatePlaygroundPath } from '@/features/prompt-templates/lib/prompt-template-links';
 
 export function PromptRunHistoryPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -86,7 +87,7 @@ export function PromptRunHistoryPage() {
   const canCreateFirstRun =
     activeSelectedTemplate !== null && !selectedTemplateHasRuns;
   const emptyHistoryPlaygroundUrl = canCreateFirstRun
-    ? `/playground?templateId=${encodeURIComponent(activeSelectedTemplate.id)}`
+    ? buildPromptTemplatePlaygroundPath(activeSelectedTemplate.id)
     : '/playground';
 
   const updateFilters = ({

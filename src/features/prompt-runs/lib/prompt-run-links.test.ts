@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   buildPromptRunDetailPath,
+  buildPromptRunPlaygroundPath,
   buildPromptRunSourceDiffUrl,
 } from '@/features/prompt-runs/lib/prompt-run-links';
 import type { PromptRunRecord } from '@/types/prompt-run';
@@ -56,6 +57,23 @@ describe('prompt-run-links', () => {
       '/runs/imported%2Frun%20%231',
     );
     expect(buildPromptRunDetailPath('run-1')).toBe('/runs/run-1');
+  });
+
+  it('encodes run and template IDs used to reopen a saved run', () => {
+    expect(
+      buildPromptRunPlaygroundPath({
+        runId: 'imported/run #1',
+        templateId: 'imported/template & #1',
+      }),
+    ).toBe(
+      '/playground?runId=imported%2Frun%20%231&templateId=imported%2Ftemplate%20%26%20%231',
+    );
+    expect(
+      buildPromptRunPlaygroundPath({
+        runId: 'run-1',
+        templateId: 'template-1',
+      }),
+    ).toBe('/playground?runId=run-1&templateId=template-1');
   });
 
   it('builds a Prompt Diff URL using the matching source template revision', () => {

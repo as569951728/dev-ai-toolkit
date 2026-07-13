@@ -7,6 +7,7 @@ import {
 } from '@/features/prompt-runs/lib/prompt-run-display';
 import {
   buildPromptRunDetailPath,
+  buildPromptRunPlaygroundPath,
   buildPromptRunSourceDiffUrl,
 } from '@/features/prompt-runs/lib/prompt-run-links';
 import { buildPromptTemplateDetailPath } from '@/features/prompt-templates/lib/prompt-template-links';
@@ -87,7 +88,10 @@ export function PromptRunHistoryCard({
         {sourceTemplate && !sourceTemplate.archivedAt ? (
           <Link
             className="ghost-button"
-            to={`/playground?runId=${encodeURIComponent(run.id)}&templateId=${encodeURIComponent(run.templateId)}`}
+            to={buildPromptRunPlaygroundPath({
+              runId: run.id,
+              templateId: run.templateId,
+            })}
           >
             Reopen in Playground
           </Link>

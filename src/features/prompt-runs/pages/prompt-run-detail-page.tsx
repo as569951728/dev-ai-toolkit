@@ -11,7 +11,10 @@ import { buildCodeViewerUrl } from '@/features/code-viewer/lib/code-viewer-utils
 import { PromptRunNotePanel } from '@/features/prompt-run-notes/components/prompt-run-note-panel';
 import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
 import { exportPromptRunAsJson } from '@/features/prompt-runs/lib/prompt-run-export';
-import { buildPromptRunSourceDiffUrl } from '@/features/prompt-runs/lib/prompt-run-links';
+import {
+  buildPromptRunPlaygroundPath,
+  buildPromptRunSourceDiffUrl,
+} from '@/features/prompt-runs/lib/prompt-run-links';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
 import { buildPromptTemplateDetailPath } from '@/features/prompt-templates/lib/prompt-template-links';
@@ -172,7 +175,10 @@ export function PromptRunDetailPage() {
           {sourceTemplate && !sourceTemplate.archivedAt ? (
             <Link
               className="primary-button"
-              to={`/playground?runId=${encodeURIComponent(run.id)}&templateId=${encodeURIComponent(run.templateId)}`}
+              to={buildPromptRunPlaygroundPath({
+                runId: run.id,
+                templateId: run.templateId,
+              })}
             >
               Reopen in Playground
             </Link>
