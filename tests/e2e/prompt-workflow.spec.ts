@@ -1,6 +1,12 @@
 import { expect, test } from '@playwright/test';
 
-test('saves a prompt snapshot and opens it for review', async ({ page }) => {
+test('saves a prompt snapshot and opens it for review', async ({
+  context,
+  page,
+}) => {
+  await context.grantPermissions(['clipboard-read', 'clipboard-write'], {
+    origin: 'http://127.0.0.1:4173',
+  });
   await page.goto('/playground?templateId=code-review-assistant');
 
   await page.getByLabel('Repository Name').fill('dev-ai-toolkit');
@@ -36,4 +42,14 @@ test('saves a prompt snapshot and opens it for review', async ({ page }) => {
   await expect(
     page.getByRole('link', { name: 'Reopen in Playground' }),
   ).toBeVisible();
+
+  await page.getByRole('button', { name: 'Copy full prompt' }).click();
+
+  await expect(page.getByRole('status')).toContainText('Full prompt copied.');
+  const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
+
+  expect(clipboardText).toContain('System prompt');
+  expect(clipboardText).toContain('User prompt');
+  expect(clipboardText).toContain('dev-ai-toolkit');
+  expect(clipboardText).toContain('frontend workflow');
 });
