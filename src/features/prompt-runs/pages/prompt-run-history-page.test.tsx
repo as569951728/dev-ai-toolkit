@@ -206,6 +206,12 @@ describe('PromptRunHistoryPage', () => {
       screen.getAllByRole('link', { name: 'View details' })[0],
     ).toHaveAttribute('href', '/runs/run-2');
     expect(
+      screen.getAllByRole('link', { name: 'Reopen in Playground' })[0],
+    ).toHaveAttribute(
+      'href',
+      `/playground?runId=run-2&templateId=${starterPromptTemplates[1]!.id}`,
+    );
+    expect(
       screen.getAllByRole('link', {
         name: 'Open saved prompts in Code Viewer',
       }),
@@ -304,6 +310,35 @@ describe('PromptRunHistoryPage', () => {
     expect(
       screen.getByRole('link', { name: 'Open Prompt Playground' }),
     ).toHaveAttribute('href', '/playground');
+  });
+
+  it('does not reopen a saved snapshot from an archived template', () => {
+    const archivedTemplate = {
+      ...starterPromptTemplates[1]!,
+      archivedAt: '2026-05-08T09:00:00.000Z',
+    };
+    const archivedRun: PromptRunRecord = {
+      id: 'archived-template-run',
+      templateId: archivedTemplate.id,
+      templateName: archivedTemplate.name,
+      templateVersion: archivedTemplate.version,
+      variables: {},
+      systemPrompt: 'Saved system prompt.',
+      userPrompt: 'Saved user prompt.',
+      createdAt: '2026-05-08T10:00:00.000Z',
+    };
+
+    renderRunHistory({
+      runs: [archivedRun],
+      templateRepository: createTemplateRepository([archivedTemplate]),
+    });
+
+    expect(
+      screen.queryByRole('link', { name: 'Reopen in Playground' }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'View source template' }),
+    ).toHaveAttribute('href', `/prompts/${archivedTemplate.id}`);
   });
 
   it('imports a single prompt run JSON export with note context', async () => {
@@ -895,6 +930,9 @@ describe('PromptRunHistoryPage', () => {
     expect(
       screen.getByRole('heading', { name: 'Deleted Template' }),
     ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('link', { name: 'Reopen in Playground' }),
+    ).not.toBeInTheDocument();
   });
 
   it('keeps the selected template filter visible when that template has no runs yet', () => {

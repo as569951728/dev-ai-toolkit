@@ -80,6 +80,14 @@ export function PromptRunHistoryCard({
         <Link className="ghost-button" to={`/runs/${run.id}`}>
           View details
         </Link>
+        {sourceTemplate && !sourceTemplate.archivedAt ? (
+          <Link
+            className="ghost-button"
+            to={`/playground?runId=${encodeURIComponent(run.id)}&templateId=${encodeURIComponent(run.templateId)}`}
+          >
+            Reopen in Playground
+          </Link>
+        ) : null}
         {sourceTemplate ? (
           <Link className="ghost-button" to={`/prompts/${run.templateId}`}>
             View source template

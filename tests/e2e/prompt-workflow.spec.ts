@@ -80,6 +80,16 @@ test('saves a prompt snapshot and protects its review note draft', async ({
   await expect(
     page.getByRole('heading', { name: 'Recent prompt runs' }),
   ).toBeVisible();
+
+  await page.getByRole('link', { name: 'Reopen in Playground' }).click();
+
+  await expect(page).toHaveURL(/\/playground\?.*runId=/);
+  await expect(page.getByLabel('Repository Name')).toHaveValue(
+    'dev-ai-toolkit',
+  );
+  await expect(page.getByLabel('Change Scope')).toHaveValue(
+    'frontend workflow',
+  );
 });
 
 test('resolves dotted template variables in the Playground', async ({
