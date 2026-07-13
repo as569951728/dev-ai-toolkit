@@ -58,6 +58,7 @@ The format is intentionally lightweight and human-readable.
 
 ### Fixed
 
+- Reported partial prompt run imports when compensating run writes fail
 - Reported when a failed prompt run deletion could not restore its note
 - Preserved prompt run notes saved before the provider renders again
 - Preserved prompt templates created before the provider renders again

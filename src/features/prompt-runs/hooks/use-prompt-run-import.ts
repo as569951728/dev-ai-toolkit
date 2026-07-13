@@ -18,6 +18,25 @@ interface ImportStatus {
   runId: string;
 }
 
+export class PromptRunImportRollbackError extends Error {
+  readonly rollbackCause: unknown;
+
+  constructor(
+    replacedExistingRun: boolean,
+    noteImportCause: unknown,
+    rollbackCause: unknown,
+  ) {
+    super(
+      replacedExistingRun
+        ? 'Prompt run import failed, and the previous local run could not be restored. Imported run data may still be present.'
+        : 'Prompt run import failed, and the new local run could not be removed. The imported run may still be present.',
+      { cause: noteImportCause },
+    );
+    this.name = 'PromptRunImportRollbackError';
+    this.rollbackCause = rollbackCause;
+  }
+}
+
 export function usePromptRunImport({
   deleteRun,
   getRunById,
@@ -44,10 +63,18 @@ export function usePromptRunImport({
         try {
           importNotes([payload.note]);
         } catch (error) {
-          if (existingRun) {
-            importRuns([existingRun]);
-          } else {
-            deleteRun(payload.run.id);
+          try {
+            if (existingRun) {
+              importRuns([existingRun]);
+            } else {
+              deleteRun(payload.run.id);
+            }
+          } catch (rollbackError) {
+            throw new PromptRunImportRollbackError(
+              replacedExistingRun,
+              error,
+              rollbackError,
+            );
           }
 
           throw error;

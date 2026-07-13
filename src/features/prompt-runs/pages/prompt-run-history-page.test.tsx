@@ -42,6 +42,27 @@ function createRunRepository(
   };
 }
 
+function createRollbackFailingRunRepository(
+  initialRuns: PromptRunRecord[],
+): PromptRunRepository & { snapshot: () => PromptRunRecord[] } {
+  let runs = [...initialRuns];
+  let writeCount = 0;
+
+  return {
+    loadAll: () => [...runs],
+    saveAll: (nextRuns) => {
+      writeCount += 1;
+
+      if (writeCount > 1) {
+        throw new Error('Browser storage rejected the run rollback.');
+      }
+
+      runs = [...nextRuns];
+    },
+    snapshot: () => [...runs],
+  };
+}
+
 function createNoteRepository(
   initialNotes: PromptRunNote[] = [],
 ): PromptRunNoteRepository & { snapshot: () => PromptRunNote[] } {
@@ -453,6 +474,73 @@ describe('PromptRunHistoryPage', () => {
     expect(codeViewerUrl.searchParams.get('left')).toBe('System B');
     expect(codeViewerUrl.searchParams.get('right')).toBe('User B');
   });
+
+  it.each([
+    {
+      scenario: 'a new run',
+      initialRuns: [] as PromptRunRecord[],
+      importedRun: {
+        ...sampleRuns[0]!,
+        id: 'imported-run',
+        systemPrompt: 'Imported system prompt.',
+      },
+      expectedMessage:
+        'Prompt run import failed, and the new local run could not be removed. The imported run may still be present.',
+    },
+    {
+      scenario: 'a replacement run',
+      initialRuns: [sampleRuns[0]!],
+      importedRun: {
+        ...sampleRuns[0]!,
+        systemPrompt: 'Replacement system prompt.',
+      },
+      expectedMessage:
+        'Prompt run import failed, and the previous local run could not be restored. Imported run data may still be present.',
+    },
+  ])(
+    'reports a partial import when rollback fails for $scenario',
+    async ({ initialRuns, importedRun, expectedMessage }) => {
+      const runRepository = createRollbackFailingRunRepository(initialRuns);
+      const noteRepository = createFailingNoteRepository();
+
+      renderRunHistory({
+        runs: initialRuns,
+        runRepository,
+        noteRepository,
+      });
+      const file = new File(
+        [
+          JSON.stringify(
+            createPromptRunExportPayload({
+              run: importedRun,
+              note: {
+                id: `note-${importedRun.id}`,
+                runId: importedRun.id,
+                body: 'Imported note.',
+                createdAt: '2026-05-10T10:00:00.000Z',
+                updatedAt: '2026-05-10T10:00:00.000Z',
+              },
+              exportedAt: '2026-05-10T11:00:00.000Z',
+            }),
+          ),
+        ],
+        'prompt-run.json',
+        { type: 'application/json' },
+      );
+
+      fireEvent.change(screen.getByLabelText('Import run JSON'), {
+        target: { files: [file] },
+      });
+
+      expect(await screen.findByRole('alert')).toHaveTextContent(
+        expectedMessage,
+      );
+      expect(runRepository.snapshot()[0]?.systemPrompt).toBe(
+        importedRun.systemPrompt,
+      );
+      expect(noteRepository.snapshot()).toEqual([]);
+    },
+  );
 
   it('reports when an imported run replaces an existing local record', async () => {
     const { runRepository } = renderRunHistory();
