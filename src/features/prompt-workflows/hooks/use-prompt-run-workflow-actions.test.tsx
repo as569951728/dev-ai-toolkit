@@ -80,6 +80,40 @@ afterEach(() => {
 });
 
 describe('usePromptRunWorkflowActions', () => {
+  it('deletes a run without writing the note collection when no note exists', () => {
+    const runRepository = createRunRepository([
+      {
+        id: 'run-1',
+        templateId: 'template-1',
+        templateName: 'Code Review Assistant',
+        templateVersion: 2,
+        variables: {},
+        systemPrompt: 'System',
+        userPrompt: 'User',
+        createdAt: '2026-05-07T09:00:00.000Z',
+      },
+    ]);
+    const noteRepository: PromptRunNoteRepository = {
+      loadAll: () => [],
+      saveAll: () => {
+        throw new Error('Unexpected note write.');
+      },
+    };
+
+    render(
+      <PromptRunsProvider repository={runRepository}>
+        <PromptRunNotesProvider repository={noteRepository}>
+          <TestConsumer runId="run-1" />
+        </PromptRunNotesProvider>
+      </PromptRunsProvider>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete workflow run' }));
+
+    expect(runRepository.snapshot()).toEqual([]);
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
   it('deletes a prompt run and its saved note together', () => {
     const runRepository = createRunRepository([
       {

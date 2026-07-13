@@ -24,7 +24,9 @@ export function usePromptRunWorkflowActions() {
     (runId: string) => {
       const note = getNoteByRunId(runId);
 
-      deleteNoteByRunId(runId);
+      if (note) {
+        deleteNoteByRunId(runId);
+      }
 
       try {
         deleteRun(runId);
