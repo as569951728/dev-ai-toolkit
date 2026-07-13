@@ -249,6 +249,42 @@ describe('prompt-template-transfer', () => {
     expect(result.importedTemplates[0]?.id).not.toBe(existingReviewTemplate.id);
   });
 
+  it('matches existing templates after trimming imported ids', () => {
+    const archivedTemplate = {
+      ...existingApiTemplate,
+      archivedAt: '2026-05-03T08:00:00.000Z',
+    };
+    const result = parsePromptTemplateImport(
+      JSON.stringify([
+        {
+          id: `  ${archivedTemplate.id}  `,
+          name: archivedTemplate.name,
+          description: 'Imported update with a padded id.',
+          systemPrompt: archivedTemplate.systemPrompt,
+          userPrompt: archivedTemplate.userPrompt,
+          tags: archivedTemplate.tags,
+        },
+      ]),
+      [archivedTemplate],
+    );
+
+    expect(result.summary).toEqual({
+      created: 0,
+      skipped: 0,
+      updated: 1,
+      total: 1,
+    });
+    expect(result.importedTemplates[0]).toMatchObject({
+      id: archivedTemplate.id,
+      archivedAt: archivedTemplate.archivedAt,
+      version: archivedTemplate.version,
+      updatedAt: archivedTemplate.updatedAt,
+    });
+    expect(
+      mergePromptTemplates([archivedTemplate], result.importedTemplates),
+    ).toHaveLength(1);
+  });
+
   it('normalizes archived template state from imported payloads', () => {
     const archivedTemplate = {
       ...existingApiTemplate,

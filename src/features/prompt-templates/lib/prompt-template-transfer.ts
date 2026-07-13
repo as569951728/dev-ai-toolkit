@@ -199,7 +199,9 @@ export function parsePromptTemplateImport(
 
   for (const item of templatesSource) {
     const candidateId =
-      isRecord(item) && typeof item.id === 'string' ? item.id : '';
+      isRecord(item) && typeof item.id === 'string'
+        ? normalizeString(item.id)
+        : '';
     const existingTemplate = candidateId
       ? existingTemplatesById.get(candidateId)
       : undefined;
