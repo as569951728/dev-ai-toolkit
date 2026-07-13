@@ -125,8 +125,8 @@ npm run build
 npm run test
 ```
 
-The browser smoke test covers the main prompt workflow. Install its Chromium
-runtime once, then run it with:
+The browser smoke tests cover the main prompt workflow and a workspace backup
+round trip. Install their Chromium runtime once, then run them with:
 
 ```bash
 npx playwright install chromium
