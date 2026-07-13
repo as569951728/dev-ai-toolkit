@@ -45,6 +45,8 @@ The format is intentionally lightweight and human-readable.
 
 ### Fixed
 
+- Reported prompt template JSON export failures and kept the export action
+  available for retry
 - Reported workspace backup export failures and kept the download action
   available for retry
 - Reported prompt run JSON export failures on Run Detail and kept the action

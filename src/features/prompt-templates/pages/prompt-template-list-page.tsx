@@ -58,20 +58,32 @@ export function PromptTemplateListPage() {
   };
 
   const handleExport = () => {
-    const json = stringifyPromptTemplateExport(templates);
-    const blob = new Blob([json], { type: 'application/json' });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    let objectUrl = '';
 
-    link.href = url;
-    link.download = `dev-ai-toolkit-prompts-${new Date().toISOString().slice(0, 10)}.json`;
-    link.click();
-    window.URL.revokeObjectURL(url);
+    try {
+      const json = stringifyPromptTemplateExport(templates);
+      const blob = new Blob([json], { type: 'application/json' });
+      const link = document.createElement('a');
 
-    setFeedback({
-      message: `Exported ${templates.length} templates to JSON.`,
-      tone: 'success',
-    });
+      objectUrl = window.URL.createObjectURL(blob);
+      link.href = objectUrl;
+      link.download = `dev-ai-toolkit-prompts-${new Date().toISOString().slice(0, 10)}.json`;
+      link.click();
+
+      setFeedback({
+        message: `Exported ${templates.length} templates to JSON.`,
+        tone: 'success',
+      });
+    } catch {
+      setFeedback({
+        message: 'Failed to export prompt templates. Please try again.',
+        tone: 'error',
+      });
+    } finally {
+      if (objectUrl) {
+        window.URL.revokeObjectURL(objectUrl);
+      }
+    }
   };
 
   const handleImport = async (

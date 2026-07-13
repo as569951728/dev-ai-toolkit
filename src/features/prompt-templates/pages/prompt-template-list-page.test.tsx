@@ -42,6 +42,7 @@ function createMemoryRepository(
 
 afterEach(() => {
   cleanup();
+  vi.restoreAllMocks();
 });
 
 describe('PromptTemplateListPage', () => {
@@ -75,6 +76,53 @@ describe('PromptTemplateListPage', () => {
       `Exported ${starterPromptTemplates.length} templates to JSON.`,
     );
     expect(click).toHaveBeenCalled();
+  });
+
+  it('announces a failed template export and allows retrying', () => {
+    const createObjectURL = vi
+      .fn()
+      .mockImplementationOnce(() => {
+        throw new Error('Downloads are unavailable.');
+      })
+      .mockReturnValue('blob:prompt-template-export');
+    const revokeObjectURL = vi.fn();
+    const click = vi
+      .spyOn(HTMLAnchorElement.prototype, 'click')
+      .mockImplementation(() => undefined);
+
+    Object.defineProperty(window.URL, 'createObjectURL', {
+      configurable: true,
+      value: createObjectURL,
+    });
+    Object.defineProperty(window.URL, 'revokeObjectURL', {
+      configurable: true,
+      value: revokeObjectURL,
+    });
+
+    render(
+      <MemoryRouter>
+        <PromptTemplatesProvider repository={createMemoryRepository()}>
+          <PromptTemplateListPage />
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Export JSON' }));
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Failed to export prompt templates. Please try again.',
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Export JSON' }));
+
+    expect(screen.getByRole('status')).toHaveTextContent(
+      `Exported ${starterPromptTemplates.length} templates to JSON.`,
+    );
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(click).toHaveBeenCalledOnce();
+    expect(revokeObjectURL).toHaveBeenCalledWith(
+      'blob:prompt-template-export',
+    );
   });
 
   it('announces invalid template import feedback as an alert', async () => {
