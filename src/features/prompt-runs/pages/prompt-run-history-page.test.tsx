@@ -249,6 +249,42 @@ describe('PromptRunHistoryPage', () => {
     ).toHaveAttribute('href', '/playground');
   });
 
+  it('preserves the selected template when its entire run history is empty', () => {
+    const template = starterPromptTemplates[1]!;
+
+    renderRunHistory({
+      initialEntry: `/runs?templateId=${template.id}`,
+      runs: [],
+    });
+
+    expect(
+      screen.getByRole('link', { name: 'Create first run in Playground' }),
+    ).toHaveAttribute('href', `/playground?templateId=${template.id}`);
+  });
+
+  it('does not carry an archived template into the Playground', () => {
+    const archivedTemplate = {
+      ...starterPromptTemplates[1]!,
+      archivedAt: '2026-05-08T09:00:00.000Z',
+    };
+
+    renderRunHistory({
+      initialEntry: `/runs?templateId=${archivedTemplate.id}`,
+      runs: [],
+      templateRepository: createTemplateRepository([
+        starterPromptTemplates[0]!,
+        archivedTemplate,
+      ]),
+    });
+
+    expect(
+      screen.queryByRole('link', { name: 'Create first run in Playground' }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'Open Prompt Playground' }),
+    ).toHaveAttribute('href', '/playground');
+  });
+
   it('imports a single prompt run JSON export with note context', async () => {
     const { noteRepository, runRepository } = renderRunHistory({ runs: [] });
     const importedRun: PromptRunRecord = {
@@ -682,6 +718,12 @@ describe('PromptRunHistoryPage', () => {
     expect(
       screen.getByText('No runs match the current filters'),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'Create first run in Playground' }),
+    ).toHaveAttribute(
+      'href',
+      `/playground?templateId=${starterPromptTemplates[1]!.id}`,
+    );
   });
 
   it('syncs active filters when the route query changes', () => {

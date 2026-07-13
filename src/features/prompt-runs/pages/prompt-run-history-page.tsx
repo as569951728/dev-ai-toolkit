@@ -59,6 +59,20 @@ export function PromptRunHistoryPage() {
       ? null
       : availableTemplates.find((template) => template.id === selectedTemplateId)
           ?.name ?? null;
+  const selectedTemplate =
+    selectedTemplateId === 'all'
+      ? null
+      : (getTemplateById(selectedTemplateId) ?? null);
+  const activeSelectedTemplate =
+    selectedTemplate && !selectedTemplate.archivedAt ? selectedTemplate : null;
+  const selectedTemplateHasRuns = activeSelectedTemplate
+    ? runs.some((run) => run.templateId === activeSelectedTemplate.id)
+    : false;
+  const canCreateFirstRun =
+    activeSelectedTemplate !== null && !selectedTemplateHasRuns;
+  const emptyHistoryPlaygroundUrl = canCreateFirstRun
+    ? `/playground?templateId=${encodeURIComponent(activeSelectedTemplate.id)}`
+    : '/playground';
 
   const updateFilters = ({
     nextSearchValue = searchValue,
@@ -194,6 +208,11 @@ export function PromptRunHistoryPage() {
               <div className="empty-state empty-state--compact">
                 <h2>No runs match the current filters</h2>
                 <p>Try a different search value or switch back to all templates.</p>
+                {canCreateFirstRun ? (
+                  <Link className="primary-button" to={emptyHistoryPlaygroundUrl}>
+                    Create first run in Playground
+                  </Link>
+                ) : null}
               </div>
             )}
           </>
@@ -204,8 +223,10 @@ export function PromptRunHistoryPage() {
               Save a prompt run from the playground to build a reusable local
               activity trail.
             </p>
-            <Link className="primary-button" to="/playground">
-              Open Prompt Playground
+            <Link className="primary-button" to={emptyHistoryPlaygroundUrl}>
+              {canCreateFirstRun
+                ? 'Create first run in Playground'
+                : 'Open Prompt Playground'}
             </Link>
           </div>
         )}
