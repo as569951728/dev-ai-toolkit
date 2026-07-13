@@ -2,10 +2,17 @@ import { describe, expect, it } from 'vitest';
 
 import {
   formatCapturedVariableCount,
+  formatPromptRunCreatedAt,
   getCapturedVariablePreview,
 } from '@/features/prompt-runs/lib/prompt-run-display';
 
 describe('prompt-run-display', () => {
+  it('formats saved run timestamps for display', () => {
+    expect(formatPromptRunCreatedAt('2026-01-15T12:30:00')).toBe(
+      'Jan 15, 2026, 12:30 PM',
+    );
+  });
+
   it('formats captured variable counts with readable singular and plural text', () => {
     expect(formatCapturedVariableCount(0)).toBe(
       'No template variables were captured in this run.',

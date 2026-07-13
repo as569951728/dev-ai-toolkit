@@ -7,25 +7,17 @@ import {
   useParams,
 } from 'react-router-dom';
 
-import { buildCodeViewerUrl } from '@/features/code-viewer/lib/code-viewer-utils';
 import { PromptRunNotePanel } from '@/features/prompt-run-notes/components/prompt-run-note-panel';
 import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
 import { PromptRunInputsPanel } from '@/features/prompt-runs/components/prompt-run-inputs-panel';
+import { PromptRunOverviewPanel } from '@/features/prompt-runs/components/prompt-run-overview-panel';
 import {
   PromptRunPromptsPanel,
   type PromptRunCopyTarget,
 } from '@/features/prompt-runs/components/prompt-run-prompts-panel';
 import { exportPromptRunAsJson } from '@/features/prompt-runs/lib/prompt-run-export';
-import {
-  buildPromptRunPlaygroundPath,
-  buildPromptRunSourceDiffUrl,
-} from '@/features/prompt-runs/lib/prompt-run-links';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
-import {
-  buildPromptTemplateCreatePath,
-  buildPromptTemplateDetailPath,
-} from '@/features/prompt-templates/lib/prompt-template-links';
 import {
   PromptRunNoteRollbackError,
   usePromptRunWorkflowActions,
@@ -36,16 +28,6 @@ type ActionFeedback = {
   message: string;
   tone: 'success' | 'error';
 };
-
-function formatCreatedAt(createdAt: string) {
-  return new Intl.DateTimeFormat('en', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-  }).format(new Date(createdAt));
-}
 
 export function PromptRunDetailPage() {
   const navigate = useNavigate();
@@ -112,17 +94,10 @@ export function PromptRunDetailPage() {
       );
     }
   };
-  const codeViewerUrl = buildCodeViewerUrl({
-    left: run.systemPrompt,
-    right: run.userPrompt,
-    mode: 'compare',
-    language: 'markdown',
-  });
   const sourceRevision =
     sourceTemplate?.revisions.find(
       (revision) => revision.version === run.templateVersion,
     ) ?? null;
-  const promptDiffUrl = buildPromptRunSourceDiffUrl({ run, sourceTemplate });
   const handleExportRun = () => {
     try {
       exportPromptRunAsJson({
@@ -166,62 +141,7 @@ export function PromptRunDetailPage() {
 
   return (
     <section className="playground-layout">
-      <div className="playground-hero panel">
-        <p className="eyebrow">Saved prompt snapshot</p>
-        <h1>{run.templateName}</h1>
-        <p className="panel__summary">
-          Saved {formatCreatedAt(run.createdAt)} from template v
-          {run.templateVersion}.
-        </p>
-
-        <div className="detail-actions detail-actions--inline">
-          <Link className="ghost-button" to="/runs">
-            Back to Run History
-          </Link>
-          {sourceTemplate && !sourceTemplate.archivedAt ? (
-            <Link
-              className="primary-button"
-              to={buildPromptRunPlaygroundPath({
-                runId: run.id,
-                templateId: run.templateId,
-              })}
-            >
-              Reopen in Playground
-            </Link>
-          ) : null}
-          {promptDiffUrl ? (
-            <Link className="secondary-button" to={promptDiffUrl}>
-              Compare with source
-            </Link>
-          ) : sourceTemplate ? (
-            <span className="run-history-note">
-              Template v{run.templateVersion} is no longer available in local
-              revision history, so source comparison is unavailable.
-            </span>
-          ) : null}
-          {sourceTemplate ? (
-            <Link
-              className="ghost-button"
-              to={buildPromptTemplateDetailPath(run.templateId)}
-            >
-              View source template
-            </Link>
-          ) : (
-            <span className="run-history-note">
-              Source template is no longer available.
-            </span>
-          )}
-          <Link
-            className="ghost-button"
-            to={buildPromptTemplateCreatePath(run.id)}
-          >
-            Create template from snapshot
-          </Link>
-          <Link className="ghost-button" to={codeViewerUrl}>
-            Open saved prompts in Code Viewer
-          </Link>
-        </div>
-      </div>
+      <PromptRunOverviewPanel run={run} sourceTemplate={sourceTemplate} />
 
       {navigationBlocker.state === 'blocked' ? (
         <div

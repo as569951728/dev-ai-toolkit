@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { buildCodeViewerUrl } from '@/features/code-viewer/lib/code-viewer-utils';
 import {
   formatCapturedVariableCount,
+  formatPromptRunCreatedAt,
   getCapturedVariablePreview,
 } from '@/features/prompt-runs/lib/prompt-run-display';
 import {
@@ -19,16 +20,6 @@ interface PromptRunHistoryCardProps {
   note: PromptRunNote | null | undefined;
   run: PromptRunRecord;
   sourceTemplate: PromptTemplate | null;
-}
-
-function formatCreatedAt(createdAt: string) {
-  return new Intl.DateTimeFormat('en', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-  }).format(new Date(createdAt));
 }
 
 export function PromptRunHistoryCard({
@@ -48,7 +39,7 @@ export function PromptRunHistoryCard({
       <div className="revision-card__header">
         <div>
           <h3>{run.templateName}</h3>
-          <p>{formatCreatedAt(run.createdAt)}</p>
+          <p>{formatPromptRunCreatedAt(run.createdAt)}</p>
         </div>
 
         <span className="revision-badge">Template v{run.templateVersion}</span>
