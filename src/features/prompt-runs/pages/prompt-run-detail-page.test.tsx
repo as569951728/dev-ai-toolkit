@@ -236,10 +236,10 @@ describe('PromptRunDetailPage', () => {
           userPrompt: 'User prompt to reuse.',
         }),
       );
+      expect(screen.getByRole('status')).toHaveTextContent(
+        'Full prompt copied.',
+      );
     });
-    expect(screen.getByRole('status')).toHaveTextContent(
-      'Full prompt copied.',
-    );
   });
 
   it('announces when a full saved prompt cannot be copied', async () => {
