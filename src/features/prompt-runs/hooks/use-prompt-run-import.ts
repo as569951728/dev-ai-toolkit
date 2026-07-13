@@ -18,6 +18,11 @@ interface ImportStatus {
   runId: string;
 }
 
+interface PendingImport {
+  fileName: string;
+  payload: ReturnType<typeof parsePromptRunExportImport>;
+}
+
 export class PromptRunImportRollbackError extends Error {
   readonly rollbackCause: unknown;
 
@@ -46,17 +51,15 @@ export function usePromptRunImport({
   const [importError, setImportError] = useState('');
   const [importStatus, setImportStatus] = useState<ImportStatus | null>(null);
 
-  const handleImportRun = async (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+  const [pendingImport, setPendingImport] = useState<PendingImport | null>(
+    null,
+  );
 
-    if (!file) {
-      return;
-    }
+  const importRun = ({ fileName, payload }: PendingImport) => {
+    const existingRun = getRunById(payload.run.id);
+    const replacedExistingRun = Boolean(existingRun);
 
     try {
-      const payload = parsePromptRunExportImport(await file.text());
-      const existingRun = getRunById(payload.run.id);
-      const replacedExistingRun = Boolean(existingRun);
       importRuns([payload.run]);
 
       if (payload.note) {
@@ -83,12 +86,42 @@ export function usePromptRunImport({
 
       setImportStatus({
         message: replacedExistingRun
-          ? `Replaced existing ${payload.run.templateName} with data from ${file.name}.`
-          : `Imported ${payload.run.templateName} from ${file.name}.`,
+          ? `Replaced existing ${payload.run.templateName} with data from ${fileName}.`
+          : `Imported ${payload.run.templateName} from ${fileName}.`,
         replacedExistingRun,
         runId: payload.run.id,
       });
       setImportError('');
+    } catch (error) {
+      setImportStatus(null);
+      setImportError(
+        error instanceof Error
+          ? error.message
+          : 'Unable to import the selected prompt run JSON.',
+      );
+    }
+  };
+
+  const handleImportRun = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    setPendingImport(null);
+
+    try {
+      const payload = parsePromptRunExportImport(await file.text());
+      const existingRun = getRunById(payload.run.id);
+
+      if (existingRun) {
+        setPendingImport({ fileName: file.name, payload });
+        setImportStatus(null);
+        setImportError('');
+      } else {
+        importRun({ fileName: file.name, payload });
+      }
     } catch (error) {
       setImportStatus(null);
       setImportError(
@@ -102,8 +135,18 @@ export function usePromptRunImport({
   };
 
   return {
+    cancelPendingImport: () => setPendingImport(null),
+    confirmPendingImport: () => {
+      if (!pendingImport) {
+        return;
+      }
+
+      importRun(pendingImport);
+      setPendingImport(null);
+    },
     handleImportRun,
     importError,
     importStatus,
+    pendingImport,
   };
 }

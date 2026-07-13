@@ -461,6 +461,10 @@ describe('PromptRunHistoryPage', () => {
       target: { files: [file] },
     });
 
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Replace local run' }),
+    );
+
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'Browser storage rejected the imported note.',
     );
@@ -532,6 +536,12 @@ describe('PromptRunHistoryPage', () => {
         target: { files: [file] },
       });
 
+      if (initialRuns.some((run) => run.id === importedRun.id)) {
+        fireEvent.click(
+          await screen.findByRole('button', { name: 'Replace local run' }),
+        );
+      }
+
       expect(await screen.findByRole('alert')).toHaveTextContent(
         expectedMessage,
       );
@@ -542,8 +552,17 @@ describe('PromptRunHistoryPage', () => {
     },
   );
 
-  it('reports when an imported run replaces an existing local record', async () => {
-    const { runRepository } = renderRunHistory();
+  it('confirms before an imported run replaces local data', async () => {
+    const existingNote: PromptRunNote = {
+      id: 'note-run-2',
+      runId: sampleRuns[0]!.id,
+      body: 'Keep this local note.',
+      createdAt: '2026-05-09T10:00:00.000Z',
+      updatedAt: '2026-05-09T10:00:00.000Z',
+    };
+    const { noteRepository, runRepository } = renderRunHistory({
+      notes: [existingNote],
+    });
     const replacementRun: PromptRunRecord = {
       ...sampleRuns[0]!,
       systemPrompt: 'Updated system prompt from export.',
@@ -566,11 +585,70 @@ describe('PromptRunHistoryPage', () => {
       target: { files: [file] },
     });
 
+    expect(
+      await screen.findByRole('heading', {
+        name: 'Replace this local prompt run?',
+      }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('dialog')).toHaveTextContent(
+      'This file has no note, so any local note will remain attached.',
+    );
+    expect(screen.getByRole('button', { name: 'Keep local run' })).toHaveFocus();
+    expect(runRepository.snapshot()).toEqual(sampleRuns);
+    expect(noteRepository.snapshot()).toEqual([existingNote]);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Replace local run' }));
+
     expect(await screen.findByText('Prompt run replaced.')).toBeInTheDocument();
     expect(screen.getByRole('status')).toHaveTextContent(
       'Replaced existing API Design Partner with data from replacement-run.json.',
     );
     expect(runRepository.snapshot()).toContainEqual(replacementRun);
+    expect(noteRepository.snapshot()).toEqual([existingNote]);
+  });
+
+  it('cancels a conflicting prompt run import without changing local data', async () => {
+    const existingNote: PromptRunNote = {
+      id: 'note-run-2',
+      runId: sampleRuns[0]!.id,
+      body: 'Keep this local note.',
+      createdAt: '2026-05-09T10:00:00.000Z',
+      updatedAt: '2026-05-09T10:00:00.000Z',
+    };
+    const importedNote: PromptRunNote = {
+      ...existingNote,
+      body: 'Imported replacement note.',
+      updatedAt: '2026-05-10T10:00:00.000Z',
+    };
+    const { noteRepository, runRepository } = renderRunHistory({
+      notes: [existingNote],
+    });
+    const file = new File(
+      [
+        JSON.stringify(
+          createPromptRunExportPayload({
+            run: { ...sampleRuns[0]!, systemPrompt: 'Imported replacement.' },
+            note: importedNote,
+            exportedAt: '2026-05-10T11:00:00.000Z',
+          }),
+        ),
+      ],
+      'replacement-run.json',
+      { type: 'application/json' },
+    );
+
+    fireEvent.change(screen.getByLabelText('Import run JSON'), {
+      target: { files: [file] },
+    });
+
+    expect(await screen.findByRole('dialog')).toHaveTextContent(
+      'The imported note will replace any local note attached to this run.',
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Keep local run' }));
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(runRepository.snapshot()).toEqual(sampleRuns);
+    expect(noteRepository.snapshot()).toEqual([existingNote]);
   });
 
   it('filters runs by template and template name search', () => {

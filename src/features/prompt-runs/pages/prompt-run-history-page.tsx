@@ -14,7 +14,14 @@ export function PromptRunHistoryPage() {
   const { deleteRun, getRunById, importRuns, runs } = usePromptRuns();
   const { getNoteByRunId, importNotes } = usePromptRunNotes();
   const { getTemplateById } = usePromptTemplates();
-  const { handleImportRun, importError, importStatus } = usePromptRunImport({
+  const {
+    cancelPendingImport,
+    confirmPendingImport,
+    handleImportRun,
+    importError,
+    importStatus,
+    pendingImport,
+  } = usePromptRunImport({
     deleteRun,
     getRunById,
     importNotes,
@@ -172,6 +179,43 @@ export function PromptRunHistoryPage() {
           <div className="empty-state empty-state--compact" role="alert">
             <h2>Import failed</h2>
             <p>{importError}</p>
+          </div>
+        ) : null}
+
+        {pendingImport ? (
+          <div
+            aria-describedby="prompt-run-import-conflict-description"
+            aria-labelledby="prompt-run-import-conflict-title"
+            className="status-banner status-banner--error"
+            role="dialog"
+          >
+            <h2 id="prompt-run-import-conflict-title">
+              Replace this local prompt run?
+            </h2>
+            <p id="prompt-run-import-conflict-description">
+              A local run already uses this ID. Replacing it will overwrite the
+              saved prompts and captured variables.
+              {pendingImport.payload.note
+                ? ' The imported note will replace any local note attached to this run.'
+                : ' This file has no note, so any local note will remain attached.'}
+            </p>
+            <div className="detail-actions detail-actions--inline">
+              <button
+                autoFocus
+                className="secondary-button"
+                type="button"
+                onClick={cancelPendingImport}
+              >
+                Keep local run
+              </button>
+              <button
+                className="danger-button"
+                type="button"
+                onClick={confirmPendingImport}
+              >
+                Replace local run
+              </button>
+            </div>
           </div>
         ) : null}
 
