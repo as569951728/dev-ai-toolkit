@@ -14,6 +14,11 @@ import {
   stringifyWorkspaceBackup,
 } from '@/features/workspace-backup/lib/workspace-backup-transfer';
 
+export interface WorkspaceBackupImportPreview {
+  includesRecentTemplates: boolean;
+  summary: ReturnType<typeof mergeWorkspaceBackupData>['summary'];
+}
+
 function filterExistingTemplateIds(
   templateIds: string[],
   templateIdsToKeep: string[],
@@ -43,10 +48,9 @@ export function useWorkspaceBackup() {
     [notes, runs, templates],
   );
 
-  const importWorkspaceBackupJson = useCallback(
+  const prepareWorkspaceBackupImport = useCallback(
     (rawValue: string) => {
       const backup = parseWorkspaceBackupImport(rawValue);
-      const previousRecentTemplateIds = loadRecentTemplateIds();
       const result = mergeWorkspaceBackupData(
         {
           templates,
@@ -55,6 +59,29 @@ export function useWorkspaceBackup() {
         },
         backup.data,
       );
+
+      return { backup, result };
+    },
+    [notes, runs, templates],
+  );
+
+  const previewWorkspaceBackupJson = useCallback(
+    (rawValue: string): WorkspaceBackupImportPreview => {
+      const { backup, result } = prepareWorkspaceBackupImport(rawValue);
+
+      return {
+        includesRecentTemplates:
+          backup.data.recentTemplateIds !== undefined,
+        summary: result.summary,
+      };
+    },
+    [prepareWorkspaceBackupImport],
+  );
+
+  const importWorkspaceBackupJson = useCallback(
+    (rawValue: string) => {
+      const { backup, result } = prepareWorkspaceBackupImport(rawValue);
+      const previousRecentTemplateIds = loadRecentTemplateIds();
       let templatesImported = false;
       let runsImported = false;
       let notesImported = false;
@@ -115,6 +142,7 @@ export function useWorkspaceBackup() {
       importRuns,
       importTemplates,
       notes,
+      prepareWorkspaceBackupImport,
       replaceNotes,
       replaceRuns,
       replaceTemplates,
@@ -127,7 +155,12 @@ export function useWorkspaceBackup() {
     () => ({
       createWorkspaceBackupJson,
       importWorkspaceBackupJson,
+      previewWorkspaceBackupJson,
     }),
-    [createWorkspaceBackupJson, importWorkspaceBackupJson],
+    [
+      createWorkspaceBackupJson,
+      importWorkspaceBackupJson,
+      previewWorkspaceBackupJson,
+    ],
   );
 }

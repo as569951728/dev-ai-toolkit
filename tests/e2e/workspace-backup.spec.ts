@@ -37,6 +37,13 @@ test('exports and restores a local workspace backup', async ({ page }) => {
   await page.reload();
 
   await page.getByLabel('Import workspace JSON').setInputFiles(backupPath);
+  await expect(
+    page.getByRole('heading', { name: 'Import this workspace backup?' }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Keep current workspace' }),
+  ).toBeFocused();
+  await page.getByRole('button', { name: 'Import backup' }).click();
   await expect(page.getByRole('status')).toContainText(
     'Workspace backup imported.',
   );

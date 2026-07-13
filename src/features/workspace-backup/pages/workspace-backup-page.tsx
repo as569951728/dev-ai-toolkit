@@ -5,7 +5,10 @@ import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
 import { loadRecentTemplateIds } from '@/features/prompt-playground/repositories/local-storage-recent-template-repository';
-import { useWorkspaceBackup } from '@/features/workspace-backup/hooks/use-workspace-backup';
+import {
+  type WorkspaceBackupImportPreview,
+  useWorkspaceBackup,
+} from '@/features/workspace-backup/hooks/use-workspace-backup';
 import { downloadWorkspaceBackup } from '@/features/workspace-backup/lib/workspace-backup-download';
 import type { WorkspaceBackupImportSummary } from '@/features/workspace-backup/lib/workspace-backup-merge';
 import { filterNotesForWorkspaceBackup } from '@/features/workspace-backup/lib/workspace-backup-transfer';
@@ -15,15 +18,47 @@ type ExportFeedback = {
   tone: 'success' | 'error';
 };
 
+interface PendingWorkspaceImport {
+  fileName: string;
+  preview: WorkspaceBackupImportPreview;
+  rawValue: string;
+}
+
 function formatCount(count: number, singularLabel: string) {
   return `${count} ${singularLabel}${count === 1 ? '' : 's'}`;
+}
+
+function WorkspaceImportCounts({
+  summary,
+}: {
+  summary: WorkspaceBackupImportSummary;
+}) {
+  return (
+    <>
+      <p>
+        Templates: {summary.templates.created} created,{' '}
+        {summary.templates.updated} updated.
+      </p>
+      <p>
+        Runs: {summary.runs.created} created, {summary.runs.updated} updated.
+      </p>
+      <p>
+        Notes: {summary.notes.created} created, {summary.notes.updated} updated.
+      </p>
+      <p>
+        Recent templates: {summary.recentTemplates.imported} imported,{' '}
+        {summary.recentTemplates.skipped} skipped.
+      </p>
+    </>
+  );
 }
 
 export function WorkspaceBackupPage() {
   const { notes } = usePromptRunNotes();
   const { runs } = usePromptRuns();
   const { templates } = usePromptTemplates();
-  const { importWorkspaceBackupJson } = useWorkspaceBackup();
+  const { importWorkspaceBackupJson, previewWorkspaceBackupJson } =
+    useWorkspaceBackup();
   const [exportFeedback, setExportFeedback] = useState<ExportFeedback | null>(
     null,
   );
@@ -33,6 +68,8 @@ export function WorkspaceBackupPage() {
   );
   const [importSummary, setImportSummary] =
     useState<WorkspaceBackupImportSummary | null>(null);
+  const [pendingImport, setPendingImport] =
+    useState<PendingWorkspaceImport | null>(null);
   const currentRecentTemplateIds = recentTemplateIds.filter((templateId) =>
     templates.some((template) => template.id === templateId),
   );
@@ -68,10 +105,14 @@ export function WorkspaceBackupPage() {
       return;
     }
 
+    setPendingImport(null);
+
     try {
-      const summary = importWorkspaceBackupJson(await file.text());
-      setImportSummary(summary);
-      setRecentTemplateIds(loadRecentTemplateIds());
+      const rawValue = await file.text();
+      const preview = previewWorkspaceBackupJson(rawValue);
+
+      setPendingImport({ fileName: file.name, preview, rawValue });
+      setImportSummary(null);
       setImportError('');
     } catch (error) {
       setImportSummary(null);
@@ -82,6 +123,29 @@ export function WorkspaceBackupPage() {
       );
     } finally {
       event.target.value = '';
+    }
+  };
+
+  const confirmImportWorkspace = () => {
+    if (!pendingImport) {
+      return;
+    }
+
+    try {
+      const summary = importWorkspaceBackupJson(pendingImport.rawValue);
+
+      setImportSummary(summary);
+      setRecentTemplateIds(loadRecentTemplateIds());
+      setImportError('');
+      setPendingImport(null);
+    } catch (error) {
+      setImportSummary(null);
+      setImportError(
+        error instanceof Error
+          ? error.message
+          : 'Unable to import the selected workspace backup.',
+      );
+      setPendingImport(null);
     }
   };
 
@@ -181,22 +245,7 @@ export function WorkspaceBackupPage() {
         {importSummary ? (
           <div className="empty-state empty-state--compact" role="status">
             <h2>Workspace backup imported.</h2>
-            <p>
-              Templates: {importSummary.templates.created} created,{' '}
-              {importSummary.templates.updated} updated.
-            </p>
-            <p>
-              Runs: {importSummary.runs.created} created,{' '}
-              {importSummary.runs.updated} updated.
-            </p>
-            <p>
-              Notes: {importSummary.notes.created} created,{' '}
-              {importSummary.notes.updated} updated.
-            </p>
-            <p>
-              Recent templates: {importSummary.recentTemplates.imported}{' '}
-              imported, {importSummary.recentTemplates.skipped} skipped.
-            </p>
+            <WorkspaceImportCounts summary={importSummary} />
           </div>
         ) : null}
 
@@ -204,6 +253,44 @@ export function WorkspaceBackupPage() {
           <div className="empty-state empty-state--compact" role="alert">
             <h2>Import failed</h2>
             <p>{importError}</p>
+          </div>
+        ) : null}
+
+        {pendingImport ? (
+          <div
+            aria-describedby="workspace-import-preview-description"
+            aria-labelledby="workspace-import-preview-title"
+            className="status-banner status-banner--error"
+            role="dialog"
+          >
+            <h2 id="workspace-import-preview-title">
+              Import this workspace backup?
+            </h2>
+            <p id="workspace-import-preview-description">
+              Review the changes from {pendingImport.fileName}. Matching local
+              records will be updated after you confirm.
+              {pendingImport.preview.includesRecentTemplates
+                ? ' The recent-template shortcut list will also be replaced.'
+                : ' Existing recent-template shortcuts will be kept.'}
+            </p>
+            <WorkspaceImportCounts summary={pendingImport.preview.summary} />
+            <div className="detail-actions detail-actions--inline">
+              <button
+                autoFocus
+                className="secondary-button"
+                type="button"
+                onClick={() => setPendingImport(null)}
+              >
+                Keep current workspace
+              </button>
+              <button
+                className="danger-button"
+                type="button"
+                onClick={confirmImportWorkspace}
+              >
+                Import backup
+              </button>
+            </div>
           </div>
         ) : null}
       </section>

@@ -123,7 +123,6 @@ function renderWorkspaceBackupPage({
   runRepository?: ReturnType<typeof createRunRepository>;
   noteRepository?: ReturnType<typeof createNoteRepository>;
 } = {}) {
-
   render(
     <PromptTemplatesProvider repository={templateRepository}>
       <PromptRunsProvider repository={runRepository}>
@@ -139,6 +138,12 @@ function renderWorkspaceBackupPage({
     runRepository,
     templateRepository,
   };
+}
+
+async function confirmPendingWorkspaceImport() {
+  fireEvent.click(
+    await screen.findByRole('button', { name: 'Import backup' }),
+  );
 }
 
 afterEach(() => {
@@ -261,6 +266,35 @@ describe('WorkspaceBackupPage', () => {
       target: { files: [file] },
     });
 
+    expect(
+      await screen.findByRole('heading', {
+        name: 'Import this workspace backup?',
+      }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('dialog')).toHaveTextContent(
+      'The recent-template shortcut list will also be replaced.',
+    );
+    expect(
+      screen.getByRole('button', { name: 'Keep current workspace' }),
+    ).toHaveFocus();
+    expect(templateRepository.snapshot()).toEqual([template]);
+    expect(runRepository.snapshot()).toEqual([run]);
+    expect(noteRepository.snapshot()).toEqual([note]);
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Keep current workspace' }),
+    );
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(templateRepository.snapshot()).toEqual([template]);
+    expect(runRepository.snapshot()).toEqual([run]);
+    expect(noteRepository.snapshot()).toEqual([note]);
+
+    fireEvent.change(screen.getByLabelText('Import workspace JSON'), {
+      target: { files: [file] },
+    });
+    await confirmPendingWorkspaceImport();
+
     expect(await screen.findByText('Workspace backup imported.')).toBeInTheDocument();
     expect(screen.getByRole('status')).toHaveTextContent(
       'Workspace backup imported.',
@@ -351,6 +385,8 @@ describe('WorkspaceBackupPage', () => {
       target: { files: [file] },
     });
 
+    await confirmPendingWorkspaceImport();
+
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'Browser storage rejected the imported notes.',
     );
@@ -416,6 +452,8 @@ describe('WorkspaceBackupPage', () => {
       target: { files: [file] },
     });
 
+    await confirmPendingWorkspaceImport();
+
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'Browser storage rejected the imported notes.',
     );
@@ -471,6 +509,8 @@ describe('WorkspaceBackupPage', () => {
     fireEvent.change(screen.getByLabelText('Import workspace JSON'), {
       target: { files: [file] },
     });
+
+    await confirmPendingWorkspaceImport();
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'Workspace backup import failed and previous local data could not be fully restored.',
