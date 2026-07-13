@@ -53,3 +53,49 @@ test('saves a prompt snapshot and opens it for review', async ({
   expect(clipboardText).toContain('dev-ai-toolkit');
   expect(clipboardText).toContain('frontend workflow');
 });
+
+test('resolves dotted template variables in the Playground', async ({
+  page,
+}) => {
+  const templateName = 'Pull Request Summary';
+
+  await page.goto('/prompts/new');
+  await page.getByLabel('Name').fill(templateName);
+  await page
+    .getByLabel('Description')
+    .fill('Turn a pull request title into a review summary.');
+  await page
+    .getByLabel('System prompt')
+    .fill('You summarize pull requests for engineering teams.');
+  await page
+    .getByLabel('User prompt')
+    .fill('Summarize pull request: {{pull_request.title}}');
+  await page.getByLabel('Tags').fill('pull-request, summary');
+  await page.getByRole('button', { name: 'Create template' }).click();
+
+  const templateCard = page.getByRole('article').filter({
+    has: page.getByRole('heading', { name: templateName }),
+  });
+  await templateCard
+    .getByRole('button', { name: 'Open in Playground' })
+    .click();
+
+  await expect(
+    page.getByText(/1 template variable is unresolved/),
+  ).toBeVisible();
+  await page
+    .getByLabel('Pull Request Title')
+    .fill('Keep storage reads resilient');
+
+  await expect(
+    page.getByText(/template variable is unresolved/),
+  ).toHaveCount(0);
+
+  const userPromptPreview = page.getByRole('article').filter({
+    has: page.getByRole('heading', { name: 'User prompt' }),
+  });
+  await expect(userPromptPreview).toContainText(
+    'Summarize pull request: Keep storage reads resilient',
+  );
+  await expect(userPromptPreview).not.toContainText('{{pull_request.title}}');
+});
