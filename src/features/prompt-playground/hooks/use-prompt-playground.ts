@@ -17,17 +17,26 @@ function findTemplateById(templates: PromptTemplate[], templateId: string) {
   return templates.find((template) => template.id === templateId) ?? null;
 }
 
-function createInitialValues(template: PromptTemplate | null) {
+function createInitialValues(
+  template: PromptTemplate | null,
+  initialValues: Record<string, string> = {},
+) {
   if (!template) {
     return {} as Record<string, string>;
   }
 
   return Object.fromEntries(
-    extractVariables(template).map((variable) => [variable.key, '']),
+    extractVariables(template).map((variable) => [
+      variable.key,
+      initialValues[variable.key] ?? '',
+    ]),
   );
 }
 
-export function usePromptPlayground(initialTemplateId?: string) {
+export function usePromptPlayground(
+  initialTemplateId?: string,
+  initialVariableValues?: Record<string, string>,
+) {
   const { templates } = usePromptTemplates();
   const activeTemplates = useMemo(
     () => templates.filter((template) => !template.archivedAt),
@@ -41,7 +50,11 @@ export function usePromptPlayground(initialTemplateId?: string) {
     initialTemplate?.id ?? defaultTemplate?.id ?? '',
   );
   const [variableValues, setVariableValues] = useState<Record<string, string>>(
-    () => createInitialValues(initialTemplate ?? defaultTemplate),
+    () =>
+      createInitialValues(
+        initialTemplate ?? defaultTemplate,
+        initialVariableValues,
+      ),
   );
   const [recentTemplateIds, setRecentTemplateIds] = useState<string[]>(() =>
     loadRecentTemplateIds(),

@@ -134,6 +134,9 @@ describe('PromptRunDetailPage', () => {
     expect(
       screen.getByRole('link', { name: 'View source template' }),
     ).toHaveAttribute('href', `/prompts/${starterPromptTemplates[0]!.id}`);
+    expect(
+      screen.getByRole('link', { name: 'Reopen in Playground' }),
+    ).toHaveAttribute('href', '/playground?runId=run-1');
     const codeViewerUrl = new URL(
       screen
         .getByRole('link', { name: 'Open saved prompts in Code Viewer' })
@@ -405,5 +408,33 @@ describe('PromptRunDetailPage', () => {
     expect(
       screen.getByRole('link', { name: 'Back to Run History' }),
     ).toHaveAttribute('href', '/runs');
+  });
+
+  it('does not reopen a run when its source template is archived', () => {
+    const archivedTemplate: PromptTemplate = {
+      ...starterPromptTemplates[0]!,
+      archivedAt: '2026-05-08T09:00:00.000Z',
+    };
+
+    renderRunDetail(
+      '/runs/run-1',
+      [
+        {
+          id: 'run-1',
+          templateId: archivedTemplate.id,
+          templateName: archivedTemplate.name,
+          templateVersion: archivedTemplate.version,
+          variables: {},
+          systemPrompt: 'System prompt.',
+          userPrompt: 'User prompt.',
+          createdAt: '2026-05-07T09:00:00.000Z',
+        },
+      ],
+      createTemplateRepository([archivedTemplate]),
+    );
+
+    expect(
+      screen.queryByRole('link', { name: 'Reopen in Playground' }),
+    ).not.toBeInTheDocument();
   });
 });

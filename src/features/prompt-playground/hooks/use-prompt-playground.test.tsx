@@ -89,4 +89,24 @@ describe('usePromptPlayground', () => {
     expect(result.current.selectedTemplate?.id).toBe(fallbackTemplate.id);
     expect(result.current.selectedTemplateId).toBe(fallbackTemplate.id);
   });
+
+  it('loads matching captured variables and ignores stale run fields', () => {
+    const template = starterPromptTemplates[0]!;
+    const { result } = renderHook(
+      () =>
+        usePromptPlayground(template.id, {
+          repository_name: 'dev-ai-toolkit',
+          change_scope: 'prompt workflow',
+          removed_variable: 'ignore me',
+        }),
+      {
+        wrapper: createWrapper(createTemplateRepository()),
+      },
+    );
+
+    expect(result.current.variableValues).toEqual({
+      repository_name: 'dev-ai-toolkit',
+      change_scope: 'prompt workflow',
+    });
+  });
 });

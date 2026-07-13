@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { buildCodeViewerUrl } from '@/features/code-viewer/lib/code-viewer-utils';
 import { PromptPlaygroundPreview } from '@/features/prompt-playground/components/prompt-playground-preview';
@@ -8,9 +8,12 @@ import { PromptPlaygroundVariableForm } from '@/features/prompt-playground/compo
 import { formatPromptSections } from '@/features/prompt-playground/lib/prompt-playground-utils';
 import { usePromptPlayground } from '@/features/prompt-playground/hooks/use-prompt-playground';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
+import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
 
 type PromptPlaygroundWorkspaceProps = {
   initialTemplateId?: string;
+  initialVariableValues?: Record<string, string>;
+  sourceRunId?: string;
 };
 
 type SaveStatus = {
@@ -35,6 +38,8 @@ function buildPreviewContextKey(
 
 function PromptPlaygroundWorkspace({
   initialTemplateId,
+  initialVariableValues,
+  sourceRunId,
 }: PromptPlaygroundWorkspaceProps) {
   const navigate = useNavigate();
   const { createRun } = usePromptRuns();
@@ -50,7 +55,7 @@ function PromptPlaygroundWorkspace({
     markTemplateAsRecent,
     setSelectedTemplateId,
     updateVariableValue,
-  } = usePromptPlayground(initialTemplateId);
+  } = usePromptPlayground(initialTemplateId, initialVariableValues);
 
   const originalPromptText = useMemo(() => {
     if (!selectedTemplate) {
@@ -103,6 +108,14 @@ function PromptPlaygroundWorkspace({
           output before you take it into your coding or debugging workflow.
         </p>
       </div>
+
+      {sourceRunId ? (
+        <p className="status-banner" role="status">
+          Loaded captured variables from a{' '}
+          <Link to={`/runs/${sourceRunId}`}>saved prompt snapshot</Link>. Changes
+          here will create a new snapshot and leave the original unchanged.
+        </p>
+      ) : null}
 
       <div className="playground-grid">
         <PromptPlaygroundTemplatePicker
@@ -175,13 +188,30 @@ function PromptPlaygroundWorkspace({
 
 export function PromptPlaygroundPage() {
   const [searchParams] = useSearchParams();
-  const initialTemplateId = searchParams.get('templateId') ?? undefined;
-  const workspaceKey = initialTemplateId ?? 'default-playground';
+  const { getRunById } = usePromptRuns();
+  const { getTemplateById } = usePromptTemplates();
+  const requestedRunId = searchParams.get('runId') ?? undefined;
+  const requestedRun = requestedRunId ? getRunById(requestedRunId) : undefined;
+  const requestedRunTemplate = requestedRun
+    ? getTemplateById(requestedRun.templateId)
+    : undefined;
+  const canLoadRequestedRun = Boolean(
+    requestedRun && requestedRunTemplate && !requestedRunTemplate.archivedAt,
+  );
+  const initialTemplateId = canLoadRequestedRun
+    ? requestedRun?.templateId
+    : (searchParams.get('templateId') ?? undefined);
+  const sourceRunId = canLoadRequestedRun ? requestedRun?.id : undefined;
+  const workspaceKey = sourceRunId ?? initialTemplateId ?? 'default-playground';
 
   return (
     <PromptPlaygroundWorkspace
       key={workspaceKey}
       initialTemplateId={initialTemplateId}
+      initialVariableValues={
+        canLoadRequestedRun ? requestedRun?.variables : undefined
+      }
+      sourceRunId={sourceRunId}
     />
   );
 }

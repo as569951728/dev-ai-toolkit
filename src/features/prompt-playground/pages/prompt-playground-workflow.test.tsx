@@ -213,6 +213,50 @@ describe('Prompt playground workflow', () => {
     expect(codeViewerParams.get('language')).toBe('markdown');
   });
 
+  it('reopens a saved run with its captured variables', () => {
+    const templateRepository = createTemplateRepository();
+    const template = starterPromptTemplates[0]!;
+    const runRepository = createRunRepository([
+      {
+        id: 'run-1',
+        templateId: template.id,
+        templateName: template.name,
+        templateVersion: template.version,
+        variables: {
+          repository_name: 'dev-ai-toolkit',
+          change_scope: 'saved workflow review',
+        },
+        systemPrompt: 'Saved system prompt.',
+        userPrompt: 'Saved user prompt.',
+        createdAt: '2026-05-07T09:00:00.000Z',
+      },
+    ]);
+
+    render(
+      <MemoryRouter initialEntries={['/playground?runId=run-1']}>
+        <PromptTemplatesProvider repository={templateRepository}>
+          <PromptRunsProvider repository={runRepository}>
+            <PlaygroundWorkflowProbe />
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByLabelText('Active template')).toHaveValue(template.id);
+    expect(screen.getByLabelText('Repository Name')).toHaveValue(
+      'dev-ai-toolkit',
+    );
+    expect(screen.getByLabelText('Change Scope')).toHaveValue(
+      'saved workflow review',
+    );
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Changes here will create a new snapshot and leave the original unchanged.',
+    );
+    expect(
+      screen.getByRole('link', { name: 'saved prompt snapshot' }),
+    ).toHaveAttribute('href', '/runs/run-1');
+  });
+
   it('copies generated prompt sections and announces the result', async () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     const templateRepository = createTemplateRepository();

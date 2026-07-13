@@ -120,6 +120,14 @@ export function PromptRunDetailPage() {
               Source template is no longer available.
             </span>
           )}
+          {sourceTemplate && !sourceTemplate.archivedAt ? (
+            <Link
+              className="ghost-button"
+              to={`/playground?runId=${encodeURIComponent(run.id)}`}
+            >
+              Reopen in Playground
+            </Link>
+          ) : null}
           <Link className="ghost-button" to={codeViewerUrl}>
             Open saved prompts in Code Viewer
           </Link>
