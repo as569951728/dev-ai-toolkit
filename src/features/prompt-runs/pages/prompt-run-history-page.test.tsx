@@ -341,6 +341,45 @@ describe('PromptRunHistoryPage', () => {
     ).toHaveAttribute('href', `/prompts/${archivedTemplate.id}`);
   });
 
+  it('explains when a saved source revision cannot be compared', () => {
+    const baseTemplate = starterPromptTemplates[0]!;
+    const currentRevision = {
+      ...baseTemplate.revisions[0]!,
+      version: 2,
+      updatedAt: '2026-05-08T09:00:00.000Z',
+    };
+    const template = {
+      ...baseTemplate,
+      version: currentRevision.version,
+      updatedAt: currentRevision.updatedAt,
+      revisions: [currentRevision],
+    };
+    const run: PromptRunRecord = {
+      id: 'run-with-missing-revision',
+      templateId: template.id,
+      templateName: template.name,
+      templateVersion: 1,
+      variables: {},
+      systemPrompt: 'Saved system prompt.',
+      userPrompt: 'Saved user prompt.',
+      createdAt: '2026-05-08T10:00:00.000Z',
+    };
+
+    renderRunHistory({
+      runs: [run],
+      templateRepository: createTemplateRepository([template]),
+    });
+
+    expect(
+      screen.queryByRole('link', { name: 'Compare with source' }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Template v1 is no longer available for comparison.',
+      ),
+    ).toBeInTheDocument();
+  });
+
   it('imports a single prompt run JSON export with note context', async () => {
     const { noteRepository, runRepository } = renderRunHistory({ runs: [] });
     const importedRun: PromptRunRecord = {

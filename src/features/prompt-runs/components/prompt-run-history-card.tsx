@@ -112,6 +112,11 @@ export function PromptRunHistoryCard({
           <Link className="ghost-button" to={promptDiffUrl}>
             Compare with source
           </Link>
+        ) : sourceTemplate ? (
+          <span className="run-history-note">
+            Template v{run.templateVersion} is no longer available for
+            comparison.
+          </span>
         ) : null}
       </div>
     </article>
