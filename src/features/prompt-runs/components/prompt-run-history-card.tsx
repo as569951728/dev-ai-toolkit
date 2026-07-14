@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import {
@@ -12,6 +13,8 @@ import {
   buildPromptRunSourceDiffUrl,
 } from '@/features/prompt-runs/lib/prompt-run-links';
 import { buildPromptTemplateDetailPath } from '@/features/prompt-templates/lib/prompt-template-links';
+import { writeClipboardText } from '@/lib/clipboard';
+import { formatPromptSections } from '@/lib/prompt-sections';
 import type { PromptRunRecord } from '@/types/prompt-run';
 import type { PromptRunNote } from '@/types/prompt-run-note';
 import type { PromptTemplate } from '@/types/prompt-template';
@@ -27,12 +30,30 @@ export function PromptRunHistoryCard({
   run,
   sourceTemplate,
 }: PromptRunHistoryCardProps) {
+  const [copyFeedback, setCopyFeedback] = useState<{
+    message: string;
+    tone: 'success' | 'error';
+  } | null>(null);
   const variableCount = Object.keys(run.variables).length;
   const variablePreview = getCapturedVariablePreview(run.variables);
   const promptDiffUrl = buildPromptRunSourceDiffUrl({
     run,
     sourceTemplate,
   });
+  const handleCopyPrompt = async () => {
+    try {
+      await writeClipboardText(formatPromptSections(run));
+      setCopyFeedback({
+        message: 'Full prompt copied.',
+        tone: 'success',
+      });
+    } catch {
+      setCopyFeedback({
+        message: 'Failed to copy full prompt.',
+        tone: 'error',
+      });
+    }
+  };
 
   return (
     <article className="revision-card">
@@ -72,7 +93,27 @@ export function PromptRunHistoryCard({
         </div>
       ) : null}
 
+      {copyFeedback ? (
+        <p
+          className={
+            copyFeedback.tone === 'error'
+              ? 'status-banner status-banner--error'
+              : 'status-banner'
+          }
+          role={copyFeedback.tone === 'error' ? 'alert' : 'status'}
+        >
+          {copyFeedback.message}
+        </p>
+      ) : null}
+
       <div className="detail-actions detail-actions--inline">
+        <button
+          className="ghost-button"
+          type="button"
+          onClick={() => void handleCopyPrompt()}
+        >
+          Copy full prompt
+        </button>
         <Link className="ghost-button" to={buildPromptRunDetailPath(run.id)}>
           View details
         </Link>

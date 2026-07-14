@@ -1,7 +1,6 @@
-import { afterEach } from 'vitest';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter, useNavigate } from 'react-router-dom';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { PromptRunNotesProvider } from '@/features/prompt-run-notes/providers/prompt-run-notes-provider';
 import type { PromptRunNoteRepository } from '@/features/prompt-run-notes/repositories/prompt-run-note-repository';
@@ -184,6 +183,8 @@ function renderNavigableRunHistory(initialEntry: string) {
 
 afterEach(() => {
   cleanup();
+  vi.restoreAllMocks();
+  Reflect.deleteProperty(navigator, 'clipboard');
 });
 
 describe('PromptRunHistoryPage', () => {
@@ -235,6 +236,44 @@ describe('PromptRunHistoryPage', () => {
     expect(
       screen.getByText('feature_name: run-history-page'),
     ).toBeInTheDocument();
+  });
+
+  it('copies a full saved prompt from the history card', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText },
+    });
+
+    renderRunHistory();
+
+    fireEvent.click(
+      screen.getAllByRole('button', { name: 'Copy full prompt' })[0]!,
+    );
+
+    expect(writeText).toHaveBeenCalledWith(
+      'System prompt\nSystem B\n\nUser prompt\nUser B',
+    );
+    expect(await screen.findByRole('status')).toHaveTextContent(
+      'Full prompt copied.',
+    );
+  });
+
+  it('announces when a history-card prompt cannot be copied', async () => {
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: undefined,
+    });
+
+    renderRunHistory();
+
+    fireEvent.click(
+      screen.getAllByRole('button', { name: 'Copy full prompt' })[0]!,
+    );
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Failed to copy full prompt.',
+    );
   });
 
   it('encodes an imported source template ID in its detail link', () => {

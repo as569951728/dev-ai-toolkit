@@ -83,6 +83,16 @@ test('saves a prompt snapshot and protects its review note draft', async ({
     page.getByRole('heading', { name: 'Recent prompt runs' }),
   ).toBeVisible();
 
+  await page.getByRole('button', { name: 'Copy full prompt' }).click();
+
+  await expect(page.getByRole('status')).toContainText('Full prompt copied.');
+  const historyClipboardText = await page.evaluate(() =>
+    navigator.clipboard.readText(),
+  );
+
+  expect(historyClipboardText).toContain('dev-ai-toolkit');
+  expect(historyClipboardText).toContain('frontend workflow');
+
   await page.getByRole('link', { name: 'Reopen in Playground' }).click();
 
   await expect(page).toHaveURL(/\/playground\?.*runId=/);
