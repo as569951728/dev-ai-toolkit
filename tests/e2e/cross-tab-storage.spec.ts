@@ -75,3 +75,60 @@ test('restores a run note draft after another tab deletes its snapshot', async (
   );
   await deletePage.close();
 });
+
+test('restores a template draft after another tab deletes its source', async ({
+  context,
+  page,
+}) => {
+  const templateName = 'Cross-tab Template Recovery';
+  const recoveredName = 'Recovered Cross-tab Template';
+
+  await page.goto('/create-template');
+  await page.getByLabel('Name').fill(templateName);
+  await page
+    .getByLabel('Description')
+    .fill('Exercise template draft recovery across browser tabs.');
+  await page
+    .getByLabel('System prompt')
+    .fill('Review {{change_scope}} before it is merged.');
+  await page
+    .getByLabel('User prompt')
+    .fill('Summarize the risks in {{change_scope}}.');
+  await page.getByRole('button', { name: 'Create template' }).click();
+
+  const templateCard = page.getByRole('article').filter({
+    has: page.getByRole('heading', { name: templateName }),
+  });
+
+  await templateCard.getByRole('button', { name: 'Edit' }).click();
+
+  const originalEditUrl = page.url();
+  const originalDetailUrl = originalEditUrl.replace(/\/edit$/, '');
+
+  await page.getByLabel('Name').fill(recoveredName);
+
+  const deletePage = await context.newPage();
+  await deletePage.goto(originalDetailUrl);
+  await deletePage.getByRole('button', { name: 'Delete' }).click();
+  await deletePage.getByRole('button', { name: 'Confirm delete' }).click();
+
+  await expect(deletePage).toHaveURL(/\/prompts$/);
+  await expect(page.getByLabel('Name')).toHaveValue(recoveredName);
+  await expect(page.getByRole('status')).toContainText(
+    'Saved template was deleted in another tab.',
+  );
+  await page.getByRole('button', { name: 'Restore as new template' }).click();
+
+  await expect(page).toHaveURL(/\/prompts$/);
+  await page.reload();
+
+  const recoveredCard = page.getByRole('article').filter({
+    has: page.getByRole('heading', { name: recoveredName }),
+  });
+
+  await expect(recoveredCard).toBeVisible();
+  await recoveredCard.getByRole('button', { name: 'Edit' }).click();
+  expect(page.url()).not.toBe(originalEditUrl);
+
+  await deletePage.close();
+});
