@@ -15,6 +15,10 @@ import {
   PromptRunPromptsPanel,
   type PromptRunCopyTarget,
 } from '@/features/prompt-runs/components/prompt-run-prompts-panel';
+import {
+  type PromptRunActionFeedback,
+  PromptRunSnapshotManagement,
+} from '@/features/prompt-runs/components/prompt-run-snapshot-management';
 import { exportPromptRunAsJson } from '@/features/prompt-runs/lib/prompt-run-export';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { buildPromptRunDetailPath } from '@/features/prompt-runs/lib/prompt-run-links';
@@ -25,11 +29,6 @@ import {
   usePromptRunWorkflowActions,
 } from '@/features/prompt-workflows/hooks/use-prompt-run-workflow-actions';
 import { writeClipboardText } from '@/lib/clipboard';
-
-type ActionFeedback = {
-  message: string;
-  tone: 'success' | 'error';
-};
 
 export function PromptRunDetailPage() {
   const navigate = useNavigate();
@@ -44,15 +43,12 @@ export function PromptRunDetailPage() {
   const [lastRun, setLastRun] = useState(currentRun);
   const [isNoteDirty, setIsNoteDirty] = useState(false);
   const [noteDraft, setNoteDraft] = useState('');
-  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const [deleteErrorMessage, setDeleteErrorMessage] = useState('');
   const [restoreErrorMessage, setRestoreErrorMessage] = useState('');
-  const [exportFeedback, setExportFeedback] = useState<ActionFeedback | null>(
-    null,
-  );
-  const [copyFeedback, setCopyFeedback] = useState<ActionFeedback | null>(
-    null,
-  );
+  const [exportFeedback, setExportFeedback] =
+    useState<PromptRunActionFeedback | null>(null);
+  const [copyFeedback, setCopyFeedback] =
+    useState<PromptRunActionFeedback | null>(null);
   const navigationBlocker = useBlocker(
     () => isNoteDirty && !allowNavigationRef.current,
   );
@@ -249,81 +245,14 @@ export function PromptRunDetailPage() {
       </div>
 
       {!sourceWasDeleted ? (
-        <section className="panel">
-          <div className="panel__header">
-            <div>
-              <p className="eyebrow">Local snapshot</p>
-              <h2>Snapshot management</h2>
-              <p className="panel__summary">
-                Export a portable JSON copy or remove this snapshot and its note
-                from the current browser.
-              </p>
-            </div>
-          </div>
-
-          {exportFeedback ? (
-            <p
-              className={`status-banner${
-                exportFeedback.tone === 'error' ? ' status-banner--error' : ''
-              }`}
-              role={exportFeedback.tone === 'error' ? 'alert' : 'status'}
-            >
-              {exportFeedback.message}
-            </p>
-          ) : null}
-
-          {deleteErrorMessage ? (
-            <p className="status-banner status-banner--error" role="alert">
-              {deleteErrorMessage}
-            </p>
-          ) : null}
-
-          {isConfirmingDelete && isNoteDirty ? (
-            <p className="status-banner" role="status">
-              The unsaved note draft will also be discarded.
-            </p>
-          ) : null}
-
-          <div className="detail-actions detail-actions--inline">
-            <button
-              className="ghost-button"
-              type="button"
-              onClick={handleExportRun}
-            >
-              Export run JSON
-            </button>
-            {isConfirmingDelete ? (
-              <>
-                <button
-                  className="danger-button"
-                  type="button"
-                  onClick={handleDeleteRun}
-                >
-                  Confirm delete
-                </button>
-                <button
-                  autoFocus
-                  className="ghost-button"
-                  type="button"
-                  onClick={() => {
-                    setIsConfirmingDelete(false);
-                    setDeleteErrorMessage('');
-                  }}
-                >
-                  Cancel
-                </button>
-              </>
-            ) : (
-              <button
-                className="danger-button"
-                type="button"
-                onClick={() => setIsConfirmingDelete(true)}
-              >
-                Delete run
-              </button>
-            )}
-          </div>
-        </section>
+        <PromptRunSnapshotManagement
+          deleteErrorMessage={deleteErrorMessage}
+          exportFeedback={exportFeedback}
+          isNoteDirty={isNoteDirty}
+          onCancelDelete={() => setDeleteErrorMessage('')}
+          onConfirmDelete={handleDeleteRun}
+          onExport={handleExportRun}
+        />
       ) : null}
     </section>
   );
