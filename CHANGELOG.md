@@ -8,6 +8,12 @@ The format is intentionally lightweight and human-readable.
 
 ### Added
 
+- Added cross-tab refresh for templates, saved runs, notes, and recent
+  Playground shortcuts, with warnings that preserve unsaved editor drafts
+- Added recovery actions when another tab deletes a template or saved run that
+  still has an unsaved local draft
+- Added comparisons between historical template revisions and the current
+  template
 - Documented local collection merge and rollback boundaries for contributors
 - Explained saved-run retention before prompt template deletion
 - Documented workspace backup relationship rules for standalone saved runs
@@ -59,6 +65,10 @@ The format is intentionally lightweight and human-readable.
 
 ### Fixed
 
+- Preserved active Prompt Template and Run History filters across detail, edit,
+  Prompt Diff, JSON Tools, and Code Viewer round trips
+- Removed inactive or invalid list filters from shareable Prompt Template and
+  Run History URLs
 - Skipped unnecessary note writes when deleting runs without saved notes
 - Restored exact local collections when workspace backup imports roll back
 - Reported partial prompt run imports when compensating run writes fail
