@@ -1,8 +1,8 @@
 # Issue Triage Ledger
 
-Status: Active  
-Last updated: 2026-07-14  
-Open-issue snapshot: 99
+**Status:** Active
+**Last updated:** 2026-07-15
+**Open-issue snapshot:** 89
 
 GitHub Issues remains the source of truth. This ledger defines how the current
 backlog is reviewed without bulk-closing work or treating commit messages as
@@ -49,22 +49,21 @@ any, is tracked in #<issue>.
 
 ## First Triage Session
 
-Review this set first because repository history already contains likely
-implementation evidence. Each row remains `unreviewed` until its original issue
-body and current behavior have both been checked.
+The first set was reviewed against each issue body, targeted tests on current
+`main`, and the green main-branch CI run.
 
-| Issue | Candidate evidence | Initial decision | Verification still required |
+| Issue | Implementation | Decision | Verification evidence |
 | --- | --- | --- | --- |
-| [#37](https://github.com/as569951728/dev-ai-toolkit/issues/37) Full prompt clipboard browser coverage | `8730264` | `unreviewed` | Run the named E2E path on current `main`; do not use the currently flaky unit assertion as closure evidence. |
-| [#38](https://github.com/as569951728/dev-ai-toolkit/issues/38) Stale Playground copy feedback | `8483878` | `unreviewed` | Change the prompt after copying and verify the feedback clears. |
-| [#39](https://github.com/as569951728/dev-ai-toolkit/issues/39) Template context from empty Run History | `8e9a6df` | `unreviewed` | Open empty filtered history from a template and verify the return context. |
-| [#40](https://github.com/as569951728/dev-ai-toolkit/issues/40) Dotted variable names | `f9c367a`, `8a36b0b` | `unreviewed` | Run unit and browser coverage for a dotted key. |
-| [#45](https://github.com/as569951728/dev-ai-toolkit/issues/45) Shared variable parsing | `d259ffd` | `unreviewed` | Compare all parsing call sites with the issue scope and run the related tests. |
-| [#46](https://github.com/as569951728/dev-ai-toolkit/issues/46) Storage read failures during startup | `b7aa21e` | `unreviewed` | Verify the original availability requirement. Track malformed-data recovery separately if the issue did not require a warning. |
-| [#74](https://github.com/as569951728/dev-ai-toolkit/issues/74) Unsaved template changes | `590e83b` | `unreviewed` | Exercise navigation, refresh, and external-storage changes with a dirty form. |
-| [#115](https://github.com/as569951728/dev-ai-toolkit/issues/115) Template draft from a saved run | `65ad069` | `unreviewed` | Verify the new draft does not mutate the source run or template. |
-| [#117](https://github.com/as569951728/dev-ai-toolkit/issues/117) Saved variables in JSON Tools | `8832133` | `unreviewed` | Verify variables are passed without prompt content in the URL. |
-| [#119](https://github.com/as569951728/dev-ai-toolkit/issues/119) Return from JSON Tools | `e05144f` | `unreviewed` | Verify the round trip returns to the originating saved run. |
+| [#37](https://github.com/as569951728/dev-ai-toolkit/issues/37#issuecomment-4971579627) Full prompt clipboard browser coverage | `8730264` | `close-implemented` | Real Chromium clipboard path and 25 browser tests passed. |
+| [#38](https://github.com/as569951728/dev-ai-toolkit/issues/38#issuecomment-4971580259) Stale Playground copy feedback | `8483878` | `close-implemented` | Workflow test changes a variable after copying. |
+| [#39](https://github.com/as569951728/dev-ai-toolkit/issues/39#issuecomment-4971580820) Template context from empty Run History | `8e9a6df` | `close-implemented` | History tests cover active, archived, unknown, and global empty states. |
+| [#40](https://github.com/as569951728/dev-ai-toolkit/issues/40#issuecomment-4971581559) Dotted variable names | `f9c367a`, `8a36b0b` | `close-implemented` | Utility, workflow, and browser coverage passed. |
+| [#45](https://github.com/as569951728/dev-ai-toolkit/issues/45#issuecomment-4971582117) Shared variable parsing | `d259ffd` | `close-implemented` | Shared parser, Playground, and Prompt Diff tests passed. |
+| [#46](https://github.com/as569951728/dev-ai-toolkit/issues/46#issuecomment-4971582617) Storage read failures during startup | `b7aa21e` | `close-implemented` | Template, run, and note repository failure tests passed. |
+| [#74](https://github.com/as569951728/dev-ai-toolkit/issues/74#issuecomment-4971583142) Unsaved template changes | `590e83b` | `close-implemented` | Form navigation, before-unload, and browser paths passed. |
+| [#115](https://github.com/as569951728/dev-ai-toolkit/issues/115#issuecomment-4971607921) Template draft from a saved run | `65ad069` | `close-implemented` | Create-page and browser tests preserve the source snapshot. |
+| [#117](https://github.com/as569951728/dev-ai-toolkit/issues/117#issuecomment-4971608734) Saved variables in JSON Tools | `8832133` | `close-implemented` | Run Detail, JSON Tools, and browser handoff tests passed. |
+| [#119](https://github.com/as569951728/dev-ai-toolkit/issues/119#issuecomment-4971609456) Return from JSON Tools | `e05144f` | `close-implemented` | JSON Tools unit and browser round-trip tests passed. |
 
 ## Remaining Review Batches
 
@@ -73,10 +72,10 @@ organizational only; they do not imply a shared disposition.
 
 | Batch | Scope | Required output |
 | --- | --- | --- |
-| A | #22-#45: storage errors and early prompt workflow changes | One decision and evidence comment per issue |
-| B | #46-#69: storage availability, rollback, and same-event writes | Reproduction or current-main verification per issue |
-| C | #70-#95: editor safety, imports, confirmations, and browser coverage | Separate behavior bugs from documentation or test follow-up |
-| D | #96-#119: navigation, identifiers, reuse, and tool handoffs | Check recent commits and close only after end-to-end verification |
+| A | Remaining open issues in #22-#45: storage errors and early prompt workflow changes | One decision and evidence comment per issue |
+| B | Remaining open issues in #46-#69: storage availability, rollback, and same-event writes | Reproduction or current-main verification per issue |
+| C | Remaining open issues in #70-#95: editor safety, imports, confirmations, and browser coverage | Separate behavior bugs from documentation or test follow-up |
+| D | Remaining open issues in #96-#119: navigation, identifiers, reuse, and tool handoffs | Check recent commits and close only after end-to-end verification |
 | E | #14 and uncategorized maintenance items | Keep deployment and release blockers visible |
 
 ## New Work From The Review
@@ -86,7 +85,7 @@ items need an issue only if no existing issue has equivalent acceptance criteria
 
 | Action ID | Proposed issue title | Label | Create when |
 | --- | --- | --- | --- |
-| MAINT-001 | Test: stabilize Run Detail clipboard feedback assertion | `ci` | No existing issue covers the failing CI assertion. |
+| MAINT-001 | No issue created; completed in [PR #120](https://github.com/as569951728/dev-ai-toolkit/pull/120) | `ci` | The blocker was resolved before a separate issue was needed. |
 | MAINT-003 | Maintenance: reconcile open issues with current main | `chore` | Use one tracking issue, not one issue per triage batch. |
 | MAINT-004 | CI: require the main workflow before merge | `ci` | Repository rules cannot be recorded directly in an existing maintenance issue. |
 | DATA-001 | Bug: provide recovery when local collections are malformed | `bug` | #46 does not already require visible corruption recovery. |
@@ -101,5 +100,4 @@ evidence.
 
 | Date | Issues reviewed | Decisions | Evidence | Next batch |
 | --- | --- | --- | --- | --- |
-| Pending | Pending | Pending | Pending | First triage session |
-
+| 2026-07-15 | #37, #38, #39, #40, #45, #46, #74, #115, #117, #119 | 10 `close-implemented` | 11 targeted files with 105 passing tests and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29349675016) | Batch A, remaining open issues only |
