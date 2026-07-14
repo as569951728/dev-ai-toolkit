@@ -4,6 +4,7 @@ import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 
 import { PromptPlaygroundPage } from '@/features/prompt-playground/pages/prompt-playground-page';
+import { usePromptPlayground } from '@/features/prompt-playground/hooks/use-prompt-playground';
 import {
   RECENT_TEMPLATE_STORAGE_KEY,
   saveRecentTemplateIds,
@@ -14,6 +15,10 @@ import type { PromptRunRecord } from '@/types/prompt-run';
 import { starterPromptTemplates } from '@/features/prompt-templates/seed/prompt-templates';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
 import { PromptTemplatesProvider } from '@/features/prompt-templates/providers/prompt-templates-provider';
+import {
+  createLocalStoragePromptTemplateRepository,
+  PROMPT_TEMPLATE_STORAGE_KEY,
+} from '@/features/prompt-templates/repositories/local-storage-prompt-template-repository';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
 import { PromptTemplateDetailPage } from '@/features/prompt-templates/pages/prompt-template-detail-page';
 import { formatPromptSections } from '@/lib/prompt-sections';
@@ -72,6 +77,19 @@ function LocationProbe() {
   );
 }
 
+function PlaygroundSelectionProbe() {
+  const { selectedTemplate, selectedTemplateId } = usePromptPlayground();
+
+  return (
+    <div>
+      <span data-testid="selected-template-id">{selectedTemplateId}</span>
+      <span data-testid="selected-template-record-id">
+        {selectedTemplate?.id ?? 'none'}
+      </span>
+    </div>
+  );
+}
+
 function renderPlayground(
   initialEntry: string,
   templateRepository = createTemplateRepository(),
@@ -111,6 +129,42 @@ describe('Prompt playground workflow', () => {
     expect(
       screen.getByRole('button', { name: /API Design Partner/ }),
     ).toBeInTheDocument();
+  });
+
+  it('selects an available template when another tab removes the active one', () => {
+    render(
+      <MemoryRouter initialEntries={['/playground']}>
+        <PromptTemplatesProvider>
+          <PromptRunsProvider repository={createRunRepository()}>
+            <PlaygroundWorkflowProbe />
+            <PlaygroundSelectionProbe />
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByLabelText('Active template')).toHaveValue(
+      starterPromptTemplates[0]!.id,
+    );
+
+    createLocalStoragePromptTemplateRepository().saveAll(
+      starterPromptTemplates.slice(1),
+    );
+    act(() => {
+      window.dispatchEvent(
+        new StorageEvent('storage', { key: PROMPT_TEMPLATE_STORAGE_KEY }),
+      );
+    });
+
+    expect(screen.getByLabelText('Active template')).toHaveValue(
+      starterPromptTemplates[1]!.id,
+    );
+    expect(screen.getByTestId('selected-template-record-id')).toHaveTextContent(
+      starterPromptTemplates[1]!.id,
+    );
+    expect(screen.getByTestId('selected-template-id')).toHaveTextContent(
+      starterPromptTemplates[1]!.id,
+    );
   });
 
   it('surfaces unresolved variables until all prompt inputs are filled', () => {

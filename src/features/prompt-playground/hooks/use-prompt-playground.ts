@@ -72,7 +72,10 @@ export function usePromptPlayground(
   );
 
   const activeTemplateId =
-    selectedTemplateId || initialTemplate?.id || defaultTemplate?.id || '';
+    findTemplateById(activeTemplates, selectedTemplateId)?.id ??
+    initialTemplate?.id ??
+    defaultTemplate?.id ??
+    '';
 
   const selectedTemplate = useMemo(
     () =>
