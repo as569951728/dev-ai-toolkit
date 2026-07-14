@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { ChangeEvent } from 'react';
 
 import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
-import { loadRecentTemplateIds } from '@/features/prompt-playground/repositories/local-storage-recent-template-repository';
+import {
+  loadRecentTemplateIds,
+  RECENT_TEMPLATE_STORAGE_KEY,
+} from '@/features/prompt-playground/repositories/local-storage-recent-template-repository';
 import {
   type WorkspaceBackupImportPreview,
   useWorkspaceBackup,
@@ -12,6 +15,7 @@ import {
 import { downloadWorkspaceBackup } from '@/features/workspace-backup/lib/workspace-backup-download';
 import type { WorkspaceBackupImportSummary } from '@/features/workspace-backup/lib/workspace-backup-merge';
 import { filterNotesForWorkspaceBackup } from '@/features/workspace-backup/lib/workspace-backup-transfer';
+import { subscribeToStorageKey } from '@/lib/storage-sync';
 
 type ExportFeedback = {
   message: string;
@@ -70,6 +74,15 @@ export function WorkspaceBackupPage() {
     useState<WorkspaceBackupImportSummary | null>(null);
   const [pendingImport, setPendingImport] =
     useState<PendingWorkspaceImport | null>(null);
+
+  useEffect(
+    () =>
+      subscribeToStorageKey(RECENT_TEMPLATE_STORAGE_KEY, () => {
+        setRecentTemplateIds(loadRecentTemplateIds());
+      }),
+    [],
+  );
+
   const currentRecentTemplateIds = recentTemplateIds.filter((templateId) =>
     templates.some((template) => template.id === templateId),
   );

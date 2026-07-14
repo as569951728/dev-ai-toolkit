@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { PromptRunNotesProvider } from '@/features/prompt-run-notes/providers/prompt-run-notes-provider';
@@ -7,6 +7,7 @@ import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs
 import type { PromptRunRepository } from '@/features/prompt-runs/repositories/prompt-run-repository';
 import {
   loadRecentTemplateIds,
+  RECENT_TEMPLATE_STORAGE_KEY,
   saveRecentTemplateIds,
 } from '@/features/prompt-playground/repositories/local-storage-recent-template-repository';
 import { PromptTemplatesProvider } from '@/features/prompt-templates/providers/prompt-templates-provider';
@@ -166,6 +167,21 @@ afterEach(() => {
 });
 
 describe('WorkspaceBackupPage', () => {
+  it('refreshes recent template counts after another tab updates them', () => {
+    renderWorkspaceBackupPage();
+
+    expect(screen.getByText('0 recent templates')).toBeInTheDocument();
+
+    saveRecentTemplateIds(['template-1']);
+    act(() => {
+      window.dispatchEvent(
+        new StorageEvent('storage', { key: RECENT_TEMPLATE_STORAGE_KEY }),
+      );
+    });
+
+    expect(screen.getByText('1 recent template')).toBeInTheDocument();
+  });
+
   it('shows current local workspace counts and exports a backup file', () => {
     saveRecentTemplateIds(['missing-template', 'template-1']);
 
