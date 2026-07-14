@@ -194,6 +194,9 @@ test('compares a saved prompt without exposing prompt text in the URL', async ({
   await page.getByLabel('Change Scope').fill('private comparison');
   await page.getByRole('button', { name: 'Save prompt snapshot' }).click();
   await page.getByRole('link', { name: 'Open saved run' }).click();
+  await page.getByRole('link', { name: 'Back to Run History' }).click();
+  await page.getByLabel('Search runs').fill('private comparison');
+  await page.getByRole('link', { name: 'View details' }).click();
   await page.getByRole('link', { name: 'Compare with source' }).click();
 
   await expect(page).toHaveURL(/\/prompt-diff\?runId=/);
@@ -210,6 +213,12 @@ test('compares a saved prompt without exposing prompt text in the URL', async ({
   await expect(page.getByLabel('Revised prompt')).toContainText(
     'dev-ai-toolkit',
   );
+
+  await page.getByRole('link', { name: 'Back to saved run' }).click();
+  await page.getByRole('link', { name: 'Back to Run History' }).click();
+
+  await expect(page).toHaveURL(/\/runs\?q=private\+comparison$/);
+  await expect(page.getByLabel('Search runs')).toHaveValue('private comparison');
 });
 
 test('opens a saved prompt in Code Viewer without exposing it in the URL', async ({

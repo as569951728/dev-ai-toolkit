@@ -15,6 +15,8 @@ import {
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import {
   buildPromptRunDetailPath,
+  createPromptRunDetailNavigationState,
+  getPromptRunHistoryReturnPath,
   resolvePromptRunSourceDiff,
 } from '@/features/prompt-runs/lib/prompt-run-links';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
@@ -23,6 +25,7 @@ import { writeClipboardText } from '@/lib/clipboard';
 type PromptDiffWorkspaceProps = {
   initialLeftValue: string;
   initialRightValue: string;
+  historyPath: string;
   loadNotice: string | null;
   sourceRun: {
     id: string;
@@ -39,6 +42,7 @@ type CopyFeedback = {
 function PromptDiffWorkspace({
   initialLeftValue,
   initialRightValue,
+  historyPath,
   loadNotice,
   sourceRun,
 }: PromptDiffWorkspaceProps) {
@@ -81,7 +85,12 @@ function PromptDiffWorkspace({
         <p className="status-banner" role="status">
           Loaded {sourceRun.templateName} v{sourceRun.templateVersion} from local
           Run History.{' '}
-          <Link to={buildPromptRunDetailPath(sourceRun.id)}>Back to saved run</Link>
+          <Link
+            state={createPromptRunDetailNavigationState(historyPath)}
+            to={buildPromptRunDetailPath(sourceRun.id)}
+          >
+            Back to saved run
+          </Link>
         </p>
       ) : null}
 
@@ -165,6 +174,7 @@ export function PromptDiffPage() {
     ? null
     : readPromptDiffNavigationState(location.state);
   const hasNavigationComparison = navigationComparison !== null;
+  const historyPath = getPromptRunHistoryReturnPath(location.state);
 
   useEffect(() => {
     if (
@@ -235,6 +245,7 @@ export function PromptDiffPage() {
       key={workspaceKey}
       initialLeftValue={initialLeftValue}
       initialRightValue={initialRightValue}
+      historyPath={historyPath}
       loadNotice={loadNotice}
       sourceRun={sourceRun}
     />

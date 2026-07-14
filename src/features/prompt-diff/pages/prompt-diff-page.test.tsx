@@ -18,6 +18,7 @@ import { createPromptDiffNavigationState } from '@/features/prompt-diff/lib/prom
 import { PromptDiffPage } from '@/features/prompt-diff/pages/prompt-diff-page';
 import { promptDiffSampleLeft } from '@/features/prompt-diff/lib/prompt-diff-utils';
 import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs-provider';
+import { createPromptRunDetailNavigationState } from '@/features/prompt-runs/lib/prompt-run-links';
 import type { PromptRunRepository } from '@/features/prompt-runs/repositories/prompt-run-repository';
 import { PromptTemplatesProvider } from '@/features/prompt-templates/providers/prompt-templates-provider';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
@@ -112,6 +113,7 @@ function renderPromptDiff(
                 </>
               }
             />
+            <Route path="/runs/:runId" element={<LocationStateProbe />} />
           </Routes>
         </PromptRunsProvider>
       </PromptTemplatesProvider>
@@ -123,6 +125,12 @@ function LocationProbe() {
   const location = useLocation();
 
   return <div data-testid="location-search">{location.search}</div>;
+}
+
+function LocationStateProbe() {
+  const location = useLocation();
+
+  return <div data-testid="location-state">{JSON.stringify(location.state)}</div>;
 }
 
 describe('PromptDiffPage', () => {
@@ -191,7 +199,13 @@ describe('PromptDiffPage', () => {
   });
 
   it('loads a saved run comparison from local data', () => {
-    renderPromptDiff('/prompt-diff?runId=imported%2Frun%20%231', {
+    const historyPath = '/runs?templateId=review-template&q=generated';
+
+    renderPromptDiff({
+      pathname: '/prompt-diff',
+      search: '?runId=imported%2Frun%20%231',
+      state: createPromptRunDetailNavigationState(historyPath),
+    }, {
       runs: [savedRun],
       templates: [savedTemplate],
     });
@@ -208,6 +222,12 @@ describe('PromptDiffPage', () => {
     expect(screen.getByRole('link', { name: 'Back to saved run' })).toHaveAttribute(
       'href',
       '/runs/imported%2Frun%20%231',
+    );
+
+    fireEvent.click(screen.getByRole('link', { name: 'Back to saved run' }));
+
+    expect(screen.getByTestId('location-state')).toHaveTextContent(
+      JSON.stringify(createPromptRunDetailNavigationState(historyPath)),
     );
   });
 

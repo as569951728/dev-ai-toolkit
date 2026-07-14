@@ -154,7 +154,11 @@ export function PromptRunHistoryCard({
           Open saved prompts in Code Viewer
         </Link>
         {promptDiffUrl ? (
-          <Link className="ghost-button" to={promptDiffUrl}>
+          <Link
+            className="ghost-button"
+            state={createPromptRunDetailNavigationState(historyPath)}
+            to={promptDiffUrl}
+          >
             Compare with source
           </Link>
         ) : sourceTemplate ? (

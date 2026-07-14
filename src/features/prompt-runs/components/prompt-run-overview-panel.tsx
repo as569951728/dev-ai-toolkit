@@ -5,6 +5,7 @@ import {
   buildPromptRunCodeViewerPath,
   buildPromptRunPlaygroundPath,
   buildPromptRunSourceDiffUrl,
+  createPromptRunDetailNavigationState,
 } from '@/features/prompt-runs/lib/prompt-run-links';
 import {
   buildPromptTemplateCreatePath,
@@ -51,7 +52,11 @@ export function PromptRunOverviewPanel({
           </Link>
         ) : null}
         {promptDiffUrl ? (
-          <Link className="secondary-button" to={promptDiffUrl}>
+          <Link
+            className="secondary-button"
+            state={createPromptRunDetailNavigationState(historyPath)}
+            to={promptDiffUrl}
+          >
             Compare with source
           </Link>
         ) : sourceTemplate ? (
