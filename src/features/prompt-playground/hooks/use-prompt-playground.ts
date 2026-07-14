@@ -90,16 +90,27 @@ export function usePromptPlayground(
     [selectedTemplate],
   );
 
+  const activeVariableValues = useMemo(
+    () =>
+      Object.fromEntries(
+        variables.map((variable) => [
+          variable.key,
+          variableValues[variable.key] ?? '',
+        ]),
+      ),
+    [variableValues, variables],
+  );
+
   const preview = useMemo(
     () =>
       selectedTemplate
-        ? buildPromptPreview(selectedTemplate, variableValues)
+        ? buildPromptPreview(selectedTemplate, activeVariableValues)
         : null,
-    [selectedTemplate, variableValues],
+    [activeVariableValues, selectedTemplate],
   );
   const unresolvedVariables = getUnresolvedVariables(
     variables,
-    variableValues,
+    activeVariableValues,
   );
 
   const recentTemplates = useMemo(
@@ -138,7 +149,7 @@ export function usePromptPlayground(
     selectedTemplateId: activeTemplateId,
     templates: activeTemplates,
     variables,
-    variableValues,
+    variableValues: activeVariableValues,
     preview,
     recentTemplates,
     unresolvedVariables,

@@ -78,13 +78,17 @@ function LocationProbe() {
 }
 
 function PlaygroundSelectionProbe() {
-  const { selectedTemplate, selectedTemplateId } = usePromptPlayground();
+  const { selectedTemplate, selectedTemplateId, variableValues } =
+    usePromptPlayground();
 
   return (
     <div>
       <span data-testid="selected-template-id">{selectedTemplateId}</span>
       <span data-testid="selected-template-record-id">
         {selectedTemplate?.id ?? 'none'}
+      </span>
+      <span data-testid="selected-template-values">
+        {JSON.stringify(variableValues)}
       </span>
     </div>
   );
@@ -164,6 +168,9 @@ describe('Prompt playground workflow', () => {
     );
     expect(screen.getByTestId('selected-template-id')).toHaveTextContent(
       starterPromptTemplates[1]!.id,
+    );
+    expect(screen.getByTestId('selected-template-values')).toHaveTextContent(
+      JSON.stringify({ product_area: '', feature_name: '' }),
     );
   });
 
