@@ -114,6 +114,10 @@ describe('workspace-backup-transfer', () => {
             ...template,
             id: ' template-1 ',
             systemPrompt: '  Preserve template whitespace.  ',
+            revisions: template.revisions.map((revision) => ({
+              ...revision,
+              systemPrompt: '  Preserve template whitespace.  ',
+            })),
           },
         ],
         runs: [
@@ -406,6 +410,27 @@ describe('workspace-backup-transfer', () => {
                     updatedAt: '2026-05-03T08:00:00.000Z',
                   },
                 ],
+              },
+            ],
+            runs: [run],
+            notes: [note],
+          },
+        }),
+      ),
+    ).toThrow('Invalid workspace backup format.');
+  });
+
+  it('rejects workspace templates whose current revision has different content', () => {
+    expect(() =>
+      parseWorkspaceBackupImport(
+        JSON.stringify({
+          version: 1,
+          exportedAt: '2026-05-04T08:00:00.000Z',
+          data: {
+            templates: [
+              {
+                ...template,
+                systemPrompt: `${template.systemPrompt}\nReturn a short summary.`,
               },
             ],
             runs: [run],

@@ -57,11 +57,25 @@ export function isPromptTemplate(value: unknown): value is PromptTemplate {
   }
 
   const currentVersion = value.version;
+  const currentName = value.name;
+  const currentDescription = value.description;
+  const currentSystemPrompt = value.systemPrompt;
+  const currentUserPrompt = value.userPrompt;
+  const currentTags = value.tags;
   const revisionVersions = value.revisions.map((revision) => revision.version);
+  const currentRevision = value.revisions.find(
+    (revision) => revision.version === currentVersion,
+  );
 
   return (
-    revisionVersions.includes(currentVersion) &&
+    currentRevision !== undefined &&
     revisionVersions.length === new Set(revisionVersions).size &&
-    revisionVersions.every((revisionVersion) => revisionVersion <= currentVersion)
+    revisionVersions.every((revisionVersion) => revisionVersion <= currentVersion) &&
+    currentRevision.name === currentName &&
+    currentRevision.description === currentDescription &&
+    currentRevision.systemPrompt === currentSystemPrompt &&
+    currentRevision.userPrompt === currentUserPrompt &&
+    currentRevision.tags.length === currentTags.length &&
+    currentRevision.tags.every((tag, index) => tag === currentTags[index])
   );
 }

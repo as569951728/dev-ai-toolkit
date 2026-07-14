@@ -85,6 +85,16 @@ const template: PromptTemplate = {
   updatedAt: '2026-05-01T08:00:00.000Z',
 };
 
+function renameTemplate(source: PromptTemplate, name: string): PromptTemplate {
+  return {
+    ...source,
+    name,
+    revisions: source.revisions.map((revision) =>
+      revision.version === source.version ? { ...revision, name } : revision,
+    ),
+  };
+}
+
 const run: PromptRunRecord = {
   id: 'run-1',
   templateId: 'template-1',
@@ -135,7 +145,9 @@ function TestConsumer() {
               version: 1,
               exportedAt: '2026-06-10T08:30:00.000Z',
               data: {
-                templates: [{ ...template, name: 'Imported Review Assistant' }],
+                templates: [
+                  renameTemplate(template, 'Imported Review Assistant'),
+                ],
                 runs: [{ ...run, templateName: 'Imported Review Assistant' }],
                 notes: [{ ...note, body: 'Imported note body.' }],
                 recentTemplateIds: ['template-1', 'missing-template'],

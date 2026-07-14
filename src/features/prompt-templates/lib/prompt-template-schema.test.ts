@@ -54,4 +54,13 @@ describe('prompt-template-schema', () => {
       }),
     ).toBe(false);
   });
+
+  it('rejects current revisions that disagree with template content', () => {
+    expect(
+      isPromptTemplate({
+        ...template,
+        userPrompt: `${template.userPrompt}\nAdd a concise risk summary.`,
+      }),
+    ).toBe(false);
+  });
 });
