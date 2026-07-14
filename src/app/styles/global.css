@@ -1311,6 +1311,12 @@ pre {
   color: #a53049;
 }
 
+@media (max-width: 960px) {
+  .playground-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 640px) {
   .app-shell {
     padding: 20px 16px;
@@ -1337,7 +1343,6 @@ pre {
   .prompt-form,
   .detail-grid,
   .toolbar,
-  .playground-grid,
   .json-grid,
   .api-grid,
   .api-preview-grid,
