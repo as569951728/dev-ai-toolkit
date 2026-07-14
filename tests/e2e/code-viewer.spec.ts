@@ -12,4 +12,14 @@ test('clears legacy content parameters after loading them', async ({ page }) => 
   await expect(page.getByLabel('Right input')).toHaveValue(
     'private-legacy-right',
   );
+
+  await page.reload();
+
+  await expect(page).toHaveURL(/\/code-viewer$/);
+  await expect(page.getByLabel('Left input')).toHaveValue(
+    'private-legacy-left',
+  );
+  await expect(page.getByLabel('Right input')).toHaveValue(
+    'private-legacy-right',
+  );
 });

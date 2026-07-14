@@ -13,4 +13,11 @@ test('opens generated requests without exposing them in the URL', async ({
     'Bearer private-token',
   );
   expect(page.url()).not.toContain('private-token');
+
+  await page.reload();
+
+  await expect(page).toHaveURL(/\/code-viewer$/);
+  await expect(page.getByLabel('Left input')).toContainText(
+    'Bearer private-token',
+  );
 });
