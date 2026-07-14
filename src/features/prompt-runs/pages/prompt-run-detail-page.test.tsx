@@ -15,6 +15,7 @@ import { PromptTemplatesProvider } from '@/features/prompt-templates/providers/p
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
 import { exportPromptRunAsJson } from '@/features/prompt-runs/lib/prompt-run-export';
 import { buildPromptRunDetailPath } from '@/features/prompt-runs/lib/prompt-run-links';
+import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { PromptRunDetailPage } from '@/features/prompt-runs/pages/prompt-run-detail-page';
 import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs-provider';
 import type { PromptRunRepository } from '@/features/prompt-runs/repositories/prompt-run-repository';
@@ -73,12 +74,23 @@ function createNoteRepository(
   };
 }
 
+function ExternalRunDeleteButton({ runId }: { runId: string }) {
+  const { deleteRun } = usePromptRuns();
+
+  return (
+    <button type="button" onClick={() => deleteRun(runId)}>
+      Delete run externally
+    </button>
+  );
+}
+
 function renderRunDetail(
   initialEntry: string,
   initialRuns: PromptRunRecord[],
   templateRepository = createTemplateRepository(),
   noteRepository = createNoteRepository(),
   runRepository = createRunRepository(initialRuns),
+  externalDeleteRunId?: string,
 ) {
   const router = createMemoryRouter(
     [
@@ -89,6 +101,9 @@ function renderRunDetail(
             <PromptRunsProvider repository={runRepository}>
               <PromptRunNotesProvider repository={noteRepository}>
                 <PromptRunDetailPage />
+                {externalDeleteRunId ? (
+                  <ExternalRunDeleteButton runId={externalDeleteRunId} />
+                ) : null}
               </PromptRunNotesProvider>
             </PromptRunsProvider>
           </PromptTemplatesProvider>
@@ -561,6 +576,146 @@ describe('PromptRunDetailPage', () => {
     );
 
     expect(await screen.findByText('Run History Destination')).toBeInTheDocument();
+  });
+
+  it('shows the missing state when a clean run is deleted externally', () => {
+    const run: PromptRunRecord = {
+      id: 'run-1',
+      templateId: starterPromptTemplates[0]!.id,
+      templateName: starterPromptTemplates[0]!.name,
+      templateVersion: starterPromptTemplates[0]!.version,
+      variables: {},
+      systemPrompt: 'System',
+      userPrompt: 'User',
+      createdAt: '2026-05-07T09:00:00.000Z',
+    };
+
+    renderRunDetail(
+      '/runs/run-1',
+      [run],
+      createTemplateRepository(),
+      createNoteRepository(),
+      createRunRepository([run]),
+      run.id,
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Delete run externally' }),
+    );
+
+    expect(
+      screen.getByRole('heading', { name: 'Run not found' }),
+    ).toBeInTheDocument();
+    expect(screen.queryByLabelText('Note')).not.toBeInTheDocument();
+  });
+
+  it('restores a deleted run with its unsaved note draft', () => {
+    const run: PromptRunRecord = {
+      id: 'run-1',
+      templateId: starterPromptTemplates[0]!.id,
+      templateName: starterPromptTemplates[0]!.name,
+      templateVersion: starterPromptTemplates[0]!.version,
+      variables: {},
+      systemPrompt: 'System',
+      userPrompt: 'User',
+      createdAt: '2026-05-07T09:00:00.000Z',
+    };
+    const runRepository = createRunRepository([run]);
+    const noteRepository = createNoteRepository();
+    const { router } = renderRunDetail(
+      '/runs/run-1',
+      [run],
+      createTemplateRepository(),
+      noteRepository,
+      runRepository,
+      run.id,
+    );
+
+    fireEvent.change(screen.getByLabelText('Note'), {
+      target: { value: 'Keep this deleted-run draft.' },
+    });
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Delete run externally' }),
+    );
+
+    expect(screen.getByLabelText('Note')).toHaveValue(
+      'Keep this deleted-run draft.',
+    );
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Saved prompt snapshot was deleted in another tab. Your unsaved note is still here. Restore both as a new snapshot to keep the draft.',
+    );
+    expect(screen.getByRole('button', { name: 'Save note' })).toBeDisabled();
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Restore snapshot and note' }),
+    );
+
+    const restoredRun = runRepository.loadAll()[0];
+
+    expect(restoredRun?.id).not.toBe(run.id);
+    expect(router.state.location.pathname).toBe(
+      buildPromptRunDetailPath(restoredRun!.id),
+    );
+    expect(noteRepository.snapshot()[0]).toMatchObject({
+      runId: restoredRun?.id,
+      body: 'Keep this deleted-run draft.',
+    });
+    expect(screen.getByLabelText('Note')).toHaveValue(
+      'Keep this deleted-run draft.',
+    );
+    expect(screen.getByRole('button', { name: 'Save note' })).toBeEnabled();
+  });
+
+  it('keeps a deleted-run note draft when restoration fails', () => {
+    const run: PromptRunRecord = {
+      id: 'run-1',
+      templateId: starterPromptTemplates[0]!.id,
+      templateName: starterPromptTemplates[0]!.name,
+      templateVersion: starterPromptTemplates[0]!.version,
+      variables: {},
+      systemPrompt: 'System',
+      userPrompt: 'User',
+      createdAt: '2026-05-07T09:00:00.000Z',
+    };
+    const runRepository = createRunRepository([run]);
+    const noteRepository: PromptRunNoteRepository & {
+      snapshot: () => PromptRunNote[];
+    } = {
+      loadAll: () => [],
+      saveAll: () => {
+        throw new Error('Note storage failed.');
+      },
+      snapshot: () => [],
+    };
+
+    renderRunDetail(
+      '/runs/run-1',
+      [run],
+      createTemplateRepository(),
+      noteRepository,
+      runRepository,
+      run.id,
+    );
+
+    fireEvent.change(screen.getByLabelText('Note'), {
+      target: { value: 'Keep this failed-restore draft.' },
+    });
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Delete run externally' }),
+    );
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Restore snapshot and note' }),
+    );
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Failed to restore this snapshot and note. No replacement was kept.',
+    );
+    expect(screen.getByLabelText('Note')).toHaveValue(
+      'Keep this failed-restore draft.',
+    );
+    expect(screen.getByRole('button', { name: 'Save note' })).toBeDisabled();
+    expect(runRepository.loadAll()).toEqual([]);
+    expect(noteRepository.snapshot()).toEqual([]);
   });
 
   it('asks for confirmation before deleting the current run and its saved note', () => {

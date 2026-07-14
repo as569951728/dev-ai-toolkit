@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from 'react';
 import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
 
 interface PromptRunNotePanelProps {
+  isSaveDisabled?: boolean;
+  onDraftChange?: (body: string) => void;
   onDirtyChange?: (isDirty: boolean) => void;
   runId: string;
 }
@@ -13,6 +15,8 @@ interface NoteSaveFeedback {
 }
 
 export function PromptRunNotePanel({
+  isSaveDisabled = false,
+  onDraftChange,
   onDirtyChange,
   runId,
 }: PromptRunNotePanelProps) {
@@ -48,7 +52,8 @@ export function PromptRunNotePanel({
 
   useEffect(() => {
     onDirtyChange?.(body !== savedBody);
-  }, [body, onDirtyChange, savedBody]);
+    onDraftChange?.(body);
+  }, [body, onDirtyChange, onDraftChange, savedBody]);
 
   const handleSave = () => {
     try {
@@ -123,7 +128,12 @@ export function PromptRunNotePanel({
       </label>
 
       <div className="detail-actions detail-actions--inline">
-        <button className="primary-button" type="button" onClick={handleSave}>
+        <button
+          className="primary-button"
+          type="button"
+          disabled={isSaveDisabled}
+          onClick={handleSave}
+        >
           Save note
         </button>
       </div>

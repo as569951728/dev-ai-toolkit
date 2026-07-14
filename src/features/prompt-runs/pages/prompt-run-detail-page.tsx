@@ -17,9 +17,11 @@ import {
 } from '@/features/prompt-runs/components/prompt-run-prompts-panel';
 import { exportPromptRunAsJson } from '@/features/prompt-runs/lib/prompt-run-export';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
+import { buildPromptRunDetailPath } from '@/features/prompt-runs/lib/prompt-run-links';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
 import {
   PromptRunNoteRollbackError,
+  PromptRunRestoreRollbackError,
   usePromptRunWorkflowActions,
 } from '@/features/prompt-workflows/hooks/use-prompt-run-workflow-actions';
 import { writeClipboardText } from '@/lib/clipboard';
@@ -35,11 +37,16 @@ export function PromptRunDetailPage() {
   const { getRunById } = usePromptRuns();
   const { getNoteByRunId } = usePromptRunNotes();
   const { getTemplateById } = usePromptTemplates();
-  const { deleteRunWithRelatedData } = usePromptRunWorkflowActions();
+  const { deleteRunWithRelatedData, restoreRunWithNoteDraft } =
+    usePromptRunWorkflowActions();
+  const currentRun = runId ? getRunById(runId) : undefined;
   const allowNavigationRef = useRef(false);
+  const [lastRun, setLastRun] = useState(currentRun);
   const [isNoteDirty, setIsNoteDirty] = useState(false);
+  const [noteDraft, setNoteDraft] = useState('');
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const [deleteErrorMessage, setDeleteErrorMessage] = useState('');
+  const [restoreErrorMessage, setRestoreErrorMessage] = useState('');
   const [exportFeedback, setExportFeedback] = useState<ActionFeedback | null>(
     null,
   );
@@ -62,7 +69,12 @@ export function PromptRunDetailPage() {
     { capture: true },
   );
 
-  const run = runId ? getRunById(runId) : undefined;
+  if (currentRun && currentRun !== lastRun) {
+    setLastRun(currentRun);
+  }
+
+  const sourceWasDeleted = !currentRun && isNoteDirty;
+  const run = currentRun ?? (sourceWasDeleted ? lastRun : undefined);
 
   if (!run) {
     return (
@@ -78,6 +90,25 @@ export function PromptRunDetailPage() {
 
   const sourceTemplate = getTemplateById(run.templateId);
   const note = getNoteByRunId(run.id);
+  const handleRestoreRun = () => {
+    setRestoreErrorMessage('');
+
+    try {
+      const restoredRun = restoreRunWithNoteDraft(run, noteDraft);
+
+      allowNavigationRef.current = true;
+      navigate(buildPromptRunDetailPath(restoredRun.id), { replace: true });
+      queueMicrotask(() => {
+        allowNavigationRef.current = false;
+      });
+    } catch (error) {
+      setRestoreErrorMessage(
+        error instanceof PromptRunRestoreRollbackError
+          ? error.message
+          : 'Failed to restore this snapshot and note. No replacement was kept. Check that browser storage is available and try again.',
+      );
+    }
+  };
   const handleDeleteRun = () => {
     setDeleteErrorMessage('');
     allowNavigationRef.current = true;
@@ -143,6 +174,31 @@ export function PromptRunDetailPage() {
     <section className="playground-layout">
       <PromptRunOverviewPanel run={run} sourceTemplate={sourceTemplate} />
 
+      {sourceWasDeleted ? (
+        <div className="status-banner" role="status">
+          <h2>Snapshot deleted in another tab</h2>
+          <p>
+            Saved prompt snapshot was deleted in another tab. Your unsaved note
+            is still here. Restore both as a new snapshot to keep the draft.
+          </p>
+          <div className="detail-actions detail-actions--inline">
+            <button
+              className="primary-button"
+              type="button"
+              onClick={handleRestoreRun}
+            >
+              Restore snapshot and note
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      {restoreErrorMessage ? (
+        <p className="status-banner status-banner--error" role="alert">
+          {restoreErrorMessage}
+        </p>
+      ) : null}
+
       {navigationBlocker.state === 'blocked' ? (
         <div
           aria-describedby="unsaved-run-note-description"
@@ -185,86 +241,90 @@ export function PromptRunDetailPage() {
         <PromptRunInputsPanel run={run} />
 
         <PromptRunNotePanel
+          isSaveDisabled={sourceWasDeleted}
           runId={run.id}
+          onDraftChange={setNoteDraft}
           onDirtyChange={setIsNoteDirty}
         />
       </div>
 
-      <section className="panel">
-        <div className="panel__header">
-          <div>
-            <p className="eyebrow">Local snapshot</p>
-            <h2>Snapshot management</h2>
-            <p className="panel__summary">
-              Export a portable JSON copy or remove this snapshot and its note
-              from the current browser.
-            </p>
+      {!sourceWasDeleted ? (
+        <section className="panel">
+          <div className="panel__header">
+            <div>
+              <p className="eyebrow">Local snapshot</p>
+              <h2>Snapshot management</h2>
+              <p className="panel__summary">
+                Export a portable JSON copy or remove this snapshot and its note
+                from the current browser.
+              </p>
+            </div>
           </div>
-        </div>
 
-        {exportFeedback ? (
-          <p
-            className={`status-banner${
-              exportFeedback.tone === 'error' ? ' status-banner--error' : ''
-            }`}
-            role={exportFeedback.tone === 'error' ? 'alert' : 'status'}
-          >
-            {exportFeedback.message}
-          </p>
-        ) : null}
+          {exportFeedback ? (
+            <p
+              className={`status-banner${
+                exportFeedback.tone === 'error' ? ' status-banner--error' : ''
+              }`}
+              role={exportFeedback.tone === 'error' ? 'alert' : 'status'}
+            >
+              {exportFeedback.message}
+            </p>
+          ) : null}
 
-        {deleteErrorMessage ? (
-          <p className="status-banner status-banner--error" role="alert">
-            {deleteErrorMessage}
-          </p>
-        ) : null}
+          {deleteErrorMessage ? (
+            <p className="status-banner status-banner--error" role="alert">
+              {deleteErrorMessage}
+            </p>
+          ) : null}
 
-        {isConfirmingDelete && isNoteDirty ? (
-          <p className="status-banner" role="status">
-            The unsaved note draft will also be discarded.
-          </p>
-        ) : null}
+          {isConfirmingDelete && isNoteDirty ? (
+            <p className="status-banner" role="status">
+              The unsaved note draft will also be discarded.
+            </p>
+          ) : null}
 
-        <div className="detail-actions detail-actions--inline">
-          <button
-            className="ghost-button"
-            type="button"
-            onClick={handleExportRun}
-          >
-            Export run JSON
-          </button>
-          {isConfirmingDelete ? (
-            <>
+          <div className="detail-actions detail-actions--inline">
+            <button
+              className="ghost-button"
+              type="button"
+              onClick={handleExportRun}
+            >
+              Export run JSON
+            </button>
+            {isConfirmingDelete ? (
+              <>
+                <button
+                  className="danger-button"
+                  type="button"
+                  onClick={handleDeleteRun}
+                >
+                  Confirm delete
+                </button>
+                <button
+                  autoFocus
+                  className="ghost-button"
+                  type="button"
+                  onClick={() => {
+                    setIsConfirmingDelete(false);
+                    setDeleteErrorMessage('');
+                  }}
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
               <button
                 className="danger-button"
                 type="button"
-                onClick={handleDeleteRun}
+                onClick={() => setIsConfirmingDelete(true)}
               >
-                Confirm delete
+                Delete run
               </button>
-              <button
-                autoFocus
-                className="ghost-button"
-                type="button"
-                onClick={() => {
-                  setIsConfirmingDelete(false);
-                  setDeleteErrorMessage('');
-                }}
-              >
-                Cancel
-              </button>
-            </>
-          ) : (
-            <button
-              className="danger-button"
-              type="button"
-              onClick={() => setIsConfirmingDelete(true)}
-            >
-              Delete run
-            </button>
-          )}
-        </div>
-      </section>
+            )}
+          </div>
+        </section>
+      ) : null}
     </section>
   );
 }
