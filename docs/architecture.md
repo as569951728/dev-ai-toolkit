@@ -161,6 +161,16 @@ Repositories for prompt templates, prompt runs, prompt run notes, and recent pro
 - read versioned payloads when the schema matches the current version
 - write back using the current versioned payload shape
 
+Default providers also listen for the matching browser `storage` event. A write
+or clear from another tab reloads that collection through its repository, so
+open tabs in the same browser profile do not keep stale templates, runs, notes,
+or recent-template shortcuts. Injected repositories do not subscribe because
+their lifecycle may not be connected to browser storage.
+
+This is refresh-on-change behavior, not collaborative editing. The storage API
+does not provide collection transactions or conflict resolution, so concurrent
+writes still use the last value persisted by the browser.
+
 ### Migration assumptions
 
 The current migration strategy is intentionally simple:

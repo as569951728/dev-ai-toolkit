@@ -132,7 +132,7 @@ skipped.
 
 - Data is still local to the current browser profile.
 - There is no account system, remote sync, or shared team workspace yet.
-- Open the workspace in one tab at a time. Tabs do not synchronize live, so
-  concurrent edits can overwrite earlier local changes.
+- Other tabs in the same browser profile refresh persisted workflow data, but
+  concurrent edits still use the last browser write without automatic merging.
 - Screenshots in this document are captured from the local app, not a hosted
   analytics or production environment.

@@ -207,8 +207,10 @@ The current storage model is intentionally local-first:
 
 - A few starter templates are seeded on first load
 - User changes and saved runs are persisted in `localStorage`
-- Tabs do not synchronize live; editing the same workspace in multiple tabs can
-  overwrite earlier local changes
+- Other open tabs in the same browser profile refresh templates, saved runs,
+  notes, and recent Playground shortcuts after a storage change
+- Concurrent edits are still resolved by the browser's last persisted write;
+  there is no merge or conflict-resolution layer
 - Workspace backups can export and restore local templates, saved runs, notes, and recent playground shortcuts
 - Repository boundaries are in place so future API-backed work does not require rewriting page structure first
 
