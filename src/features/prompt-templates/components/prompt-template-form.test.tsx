@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import {
   createMemoryRouter,
@@ -52,6 +53,57 @@ function renderForm(
   render(<RouterProvider router={router} />);
 
   return router;
+}
+
+const originalEditValue: PromptTemplateInput = {
+  name: 'Original Review Template',
+  description: 'Original description.',
+  systemPrompt: 'Original system prompt.',
+  userPrompt: 'Original user prompt.',
+  tags: ['review'],
+};
+
+const externalEditValue: PromptTemplateInput = {
+  name: 'Externally Updated Template',
+  description: 'Updated in another tab.',
+  systemPrompt: 'Updated system prompt.',
+  userPrompt: 'Updated user prompt.',
+  tags: ['review', 'updated'],
+};
+
+function ExternallyUpdatedEditFormHarness() {
+  const [initialValue, setInitialValue] = useState(originalEditValue);
+
+  return (
+    <>
+      <PromptTemplateForm
+        mode="edit"
+        initialValue={initialValue}
+        onCancel={() => undefined}
+        onSubmit={() => undefined}
+      />
+      <button
+        type="button"
+        onClick={() => setInitialValue(externalEditValue)}
+      >
+        Update externally
+      </button>
+    </>
+  );
+}
+
+function renderExternallyUpdatedEditForm() {
+  const router = createMemoryRouter(
+    [
+      {
+        path: '/prompts/template-1/edit',
+        element: <ExternallyUpdatedEditFormHarness />,
+      },
+    ],
+    { initialEntries: ['/prompts/template-1/edit'] },
+  );
+
+  render(<RouterProvider router={router} />);
 }
 
 function fillRequiredFields() {
@@ -241,5 +293,36 @@ describe('PromptTemplateForm', () => {
     expect(
       await screen.findByRole('heading', { name: 'Prompt template list' }),
     ).toBeInTheDocument();
+  });
+
+  it('refreshes a clean edit form when the saved template changes', () => {
+    renderExternallyUpdatedEditForm();
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Update externally' }),
+    );
+
+    expect(screen.getByLabelText('Name')).toHaveValue(
+      'Externally Updated Template',
+    );
+    expect(screen.getByLabelText('Description')).toHaveValue(
+      'Updated in another tab.',
+    );
+  });
+
+  it('preserves a local edit draft when the saved template changes', () => {
+    renderExternallyUpdatedEditForm();
+
+    fireEvent.change(screen.getByLabelText('Name'), {
+      target: { value: 'Keep this local draft' },
+    });
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Update externally' }),
+    );
+
+    expect(screen.getByLabelText('Name')).toHaveValue('Keep this local draft');
+    expect(screen.getByLabelText('Description')).toHaveValue(
+      'Original description.',
+    );
   });
 });

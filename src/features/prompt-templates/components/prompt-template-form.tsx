@@ -30,6 +30,16 @@ function createInitialState(
   };
 }
 
+function isSameFormState(left: FormState, right: FormState) {
+  return (
+    left.name === right.name &&
+    left.description === right.description &&
+    left.systemPrompt === right.systemPrompt &&
+    left.userPrompt === right.userPrompt &&
+    left.tags === right.tags
+  );
+}
+
 function normalizeTags(value: string) {
   return [
     ...new Set(
@@ -60,7 +70,7 @@ export function PromptTemplateForm({
 }: PromptTemplateFormProps) {
   const allowNavigationRef = useRef(false);
   const continueEditingButtonRef = useRef<HTMLButtonElement | null>(null);
-  const [initialFormState] = useState<FormState>(() =>
+  const [initialFormState, setInitialFormState] = useState<FormState>(() =>
     createInitialState(initialValue),
   );
   const [formState, setFormState] = useState<FormState>(
@@ -71,6 +81,17 @@ export function PromptTemplateForm({
     ([field, value]) =>
       value !== initialFormState[field as keyof FormState],
   );
+  const nextInitialFormState = createInitialState(initialValue);
+
+  if (!isSameFormState(initialFormState, nextInitialFormState)) {
+    setInitialFormState(nextInitialFormState);
+    setErrorMessage(null);
+
+    if (!isDirty) {
+      setFormState(nextInitialFormState);
+    }
+  }
+
   const navigationBlocker = useBlocker(
     () => isDirty && !allowNavigationRef.current,
   );
