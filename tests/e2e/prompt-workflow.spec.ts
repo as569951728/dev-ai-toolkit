@@ -407,7 +407,22 @@ test('preserves template list filters across preview and editing', async ({
   );
 
   await templateCard.getByRole('button', { name: 'Edit' }).click();
+  await page
+    .getByLabel('Description')
+    .fill('Temporary description that should be discarded.');
   await page.getByRole('button', { name: 'Back to list' }).click();
+
+  await expect(
+    page.getByRole('heading', { name: 'Discard unsaved changes?' }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Continue editing' }).click();
+
+  await expect(page.getByLabel('Description')).toHaveValue(
+    'Temporary description that should be discarded.',
+  );
+
+  await page.getByRole('button', { name: 'Back to list' }).click();
+  await page.getByRole('button', { name: 'Discard changes' }).click();
 
   await expect(page).toHaveURL(
     /\/prompts\?search=Code\+Review&tag=review$/,
