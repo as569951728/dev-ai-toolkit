@@ -14,11 +14,13 @@ import type { PromptRunRecord } from '@/types/prompt-run';
 import type { PromptTemplate } from '@/types/prompt-template';
 
 interface PromptRunOverviewPanelProps {
+  historyPath: string;
   run: PromptRunRecord;
   sourceTemplate: PromptTemplate | null | undefined;
 }
 
 export function PromptRunOverviewPanel({
+  historyPath,
   run,
   sourceTemplate,
 }: PromptRunOverviewPanelProps) {
@@ -34,7 +36,7 @@ export function PromptRunOverviewPanel({
       </p>
 
       <div className="detail-actions detail-actions--inline">
-        <Link className="ghost-button" to="/runs">
+        <Link className="ghost-button" to={historyPath}>
           Back to Run History
         </Link>
         {sourceTemplate && !sourceTemplate.archivedAt ? (

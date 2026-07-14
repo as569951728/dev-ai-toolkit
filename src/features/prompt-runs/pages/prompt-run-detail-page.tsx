@@ -3,6 +3,7 @@ import {
   Link,
   useBeforeUnload,
   useBlocker,
+  useLocation,
   useNavigate,
   useParams,
 } from 'react-router-dom';
@@ -21,7 +22,10 @@ import {
 } from '@/features/prompt-runs/components/prompt-run-snapshot-management';
 import { exportPromptRunAsJson } from '@/features/prompt-runs/lib/prompt-run-export';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
-import { buildPromptRunDetailPath } from '@/features/prompt-runs/lib/prompt-run-links';
+import {
+  buildPromptRunDetailPath,
+  getPromptRunHistoryReturnPath,
+} from '@/features/prompt-runs/lib/prompt-run-links';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
 import {
   PromptRunNoteRollbackError,
@@ -31,6 +35,7 @@ import {
 import { writeClipboardText } from '@/lib/clipboard';
 
 export function PromptRunDetailPage() {
+  const location = useLocation();
   const navigate = useNavigate();
   const { runId } = useParams();
   const { getRunById } = usePromptRuns();
@@ -39,6 +44,7 @@ export function PromptRunDetailPage() {
   const { deleteRunWithRelatedData, restoreRunWithNoteDraft } =
     usePromptRunWorkflowActions();
   const currentRun = runId ? getRunById(runId) : undefined;
+  const historyPath = getPromptRunHistoryReturnPath(location.state);
   const allowNavigationRef = useRef(false);
   const [lastRun, setLastRun] = useState(currentRun);
   const [isNoteDirty, setIsNoteDirty] = useState(false);
@@ -168,7 +174,11 @@ export function PromptRunDetailPage() {
 
   return (
     <section className="playground-layout">
-      <PromptRunOverviewPanel run={run} sourceTemplate={sourceTemplate} />
+      <PromptRunOverviewPanel
+        historyPath={historyPath}
+        run={run}
+        sourceTemplate={sourceTemplate}
+      />
 
       {sourceWasDeleted ? (
         <div className="status-banner" role="status">

@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 
 import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
 import { PromptRunHistoryCard } from '@/features/prompt-runs/components/prompt-run-history-card';
@@ -12,12 +12,16 @@ import {
   normalizePromptRunHistorySearchParams,
   type PromptRunSortOrder,
 } from '@/features/prompt-runs/lib/prompt-run-history-query';
-import { buildPromptRunDetailPath } from '@/features/prompt-runs/lib/prompt-run-links';
+import {
+  buildPromptRunDetailPath,
+  createPromptRunDetailNavigationState,
+} from '@/features/prompt-runs/lib/prompt-run-links';
 import { matchesPromptRunSearch } from '@/features/prompt-runs/lib/prompt-run-search';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
 import { buildPromptTemplatePlaygroundPath } from '@/features/prompt-templates/lib/prompt-template-links';
 
 export function PromptRunHistoryPage() {
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const { deleteRun, getRunById, importRuns, runs } = usePromptRuns();
   const { getNoteByRunId, importNotes } = usePromptRunNotes();
@@ -45,6 +49,7 @@ export function PromptRunHistoryPage() {
     : 'all';
   const searchValue = searchParams.get('q') ?? '';
   const sortOrder = getPromptRunSortOrder(searchParams);
+  const historyPath = `${location.pathname}${location.search}`;
 
   useEffect(() => {
     const normalizedSearchParams = normalizePromptRunHistorySearchParams(
@@ -199,7 +204,10 @@ export function PromptRunHistoryPage() {
             </h2>
             <p>
               {importStatus.message}{' '}
-              <Link to={buildPromptRunDetailPath(importStatus.runId)}>
+              <Link
+                state={createPromptRunDetailNavigationState(historyPath)}
+                to={buildPromptRunDetailPath(importStatus.runId)}
+              >
                 Open imported run
               </Link>
             </p>
@@ -289,6 +297,7 @@ export function PromptRunHistoryPage() {
 
                   return (
                     <PromptRunHistoryCard
+                      historyPath={historyPath}
                       key={run.id}
                       note={note}
                       run={run}

@@ -98,6 +98,20 @@ test('saves a prompt snapshot and protects its review note draft', async ({
   await expect(page).toHaveURL(/\/runs\?order=oldest$/);
   await expect(page.getByLabel('Sort')).toHaveValue('oldest');
 
+  await page.getByLabel('Search runs').fill('frontend workflow');
+  await expect(page).toHaveURL(
+    /\/runs\?q=frontend\+workflow&order=oldest$/,
+  );
+
+  await page.getByRole('link', { name: 'View details' }).click();
+  await page.getByRole('link', { name: 'Back to Run History' }).click();
+
+  await expect(page).toHaveURL(
+    /\/runs\?q=frontend\+workflow&order=oldest$/,
+  );
+  await expect(page.getByLabel('Search runs')).toHaveValue('frontend workflow');
+  await expect(page.getByLabel('Sort')).toHaveValue('oldest');
+
   await page.getByRole('link', { name: 'Reopen in Playground' }).click();
 
   await expect(page).toHaveURL(/\/playground\?.*runId=/);

@@ -11,6 +11,7 @@ import {
   buildPromptRunDetailPath,
   buildPromptRunPlaygroundPath,
   buildPromptRunSourceDiffUrl,
+  createPromptRunDetailNavigationState,
 } from '@/features/prompt-runs/lib/prompt-run-links';
 import { buildPromptTemplateDetailPath } from '@/features/prompt-templates/lib/prompt-template-links';
 import { writeClipboardText } from '@/lib/clipboard';
@@ -20,12 +21,14 @@ import type { PromptRunNote } from '@/types/prompt-run-note';
 import type { PromptTemplate } from '@/types/prompt-template';
 
 interface PromptRunHistoryCardProps {
+  historyPath: string;
   note: PromptRunNote | null | undefined;
   run: PromptRunRecord;
   sourceTemplate: PromptTemplate | null;
 }
 
 export function PromptRunHistoryCard({
+  historyPath,
   note,
   run,
   sourceTemplate,
@@ -114,7 +117,11 @@ export function PromptRunHistoryCard({
         >
           Copy full prompt
         </button>
-        <Link className="ghost-button" to={buildPromptRunDetailPath(run.id)}>
+        <Link
+          className="ghost-button"
+          state={createPromptRunDetailNavigationState(historyPath)}
+          to={buildPromptRunDetailPath(run.id)}
+        >
           View details
         </Link>
         {sourceTemplate && !sourceTemplate.archivedAt ? (

@@ -6,7 +6,11 @@ import {
   waitFor,
 } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createMemoryRouter, RouterProvider } from 'react-router-dom';
+import {
+  createMemoryRouter,
+  type InitialEntry,
+  RouterProvider,
+} from 'react-router-dom';
 
 import { PromptRunNotesProvider } from '@/features/prompt-run-notes/providers/prompt-run-notes-provider';
 import type { PromptRunNoteRepository } from '@/features/prompt-run-notes/repositories/prompt-run-note-repository';
@@ -14,7 +18,10 @@ import { starterPromptTemplates } from '@/features/prompt-templates/seed/prompt-
 import { PromptTemplatesProvider } from '@/features/prompt-templates/providers/prompt-templates-provider';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
 import { exportPromptRunAsJson } from '@/features/prompt-runs/lib/prompt-run-export';
-import { buildPromptRunDetailPath } from '@/features/prompt-runs/lib/prompt-run-links';
+import {
+  buildPromptRunDetailPath,
+  createPromptRunDetailNavigationState,
+} from '@/features/prompt-runs/lib/prompt-run-links';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { PromptRunDetailPage } from '@/features/prompt-runs/pages/prompt-run-detail-page';
 import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs-provider';
@@ -85,7 +92,7 @@ function ExternalRunDeleteButton({ runId }: { runId: string }) {
 }
 
 function renderRunDetail(
-  initialEntry: string,
+  initialEntry: InitialEntry,
   initialRuns: PromptRunRecord[],
   templateRepository = createTemplateRepository(),
   noteRepository = createNoteRepository(),
@@ -194,6 +201,35 @@ describe('PromptRunDetailPage', () => {
       'Maintenance note',
       'Snapshot management',
     ]);
+  });
+
+  it('returns to the filtered Run History path that opened the detail', async () => {
+    const run: PromptRunRecord = {
+      id: 'run-1',
+      templateId: starterPromptTemplates[0]!.id,
+      templateName: starterPromptTemplates[0]!.name,
+      templateVersion: starterPromptTemplates[0]!.version,
+      variables: {},
+      systemPrompt: 'System',
+      userPrompt: 'User',
+      createdAt: '2026-05-07T09:00:00.000Z',
+    };
+    const historyPath = `/runs?templateId=${run.templateId}&q=System`;
+    const { router } = renderRunDetail(
+      {
+        pathname: '/runs/run-1',
+        state: createPromptRunDetailNavigationState(historyPath),
+      },
+      [run],
+    );
+
+    fireEvent.click(screen.getByRole('link', { name: 'Back to Run History' }));
+
+    expect(await screen.findByText('Run History Destination')).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe('/runs');
+    expect(router.state.location.search).toBe(
+      `?templateId=${run.templateId}&q=System`,
+    );
   });
 
   it('opens a run whose ID contains URL-sensitive characters', () => {

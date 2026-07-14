@@ -144,6 +144,7 @@ function renderRunHistory({
           <PromptRunNotesProvider repository={noteRepository}>
             <PromptRunHistoryPage />
             <LocationSearchProbe />
+            <LocationStateProbe />
           </PromptRunNotesProvider>
         </PromptRunsProvider>
       </PromptTemplatesProvider>
@@ -160,6 +161,12 @@ function LocationSearchProbe() {
   const location = useLocation();
 
   return <div data-testid="location-search">{location.search}</div>;
+}
+
+function LocationStateProbe() {
+  const location = useLocation();
+
+  return <div data-testid="location-state">{JSON.stringify(location.state)}</div>;
 }
 
 function RunHistoryNavigationHarness() {
@@ -249,6 +256,18 @@ describe('PromptRunHistoryPage', () => {
     expect(
       screen.getByText('feature_name: run-history-page'),
     ).toBeInTheDocument();
+  });
+
+  it('keeps the current filters as navigation state on detail links', () => {
+    const historyPath = `/runs?templateId=${starterPromptTemplates[1]!.id}&q=System`;
+
+    renderRunHistory({ initialEntry: historyPath });
+
+    fireEvent.click(screen.getByRole('link', { name: 'View details' }));
+
+    expect(screen.getByTestId('location-state')).toHaveTextContent(
+      JSON.stringify({ historyPath }),
+    );
   });
 
   it('copies a full saved prompt from the history card', async () => {

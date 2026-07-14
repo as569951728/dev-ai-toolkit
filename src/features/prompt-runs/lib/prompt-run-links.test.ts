@@ -6,6 +6,8 @@ import {
   buildPromptRunJsonToolsPath,
   buildPromptRunPlaygroundPath,
   buildPromptRunSourceDiffUrl,
+  createPromptRunDetailNavigationState,
+  getPromptRunHistoryReturnPath,
 } from '@/features/prompt-runs/lib/prompt-run-links';
 import type { PromptRunRecord } from '@/types/prompt-run';
 import type { PromptTemplate } from '@/types/prompt-template';
@@ -59,6 +61,20 @@ describe('prompt-run-links', () => {
       '/runs/imported%2Frun%20%231',
     );
     expect(buildPromptRunDetailPath('run-1')).toBe('/runs/run-1');
+  });
+
+  it('keeps only Run History paths as detail return targets', () => {
+    const historyPath = '/runs?templateId=review-template&q=failed+build';
+
+    expect(
+      getPromptRunHistoryReturnPath(
+        createPromptRunDetailNavigationState(historyPath),
+      ),
+    ).toBe(historyPath);
+    expect(
+      getPromptRunHistoryReturnPath({ historyPath: '/prompts/new' }),
+    ).toBe('/runs');
+    expect(getPromptRunHistoryReturnPath(null)).toBe('/runs');
   });
 
   it('builds a JSON Tools path from a saved run ID', () => {

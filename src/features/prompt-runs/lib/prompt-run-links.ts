@@ -11,6 +11,29 @@ interface BuildPromptRunPlaygroundPathInput {
   templateId: string;
 }
 
+export interface PromptRunDetailNavigationState {
+  historyPath: string;
+}
+
+export function createPromptRunDetailNavigationState(
+  historyPath: string,
+): PromptRunDetailNavigationState {
+  return { historyPath };
+}
+
+export function getPromptRunHistoryReturnPath(state: unknown) {
+  if (!state || typeof state !== 'object' || !('historyPath' in state)) {
+    return '/runs';
+  }
+
+  const historyPath = state.historyPath;
+
+  return typeof historyPath === 'string' &&
+    (historyPath === '/runs' || historyPath.startsWith('/runs?'))
+    ? historyPath
+    : '/runs';
+}
+
 export function buildPromptRunDetailPath(runId: string) {
   return `/runs/${encodeURIComponent(runId)}`;
 }
