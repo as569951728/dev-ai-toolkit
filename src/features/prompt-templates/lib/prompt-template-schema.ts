@@ -56,10 +56,12 @@ export function isPromptTemplate(value: unknown): value is PromptTemplate {
     return false;
   }
 
+  const currentVersion = value.version;
   const revisionVersions = value.revisions.map((revision) => revision.version);
 
   return (
-    revisionVersions.includes(value.version) &&
-    revisionVersions.length === new Set(revisionVersions).size
+    revisionVersions.includes(currentVersion) &&
+    revisionVersions.length === new Set(revisionVersions).size &&
+    revisionVersions.every((revisionVersion) => revisionVersion <= currentVersion)
   );
 }

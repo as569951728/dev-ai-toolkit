@@ -110,7 +110,7 @@ export function ensurePromptTemplateVersioning(
   for (const revision of template.revisions ?? []) {
     const normalizedRevision = normalizeRevision(revision);
 
-    if (normalizedRevision) {
+    if (normalizedRevision && normalizedRevision.version <= version) {
       normalizedRevisionsByVersion.set(
         normalizedRevision.version,
         normalizedRevision,

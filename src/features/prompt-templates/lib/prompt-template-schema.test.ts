@@ -39,4 +39,19 @@ describe('prompt-template-schema', () => {
       }),
     ).toBe(false);
   });
+
+  it('rejects revisions newer than the current template version', () => {
+    expect(
+      isPromptTemplate({
+        ...template,
+        revisions: [
+          ...template.revisions,
+          {
+            ...template.revisions[0]!,
+            version: template.version + 1,
+          },
+        ],
+      }),
+    ).toBe(false);
+  });
 });

@@ -113,6 +113,15 @@ describe('prompt-template-transfer', () => {
             userPrompt: '',
             tags: [],
           },
+          {
+            version: 4,
+            updatedAt: '2026-05-03T00:00:00.000Z',
+            name: 'Future Legacy Template',
+            description: 'A revision newer than the declared current version',
+            systemPrompt: 'Future system prompt.',
+            userPrompt: 'Future user prompt.',
+            tags: ['future'],
+          },
         ],
       },
     ]);
