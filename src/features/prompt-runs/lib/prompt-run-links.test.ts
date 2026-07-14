@@ -86,19 +86,13 @@ describe('prompt-run-links', () => {
     ).toBe('/playground?runId=run-1&templateId=template-1');
   });
 
-  it('builds a Prompt Diff URL using the matching source template revision', () => {
-    const url = new URL(
-      buildPromptRunSourceDiffUrl({ run, sourceTemplate: template }) ?? '',
-      'https://example.test',
-    );
-
-    expect(url.pathname).toBe('/prompt-diff');
-    expect(url.searchParams.get('left')).toBe(
-      'Original system prompt v1.\n\nOriginal user prompt v1.',
-    );
-    expect(url.searchParams.get('right')).toBe(
-      'Generated system prompt.\n\nGenerated user prompt.',
-    );
+  it('builds a Prompt Diff URL without copying saved prompts into it', () => {
+    expect(
+      buildPromptRunSourceDiffUrl({
+        run: { ...run, id: 'imported/run #1' },
+        sourceTemplate: template,
+      }),
+    ).toBe('/prompt-diff?runId=imported%2Frun%20%231');
   });
 
   it('returns null when the source template is missing', () => {

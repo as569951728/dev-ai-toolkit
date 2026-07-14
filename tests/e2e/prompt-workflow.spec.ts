@@ -148,6 +148,33 @@ test('opens captured run variables in JSON Tools', async ({ page }) => {
   ).toBeVisible();
 });
 
+test('compares a saved prompt without exposing prompt text in the URL', async ({
+  page,
+}) => {
+  await page.goto('/playground?templateId=code-review-assistant');
+
+  await page.getByLabel('Repository Name').fill('dev-ai-toolkit');
+  await page.getByLabel('Change Scope').fill('private comparison');
+  await page.getByRole('button', { name: 'Save prompt snapshot' }).click();
+  await page.getByRole('link', { name: 'Open saved run' }).click();
+  await page.getByRole('link', { name: 'Compare with source' }).click();
+
+  await expect(page).toHaveURL(/\/prompt-diff\?runId=/);
+  const comparisonUrl = new URL(page.url());
+
+  expect(comparisonUrl.searchParams.has('left')).toBe(false);
+  expect(comparisonUrl.searchParams.has('right')).toBe(false);
+  await expect(page.getByRole('status')).toContainText(
+    'Loaded Code Review Assistant v1 from local Run History.',
+  );
+  await expect(page.getByLabel('Original prompt')).toContainText(
+    '{{repository_name}}',
+  );
+  await expect(page.getByLabel('Revised prompt')).toContainText(
+    'dev-ai-toolkit',
+  );
+});
+
 test('resolves dotted template variables in the Playground', async ({
   page,
 }) => {

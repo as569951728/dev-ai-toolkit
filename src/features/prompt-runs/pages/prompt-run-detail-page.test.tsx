@@ -173,7 +173,7 @@ describe('PromptRunDetailPage', () => {
     expect(codeViewerUrl.searchParams.get('language')).toBe('markdown');
     expect(
       screen.getByRole('link', { name: 'Compare with source' }),
-    ).toHaveAttribute('href', expect.stringContaining('/prompt-diff?left='));
+    ).toHaveAttribute('href', '/prompt-diff?runId=run-1');
     expect(
       screen
         .getAllByRole('heading', { level: 2 })
@@ -396,12 +396,9 @@ describe('PromptRunDetailPage', () => {
       'https://example.test',
     );
 
-    expect(compareUrl.searchParams.get('left')).toBe(
-      'Original system prompt v1.\n\nOriginal user prompt v1.',
-    );
-    expect(compareUrl.searchParams.get('right')).toBe(
-      'Generated system prompt.\n\nGenerated user prompt.',
-    );
+    expect(compareUrl.searchParams.get('runId')).toBe('run-1');
+    expect(compareUrl.searchParams.has('left')).toBe(false);
+    expect(compareUrl.searchParams.has('right')).toBe(false);
   });
 
   it('explains when the saved source revision is no longer available', () => {

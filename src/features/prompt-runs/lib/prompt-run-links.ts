@@ -26,7 +26,7 @@ export function buildPromptRunPlaygroundPath({
   return `/playground?runId=${encodeURIComponent(runId)}&templateId=${encodeURIComponent(templateId)}`;
 }
 
-export function buildPromptRunSourceDiffUrl({
+export function resolvePromptRunSourceDiff({
   run,
   sourceTemplate,
 }: BuildPromptRunSourceDiffUrlInput) {
@@ -49,10 +49,19 @@ export function buildPromptRunSourceDiffUrl({
     sourcePromptText = `${sourceRevision.systemPrompt}\n\n${sourceRevision.userPrompt}`;
   }
   const runPromptText = `${run.systemPrompt}\n\n${run.userPrompt}`;
-  const searchParams = new URLSearchParams({
+
+  return {
     left: sourcePromptText,
     right: runPromptText,
-  });
+  };
+}
 
-  return `/prompt-diff?${searchParams.toString()}`;
+export function buildPromptRunSourceDiffUrl(
+  input: BuildPromptRunSourceDiffUrlInput,
+) {
+  if (!resolvePromptRunSourceDiff(input)) {
+    return null;
+  }
+
+  return `/prompt-diff?runId=${encodeURIComponent(input.run.id)}`;
 }
