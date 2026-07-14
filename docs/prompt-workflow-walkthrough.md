@@ -58,9 +58,12 @@ prompt work in the app.
 Run History supports:
 
 - Filtering runs by source template.
+- Sorting saved runs from newest or oldest.
 - Previewing captured variables directly on the run cards.
 - Searching by template name, saved prompt text, captured variable, and note
   content.
+- Copying the complete labeled prompt directly from a run card, with local
+  success or error feedback.
 - Opening a detail page for a saved run.
 - Reopening a snapshot from its Run History card with the captured variables
   when the source template is still active.
