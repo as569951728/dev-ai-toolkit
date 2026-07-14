@@ -167,9 +167,16 @@ open tabs in the same browser profile do not keep stale templates, runs, notes,
 or recent-template shortcuts. Injected repositories do not subscribe because
 their lifecycle may not be connected to browser storage.
 
-This is refresh-on-change behavior, not collaborative editing. The storage API
-does not provide collection transactions or conflict resolution, so concurrent
-writes still use the last value persisted by the browser.
+Clean template and note editors adopt the reloaded value. If an editor has an
+unsaved draft, it keeps that draft and reports that the saved value changed.
+A template draft also remains recoverable as a new template if another tab
+deletes its source record. The equivalent recovery path is not available for a
+note whose parent run is deleted because saving it would create an orphaned note.
+
+This is still refresh-on-change behavior, not collaborative editing. The
+storage API does not provide collection transactions or field-level conflict
+resolution, so concurrent writes use the last value persisted by the browser.
+The UI warnings protect a visible draft; they do not merge competing changes.
 
 ### Migration assumptions
 

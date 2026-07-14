@@ -209,8 +209,13 @@ The current storage model is intentionally local-first:
 - User changes and saved runs are persisted in `localStorage`
 - Other open tabs in the same browser profile refresh templates, saved runs,
   notes, and recent Playground shortcuts after a storage change
+- Clean template and note editors adopt those refreshed values. Unsaved drafts
+  stay visible and show a warning instead of being silently replaced
+- If an edited template is deleted in another tab, its draft can be restored as
+  a new template. An unsaved note cannot yet be recovered if its parent run is
+  deleted in another tab
 - Concurrent edits are still resolved by the browser's last persisted write;
-  there is no merge or conflict-resolution layer
+  warnings protect the visible draft but do not merge fields automatically
 - Workspace backups can export and restore local templates, saved runs, notes, and recent playground shortcuts
 - Repository boundaries are in place so future API-backed work does not require rewriting page structure first
 
