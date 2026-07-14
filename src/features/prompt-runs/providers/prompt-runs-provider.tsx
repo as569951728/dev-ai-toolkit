@@ -1,8 +1,11 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { PropsWithChildren } from 'react';
 
 import { PromptRunsContext, type PromptRunsContextValue } from '@/features/prompt-runs/providers/prompt-runs-context';
-import { createLocalStoragePromptRunRepository } from '@/features/prompt-runs/repositories/local-storage-prompt-run-repository';
+import {
+  createLocalStoragePromptRunRepository,
+  PROMPT_RUN_STORAGE_KEY,
+} from '@/features/prompt-runs/repositories/local-storage-prompt-run-repository';
 import type { PromptRunRepository } from '@/features/prompt-runs/repositories/prompt-run-repository';
 import {
   createPromptRunRecord,
@@ -13,6 +16,7 @@ import {
   sortPromptRuns,
 } from '@/features/prompt-runs/services/prompt-run-service';
 import type { PromptRunRecord } from '@/types/prompt-run';
+import { subscribeToStorageKey } from '@/lib/storage-sync';
 
 type PromptRunsProviderProps = PropsWithChildren<{
   repository?: PromptRunRepository;
@@ -35,6 +39,16 @@ export function PromptRunsProvider({
     runsRef.current = nextRuns;
     setRuns(nextRuns);
   }, []);
+
+  useEffect(() => {
+    if (repositoryProp) {
+      return;
+    }
+
+    return subscribeToStorageKey(PROMPT_RUN_STORAGE_KEY, () => {
+      commitRuns(sortPromptRuns(repository.loadAll()));
+    });
+  }, [commitRuns, repository, repositoryProp]);
 
   const createRun = useCallback(
     (input: Omit<PromptRunRecord, 'id' | 'createdAt'>) => {

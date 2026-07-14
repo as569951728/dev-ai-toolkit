@@ -1,8 +1,12 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs-provider';
+import {
+  createLocalStoragePromptRunRepository,
+  PROMPT_RUN_STORAGE_KEY,
+} from '@/features/prompt-runs/repositories/local-storage-prompt-run-repository';
 import type { PromptRunRepository } from '@/features/prompt-runs/repositories/prompt-run-repository';
 import type { PromptRunRecord } from '@/types/prompt-run';
 
@@ -113,6 +117,7 @@ function TestConsumer() {
 
 afterEach(() => {
   cleanup();
+  window.localStorage.clear();
 });
 
 describe('PromptRunsProvider', () => {
@@ -211,5 +216,36 @@ describe('PromptRunsProvider', () => {
     expect(repository.snapshot().map((run) => run.id)).toEqual([
       'replacement-run',
     ]);
+  });
+
+  it('reloads prompt runs saved by another tab', () => {
+    render(
+      <PromptRunsProvider>
+        <TestConsumer />
+      </PromptRunsProvider>,
+    );
+
+    createLocalStoragePromptRunRepository().saveAll([
+      {
+        id: 'existing-run',
+        templateId: 'template-2',
+        templateName: 'External Review Run',
+        templateVersion: 1,
+        variables: {},
+        systemPrompt: 'External system prompt',
+        userPrompt: 'External user prompt',
+        createdAt: '2026-05-10T08:00:00.000Z',
+      },
+    ]);
+    act(() => {
+      window.dispatchEvent(
+        new StorageEvent('storage', { key: PROMPT_RUN_STORAGE_KEY }),
+      );
+    });
+
+    expect(screen.getByTestId('run-count')).toHaveTextContent('1');
+    expect(screen.getByTestId('known-run')).toHaveTextContent(
+      'External Review Run',
+    );
   });
 });

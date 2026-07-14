@@ -10,7 +10,7 @@ import {
 } from '@/lib/local-storage-schema';
 import { keepLastByKey } from '@/lib/collection-utils';
 
-const STORAGE_KEY = 'dev-ai-toolkit.prompt-runs';
+export const PROMPT_RUN_STORAGE_KEY = 'dev-ai-toolkit.prompt-runs';
 
 function normalizeRuns(value: unknown) {
   const runs =
@@ -27,7 +27,7 @@ function normalizeRuns(value: unknown) {
 }
 
 export function createLocalStoragePromptRunRepository(
-  storageKey = STORAGE_KEY,
+  storageKey = PROMPT_RUN_STORAGE_KEY,
   storage: StorageLike | null = resolveBrowserStorage(),
 ): PromptRunRepository {
   return {
