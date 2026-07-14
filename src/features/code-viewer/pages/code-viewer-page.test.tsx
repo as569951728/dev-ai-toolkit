@@ -1,7 +1,9 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import type { MemoryRouterProps } from 'react-router-dom';
 
+import { createCodeViewerNavigationState } from '@/features/code-viewer/lib/code-viewer-navigation';
 import { CodeViewerPage } from '@/features/code-viewer/pages/code-viewer-page';
 
 afterEach(() => {
@@ -9,7 +11,9 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-function renderCodeViewer(initialEntry: string) {
+function renderCodeViewer(
+  initialEntry: NonNullable<MemoryRouterProps['initialEntries']>[number],
+) {
   render(
     <MemoryRouter initialEntries={[initialEntry]}>
       <Routes>
@@ -70,6 +74,26 @@ describe('CodeViewerPage', () => {
       'aria-pressed',
       'false',
     );
+  });
+
+  it('loads code comparisons from router state', () => {
+    renderCodeViewer({
+      pathname: '/code-viewer',
+      state: createCodeViewerNavigationState({
+        left: 'Private original prompt',
+        right: 'Private rendered prompt',
+        mode: 'compare',
+        language: 'markdown',
+      }),
+    });
+
+    expect(screen.getByRole('textbox', { name: 'Left input' })).toHaveValue(
+      'Private original prompt',
+    );
+    expect(screen.getByRole('textbox', { name: 'Right input' })).toHaveValue(
+      'Private rendered prompt',
+    );
+    expect(screen.getByLabelText('Language')).toHaveValue('markdown');
   });
 
   it('copies left content and announces the result', async () => {

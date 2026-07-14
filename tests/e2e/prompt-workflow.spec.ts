@@ -196,6 +196,27 @@ test('reviews a composed prompt without exposing prompt text in the URL', async 
   );
 });
 
+test('opens a composed prompt in Code Viewer without exposing it in the URL', async ({
+  page,
+}) => {
+  await page.goto('/playground?templateId=code-review-assistant');
+
+  await page.getByLabel('Repository Name').fill('dev-ai-toolkit');
+  await page.getByLabel('Change Scope').fill('private code review');
+  await page.getByRole('button', { name: 'Open in Code Viewer' }).click();
+
+  await expect(page).toHaveURL(/\/code-viewer$/);
+  await expect(page.getByLabel('Left input')).toContainText(
+    '{{repository_name}}',
+  );
+  await expect(page.getByLabel('Right input')).toContainText(
+    'dev-ai-toolkit',
+  );
+  await expect(page.getByLabel('Right input')).toContainText(
+    'private code review',
+  );
+});
+
 test('resolves dotted template variables in the Playground', async ({
   page,
 }) => {

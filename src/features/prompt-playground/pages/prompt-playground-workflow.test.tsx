@@ -488,16 +488,25 @@ describe('Prompt playground workflow', () => {
     });
     fireEvent.click(screen.getByRole('button', { name: 'Open in Code Viewer' }));
 
-    const codeViewerParams = new URLSearchParams(
-      screen.getByTestId('location-search').textContent ?? '',
-    );
+    const codeViewerState = JSON.parse(
+      screen.getByTestId('location-state').textContent ?? 'null',
+    ) as {
+      codeViewer: {
+        left: string;
+        right: string;
+        mode: string;
+        language: string;
+      };
+    };
 
     expect(screen.getByTestId('location-pathname')).toHaveTextContent(
       '/code-viewer',
     );
-    expect(codeViewerParams.get('right')).toContain('frontend workflow');
-    expect(codeViewerParams.get('mode')).toBe('compare');
-    expect(codeViewerParams.get('language')).toBe('markdown');
+    expect(screen.getByTestId('location-search')).toBeEmptyDOMElement();
+    expect(codeViewerState.codeViewer.left).toContain('{{repository_name}}');
+    expect(codeViewerState.codeViewer.right).toContain('frontend workflow');
+    expect(codeViewerState.codeViewer.mode).toBe('compare');
+    expect(codeViewerState.codeViewer.language).toBe('markdown');
   });
 
   it('reopens a saved run with its captured variables', () => {

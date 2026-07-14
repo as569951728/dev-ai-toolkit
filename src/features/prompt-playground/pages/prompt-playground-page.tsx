@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
-import { buildCodeViewerUrl } from '@/features/code-viewer/lib/code-viewer-utils';
+import { createCodeViewerNavigationState } from '@/features/code-viewer/lib/code-viewer-navigation';
 import { createPromptDiffNavigationState } from '@/features/prompt-diff/lib/prompt-diff-navigation';
 import { PromptPlaygroundPreview } from '@/features/prompt-playground/components/prompt-playground-preview';
 import { PromptPlaygroundTemplatePicker } from '@/features/prompt-playground/components/prompt-playground-template-picker';
@@ -215,14 +215,14 @@ function PromptPlaygroundWorkspace({
             });
           }}
           onOpenInCodeViewer={() => {
-            navigate(
-              buildCodeViewerUrl({
+            navigate('/code-viewer', {
+              state: createCodeViewerNavigationState({
                 left: originalPromptText,
                 right: generatedPromptText,
                 mode: 'compare',
                 language: 'markdown',
               }),
-            );
+            });
           }}
           savedRunId={savedRunId}
         />

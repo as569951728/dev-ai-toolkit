@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useState } from 'react';
+import { useLocation, useSearchParams } from 'react-router-dom';
 
 import { CodeEditorPanel } from '@/features/code-viewer/components/code-editor-panel';
 import { CodePreviewPanel } from '@/features/code-viewer/components/code-preview-panel';
 import { CodeViewerToolbar } from '@/features/code-viewer/components/code-viewer-toolbar';
+import { readCodeViewerNavigationState } from '@/features/code-viewer/lib/code-viewer-navigation';
 import {
   codeViewerSampleLeft,
   codeViewerSampleRight,
@@ -134,17 +135,26 @@ function CodeViewerWorkspace({
 }
 
 export function CodeViewerPage() {
+  const location = useLocation();
   const [searchParams] = useSearchParams();
-  const initialMode = useMemo<CodeViewerMode>(
-    () => (searchParams.get('mode') === 'single' ? 'single' : 'compare'),
-    [searchParams],
-  );
-  const initialLanguage = searchParams.has('language')
-    ? normalizeCodeViewerLanguage(searchParams.get('language'))
-    : 'typescript';
-  const initialLeftValue = searchParams.get('left') ?? codeViewerSampleLeft;
-  const initialRightValue = searchParams.get('right') ?? codeViewerSampleRight;
-  const workspaceKey = searchParams.toString() || 'default-code-viewer';
+  const navigationWorkspace = readCodeViewerNavigationState(location.state);
+  const initialMode = navigationWorkspace?.mode ??
+    (searchParams.get('mode') === 'single' ? 'single' : 'compare');
+  const initialLanguage = navigationWorkspace?.language ??
+    (searchParams.has('language')
+      ? normalizeCodeViewerLanguage(searchParams.get('language'))
+      : 'typescript');
+  const initialLeftValue =
+    navigationWorkspace?.left ??
+    searchParams.get('left') ??
+    codeViewerSampleLeft;
+  const initialRightValue =
+    navigationWorkspace?.right ??
+    searchParams.get('right') ??
+    codeViewerSampleRight;
+  const workspaceKey = navigationWorkspace
+    ? location.key
+    : searchParams.toString() || 'default-code-viewer';
 
   return (
     <CodeViewerWorkspace
