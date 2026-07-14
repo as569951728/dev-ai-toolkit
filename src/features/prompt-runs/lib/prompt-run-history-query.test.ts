@@ -46,6 +46,15 @@ describe('prompt run history query state', () => {
     expect(normalized?.toString()).toBe('q=review');
   });
 
+  it('removes explicit defaults and empty searches', () => {
+    const normalized = normalizePromptRunHistorySearchParams(
+      new URLSearchParams('templateId=all&q=+++&source=docs'),
+      { hasRequestedTemplate: true },
+    );
+
+    expect(normalized?.toString()).toBe('source=docs');
+  });
+
   it('keeps valid and orphaned-template filters unchanged', () => {
     expect(
       normalizePromptRunHistorySearchParams(

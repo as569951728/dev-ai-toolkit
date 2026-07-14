@@ -332,6 +332,20 @@ describe('PromptRunHistoryPage', () => {
     });
   });
 
+  it('removes default filters that do not change the run list', async () => {
+    renderRunHistory({
+      initialEntry: '/runs?templateId=all&q=+++&source=docs',
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('location-search')).toHaveTextContent(
+        '?source=docs',
+      );
+    });
+    expect(screen.getByLabelText('Template')).toHaveValue('all');
+    expect(screen.getByLabelText('Search runs')).toHaveValue('');
+  });
+
   it('announces when a history-card prompt cannot be copied', async () => {
     Object.defineProperty(navigator, 'clipboard', {
       configurable: true,

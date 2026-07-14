@@ -43,13 +43,23 @@ export function normalizePromptRunHistorySearchParams(
   { hasRequestedTemplate }: NormalizePromptRunHistorySearchParamsOptions,
 ) {
   const requestedSortOrder = searchParams.get('order');
+  const requestedSearch = searchParams.get('q');
   const requestedTemplateId = searchParams.get('templateId') ?? 'all';
   const hasUnsupportedSortOrder =
     requestedSortOrder !== null && requestedSortOrder !== 'oldest';
+  const hasEmptySearch =
+    requestedSearch !== null && requestedSearch.trim().length === 0;
+  const hasDefaultTemplateFilter =
+    searchParams.has('templateId') && requestedTemplateId === 'all';
   const hasUnknownTemplateFilter =
     requestedTemplateId !== 'all' && !hasRequestedTemplate;
 
-  if (!hasUnsupportedSortOrder && !hasUnknownTemplateFilter) {
+  if (
+    !hasUnsupportedSortOrder &&
+    !hasEmptySearch &&
+    !hasDefaultTemplateFilter &&
+    !hasUnknownTemplateFilter
+  ) {
     return null;
   }
 
@@ -59,7 +69,11 @@ export function normalizePromptRunHistorySearchParams(
     normalizedSearchParams.delete('order');
   }
 
-  if (hasUnknownTemplateFilter) {
+  if (hasEmptySearch) {
+    normalizedSearchParams.delete('q');
+  }
+
+  if (hasDefaultTemplateFilter || hasUnknownTemplateFilter) {
     normalizedSearchParams.delete('templateId');
   }
 
