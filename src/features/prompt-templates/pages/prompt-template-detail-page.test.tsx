@@ -1,6 +1,11 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import {
+  MemoryRouter,
+  Route,
+  Routes,
+  useLocation,
+} from 'react-router-dom';
 
 import { starterPromptTemplates } from '@/features/prompt-templates/seed/prompt-templates';
 import { buildPromptTemplateDetailPath } from '@/features/prompt-templates/lib/prompt-template-links';
@@ -11,6 +16,7 @@ import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs
 import type { PromptRunRepository } from '@/features/prompt-runs/repositories/prompt-run-repository';
 import type { PromptRunRecord } from '@/types/prompt-run';
 import type { PromptTemplate } from '@/types/prompt-template';
+import { formatPromptSections } from '@/lib/prompt-sections';
 
 function createTemplateRepository(
   initialTemplates = starterPromptTemplates,
@@ -37,6 +43,12 @@ function createRunRepository(
       runs = [...nextRuns];
     },
   };
+}
+
+function LocationStateProbe() {
+  const location = useLocation();
+
+  return <div data-testid="location-state">{JSON.stringify(location.state)}</div>;
 }
 
 afterEach(() => {
@@ -326,6 +338,56 @@ describe('PromptTemplateDetailPage', () => {
       description: baseTemplate.description,
     });
     expect(screen.getByText('Current version v3')).toBeInTheDocument();
+  });
+
+  it('opens an earlier template revision beside the current version in Prompt Diff', () => {
+    const baseTemplate = starterPromptTemplates[0]!;
+    const currentRevision = {
+      ...baseTemplate.revisions[0]!,
+      version: 2,
+      updatedAt: '2026-05-08T08:00:00.000Z',
+      systemPrompt: 'Current system prompt.',
+      userPrompt: 'Current user prompt.',
+    };
+    const template: PromptTemplate = {
+      ...baseTemplate,
+      version: currentRevision.version,
+      updatedAt: currentRevision.updatedAt,
+      systemPrompt: currentRevision.systemPrompt,
+      userPrompt: currentRevision.userPrompt,
+      revisions: [...baseTemplate.revisions, currentRevision],
+    };
+
+    render(
+      <MemoryRouter initialEntries={[`/prompts/${template.id}`]}>
+        <PromptTemplatesProvider repository={createTemplateRepository([template])}>
+          <PromptRunsProvider repository={createRunRepository()}>
+            <Routes>
+              <Route
+                path="/prompts/:promptId"
+                element={<PromptTemplateDetailPage />}
+              />
+              <Route path="/prompt-diff" element={<LocationStateProbe />} />
+            </Routes>
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'Compare version v1 with current',
+      }),
+    );
+
+    expect(
+      JSON.parse(screen.getByTestId('location-state').textContent ?? 'null'),
+    ).toEqual({
+      promptDiff: {
+        left: formatPromptSections(baseTemplate.revisions[0]!),
+        right: formatPromptSections(template),
+      },
+    });
   });
 
   it('asks for confirmation before deleting a prompt template', () => {

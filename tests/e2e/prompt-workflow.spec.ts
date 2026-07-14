@@ -414,6 +414,39 @@ test('restores a historical template as a new current version', async ({
   ).toBeVisible();
 });
 
+test('compares a historical template revision with the current version', async ({
+  page,
+}) => {
+  const currentSystemPrompt = 'Current system prompt for browser diff.';
+
+  await page.goto('/prompts/code-review-assistant/edit');
+  await page.getByLabel('System prompt').fill(currentSystemPrompt);
+  await page.getByRole('button', { name: 'Save changes' }).click();
+
+  const templateCard = page.getByRole('article').filter({
+    has: page.getByRole('heading', { name: 'Code Review Assistant' }),
+  });
+
+  await templateCard.getByRole('button', { name: 'Preview' }).click();
+
+  const versionOneCard = page.getByRole('article').filter({
+    has: page.getByRole('heading', { name: 'Version v1' }),
+  });
+
+  await versionOneCard
+    .getByRole('button', { name: 'Compare version v1 with current' })
+    .click();
+
+  await expect(page).toHaveURL(/\/prompt-diff$/);
+  await expect(
+    page.getByRole('textbox', { name: 'Original prompt' }),
+  ).toContainText('Prioritize correctness, regressions, and maintainability.');
+  await expect(
+    page.getByRole('textbox', { name: 'Revised prompt' }),
+  ).toContainText(currentSystemPrompt);
+  expect(new URL(page.url()).search).toBe('');
+});
+
 test('discloses an unavailable Playground template link', async ({ page }) => {
   await page.goto('/playground?templateId=missing-template');
 

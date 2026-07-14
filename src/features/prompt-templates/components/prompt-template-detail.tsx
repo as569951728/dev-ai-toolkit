@@ -19,6 +19,7 @@ interface PromptTemplateDetailProps {
   onOpenInPlayground: (id: string) => void;
   onOpenRunHistory: (id: string) => void;
   onOpenRunDetail: (id: string) => void;
+  onCompareRevision: (revision: PromptTemplateRevision) => void;
   onRestoreRevision: (
     templateId: string,
     revisionVersion: PromptTemplateRevision['version'],
@@ -48,6 +49,7 @@ export function PromptTemplateDetail({
   onOpenInPlayground,
   onOpenRunHistory,
   onOpenRunDetail,
+  onCompareRevision,
   onRestoreRevision,
   recentRuns,
 }: PromptTemplateDetailProps) {
@@ -220,15 +222,29 @@ export function PromptTemplateDetail({
 
                     {isCurrent ? (
                       <span className="revision-badge">Current</span>
-                    ) : !isConfirmingRestore ? (
-                      <button
-                        className="ghost-button"
-                        type="button"
-                        onClick={() => setPendingRestoreVersion(revision.version)}
-                      >
-                        Restore as current
-                      </button>
-                    ) : null}
+                    ) : (
+                      <div className="detail-actions detail-actions--inline">
+                        <button
+                          aria-label={`Compare version v${revision.version} with current`}
+                          className="ghost-button"
+                          type="button"
+                          onClick={() => onCompareRevision(revision)}
+                        >
+                          Compare with current
+                        </button>
+                        {!isConfirmingRestore ? (
+                          <button
+                            className="ghost-button"
+                            type="button"
+                            onClick={() =>
+                              setPendingRestoreVersion(revision.version)
+                            }
+                          >
+                            Restore as current
+                          </button>
+                        ) : null}
+                      </div>
+                    )}
                   </div>
 
                   {isConfirmingRestore ? (

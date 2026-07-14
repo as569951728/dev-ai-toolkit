@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { PromptTemplateDetail } from '@/features/prompt-templates/components/prompt-template-detail';
+import { createPromptDiffNavigationState } from '@/features/prompt-diff/lib/prompt-diff-navigation';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { buildPromptRunDetailPath } from '@/features/prompt-runs/lib/prompt-run-links';
@@ -11,6 +12,7 @@ import {
   buildPromptTemplatePlaygroundPath,
   buildPromptTemplateRunHistoryPath,
 } from '@/features/prompt-templates/lib/prompt-template-links';
+import { formatPromptSections } from '@/lib/prompt-sections';
 
 export function PromptTemplateDetailPage() {
   const navigate = useNavigate();
@@ -70,6 +72,14 @@ export function PromptTemplateDetailPage() {
         navigate(buildPromptTemplateRunHistoryPath(id))
       }
       onOpenRunDetail={(id) => navigate(buildPromptRunDetailPath(id))}
+      onCompareRevision={(revision) => {
+        navigate('/prompt-diff', {
+          state: createPromptDiffNavigationState({
+            left: formatPromptSections(revision),
+            right: formatPromptSections(template),
+          }),
+        });
+      }}
       onEdit={(id) => navigate(buildPromptTemplateEditPath(id))}
       onDuplicate={(id) => {
         const duplicatedTemplate = runTemplateAction(() =>
