@@ -4,10 +4,13 @@ import { useBeforeUnload, useBlocker } from 'react-router-dom';
 import type { PromptTemplateInput } from '@/types/prompt-template';
 
 interface PromptTemplateFormProps {
+  externalChangeMessage?: string;
   mode: 'create' | 'edit';
   initialValue?: PromptTemplateInput | null;
+  onDirtyChange?: (isDirty: boolean) => void;
   onSubmit: (value: PromptTemplateInput) => void;
   onCancel: () => void;
+  submitLabel?: string;
 }
 
 interface FormState {
@@ -63,10 +66,13 @@ function formatRequiredMessage(fields: string[]) {
 }
 
 export function PromptTemplateForm({
+  externalChangeMessage,
   mode,
   initialValue,
+  onDirtyChange,
   onSubmit,
   onCancel,
+  submitLabel,
 }: PromptTemplateFormProps) {
   const allowNavigationRef = useRef(false);
   const continueEditingButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -103,6 +109,10 @@ export function PromptTemplateForm({
       continueEditingButtonRef.current?.focus();
     }
   }, [navigationBlocker.state]);
+
+  useEffect(() => {
+    onDirtyChange?.(isDirty);
+  }, [isDirty, onDirtyChange]);
 
   useBeforeUnload(
     (event) => {
@@ -194,10 +204,10 @@ export function PromptTemplateForm({
         </p>
       ) : null}
 
-      {hasExternalUpdate && isDirty ? (
+      {(externalChangeMessage || hasExternalUpdate) && isDirty ? (
         <p className="status-banner" role="status">
-          Saved template changed in another tab. Your local draft is still
-          here; review it before saving.
+          {externalChangeMessage ??
+            'Saved template changed in another tab. Your local draft is still here; review it before saving.'}
         </p>
       ) : null}
 
@@ -289,7 +299,8 @@ export function PromptTemplateForm({
 
         <div className="form-actions">
           <button className="primary-button" type="submit">
-            {mode === 'create' ? 'Create template' : 'Save changes'}
+            {submitLabel ??
+              (mode === 'create' ? 'Create template' : 'Save changes')}
           </button>
           <button className="secondary-button" type="button" onClick={onCancel}>
             Cancel
