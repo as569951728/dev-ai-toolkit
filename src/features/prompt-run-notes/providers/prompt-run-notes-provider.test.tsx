@@ -1,8 +1,12 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
 import { PromptRunNotesProvider } from '@/features/prompt-run-notes/providers/prompt-run-notes-provider';
+import {
+  createLocalStoragePromptRunNoteRepository,
+  PROMPT_RUN_NOTE_STORAGE_KEY,
+} from '@/features/prompt-run-notes/repositories/local-storage-prompt-run-note-repository';
 import type { PromptRunNoteRepository } from '@/features/prompt-run-notes/repositories/prompt-run-note-repository';
 import type { PromptRunNote } from '@/types/prompt-run-note';
 
@@ -82,6 +86,7 @@ function TestConsumer() {
 
 afterEach(() => {
   cleanup();
+  window.localStorage.clear();
 });
 
 describe('PromptRunNotesProvider', () => {
@@ -166,5 +171,33 @@ describe('PromptRunNotesProvider', () => {
     expect(repository.snapshot().map((note) => note.id)).toEqual([
       'replacement-note',
     ]);
+  });
+
+  it('reloads prompt run notes saved by another tab', () => {
+    render(
+      <PromptRunNotesProvider>
+        <TestConsumer />
+      </PromptRunNotesProvider>,
+    );
+
+    createLocalStoragePromptRunNoteRepository().saveAll([
+      {
+        id: 'external-note',
+        runId: 'run-1',
+        body: 'Review context saved in another tab.',
+        createdAt: '2026-05-10T09:00:00.000Z',
+        updatedAt: '2026-05-10T09:00:00.000Z',
+      },
+    ]);
+    act(() => {
+      window.dispatchEvent(
+        new StorageEvent('storage', { key: PROMPT_RUN_NOTE_STORAGE_KEY }),
+      );
+    });
+
+    expect(screen.getByTestId('note-count')).toHaveTextContent('1');
+    expect(screen.getByTestId('note-body')).toHaveTextContent(
+      'Review context saved in another tab.',
+    );
   });
 });

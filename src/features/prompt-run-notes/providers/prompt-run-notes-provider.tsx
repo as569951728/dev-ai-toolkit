@@ -1,8 +1,11 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { PropsWithChildren } from 'react';
 
 import { PromptRunNotesContext, type PromptRunNotesContextValue } from '@/features/prompt-run-notes/providers/prompt-run-notes-context';
-import { createLocalStoragePromptRunNoteRepository } from '@/features/prompt-run-notes/repositories/local-storage-prompt-run-note-repository';
+import {
+  createLocalStoragePromptRunNoteRepository,
+  PROMPT_RUN_NOTE_STORAGE_KEY,
+} from '@/features/prompt-run-notes/repositories/local-storage-prompt-run-note-repository';
 import type { PromptRunNoteRepository } from '@/features/prompt-run-notes/repositories/prompt-run-note-repository';
 import {
   deleteNoteForRun,
@@ -11,6 +14,7 @@ import {
   saveNoteForRun,
 } from '@/features/prompt-run-notes/services/prompt-run-note-service';
 import type { PromptRunNote } from '@/types/prompt-run-note';
+import { subscribeToStorageKey } from '@/lib/storage-sync';
 
 type PromptRunNotesProviderProps = PropsWithChildren<{
   repository?: PromptRunNoteRepository;
@@ -33,6 +37,16 @@ export function PromptRunNotesProvider({
     notesRef.current = nextNotes;
     setNotes(nextNotes);
   }, []);
+
+  useEffect(() => {
+    if (repositoryProp) {
+      return;
+    }
+
+    return subscribeToStorageKey(PROMPT_RUN_NOTE_STORAGE_KEY, () => {
+      commitNotes(repository.loadAll());
+    });
+  }, [commitNotes, repository, repositoryProp]);
 
   const getNoteByRunId = useCallback(
     (runId: string) => getNoteForRun(notes, runId),

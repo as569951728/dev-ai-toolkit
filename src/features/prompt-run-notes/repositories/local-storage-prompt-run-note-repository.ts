@@ -10,7 +10,8 @@ import {
   type StorageLike,
 } from '@/lib/browser-storage';
 
-const STORAGE_KEY = 'dev-ai-toolkit.prompt-run-notes';
+export const PROMPT_RUN_NOTE_STORAGE_KEY =
+  'dev-ai-toolkit.prompt-run-notes';
 
 function normalizeNotes(value: unknown) {
   const notes =
@@ -26,7 +27,7 @@ function normalizeNotes(value: unknown) {
 }
 
 export function createLocalStoragePromptRunNoteRepository(
-  storageKey = STORAGE_KEY,
+  storageKey = PROMPT_RUN_NOTE_STORAGE_KEY,
   storage: StorageLike | null = resolveBrowserStorage(),
 ): PromptRunNoteRepository {
   return {
