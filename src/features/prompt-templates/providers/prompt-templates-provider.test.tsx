@@ -1,9 +1,13 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { starterPromptTemplates } from '@/features/prompt-templates/seed/prompt-templates';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
 import { PromptTemplatesProvider } from '@/features/prompt-templates/providers/prompt-templates-provider';
+import {
+  createLocalStoragePromptTemplateRepository,
+  PROMPT_TEMPLATE_STORAGE_KEY,
+} from '@/features/prompt-templates/repositories/local-storage-prompt-template-repository';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
 
 function createMemoryRepository(
@@ -101,6 +105,7 @@ function TestConsumer() {
 
 afterEach(() => {
   cleanup();
+  window.localStorage.clear();
 });
 
 describe('PromptTemplatesProvider', () => {
@@ -181,5 +186,29 @@ describe('PromptTemplatesProvider', () => {
     expect(repository.snapshot().map((template) => template.id)).toEqual([
       starterPromptTemplates[2]!.id,
     ]);
+  });
+
+  it('reloads prompt templates saved by another tab', () => {
+    render(
+      <PromptTemplatesProvider>
+        <TestConsumer />
+      </PromptTemplatesProvider>,
+    );
+
+    createLocalStoragePromptTemplateRepository().saveAll([
+      starterPromptTemplates[2]!,
+    ]);
+    act(() => {
+      window.dispatchEvent(
+        new StorageEvent('storage', {
+          key: PROMPT_TEMPLATE_STORAGE_KEY,
+        }),
+      );
+    });
+
+    expect(screen.getByTestId('count')).toHaveTextContent('1');
+    expect(screen.getByTestId('first-template')).toHaveTextContent(
+      starterPromptTemplates[2]!.name,
+    );
   });
 });

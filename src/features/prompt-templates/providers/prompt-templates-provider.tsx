@@ -1,11 +1,14 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { PropsWithChildren } from 'react';
 
 import {
   PromptTemplatesContext,
   type PromptTemplatesContextValue,
 } from '@/features/prompt-templates/providers/prompt-templates-context';
-import { createLocalStoragePromptTemplateRepository } from '@/features/prompt-templates/repositories/local-storage-prompt-template-repository';
+import {
+  createLocalStoragePromptTemplateRepository,
+  PROMPT_TEMPLATE_STORAGE_KEY,
+} from '@/features/prompt-templates/repositories/local-storage-prompt-template-repository';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
 import {
   archivePromptTemplate,
@@ -24,6 +27,7 @@ import type {
   PromptTemplateImportSummary,
   PromptTemplateInput,
 } from '@/types/prompt-template';
+import { subscribeToStorageKey } from '@/lib/storage-sync';
 
 type PromptTemplatesProviderProps = PropsWithChildren<{
   repository?: PromptTemplateRepository;
@@ -46,6 +50,16 @@ export function PromptTemplatesProvider({
     templatesRef.current = nextTemplates;
     setTemplates(nextTemplates);
   }, []);
+
+  useEffect(() => {
+    if (repositoryProp) {
+      return;
+    }
+
+    return subscribeToStorageKey(PROMPT_TEMPLATE_STORAGE_KEY, () => {
+      commitTemplates(repository.loadAll());
+    });
+  }, [commitTemplates, repository, repositoryProp]);
 
   const sortedTemplates = useMemo(() => sortPromptTemplates(templates), [templates]);
 

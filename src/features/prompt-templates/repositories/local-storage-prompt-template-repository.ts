@@ -15,7 +15,7 @@ import {
 } from '@/lib/local-storage-schema';
 import { keepLastByKey } from '@/lib/collection-utils';
 
-const STORAGE_KEY = 'dev-ai-toolkit.prompt-templates';
+export const PROMPT_TEMPLATE_STORAGE_KEY = 'dev-ai-toolkit.prompt-templates';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
@@ -109,7 +109,7 @@ function normalizeStoredTemplates(value: unknown) {
 }
 
 export function createLocalStoragePromptTemplateRepository(
-  storageKey = STORAGE_KEY,
+  storageKey = PROMPT_TEMPLATE_STORAGE_KEY,
   storage: StorageLike | null = resolveBrowserStorage(),
 ): PromptTemplateRepository {
   return {
