@@ -199,6 +199,21 @@ describe('prompt-template-transfer', () => {
     ).toThrow('Unsupported prompt template export version.');
   });
 
+  it('rejects versioned exports without valid export metadata', () => {
+    for (const exportedAt of [undefined, 'not-a-date']) {
+      expect(() =>
+        parsePromptTemplateImport(
+          JSON.stringify({
+            version: 1,
+            exportedAt,
+            templates: [existingReviewTemplate],
+          }),
+          starterPromptTemplates,
+        ),
+      ).toThrow('Invalid prompt template export metadata.');
+    }
+  });
+
   it('deduplicates repeated template ids inside the same import file', () => {
     const rawValue = JSON.stringify([
       {

@@ -212,6 +212,14 @@ export function parsePromptTemplateImport(
     throw new Error('Unsupported prompt template export version.');
   }
 
+  if (
+    isRecord(parsedValue) &&
+    parsedValue.version === EXPORT_VERSION &&
+    !isValidIsoDate(normalizeString(parsedValue.exportedAt))
+  ) {
+    throw new Error('Invalid prompt template export metadata.');
+  }
+
   const templatesSource = Array.isArray(parsedValue)
     ? parsedValue
     : isRecord(parsedValue) && Array.isArray(parsedValue.templates)
