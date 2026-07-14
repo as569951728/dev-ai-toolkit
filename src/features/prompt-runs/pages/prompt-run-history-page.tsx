@@ -46,14 +46,33 @@ export function PromptRunHistoryPage() {
     requestedSortOrder === 'oldest' ? 'oldest' : 'newest';
 
   useEffect(() => {
-    if (requestedSortOrder === null || requestedSortOrder === 'oldest') {
+    const hasUnsupportedSortOrder =
+      requestedSortOrder !== null && requestedSortOrder !== 'oldest';
+    const hasUnknownTemplateFilter =
+      requestedTemplateId !== 'all' && !hasRequestedTemplate;
+
+    if (!hasUnsupportedSortOrder && !hasUnknownTemplateFilter) {
       return;
     }
 
     const nextSearchParams = new URLSearchParams(searchParams);
-    nextSearchParams.delete('order');
+
+    if (hasUnsupportedSortOrder) {
+      nextSearchParams.delete('order');
+    }
+
+    if (hasUnknownTemplateFilter) {
+      nextSearchParams.delete('templateId');
+    }
+
     setSearchParams(nextSearchParams, { replace: true });
-  }, [requestedSortOrder, searchParams, setSearchParams]);
+  }, [
+    hasRequestedTemplate,
+    requestedSortOrder,
+    requestedTemplateId,
+    searchParams,
+    setSearchParams,
+  ]);
 
   const availableTemplates = useMemo(
     () => {

@@ -1052,7 +1052,7 @@ describe('PromptRunHistoryPage', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('ignores an unknown template filter from the route query', () => {
+  it('removes an unknown template filter from the route query', async () => {
     renderRunHistory({ initialEntry: '/runs?templateId=missing-template' });
 
     expect(screen.getByLabelText('Template')).toHaveValue('all');
@@ -1068,6 +1068,9 @@ describe('PromptRunHistoryPage', () => {
     expect(
       screen.getByRole('heading', { name: 'Code Review Assistant' }),
     ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByTestId('location-search')).toBeEmptyDOMElement();
+    });
   });
 
   it('keeps a template filter when saved runs outlive the source template', () => {
@@ -1095,6 +1098,9 @@ describe('PromptRunHistoryPage', () => {
     expect(
       screen.queryByRole('link', { name: 'Reopen in Playground' }),
     ).not.toBeInTheDocument();
+    expect(screen.getByTestId('location-search')).toHaveTextContent(
+      '?templateId=deleted-template',
+    );
   });
 
   it('keeps the selected template filter visible when that template has no runs yet', () => {
