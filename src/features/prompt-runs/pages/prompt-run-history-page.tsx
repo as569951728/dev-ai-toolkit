@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 
 import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
@@ -41,8 +41,19 @@ export function PromptRunHistoryPage() {
     ? requestedTemplateId
     : 'all';
   const searchValue = searchParams.get('q') ?? '';
+  const requestedSortOrder = searchParams.get('order');
   const sortOrder: PromptRunSortOrder =
-    searchParams.get('order') === 'oldest' ? 'oldest' : 'newest';
+    requestedSortOrder === 'oldest' ? 'oldest' : 'newest';
+
+  useEffect(() => {
+    if (requestedSortOrder === null || requestedSortOrder === 'oldest') {
+      return;
+    }
+
+    const nextSearchParams = new URLSearchParams(searchParams);
+    nextSearchParams.delete('order');
+    setSearchParams(nextSearchParams, { replace: true });
+  }, [requestedSortOrder, searchParams, setSearchParams]);
 
   const availableTemplates = useMemo(
     () => {

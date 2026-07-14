@@ -1,5 +1,11 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { MemoryRouter, useNavigate } from 'react-router-dom';
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
+import { MemoryRouter, useLocation, useNavigate } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { PromptRunNotesProvider } from '@/features/prompt-run-notes/providers/prompt-run-notes-provider';
@@ -137,6 +143,7 @@ function renderRunHistory({
         <PromptRunsProvider repository={runRepository}>
           <PromptRunNotesProvider repository={noteRepository}>
             <PromptRunHistoryPage />
+            <LocationSearchProbe />
           </PromptRunNotesProvider>
         </PromptRunsProvider>
       </PromptTemplatesProvider>
@@ -147,6 +154,12 @@ function renderRunHistory({
     noteRepository,
     runRepository,
   };
+}
+
+function LocationSearchProbe() {
+  const location = useLocation();
+
+  return <div data-testid="location-search">{location.search}</div>;
 }
 
 function RunHistoryNavigationHarness() {
@@ -289,6 +302,15 @@ describe('PromptRunHistoryPage', () => {
         .getAllByRole('heading', { level: 3 })
         .map((heading) => heading.textContent),
     ).toEqual(['API Design Partner', 'Code Review Assistant']);
+  });
+
+  it('removes an unsupported sort order from the URL', async () => {
+    renderRunHistory({ initialEntry: '/runs?order=random' });
+
+    expect(screen.getByLabelText('Sort')).toHaveValue('newest');
+    await waitFor(() => {
+      expect(screen.getByTestId('location-search')).toBeEmptyDOMElement();
+    });
   });
 
   it('announces when a history-card prompt cannot be copied', async () => {
