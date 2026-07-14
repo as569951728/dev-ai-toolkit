@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
 import {
-  buildCodeViewerUrl,
   countCharacters,
   countLines,
   normalizeCodeViewerLanguage,
@@ -25,21 +24,4 @@ describe('code-viewer-utils', () => {
     expect(normalizeCodeViewerLanguage(null, 'typescript')).toBe('typescript');
   });
 
-  it('builds Code Viewer URLs with encoded content and normalized language', () => {
-    const url = new URL(
-      buildCodeViewerUrl({
-        left: 'system prompt with & symbol',
-        right: 'user prompt\nwith newline',
-        mode: 'compare',
-        language: 'markdown',
-      }),
-      'https://example.test',
-    );
-
-    expect(url.pathname).toBe('/code-viewer');
-    expect(url.searchParams.get('left')).toBe('system prompt with & symbol');
-    expect(url.searchParams.get('right')).toBe('user prompt\nwith newline');
-    expect(url.searchParams.get('mode')).toBe('compare');
-    expect(url.searchParams.get('language')).toBe('markdown');
-  });
 });

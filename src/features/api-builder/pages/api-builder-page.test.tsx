@@ -1,6 +1,11 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { MemoryRouter } from 'react-router-dom';
+import {
+  MemoryRouter,
+  Route,
+  Routes,
+  useLocation,
+} from 'react-router-dom';
 
 import { ApiBuilderPage } from '@/features/api-builder/pages/api-builder-page';
 
@@ -9,10 +14,25 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
+function LocationProbe() {
+  const location = useLocation();
+
+  return (
+    <>
+      <div data-testid="location-pathname">{location.pathname}</div>
+      <div data-testid="location-search">{location.search}</div>
+      <div data-testid="location-state">{JSON.stringify(location.state)}</div>
+    </>
+  );
+}
+
 function renderApiBuilderPage() {
   render(
     <MemoryRouter initialEntries={['/api-builder']}>
-      <ApiBuilderPage />
+      <Routes>
+        <Route path="/api-builder" element={<ApiBuilderPage />} />
+        <Route path="/code-viewer" element={<LocationProbe />} />
+      </Routes>
     </MemoryRouter>,
   );
 }
@@ -136,15 +156,26 @@ describe('ApiBuilderPage', () => {
   it('links the generated curl command to Code Viewer', () => {
     renderApiBuilderPage();
 
-    const link = screen.getByRole('link', {
-      name: 'Open cURL in Code Viewer',
-    });
-    const target = new URL(link.getAttribute('href') ?? '', 'http://localhost');
+    fireEvent.click(
+      screen.getByRole('link', { name: 'Open cURL in Code Viewer' }),
+    );
+    const state = JSON.parse(
+      screen.getByTestId('location-state').textContent ?? 'null',
+    ) as {
+      codeViewer: {
+        left: string;
+        mode: string;
+        language: string;
+      };
+    };
 
-    expect(target.pathname).toBe('/code-viewer');
-    expect(target.searchParams.get('mode')).toBe('single');
-    expect(target.searchParams.get('language')).toBe('bash');
-    expect(target.searchParams.get('left')).toContain(
+    expect(screen.getByTestId('location-pathname')).toHaveTextContent(
+      '/code-viewer',
+    );
+    expect(screen.getByTestId('location-search')).toBeEmptyDOMElement();
+    expect(state.codeViewer.mode).toBe('single');
+    expect(state.codeViewer.language).toBe('bash');
+    expect(state.codeViewer.left).toContain(
       "curl -X POST 'https://api.example.com/v1/prompts/render?workspace=dev-ai-toolkit'",
     );
   });
@@ -152,15 +183,26 @@ describe('ApiBuilderPage', () => {
   it('links the generated fetch snippet to Code Viewer', () => {
     renderApiBuilderPage();
 
-    const link = screen.getByRole('link', {
-      name: 'Open fetch in Code Viewer',
-    });
-    const target = new URL(link.getAttribute('href') ?? '', 'http://localhost');
+    fireEvent.click(
+      screen.getByRole('link', { name: 'Open fetch in Code Viewer' }),
+    );
+    const state = JSON.parse(
+      screen.getByTestId('location-state').textContent ?? 'null',
+    ) as {
+      codeViewer: {
+        left: string;
+        mode: string;
+        language: string;
+      };
+    };
 
-    expect(target.pathname).toBe('/code-viewer');
-    expect(target.searchParams.get('mode')).toBe('single');
-    expect(target.searchParams.get('language')).toBe('javascript');
-    expect(target.searchParams.get('left')).toContain(
+    expect(screen.getByTestId('location-pathname')).toHaveTextContent(
+      '/code-viewer',
+    );
+    expect(screen.getByTestId('location-search')).toBeEmptyDOMElement();
+    expect(state.codeViewer.mode).toBe('single');
+    expect(state.codeViewer.language).toBe('javascript');
+    expect(state.codeViewer.left).toContain(
       "fetch('https://api.example.com/v1/prompts/render?workspace=dev-ai-toolkit'",
     );
   });

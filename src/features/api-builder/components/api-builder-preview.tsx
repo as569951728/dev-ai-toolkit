@@ -7,7 +7,7 @@ import {
   summarizeRequest,
   type ApiBuilderState,
 } from '@/features/api-builder/lib/api-builder-utils';
-import { buildCodeViewerUrl } from '@/features/code-viewer/lib/code-viewer-utils';
+import { createCodeViewerNavigationState } from '@/features/code-viewer/lib/code-viewer-navigation';
 import { writeClipboardText } from '@/lib/clipboard';
 
 interface ApiBuilderPreviewProps {
@@ -26,13 +26,15 @@ export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
   const { requestUrl, headers, hasBody } = summarizeRequest(state);
   const fetchSnippet = buildFetchSnippet(state);
   const curlCommand = buildCurlCommand(state);
-  const fetchCodeViewerUrl = buildCodeViewerUrl({
+  const fetchCodeViewerState = createCodeViewerNavigationState({
     left: fetchSnippet,
+    right: '',
     mode: 'single',
     language: 'javascript',
   });
-  const codeViewerUrl = buildCodeViewerUrl({
+  const curlCodeViewerState = createCodeViewerNavigationState({
     left: curlCommand,
+    right: '',
     mode: 'single',
     language: 'bash',
   });
@@ -122,7 +124,11 @@ export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
       <article className="detail-card">
         <div className="detail-card__header">
           <h3>Fetch snippet</h3>
-          <Link className="ghost-button" to={fetchCodeViewerUrl}>
+          <Link
+            className="ghost-button"
+            state={fetchCodeViewerState}
+            to="/code-viewer"
+          >
             Open fetch in Code Viewer
           </Link>
         </div>
@@ -133,7 +139,11 @@ export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
         <div className="detail-card__header">
           <h3>cURL command</h3>
           <div className="detail-actions">
-            <Link className="ghost-button" to={codeViewerUrl}>
+            <Link
+              className="ghost-button"
+              state={curlCodeViewerState}
+              to="/code-viewer"
+            >
               Open cURL in Code Viewer
             </Link>
             <button
