@@ -1,6 +1,17 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import {
+  MemoryRouter,
+  Route,
+  Routes,
+  useLocation,
+} from 'react-router-dom';
 import type { MemoryRouterProps } from 'react-router-dom';
 
 import { createPromptDiffNavigationState } from '@/features/prompt-diff/lib/prompt-diff-navigation';
@@ -92,12 +103,26 @@ function renderPromptDiff(
       <PromptTemplatesProvider repository={createTemplateRepository(templates)}>
         <PromptRunsProvider repository={createRunRepository(runs)}>
           <Routes>
-            <Route path="/prompt-diff" element={<PromptDiffPage />} />
+            <Route
+              path="/prompt-diff"
+              element={
+                <>
+                  <PromptDiffPage />
+                  <LocationProbe />
+                </>
+              }
+            />
           </Routes>
         </PromptRunsProvider>
       </PromptTemplatesProvider>
     </MemoryRouter>,
   );
+}
+
+function LocationProbe() {
+  const location = useLocation();
+
+  return <div data-testid="location-search">{location.search}</div>;
 }
 
 describe('PromptDiffPage', () => {
@@ -126,6 +151,26 @@ describe('PromptDiffPage', () => {
 
     expect(originalPromptInput).toHaveValue(rightPrompt);
     expect(revisedPromptInput).toHaveValue(leftPrompt);
+  });
+
+  it('clears legacy prompts from the URL after loading them', async () => {
+    renderPromptDiff(
+      '/prompt-diff?left=private-original&right=private-revised',
+    );
+
+    expect(screen.getByRole('textbox', { name: 'Original prompt' })).toHaveValue(
+      'private-original',
+    );
+    expect(screen.getByRole('textbox', { name: 'Revised prompt' })).toHaveValue(
+      'private-revised',
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('location-search')).toBeEmptyDOMElement();
+    });
+    expect(screen.getByRole('textbox', { name: 'Original prompt' })).toHaveValue(
+      'private-original',
+    );
   });
 
   it('loads prompt comparisons from router state', () => {

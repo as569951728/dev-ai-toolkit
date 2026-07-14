@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 
 import { PromptDiffEditorPanel } from '@/features/prompt-diff/components/prompt-diff-editor-panel';
 import { PromptDiffSummary } from '@/features/prompt-diff/components/prompt-diff-summary';
 import { PromptDiffToolbar } from '@/features/prompt-diff/components/prompt-diff-toolbar';
-import { readPromptDiffNavigationState } from '@/features/prompt-diff/lib/prompt-diff-navigation';
+import {
+  createPromptDiffNavigationState,
+  readPromptDiffNavigationState,
+} from '@/features/prompt-diff/lib/prompt-diff-navigation';
 import {
   promptDiffSampleLeft,
   promptDiffSampleRight,
@@ -147,7 +150,7 @@ function PromptDiffWorkspace({
 
 export function PromptDiffPage() {
   const location = useLocation();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { getRunById } = usePromptRuns();
   const { getTemplateById } = usePromptTemplates();
   const requestedRunId = searchParams.get('runId');
@@ -161,6 +164,34 @@ export function PromptDiffPage() {
   const navigationComparison = requestedRunId
     ? null
     : readPromptDiffNavigationState(location.state);
+  const hasNavigationComparison = navigationComparison !== null;
+
+  useEffect(() => {
+    if (
+      requestedRunId ||
+      hasNavigationComparison ||
+      (!searchParams.has('left') && !searchParams.has('right'))
+    ) {
+      return;
+    }
+
+    const nextSearchParams = new URLSearchParams(searchParams);
+    nextSearchParams.delete('left');
+    nextSearchParams.delete('right');
+    setSearchParams(nextSearchParams, {
+      replace: true,
+      state: createPromptDiffNavigationState({
+        left: searchParams.get('left') ?? promptDiffSampleLeft,
+        right: searchParams.get('right') ?? promptDiffSampleRight,
+      }),
+    });
+  }, [
+    hasNavigationComparison,
+    requestedRunId,
+    searchParams,
+    setSearchParams,
+  ]);
+
   const initialLeftValue = savedComparison
     ? savedComparison.left
     : requestedRunId
