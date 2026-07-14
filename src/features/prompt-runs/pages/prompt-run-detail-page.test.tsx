@@ -626,8 +626,13 @@ describe('PromptRunDetailPage', () => {
       createdAt: '2026-05-07T09:00:00.000Z',
     };
 
+    const historyPath = `/runs?templateId=${run.templateId}&q=System`;
+
     renderRunDetail(
-      '/runs/run-1',
+      {
+        pathname: '/runs/run-1',
+        state: createPromptRunDetailNavigationState(historyPath),
+      },
       [run],
       createTemplateRepository(),
       createNoteRepository(),
@@ -642,6 +647,9 @@ describe('PromptRunDetailPage', () => {
     expect(
       screen.getByRole('heading', { name: 'Run not found' }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'Back to Run History' }),
+    ).toHaveAttribute('href', historyPath);
     expect(screen.queryByLabelText('Note')).not.toBeInTheDocument();
   });
 

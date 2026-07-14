@@ -84,7 +84,7 @@ export function PromptRunDetailPage() {
       <section className="panel empty-state">
         <h1>Run not found</h1>
         <p>The saved prompt run may have been removed from local storage.</p>
-        <Link className="primary-button" to="/runs">
+        <Link className="primary-button" to={historyPath}>
           Back to Run History
         </Link>
       </section>
