@@ -24,6 +24,7 @@ import { exportPromptRunAsJson } from '@/features/prompt-runs/lib/prompt-run-exp
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import {
   buildPromptRunDetailPath,
+  createPromptRunDetailNavigationState,
   getPromptRunHistoryReturnPath,
 } from '@/features/prompt-runs/lib/prompt-run-links';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
@@ -99,7 +100,10 @@ export function PromptRunDetailPage() {
       const restoredRun = restoreRunWithNoteDraft(run, noteDraft);
 
       allowNavigationRef.current = true;
-      navigate(buildPromptRunDetailPath(restoredRun.id), { replace: true });
+      navigate(buildPromptRunDetailPath(restoredRun.id), {
+        replace: true,
+        state: createPromptRunDetailNavigationState(historyPath),
+      });
       queueMicrotask(() => {
         allowNavigationRef.current = false;
       });
@@ -117,7 +121,7 @@ export function PromptRunDetailPage() {
 
     try {
       deleteRunWithRelatedData(run.id);
-      navigate('/runs');
+      navigate(historyPath);
     } catch (error) {
       allowNavigationRef.current = false;
       setDeleteErrorMessage(

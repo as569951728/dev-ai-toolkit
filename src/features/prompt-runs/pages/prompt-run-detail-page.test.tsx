@@ -658,8 +658,12 @@ describe('PromptRunDetailPage', () => {
     };
     const runRepository = createRunRepository([run]);
     const noteRepository = createNoteRepository();
+    const historyPath = `/runs?templateId=${run.templateId}&q=System`;
     const { router } = renderRunDetail(
-      '/runs/run-1',
+      {
+        pathname: '/runs/run-1',
+        state: createPromptRunDetailNavigationState(historyPath),
+      },
       [run],
       createTemplateRepository(),
       noteRepository,
@@ -691,6 +695,9 @@ describe('PromptRunDetailPage', () => {
     expect(restoredRun?.id).not.toBe(run.id);
     expect(router.state.location.pathname).toBe(
       buildPromptRunDetailPath(restoredRun!.id),
+    );
+    expect(router.state.location.state).toEqual(
+      createPromptRunDetailNavigationState(historyPath),
     );
     expect(noteRepository.snapshot()[0]).toMatchObject({
       runId: restoredRun?.id,
@@ -775,9 +782,13 @@ describe('PromptRunDetailPage', () => {
         updatedAt: '2026-05-08T09:00:00.000Z',
       },
     ]);
+    const historyPath = `/runs?templateId=${run.templateId}&q=System`;
 
-    renderRunDetail(
-      '/runs/run-1',
+    const { router } = renderRunDetail(
+      {
+        pathname: '/runs/run-1',
+        state: createPromptRunDetailNavigationState(historyPath),
+      },
       [run],
       createTemplateRepository(),
       noteRepository,
@@ -803,6 +814,10 @@ describe('PromptRunDetailPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Confirm delete' }));
 
     expect(screen.getByText('Run History Destination')).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe('/runs');
+    expect(router.state.location.search).toBe(
+      `?templateId=${run.templateId}&q=System`,
+    );
     expect(runRepository.loadAll()).toEqual([]);
     expect(noteRepository.snapshot()).toEqual([]);
   });
