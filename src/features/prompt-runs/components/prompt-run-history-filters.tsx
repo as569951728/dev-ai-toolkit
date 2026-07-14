@@ -3,15 +3,19 @@ interface TemplateOption {
   name: string;
 }
 
+export type PromptRunSortOrder = 'newest' | 'oldest';
+
 interface PromptRunHistoryFiltersProps {
   availableTemplates: TemplateOption[];
   filteredRunCount: number;
   onClear: () => void;
   onSearchChange: (value: string) => void;
+  onSortOrderChange: (sortOrder: PromptRunSortOrder) => void;
   onTemplateChange: (templateId: string) => void;
   searchValue: string;
   selectedTemplateId: string;
   selectedTemplateName: string | null;
+  sortOrder: PromptRunSortOrder;
   totalRunCount: number;
 }
 
@@ -20,10 +24,12 @@ export function PromptRunHistoryFilters({
   filteredRunCount,
   onClear,
   onSearchChange,
+  onSortOrderChange,
   onTemplateChange,
   searchValue,
   selectedTemplateId,
   selectedTemplateName,
+  sortOrder,
   totalRunCount,
 }: PromptRunHistoryFiltersProps) {
   const normalizedSearchValue = searchValue.trim();
@@ -55,6 +61,19 @@ export function PromptRunHistoryFilters({
                 {template.name}
               </option>
             ))}
+          </select>
+        </label>
+
+        <label className="toolbar__filter">
+          <span>Sort</span>
+          <select
+            value={sortOrder}
+            onChange={(event) =>
+              onSortOrderChange(event.target.value as PromptRunSortOrder)
+            }
+          >
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
           </select>
         </label>
 

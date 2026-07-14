@@ -259,6 +259,38 @@ describe('PromptRunHistoryPage', () => {
     );
   });
 
+  it('sorts saved runs from oldest to newest and preserves the order while searching', () => {
+    renderRunHistory({ initialEntry: '/runs?order=oldest' });
+
+    expect(screen.getByLabelText('Sort')).toHaveValue('oldest');
+    expect(
+      screen
+        .getAllByRole('heading', { level: 3 })
+        .map((heading) => heading.textContent),
+    ).toEqual(['Code Review Assistant', 'API Design Partner']);
+
+    fireEvent.change(screen.getByRole('searchbox', { name: 'Search runs' }), {
+      target: { value: 'System' },
+    });
+
+    expect(screen.getByLabelText('Sort')).toHaveValue('oldest');
+    expect(
+      screen
+        .getAllByRole('heading', { level: 3 })
+        .map((heading) => heading.textContent),
+    ).toEqual(['Code Review Assistant', 'API Design Partner']);
+
+    fireEvent.change(screen.getByLabelText('Sort'), {
+      target: { value: 'newest' },
+    });
+
+    expect(
+      screen
+        .getAllByRole('heading', { level: 3 })
+        .map((heading) => heading.textContent),
+    ).toEqual(['API Design Partner', 'Code Review Assistant']);
+  });
+
   it('announces when a history-card prompt cannot be copied', async () => {
     Object.defineProperty(navigator, 'clipboard', {
       configurable: true,

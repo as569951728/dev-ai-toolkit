@@ -3,7 +3,10 @@ import { Link, useSearchParams } from 'react-router-dom';
 
 import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
 import { PromptRunHistoryCard } from '@/features/prompt-runs/components/prompt-run-history-card';
-import { PromptRunHistoryFilters } from '@/features/prompt-runs/components/prompt-run-history-filters';
+import {
+  PromptRunHistoryFilters,
+  type PromptRunSortOrder,
+} from '@/features/prompt-runs/components/prompt-run-history-filters';
 import { usePromptRunImport } from '@/features/prompt-runs/hooks/use-prompt-run-import';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { buildPromptRunDetailPath } from '@/features/prompt-runs/lib/prompt-run-links';
@@ -38,6 +41,8 @@ export function PromptRunHistoryPage() {
     ? requestedTemplateId
     : 'all';
   const searchValue = searchParams.get('q') ?? '';
+  const sortOrder: PromptRunSortOrder =
+    searchParams.get('order') === 'oldest' ? 'oldest' : 'newest';
 
   const availableTemplates = useMemo(
     () => {
@@ -92,9 +97,11 @@ export function PromptRunHistoryPage() {
 
   const updateFilters = ({
     nextSearchValue = searchValue,
+    nextSortOrder = sortOrder,
     nextTemplateId = selectedTemplateId,
   }: {
     nextSearchValue?: string;
+    nextSortOrder?: PromptRunSortOrder;
     nextTemplateId?: string;
   }) => {
     const nextSearchParams = new URLSearchParams();
@@ -108,11 +115,15 @@ export function PromptRunHistoryPage() {
       nextSearchParams.set('q', nextSearchValue);
     }
 
+    if (nextSortOrder === 'oldest') {
+      nextSearchParams.set('order', 'oldest');
+    }
+
     setSearchParams(nextSearchParams, { replace: true });
   };
 
   const filteredRuns = useMemo(() => {
-    return runs.filter((run) => {
+    const matches = runs.filter((run) => {
       const sourceTemplateName = getTemplateById(run.templateId)?.name ?? '';
       const matchesTemplate =
         selectedTemplateId === 'all' || run.templateId === selectedTemplateId;
@@ -125,7 +136,16 @@ export function PromptRunHistoryPage() {
 
       return matchesTemplate && matchesSearch;
     });
-  }, [getNoteByRunId, getTemplateById, runs, searchValue, selectedTemplateId]);
+
+    return sortOrder === 'oldest' ? [...matches].reverse() : matches;
+  }, [
+    getNoteByRunId,
+    getTemplateById,
+    runs,
+    searchValue,
+    selectedTemplateId,
+    sortOrder,
+  ]);
 
   return (
     <section className="playground-layout">
@@ -229,10 +249,18 @@ export function PromptRunHistoryPage() {
               availableTemplates={availableTemplates}
               filteredRunCount={filteredRuns.length}
               onClear={() =>
-                setSearchParams(new URLSearchParams(), { replace: true })
+                setSearchParams(
+                  sortOrder === 'oldest'
+                    ? new URLSearchParams({ order: 'oldest' })
+                    : new URLSearchParams(),
+                  { replace: true },
+                )
               }
               onSearchChange={(nextSearchValue) =>
                 updateFilters({ nextSearchValue })
+              }
+              onSortOrderChange={(nextSortOrder) =>
+                updateFilters({ nextSortOrder })
               }
               onTemplateChange={(nextTemplateId) =>
                 updateFilters({ nextTemplateId })
@@ -240,6 +268,7 @@ export function PromptRunHistoryPage() {
               searchValue={searchValue}
               selectedTemplateId={selectedTemplateId}
               selectedTemplateName={selectedTemplateName}
+              sortOrder={sortOrder}
               totalRunCount={runs.length}
             />
 
