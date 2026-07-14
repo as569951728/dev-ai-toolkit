@@ -223,10 +223,9 @@ describe('PromptRunHistoryPage', () => {
       'https://example.test',
     );
     expect(codeViewerUrl.pathname).toBe('/code-viewer');
-    expect(codeViewerUrl.searchParams.get('left')).toBe('System B');
-    expect(codeViewerUrl.searchParams.get('right')).toBe('User B');
-    expect(codeViewerUrl.searchParams.get('mode')).toBe('compare');
-    expect(codeViewerUrl.searchParams.get('language')).toBe('markdown');
+    expect(codeViewerUrl.searchParams.get('runId')).toBe('run-2');
+    expect(codeViewerUrl.searchParams.has('left')).toBe(false);
+    expect(codeViewerUrl.searchParams.has('right')).toBe(false);
     expect(
       screen.getAllByRole('link', { name: 'Compare with source' }),
     ).toHaveLength(2);
@@ -574,8 +573,9 @@ describe('PromptRunHistoryPage', () => {
         .getAttribute('href') ?? '',
       'https://example.test',
     );
-    expect(codeViewerUrl.searchParams.get('left')).toBe('System B');
-    expect(codeViewerUrl.searchParams.get('right')).toBe('User B');
+    expect(codeViewerUrl.searchParams.get('runId')).toBe(existingRun.id);
+    expect(codeViewerUrl.searchParams.has('left')).toBe(false);
+    expect(codeViewerUrl.searchParams.has('right')).toBe(false);
   });
 
   it.each([

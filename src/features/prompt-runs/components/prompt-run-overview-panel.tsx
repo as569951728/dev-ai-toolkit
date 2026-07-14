@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
 
-import { buildCodeViewerUrl } from '@/features/code-viewer/lib/code-viewer-utils';
 import { formatPromptRunCreatedAt } from '@/features/prompt-runs/lib/prompt-run-display';
 import {
+  buildPromptRunCodeViewerPath,
   buildPromptRunPlaygroundPath,
   buildPromptRunSourceDiffUrl,
 } from '@/features/prompt-runs/lib/prompt-run-links';
@@ -23,12 +23,6 @@ export function PromptRunOverviewPanel({
   sourceTemplate,
 }: PromptRunOverviewPanelProps) {
   const promptDiffUrl = buildPromptRunSourceDiffUrl({ run, sourceTemplate });
-  const codeViewerUrl = buildCodeViewerUrl({
-    left: run.systemPrompt,
-    right: run.userPrompt,
-    mode: 'compare',
-    language: 'markdown',
-  });
 
   return (
     <div className="playground-hero panel">
@@ -82,7 +76,10 @@ export function PromptRunOverviewPanel({
         >
           Create template from snapshot
         </Link>
-        <Link className="ghost-button" to={codeViewerUrl}>
+        <Link
+          className="ghost-button"
+          to={buildPromptRunCodeViewerPath(run.id)}
+        >
           Open saved prompts in Code Viewer
         </Link>
       </div>

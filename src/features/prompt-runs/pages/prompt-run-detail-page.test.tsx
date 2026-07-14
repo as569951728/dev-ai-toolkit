@@ -163,14 +163,9 @@ describe('PromptRunDetailPage', () => {
     );
 
     expect(codeViewerUrl.pathname).toBe('/code-viewer');
-    expect(codeViewerUrl.searchParams.get('left')).toBe(
-      'Review the code carefully.',
-    );
-    expect(codeViewerUrl.searchParams.get('right')).toBe(
-      'Focus on bugs and missing tests.',
-    );
-    expect(codeViewerUrl.searchParams.get('mode')).toBe('compare');
-    expect(codeViewerUrl.searchParams.get('language')).toBe('markdown');
+    expect(codeViewerUrl.searchParams.get('runId')).toBe('run-1');
+    expect(codeViewerUrl.searchParams.has('left')).toBe(false);
+    expect(codeViewerUrl.searchParams.has('right')).toBe(false);
     expect(
       screen.getByRole('link', { name: 'Compare with source' }),
     ).toHaveAttribute('href', '/prompt-diff?runId=run-1');

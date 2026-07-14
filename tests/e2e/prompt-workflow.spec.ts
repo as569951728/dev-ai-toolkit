@@ -175,6 +175,32 @@ test('compares a saved prompt without exposing prompt text in the URL', async ({
   );
 });
 
+test('opens a saved prompt in Code Viewer without exposing it in the URL', async ({
+  page,
+}) => {
+  await page.goto('/playground?templateId=code-review-assistant');
+
+  await page.getByLabel('Repository Name').fill('dev-ai-toolkit');
+  await page.getByLabel('Change Scope').fill('private saved review');
+  await page.getByRole('button', { name: 'Save prompt snapshot' }).click();
+  await page.getByRole('link', { name: 'Open saved run' }).click();
+  await page
+    .getByRole('link', { name: 'Open saved prompts in Code Viewer' })
+    .click();
+
+  await expect(page).toHaveURL(/\/code-viewer\?runId=/);
+  const codeViewerUrl = new URL(page.url());
+
+  expect(codeViewerUrl.searchParams.has('left')).toBe(false);
+  expect(codeViewerUrl.searchParams.has('right')).toBe(false);
+  await expect(page.getByRole('status')).toContainText(
+    'Loaded saved prompts from Code Review Assistant.',
+  );
+  await expect(page.getByLabel('Right input')).toContainText(
+    'private saved review',
+  );
+});
+
 test('reviews a composed prompt without exposing prompt text in the URL', async ({
   page,
 }) => {

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  buildPromptRunCodeViewerPath,
   buildPromptRunDetailPath,
   buildPromptRunJsonToolsPath,
   buildPromptRunPlaygroundPath,
@@ -66,6 +67,15 @@ describe('prompt-run-links', () => {
     );
     expect(buildPromptRunJsonToolsPath('run-1')).toBe(
       '/json-tools?runId=run-1',
+    );
+  });
+
+  it('builds a Code Viewer path from a saved run ID', () => {
+    expect(buildPromptRunCodeViewerPath('imported/run #1')).toBe(
+      '/code-viewer?runId=imported%2Frun%20%231',
+    );
+    expect(buildPromptRunCodeViewerPath('run-1')).toBe(
+      '/code-viewer?runId=run-1',
     );
   });
 

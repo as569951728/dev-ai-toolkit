@@ -19,6 +19,10 @@ export function buildPromptRunJsonToolsPath(runId: string) {
   return `/json-tools?runId=${encodeURIComponent(runId)}`;
 }
 
+export function buildPromptRunCodeViewerPath(runId: string) {
+  return `/code-viewer?runId=${encodeURIComponent(runId)}`;
+}
+
 export function buildPromptRunPlaygroundPath({
   runId,
   templateId,

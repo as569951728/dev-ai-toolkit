@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useLocation, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 
 import { CodeEditorPanel } from '@/features/code-viewer/components/code-editor-panel';
 import { CodePreviewPanel } from '@/features/code-viewer/components/code-preview-panel';
@@ -12,6 +12,8 @@ import {
   type CodeViewerLanguage,
   type CodeViewerMode,
 } from '@/features/code-viewer/lib/code-viewer-utils';
+import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
+import { buildPromptRunDetailPath } from '@/features/prompt-runs/lib/prompt-run-links';
 import { writeClipboardText } from '@/lib/clipboard';
 
 type CodeViewerWorkspaceProps = {
@@ -19,6 +21,11 @@ type CodeViewerWorkspaceProps = {
   initialLanguage: CodeViewerLanguage;
   initialLeftValue: string;
   initialRightValue: string;
+  loadNotice: string | null;
+  sourceRun: {
+    id: string;
+    templateName: string;
+  } | null;
 };
 
 type CopyFeedback = {
@@ -31,6 +38,8 @@ function CodeViewerWorkspace({
   initialLanguage,
   initialLeftValue,
   initialRightValue,
+  loadNotice,
+  sourceRun,
 }: CodeViewerWorkspaceProps) {
   const [mode, setMode] = useState<CodeViewerMode>(initialMode);
   const [language, setLanguage] = useState(initialLanguage);
@@ -63,6 +72,19 @@ function CodeViewerWorkspace({
           layout.
         </p>
       </div>
+
+      {sourceRun ? (
+        <p className="status-banner" role="status">
+          Loaded saved prompts from {sourceRun.templateName}.{' '}
+          <Link to={buildPromptRunDetailPath(sourceRun.id)}>
+            Back to saved run
+          </Link>
+        </p>
+      ) : loadNotice ? (
+        <p className="status-banner status-banner--error" role="alert">
+          {loadNotice}
+        </p>
+      ) : null}
 
       <section className="panel code-viewer-shell">
         <div className="code-viewer-shell__header">
@@ -137,24 +159,52 @@ function CodeViewerWorkspace({
 export function CodeViewerPage() {
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const navigationWorkspace = readCodeViewerNavigationState(location.state);
-  const initialMode = navigationWorkspace?.mode ??
-    (searchParams.get('mode') === 'single' ? 'single' : 'compare');
-  const initialLanguage = navigationWorkspace?.language ??
-    (searchParams.has('language')
-      ? normalizeCodeViewerLanguage(searchParams.get('language'))
-      : 'typescript');
+  const { getRunById } = usePromptRuns();
+  const requestedRunId = searchParams.get('runId');
+  const requestedRun = requestedRunId
+    ? getRunById(requestedRunId)
+    : undefined;
+  const navigationWorkspace = requestedRunId
+    ? null
+    : readCodeViewerNavigationState(location.state);
+  const initialMode = requestedRun
+    ? 'compare'
+    : navigationWorkspace?.mode ??
+      (searchParams.get('mode') === 'single' ? 'single' : 'compare');
+  const initialLanguage = requestedRun
+    ? 'markdown'
+    : navigationWorkspace?.language ??
+      (searchParams.has('language')
+        ? normalizeCodeViewerLanguage(searchParams.get('language'))
+        : 'typescript');
   const initialLeftValue =
-    navigationWorkspace?.left ??
-    searchParams.get('left') ??
-    codeViewerSampleLeft;
+    requestedRun?.systemPrompt ??
+    (requestedRunId
+      ? codeViewerSampleLeft
+      : navigationWorkspace?.left ??
+        searchParams.get('left') ??
+        codeViewerSampleLeft);
   const initialRightValue =
-    navigationWorkspace?.right ??
-    searchParams.get('right') ??
-    codeViewerSampleRight;
-  const workspaceKey = navigationWorkspace
-    ? location.key
-    : searchParams.toString() || 'default-code-viewer';
+    requestedRun?.userPrompt ??
+    (requestedRunId
+      ? codeViewerSampleRight
+      : navigationWorkspace?.right ??
+        searchParams.get('right') ??
+        codeViewerSampleRight);
+  const workspaceKey = requestedRunId
+    ? `run:${requestedRunId}`
+    : navigationWorkspace
+      ? location.key
+      : searchParams.toString() || 'default-code-viewer';
+  const sourceRun = requestedRun
+    ? {
+        id: requestedRun.id,
+        templateName: requestedRun.templateName,
+      }
+    : null;
+  const loadNotice = requestedRunId && !requestedRun
+    ? 'The requested saved run is no longer available. Loaded the sample workspace instead.'
+    : null;
 
   return (
     <CodeViewerWorkspace
@@ -163,6 +213,8 @@ export function CodeViewerPage() {
       initialLanguage={initialLanguage}
       initialLeftValue={initialLeftValue}
       initialRightValue={initialRightValue}
+      loadNotice={loadNotice}
+      sourceRun={sourceRun}
     />
   );
 }

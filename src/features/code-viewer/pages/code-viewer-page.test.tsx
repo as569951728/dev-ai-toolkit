@@ -4,7 +4,11 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import type { MemoryRouterProps } from 'react-router-dom';
 
 import { createCodeViewerNavigationState } from '@/features/code-viewer/lib/code-viewer-navigation';
+import { codeViewerSampleLeft } from '@/features/code-viewer/lib/code-viewer-utils';
 import { CodeViewerPage } from '@/features/code-viewer/pages/code-viewer-page';
+import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs-provider';
+import type { PromptRunRepository } from '@/features/prompt-runs/repositories/prompt-run-repository';
+import type { PromptRunRecord } from '@/types/prompt-run';
 
 afterEach(() => {
   cleanup();
@@ -13,12 +17,20 @@ afterEach(() => {
 
 function renderCodeViewer(
   initialEntry: NonNullable<MemoryRouterProps['initialEntries']>[number],
+  runs: PromptRunRecord[] = [],
 ) {
+  const repository: PromptRunRepository = {
+    loadAll: () => [...runs],
+    saveAll: () => undefined,
+  };
+
   render(
     <MemoryRouter initialEntries={[initialEntry]}>
-      <Routes>
-        <Route path="/code-viewer" element={<CodeViewerPage />} />
-      </Routes>
+      <PromptRunsProvider repository={repository}>
+        <Routes>
+          <Route path="/code-viewer" element={<CodeViewerPage />} />
+        </Routes>
+      </PromptRunsProvider>
     </MemoryRouter>,
   );
 }
@@ -94,6 +106,46 @@ describe('CodeViewerPage', () => {
       'Private rendered prompt',
     );
     expect(screen.getByLabelText('Language')).toHaveValue('markdown');
+  });
+
+  it('loads saved prompts from local Run History', () => {
+    const run: PromptRunRecord = {
+      id: 'imported/run #1',
+      templateId: 'template-1',
+      templateName: 'Code Review Assistant',
+      templateVersion: 1,
+      variables: {},
+      systemPrompt: 'Private saved system prompt.',
+      userPrompt: 'Private saved user prompt.',
+      createdAt: '2026-07-13T08:00:00.000Z',
+    };
+
+    renderCodeViewer('/code-viewer?runId=imported%2Frun%20%231', [run]);
+
+    expect(screen.getByRole('textbox', { name: 'Left input' })).toHaveValue(
+      'Private saved system prompt.',
+    );
+    expect(screen.getByRole('textbox', { name: 'Right input' })).toHaveValue(
+      'Private saved user prompt.',
+    );
+    expect(screen.getByLabelText('Language')).toHaveValue('markdown');
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Loaded saved prompts from Code Review Assistant.',
+    );
+    expect(
+      screen.getByRole('link', { name: 'Back to saved run' }),
+    ).toHaveAttribute('href', '/runs/imported%2Frun%20%231');
+  });
+
+  it('keeps the sample workspace available when a saved run is missing', () => {
+    renderCodeViewer('/code-viewer?runId=missing-run');
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'The requested saved run is no longer available.',
+    );
+    expect(screen.getByRole('textbox', { name: 'Left input' })).toHaveValue(
+      codeViewerSampleLeft,
+    );
   });
 
   it('copies left content and announces the result', async () => {

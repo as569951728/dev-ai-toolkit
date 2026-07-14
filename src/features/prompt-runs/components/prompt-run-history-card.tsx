@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom';
 
-import { buildCodeViewerUrl } from '@/features/code-viewer/lib/code-viewer-utils';
 import {
   formatCapturedVariableCount,
   formatPromptRunCreatedAt,
   getCapturedVariablePreview,
 } from '@/features/prompt-runs/lib/prompt-run-display';
 import {
+  buildPromptRunCodeViewerPath,
   buildPromptRunDetailPath,
   buildPromptRunPlaygroundPath,
   buildPromptRunSourceDiffUrl,
@@ -101,12 +101,7 @@ export function PromptRunHistoryCard({
         )}
         <Link
           className="ghost-button"
-          to={buildCodeViewerUrl({
-            left: run.systemPrompt,
-            right: run.userPrompt,
-            mode: 'compare',
-            language: 'markdown',
-          })}
+          to={buildPromptRunCodeViewerPath(run.id)}
         >
           Open saved prompts in Code Viewer
         </Link>
