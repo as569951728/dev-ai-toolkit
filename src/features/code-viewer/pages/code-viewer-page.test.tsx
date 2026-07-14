@@ -1,6 +1,17 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import {
+  MemoryRouter,
+  Route,
+  Routes,
+  useLocation,
+} from 'react-router-dom';
 import type { MemoryRouterProps } from 'react-router-dom';
 
 import { createCodeViewerNavigationState } from '@/features/code-viewer/lib/code-viewer-navigation';
@@ -28,11 +39,25 @@ function renderCodeViewer(
     <MemoryRouter initialEntries={[initialEntry]}>
       <PromptRunsProvider repository={repository}>
         <Routes>
-          <Route path="/code-viewer" element={<CodeViewerPage />} />
+          <Route
+            path="/code-viewer"
+            element={
+              <>
+                <CodeViewerPage />
+                <LocationProbe />
+              </>
+            }
+          />
         </Routes>
       </PromptRunsProvider>
     </MemoryRouter>,
   );
+}
+
+function LocationProbe() {
+  const location = useLocation();
+
+  return <div data-testid="location-search">{location.search}</div>;
 }
 
 describe('CodeViewerPage', () => {
@@ -85,6 +110,26 @@ describe('CodeViewerPage', () => {
     expect(screen.getByRole('button', { name: 'Compare view' })).toHaveAttribute(
       'aria-pressed',
       'false',
+    );
+  });
+
+  it('clears legacy content from the URL after loading it', async () => {
+    renderCodeViewer(
+      '/code-viewer?left=private-left&right=private-right&mode=compare&language=markdown',
+    );
+
+    expect(screen.getByRole('textbox', { name: 'Left input' })).toHaveValue(
+      'private-left',
+    );
+    expect(screen.getByRole('textbox', { name: 'Right input' })).toHaveValue(
+      'private-right',
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('location-search')).toBeEmptyDOMElement();
+    });
+    expect(screen.getByRole('textbox', { name: 'Left input' })).toHaveValue(
+      'private-left',
     );
   });
 

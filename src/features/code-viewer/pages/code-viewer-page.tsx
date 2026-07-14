@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 
 import { CodeEditorPanel } from '@/features/code-viewer/components/code-editor-panel';
 import { CodePreviewPanel } from '@/features/code-viewer/components/code-preview-panel';
 import { CodeViewerToolbar } from '@/features/code-viewer/components/code-viewer-toolbar';
-import { readCodeViewerNavigationState } from '@/features/code-viewer/lib/code-viewer-navigation';
+import {
+  createCodeViewerNavigationState,
+  readCodeViewerNavigationState,
+} from '@/features/code-viewer/lib/code-viewer-navigation';
 import {
   codeViewerSampleLeft,
   codeViewerSampleRight,
@@ -158,7 +161,7 @@ function CodeViewerWorkspace({
 
 export function CodeViewerPage() {
   const location = useLocation();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { getRunById } = usePromptRuns();
   const requestedRunId = searchParams.get('runId');
   const requestedRun = requestedRunId
@@ -167,6 +170,34 @@ export function CodeViewerPage() {
   const navigationWorkspace = requestedRunId
     ? null
     : readCodeViewerNavigationState(location.state);
+  const hasNavigationWorkspace = navigationWorkspace !== null;
+  useEffect(() => {
+    if (
+      requestedRunId ||
+      hasNavigationWorkspace ||
+      (!searchParams.has('left') && !searchParams.has('right'))
+    ) {
+      return;
+    }
+
+    const nextSearchParams = new URLSearchParams(searchParams);
+    nextSearchParams.delete('left');
+    nextSearchParams.delete('right');
+    nextSearchParams.delete('mode');
+    nextSearchParams.delete('language');
+    setSearchParams(nextSearchParams, {
+      replace: true,
+      state: createCodeViewerNavigationState({
+        left: searchParams.get('left') ?? codeViewerSampleLeft,
+        right: searchParams.get('right') ?? codeViewerSampleRight,
+        mode: searchParams.get('mode') === 'single' ? 'single' : 'compare',
+        language: searchParams.has('language')
+          ? normalizeCodeViewerLanguage(searchParams.get('language'))
+          : 'typescript',
+      }),
+    });
+  }, [hasNavigationWorkspace, requestedRunId, searchParams, setSearchParams]);
+
   const initialMode = requestedRun
     ? 'compare'
     : navigationWorkspace?.mode ??
