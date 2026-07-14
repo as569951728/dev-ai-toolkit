@@ -375,7 +375,7 @@ describe('PromptRunDetailPage', () => {
     await waitFor(() => {
       expect(writeText).toHaveBeenCalledWith('System prompt to reuse.');
     });
-    expect(screen.getByRole('status')).toHaveTextContent(
+    expect(await screen.findByRole('status')).toHaveTextContent(
       'System prompt copied.',
     );
 
