@@ -1,9 +1,13 @@
 import { afterEach } from 'vitest';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 
 import { PromptPlaygroundPage } from '@/features/prompt-playground/pages/prompt-playground-page';
+import {
+  RECENT_TEMPLATE_STORAGE_KEY,
+  saveRecentTemplateIds,
+} from '@/features/prompt-playground/repositories/local-storage-recent-template-repository';
 import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs-provider';
 import type { PromptRunRepository } from '@/features/prompt-runs/repositories/prompt-run-repository';
 import type { PromptRunRecord } from '@/types/prompt-run';
@@ -91,6 +95,24 @@ afterEach(() => {
 });
 
 describe('Prompt playground workflow', () => {
+  it('reloads recent template shortcuts saved by another tab', () => {
+    renderPlayground('/playground');
+
+    expect(screen.queryByText('Recently used')).not.toBeInTheDocument();
+
+    saveRecentTemplateIds([starterPromptTemplates[1]!.id]);
+    act(() => {
+      window.dispatchEvent(
+        new StorageEvent('storage', { key: RECENT_TEMPLATE_STORAGE_KEY }),
+      );
+    });
+
+    expect(screen.getByText('Recently used')).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /API Design Partner/ }),
+    ).toBeInTheDocument();
+  });
+
   it('surfaces unresolved variables until all prompt inputs are filled', () => {
     render(
       <MemoryRouter initialEntries={['/playground']}>

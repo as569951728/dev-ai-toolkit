@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import {
   buildPromptPreview,
@@ -7,9 +7,11 @@ import {
 } from '@/features/prompt-playground/lib/prompt-playground-utils';
 import {
   loadRecentTemplateIds,
+  RECENT_TEMPLATE_STORAGE_KEY,
   saveRecentTemplateIds,
 } from '@/features/prompt-playground/repositories/local-storage-recent-template-repository';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
+import { subscribeToStorageKey } from '@/lib/storage-sync';
 import type { PromptTemplate } from '@/types/prompt-template';
 
 const MAX_RECENT_ITEMS = 5;
@@ -59,6 +61,14 @@ export function usePromptPlayground(
   );
   const [recentTemplateIds, setRecentTemplateIds] = useState<string[]>(() =>
     loadRecentTemplateIds(),
+  );
+
+  useEffect(
+    () =>
+      subscribeToStorageKey(RECENT_TEMPLATE_STORAGE_KEY, () => {
+        setRecentTemplateIds(loadRecentTemplateIds());
+      }),
+    [],
   );
 
   const activeTemplateId =

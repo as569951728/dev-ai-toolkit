@@ -7,7 +7,8 @@ import {
   type StorageLike,
 } from '@/lib/browser-storage';
 
-const STORAGE_KEY = 'dev-ai-toolkit.playground-recent-template-ids';
+export const RECENT_TEMPLATE_STORAGE_KEY =
+  'dev-ai-toolkit.playground-recent-template-ids';
 
 function normalizeRecentTemplateIds(value: unknown) {
   const templateIds = readVersionedCollection<string>(value);
@@ -26,7 +27,7 @@ function normalizeRecentTemplateIds(value: unknown) {
 }
 
 export function loadRecentTemplateIds(
-  storageKey = STORAGE_KEY,
+  storageKey = RECENT_TEMPLATE_STORAGE_KEY,
   storage: StorageLike | null = resolveBrowserStorage(),
 ) {
   if (!storage) {
@@ -48,7 +49,7 @@ export function loadRecentTemplateIds(
 
 export function saveRecentTemplateIds(
   templateIds: string[],
-  storageKey = STORAGE_KEY,
+  storageKey = RECENT_TEMPLATE_STORAGE_KEY,
   storage: StorageLike | null = resolveBrowserStorage(),
 ) {
   if (!storage) {
