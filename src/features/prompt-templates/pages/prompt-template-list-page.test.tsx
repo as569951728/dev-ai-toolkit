@@ -4,9 +4,10 @@ import {
   fireEvent,
   render,
   screen,
+  waitFor,
   within,
 } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, useLocation } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 
 import { PromptTemplateListPage } from '@/features/prompt-templates/pages/prompt-template-list-page';
@@ -38,6 +39,12 @@ function createMemoryRepository(
       templates = [...nextTemplates];
     },
   };
+}
+
+function LocationSearchProbe() {
+  const location = useLocation();
+
+  return <div data-testid="location-search">{location.search}</div>;
 }
 
 afterEach(() => {
@@ -470,15 +477,19 @@ describe('PromptTemplateListPage', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('ignores unknown tag filters from the route query', () => {
+  it('removes unknown tag filters from the route query', async () => {
     render(
       <MemoryRouter initialEntries={['/prompts?tag=missing-tag']}>
         <PromptTemplatesProvider repository={createMemoryRepository()}>
           <PromptTemplateListPage />
+          <LocationSearchProbe />
         </PromptTemplatesProvider>
       </MemoryRouter>,
     );
 
+    await waitFor(() => {
+      expect(screen.getByTestId('location-search')).toHaveTextContent(/^$/);
+    });
     expect(screen.getByLabelText('Tag')).toHaveValue('all');
     expect(screen.queryByText('Tag: missing-tag')).not.toBeInTheDocument();
     expect(screen.getByText('Code Review Assistant')).toBeInTheDocument();

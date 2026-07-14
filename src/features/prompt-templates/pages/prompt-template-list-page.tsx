@@ -1,7 +1,8 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { filterPromptTemplates } from '@/features/prompt-templates/lib/prompt-template-utils';
+import { normalizePromptTemplateListSearchParams } from '@/features/prompt-templates/lib/prompt-template-list-query';
 import {
   parsePromptTemplateImport,
   stringifyPromptTemplateExport,
@@ -42,14 +43,26 @@ export function PromptTemplateListPage() {
   const archivedCount = templates.filter((template) => template.archivedAt).length;
   const visibleTags = collectPromptTemplateTags(visibleTemplates);
   const requestedTag = searchParams.get('tag') ?? 'all';
+  const hasRequestedTag =
+    requestedTag === 'all' || visibleTags.includes(requestedTag);
   const filters: PromptTemplateFilters = {
     search: searchParams.get('search') ?? '',
-    tag:
-      requestedTag === 'all' || visibleTags.includes(requestedTag)
-        ? requestedTag
-        : 'all',
+    tag: hasRequestedTag ? requestedTag : 'all',
   };
   const filteredTemplates = filterPromptTemplates(visibleTemplates, filters);
+
+  useEffect(() => {
+    const normalizedSearchParams = normalizePromptTemplateListSearchParams(
+      searchParams,
+      { hasRequestedTag },
+    );
+
+    if (!normalizedSearchParams) {
+      return;
+    }
+
+    setSearchParams(normalizedSearchParams, { replace: true });
+  }, [hasRequestedTag, searchParams, setSearchParams]);
 
   const updateListSearchParams = (
     nextFilters: PromptTemplateFilters,
