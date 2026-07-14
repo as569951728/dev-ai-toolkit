@@ -1,5 +1,6 @@
 import { createTemplateId } from '@/features/prompt-templates/lib/prompt-template-utils';
 import { ensurePromptTemplateVersioning } from '@/features/prompt-templates/lib/prompt-template-versioning';
+import { isValidDateString } from '@/lib/date-validation';
 import type {
   PromptTemplate,
   PromptTemplateImportSummary,
@@ -35,14 +36,10 @@ function normalizeTags(value: unknown) {
     : [];
 }
 
-function isValidIsoDate(value: string) {
-  return !Number.isNaN(new Date(value).getTime());
-}
-
 function normalizeOptionalIsoDate(value: unknown) {
   const normalizedValue = normalizeString(value);
 
-  return normalizedValue && isValidIsoDate(normalizedValue)
+  return normalizedValue && isValidDateString(normalizedValue)
     ? normalizedValue
     : null;
 }
@@ -64,7 +61,7 @@ function normalizeRevision(
   if (
     !Number.isInteger(version) ||
     version <= 0 ||
-    !isValidIsoDate(updatedAt) ||
+    !isValidDateString(updatedAt) ||
     !name ||
     !description ||
     !systemPrompt ||
@@ -215,7 +212,7 @@ export function parsePromptTemplateImport(
   if (
     isRecord(parsedValue) &&
     parsedValue.version === EXPORT_VERSION &&
-    !isValidIsoDate(normalizeString(parsedValue.exportedAt))
+    !isValidDateString(normalizeString(parsedValue.exportedAt))
   ) {
     throw new Error('Invalid prompt template export metadata.');
   }

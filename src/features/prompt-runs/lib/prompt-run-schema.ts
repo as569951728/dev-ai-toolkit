@@ -1,4 +1,5 @@
 import type { PromptRunRecord } from '@/types/prompt-run';
+import { isValidDateString } from '@/lib/date-validation';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -6,10 +7,6 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function isNonEmptyString(value: unknown): value is string {
   return typeof value === 'string' && value.trim().length > 0;
-}
-
-function isValidDateString(value: unknown): value is string {
-  return isNonEmptyString(value) && !Number.isNaN(new Date(value).getTime());
 }
 
 function isPositiveInteger(value: unknown): value is number {

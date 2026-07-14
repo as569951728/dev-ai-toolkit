@@ -4,6 +4,7 @@ import type { PromptTemplate } from '@/types/prompt-template';
 import { isPromptRunNote } from '@/features/prompt-run-notes/lib/prompt-run-note-schema';
 import { isPromptRunRecord } from '@/features/prompt-runs/lib/prompt-run-schema';
 import { isPromptTemplate } from '@/features/prompt-templates/lib/prompt-template-schema';
+import { isValidDateString } from '@/lib/date-validation';
 
 const WORKSPACE_BACKUP_VERSION = 1;
 
@@ -22,14 +23,6 @@ export interface WorkspaceBackupPayload {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
-}
-
-function isNonEmptyString(value: unknown): value is string {
-  return typeof value === 'string' && value.trim().length > 0;
-}
-
-function isValidDateString(value: unknown): value is string {
-  return isNonEmptyString(value) && !Number.isNaN(new Date(value).getTime());
 }
 
 function isStringArray(value: unknown): value is string[] {

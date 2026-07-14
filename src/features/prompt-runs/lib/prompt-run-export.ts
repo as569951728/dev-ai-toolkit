@@ -4,6 +4,7 @@ import { isPromptTemplateRevision } from '@/features/prompt-templates/lib/prompt
 import type { PromptRunNote } from '@/types/prompt-run-note';
 import type { PromptRunRecord } from '@/types/prompt-run';
 import type { PromptTemplateRevision } from '@/types/prompt-template';
+import { isValidDateString } from '@/lib/date-validation';
 
 export interface PromptRunExportPayload {
   schemaVersion: 1;
@@ -35,14 +36,6 @@ export function createPromptRunExportPayload({
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
-}
-
-function isNonEmptyString(value: unknown): value is string {
-  return typeof value === 'string' && value.trim().length > 0;
-}
-
-function isValidDateString(value: unknown): value is string {
-  return isNonEmptyString(value) && !Number.isNaN(new Date(value).getTime());
 }
 
 export function parsePromptRunExportImport(

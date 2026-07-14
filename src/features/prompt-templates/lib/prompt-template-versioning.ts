@@ -3,6 +3,7 @@ import type {
   PromptTemplateInput,
   PromptTemplateRevision,
 } from '@/types/prompt-template';
+import { isValidDateString } from '@/lib/date-validation';
 
 type PromptTemplateVersionedShape = PromptTemplateInput & {
   id: string;
@@ -14,10 +15,6 @@ type PromptTemplateVersionedShape = PromptTemplateInput & {
 
 function isValidVersion(value: unknown): value is number {
   return typeof value === 'number' && Number.isInteger(value) && value > 0;
-}
-
-function isValidIsoDate(value: string) {
-  return !Number.isNaN(new Date(value).getTime());
 }
 
 export function toPromptTemplateInput(
@@ -78,7 +75,10 @@ export function buildPromptTemplateFromInput({
 function normalizeRevision(
   revision: PromptTemplateRevision,
 ): PromptTemplateRevision | null {
-  if (!isValidVersion(revision.version) || !isValidIsoDate(revision.updatedAt)) {
+  if (
+    !isValidVersion(revision.version) ||
+    !isValidDateString(revision.updatedAt)
+  ) {
     return null;
   }
 
@@ -98,11 +98,12 @@ export function ensurePromptTemplateVersioning(
 ): PromptTemplate {
   const input = toPromptTemplateInput(template);
   const version = isValidVersion(template.version) ? template.version : 1;
-  const updatedAt = isValidIsoDate(template.updatedAt)
+  const updatedAt = isValidDateString(template.updatedAt)
     ? template.updatedAt
     : new Date().toISOString();
   const archivedAt =
-    typeof template.archivedAt === 'string' && isValidIsoDate(template.archivedAt)
+    typeof template.archivedAt === 'string' &&
+    isValidDateString(template.archivedAt)
       ? template.archivedAt
       : null;
   const normalizedRevisionsByVersion = new Map<number, PromptTemplateRevision>();
