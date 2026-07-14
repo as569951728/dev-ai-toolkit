@@ -444,6 +444,21 @@ describe('PromptTemplateListPage', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('ignores unknown tag filters from the route query', () => {
+    render(
+      <MemoryRouter initialEntries={['/prompts?tag=missing-tag']}>
+        <PromptTemplatesProvider repository={createMemoryRepository()}>
+          <PromptTemplateListPage />
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByLabelText('Tag')).toHaveValue('all');
+    expect(screen.queryByText('Tag: missing-tag')).not.toBeInTheDocument();
+    expect(screen.getByText('Code Review Assistant')).toBeInTheDocument();
+    expect(screen.getByText('API Design Partner')).toBeInTheDocument();
+  });
+
   it('preserves spaces while entering a multi-word search', () => {
     render(
       <MemoryRouter>

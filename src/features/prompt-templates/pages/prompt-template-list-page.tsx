@@ -28,10 +28,6 @@ export function PromptTemplateListPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const { importTemplates, templates } = usePromptTemplates();
-  const filters: PromptTemplateFilters = {
-    search: searchParams.get('search') ?? '',
-    tag: searchParams.get('tag') ?? 'all',
-  };
   const showArchived = searchParams.get('archived') === '1';
   const [feedback, setFeedback] = useState<PromptTemplateFeedback | null>(null);
 
@@ -40,6 +36,14 @@ export function PromptTemplateListPage() {
     : templates.filter((template) => !template.archivedAt);
   const archivedCount = templates.filter((template) => template.archivedAt).length;
   const visibleTags = collectPromptTemplateTags(visibleTemplates);
+  const requestedTag = searchParams.get('tag') ?? 'all';
+  const filters: PromptTemplateFilters = {
+    search: searchParams.get('search') ?? '',
+    tag:
+      requestedTag === 'all' || visibleTags.includes(requestedTag)
+        ? requestedTag
+        : 'all',
+  };
   const filteredTemplates = filterPromptTemplates(visibleTemplates, filters);
 
   const updateListSearchParams = (
