@@ -29,3 +29,49 @@ test('refreshes prompt templates saved in another tab', async ({
 
   await editorPage.close();
 });
+
+test('restores a run note draft after another tab deletes its snapshot', async ({
+  context,
+  page,
+}) => {
+  await page.goto('/playground?templateId=code-review-assistant');
+  await page.getByLabel('Repository Name').fill('dev-ai-toolkit');
+  await page.getByLabel('Change Scope').fill('cross-tab run recovery');
+  await page.getByRole('button', { name: 'Save prompt snapshot' }).click();
+  await page.getByRole('link', { name: 'Open saved run' }).click();
+
+  const originalRunUrl = page.url();
+  const noteEditor = page.getByRole('textbox', {
+    name: 'Note',
+    exact: true,
+  });
+
+  await noteEditor.fill('Keep this cross-tab note draft.');
+
+  const deletePage = await context.newPage();
+  await deletePage.goto(originalRunUrl);
+  await deletePage.getByRole('button', { name: 'Delete run' }).click();
+  await deletePage.getByRole('button', { name: 'Confirm delete' }).click();
+
+  await expect(deletePage).toHaveURL(/\/runs$/);
+  await expect(
+    page.getByRole('heading', { name: 'Snapshot deleted in another tab' }),
+  ).toBeVisible();
+  await expect(noteEditor).toHaveValue('Keep this cross-tab note draft.');
+  await expect(page.getByRole('button', { name: 'Save note' })).toBeDisabled();
+
+  await page
+    .getByRole('button', { name: 'Restore snapshot and note' })
+    .click();
+
+  await expect(page).toHaveURL(/\/runs\/[^/]+$/);
+  expect(page.url()).not.toBe(originalRunUrl);
+  await expect(page.getByRole('button', { name: 'Save note' })).toBeEnabled();
+
+  await page.reload();
+
+  await expect(page.getByLabel('Note')).toHaveValue(
+    'Keep this cross-tab note draft.',
+  );
+  await deletePage.close();
+});
