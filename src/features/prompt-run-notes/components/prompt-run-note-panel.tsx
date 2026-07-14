@@ -24,14 +24,23 @@ export function PromptRunNotePanel({
     null,
   );
   const previousRunId = useRef(runId);
+  const previousSavedBody = useRef(savedBody);
 
   useEffect(() => {
     if (previousRunId.current !== runId) {
       setBody(savedBody);
       setSaveFeedback(null);
       previousRunId.current = runId;
+    } else if (
+      body === previousSavedBody.current &&
+      body !== savedBody
+    ) {
+      setBody(savedBody);
+      setSaveFeedback(null);
     }
-  }, [runId, savedBody]);
+
+    previousSavedBody.current = savedBody;
+  }, [body, runId, savedBody]);
 
   useEffect(() => {
     onDirtyChange?.(body !== savedBody);
