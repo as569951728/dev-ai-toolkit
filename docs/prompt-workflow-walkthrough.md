@@ -18,6 +18,8 @@ Useful actions in the current template flow:
 
 - Search and filter templates by tag.
 - Create, edit, duplicate, archive, restore, or delete local templates.
+- Compare an earlier revision with the current template in Prompt Diff before
+  deciding whether to restore it.
 - Export or import prompt templates as JSON.
 - Open a template in the playground when you are ready to fill variables.
 

@@ -41,6 +41,7 @@
 - Prompt Diff
   - 比较 prompt 文本
   - 检查变量占位符变化
+  - 从模板版本历史直接比较旧版本和当前版本
 - Prompt Run History
   - 浏览已保存 runs
   - 按模板过滤
@@ -187,9 +188,9 @@ npm run audit
 | 分组 | 模块 | 当前能力 | 备注 |
 | --- | --- | --- | --- |
 | Core | Overview | 介绍模块分组、主路径和当前阶段方向 | 首页入口 |
-| Prompt Workflows | Prompt Templates | 创建、编辑、复制、归档、恢复、删除、筛选、导入、导出模板 | 活跃模板可以进入 Playground，所有模板都可以查看过滤后的 Run History |
+| Prompt Workflows | Prompt Templates | 创建、编辑、复制、归档、恢复、比较版本、删除、筛选、导入、导出模板 | 活跃模板可以进入 Playground，所有模板都可以查看过滤后的 Run History |
 | Prompt Workflows | Prompt Playground | 选择模板、填变量、预览或复制带分段标签的完整 prompt、保存 run snapshot、保留最近使用模板 | 当前主工作流入口 |
-| Prompt Workflows | Prompt Diff | 比较 prompt 文本、变量变化和行级差异 | 适合做模板改写后的复核 |
+| Prompt Workflows | Prompt Diff | 比较 prompt 文本、变量变化和行级差异 | 可从模板版本历史或已保存 run 的复核流程直接进入 |
 | Prompt Workflows | Prompt Run History | 浏览 runs、按模板过滤、按保存时间排序、预览捕获变量、搜索 prompt 文本、变量或备注、查看详情、复制完整 prompt、添加备注、导出或删除单条 run、和源模板对比、在 Playground 或新模板草稿中复用已保存 prompts | 已保存 prompt 快照的历史视图 |
 | Developer Utilities | JSON Tools | 格式化、校验、压缩、复制、加载示例，或从 Run Detail 加载捕获到的变量对象 | 适合检查已保存输入和其他 JSON 载荷 |
 | Developer Utilities | API Builder | 组织请求参数并生成 `fetch` 代码和 cURL 命令 | 本地请求草稿工具 |

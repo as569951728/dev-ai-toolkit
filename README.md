@@ -29,7 +29,8 @@ version. Data stays in the active browser profile unless it is exported manually
 The current version includes:
 
 - Overview landing page
-- Prompt template list, create, edit, detail, duplicate, archive, restore, and delete flows
+- Prompt template list, create, edit, detail, duplicate, archive, restore,
+  revision comparison, and delete flows
 - Prompt template search and tag filtering
 - Prompt template import and export via JSON
 - Prompt Playground with dotted, underscored, and hyphenated variable names,
@@ -194,9 +195,9 @@ set of developer utilities.
 | Group | Module | Current capabilities | Notes |
 | --- | --- | --- | --- |
 | Core | Overview | Introduces the module groups, main workflow, and near-term direction | Landing page for first-time users |
-| Prompt Workflows | Prompt Templates | Create, edit, duplicate, archive, restore, delete, filter, import, and export templates | Active templates can open in the playground; all templates can open filtered run history |
+| Prompt Workflows | Prompt Templates | Create, edit, duplicate, archive, restore, compare revisions, delete, filter, import, and export templates | Active templates can open in the playground; all templates can open filtered run history |
 | Prompt Workflows | Prompt Playground | Select templates, fill variables, preview or copy labeled composed prompts, save run snapshots, and keep recent template usage | Main path for composing reusable prompts |
-| Prompt Workflows | Prompt Diff | Compare prompt revisions, detect variable drift, and inspect line-level wording changes | Best used after editing or templating changes |
+| Prompt Workflows | Prompt Diff | Compare prompt revisions, detect variable drift, and inspect line-level wording changes | Opens directly from template version history and saved-run review |
 | Prompt Workflows | Prompt Run History | Browse saved runs, filter by template, sort by age, preview captured variables, search saved prompt text and notes, open run details, copy full saved prompts, add notes, import or export a single run, compare with source templates, delete stale runs, and reuse saved prompts in the Playground or a new template draft | Dedicated history view for saved prompt snapshots |
 | Developer Utilities | JSON Tools | Format, validate, minify, copy, and sample JSON payloads, or load the captured variable object from Run Detail | Useful for debugging saved inputs and other payloads |
 | Developer Utilities | API Builder | Draft request URLs, headers, query params, JSON bodies, `fetch` snippets, and cURL commands | Local request scaffolding only |
