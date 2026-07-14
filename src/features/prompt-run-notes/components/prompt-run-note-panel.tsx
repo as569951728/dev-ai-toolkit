@@ -23,6 +23,7 @@ export function PromptRunNotePanel({
   const [saveFeedback, setSaveFeedback] = useState<NoteSaveFeedback | null>(
     null,
   );
+  const [hasExternalUpdate, setHasExternalUpdate] = useState(false);
   const previousRunId = useRef(runId);
   const previousSavedBody = useRef(savedBody);
 
@@ -30,13 +31,16 @@ export function PromptRunNotePanel({
     if (previousRunId.current !== runId) {
       setBody(savedBody);
       setSaveFeedback(null);
+      setHasExternalUpdate(false);
       previousRunId.current = runId;
-    } else if (
-      body === previousSavedBody.current &&
-      body !== savedBody
-    ) {
-      setBody(savedBody);
-      setSaveFeedback(null);
+    } else if (previousSavedBody.current !== savedBody) {
+      if (body === previousSavedBody.current) {
+        setBody(savedBody);
+        setSaveFeedback(null);
+        setHasExternalUpdate(false);
+      } else {
+        setHasExternalUpdate(true);
+      }
     }
 
     previousSavedBody.current = savedBody;
@@ -49,12 +53,15 @@ export function PromptRunNotePanel({
   const handleSave = () => {
     try {
       const note = saveNote(runId, body);
+      const nextSavedBody = note?.body ?? '';
 
-      setBody(note?.body ?? '');
+      previousSavedBody.current = nextSavedBody;
+      setBody(nextSavedBody);
       setSaveFeedback({
         message: note ? 'Note saved.' : 'Note cleared.',
         tone: 'success',
       });
+      setHasExternalUpdate(false);
     } catch {
       setSaveFeedback({
         message:
@@ -90,14 +97,27 @@ export function PromptRunNotePanel({
         </p>
       ) : null}
 
+      {hasExternalUpdate ? (
+        <p className="status-banner" role="status">
+          Saved note changed in another tab. Your local draft is still here;
+          review it before saving.
+        </p>
+      ) : null}
+
       <label className="field">
         <span>Note</span>
         <textarea
           value={body}
           placeholder="Add a note for this saved run"
           onChange={(event) => {
-            setBody(event.target.value);
+            const nextBody = event.target.value;
+
+            setBody(nextBody);
             setSaveFeedback(null);
+
+            if (nextBody === savedBody) {
+              setHasExternalUpdate(false);
+            }
           }}
         />
       </label>

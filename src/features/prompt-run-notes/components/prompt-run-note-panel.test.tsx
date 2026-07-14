@@ -191,6 +191,9 @@ describe('PromptRunNotePanel', () => {
       'Updated in another tab.',
     );
     expect(handleDirtyChange).toHaveBeenLastCalledWith(false);
+    expect(
+      screen.queryByText(/Saved note changed in another tab/),
+    ).not.toBeInTheDocument();
   });
 
   it('preserves a local draft when a saved note changes', () => {
@@ -211,5 +214,8 @@ describe('PromptRunNotePanel', () => {
       'Keep this local draft.',
     );
     expect(handleDirtyChange).toHaveBeenLastCalledWith(true);
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Saved note changed in another tab. Your local draft is still here; review it before saving.',
+    );
   });
 });
