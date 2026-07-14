@@ -203,6 +203,70 @@ describe('PromptTemplateDetailPage', () => {
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
+  it('restores an archived prompt template from the detail page', () => {
+    const archivedTemplate = {
+      ...starterPromptTemplates[0]!,
+      archivedAt: '2026-05-07T08:00:00.000Z',
+    };
+    const templateRepository = createTemplateRepository([archivedTemplate]);
+
+    render(
+      <MemoryRouter initialEntries={[`/prompts/${archivedTemplate.id}`]}>
+        <PromptTemplatesProvider repository={templateRepository}>
+          <PromptRunsProvider repository={createRunRepository()}>
+            <Routes>
+              <Route
+                path="/prompts/:promptId"
+                element={<PromptTemplateDetailPage />}
+              />
+            </Routes>
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Restore' }));
+
+    expect(
+      screen.getByRole('button', { name: 'Open in Playground' }),
+    ).toBeInTheDocument();
+    expect(templateRepository.snapshot()[0]?.archivedAt).toBeNull();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('duplicates a prompt template and opens the new detail page', () => {
+    const template = starterPromptTemplates[0]!;
+    const templateRepository = createTemplateRepository([template]);
+
+    render(
+      <MemoryRouter initialEntries={[`/prompts/${template.id}`]}>
+        <PromptTemplatesProvider repository={templateRepository}>
+          <PromptRunsProvider repository={createRunRepository()}>
+            <Routes>
+              <Route
+                path="/prompts/:promptId"
+                element={<PromptTemplateDetailPage />}
+              />
+            </Routes>
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Duplicate' }));
+
+    expect(
+      screen.getByRole('heading', { name: `${template.name} Copy` }),
+    ).toBeInTheDocument();
+    expect(templateRepository.snapshot()).toHaveLength(2);
+    expect(templateRepository.snapshot()[0]).toMatchObject({
+      name: `${template.name} Copy`,
+      version: 1,
+      archivedAt: null,
+    });
+    expect(templateRepository.snapshot()[0]?.id).not.toBe(template.id);
+  });
+
   it('confirms before restoring a historical template revision', () => {
     const baseTemplate = starterPromptTemplates[0]!;
     const currentRevision = {
