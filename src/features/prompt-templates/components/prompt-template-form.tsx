@@ -77,6 +77,7 @@ export function PromptTemplateForm({
     initialFormState,
   );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [hasExternalUpdate, setHasExternalUpdate] = useState(false);
   const isDirty = Object.entries(formState).some(
     ([field, value]) =>
       value !== initialFormState[field as keyof FormState],
@@ -86,6 +87,7 @@ export function PromptTemplateForm({
   if (!isSameFormState(initialFormState, nextInitialFormState)) {
     setInitialFormState(nextInitialFormState);
     setErrorMessage(null);
+    setHasExternalUpdate(mode === 'edit' && isDirty);
 
     if (!isDirty) {
       setFormState(nextInitialFormState);
@@ -189,6 +191,13 @@ export function PromptTemplateForm({
       {errorMessage ? (
         <p className="status-banner status-banner--error" role="alert">
           {errorMessage}
+        </p>
+      ) : null}
+
+      {hasExternalUpdate && isDirty ? (
+        <p className="status-banner" role="status">
+          Saved template changed in another tab. Your local draft is still
+          here; review it before saving.
         </p>
       ) : null}
 

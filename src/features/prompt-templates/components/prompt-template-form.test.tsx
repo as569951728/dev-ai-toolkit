@@ -308,6 +308,9 @@ describe('PromptTemplateForm', () => {
     expect(screen.getByLabelText('Description')).toHaveValue(
       'Updated in another tab.',
     );
+    expect(
+      screen.queryByText(/Saved template changed in another tab/),
+    ).not.toBeInTheDocument();
   });
 
   it('preserves a local edit draft when the saved template changes', () => {
@@ -323,6 +326,9 @@ describe('PromptTemplateForm', () => {
     expect(screen.getByLabelText('Name')).toHaveValue('Keep this local draft');
     expect(screen.getByLabelText('Description')).toHaveValue(
       'Original description.',
+    );
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Saved template changed in another tab. Your local draft is still here; review it before saving.',
     );
   });
 });
