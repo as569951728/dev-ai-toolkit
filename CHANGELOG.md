@@ -206,29 +206,31 @@ Initial public release of `dev-ai-toolkit`.
 
 ### Added
 
-- Prompt template management with create, edit, duplicate, archive, restore, delete, filtering, and JSON import/export
-- Prompt Playground with variable detection, preview generation, and recent template usage
+- Prompt template management with create, edit, duplicate, delete, filtering,
+  and JSON import/export
+- Prompt Playground with variable detection, preview generation, saved prompt
+  snapshots, and recent template usage
 - Prompt Diff for comparing prompt revisions
 - JSON Tools for formatting, validation, and minification
-- API Builder for drafting request configurations and generating `fetch` snippets
+- API Builder for drafting request configurations and generating `fetch`
+  snippets
 - Code Viewer for reading code or text output in single or compare mode
 - Prompt template version history with local restore support
-- Prompt run snapshots, dedicated run history, and recent activity tracking
 - Local-first repository and service layers for prompt templates and prompt runs
-- Versioned persisted payloads for browser-stored template and run data
 - GitHub Actions CI running `lint`, `test`, and `build`
-- Automated tests for services, repositories, providers, and workflow behavior
+- Unit tests for core services and one prompt workflow smoke test
 
 ### Product direction
 
 - Prompt workflows are now grouped separately from developer utilities
-- The toolbox has a clearer `Start here` path for the core template -> playground -> history flow
+- The toolbox has a `Start here` path for the template-to-Playground flow
 
 ### Notes
 
 - This release is intentionally local-first and browser-based.
 - There is no backend or account system yet.
-- Saved data is still scoped to the browser that is using the app.
-- The current focus is establishing a credible open-source foundation with connected workflows.
+- Saved data is scoped to the active browser profile.
+- Saved prompt runs do not yet have a dedicated history page.
+- Workspace backup and run notes are not included.
 
 For full release notes, see [docs/releases/v0.1.0.md](./docs/releases/v0.1.0.md).
