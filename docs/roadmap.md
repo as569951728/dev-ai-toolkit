@@ -102,8 +102,8 @@ Still open:
 
 - Verify that the public Vercel demo tracks the current `main` branch (#14).
 - Keep local import, export, and recovery coverage aligned with schema changes.
-- Decide whether another small supporting utility action belongs in the prompt
-  workflow.
+- Pause supporting utility expansion until the current prompt workflow receives
+  user feedback.
 - Prepare `v0.2.0` only after the demo, CI, docs, and release notes agree.
 
 ### Week 1: Positioning And Open-Source Hygiene
@@ -175,8 +175,8 @@ Make supporting tools feel connected without expanding the scope too broadly.
 
 Tasks:
 
-- Review whether one API Builder handoff would support the prompt workflow;
-  keep JSON Tools limited to inspecting captured run variables for now.
+- Keep the existing JSON Tools, Prompt Diff, and Code Viewer handoffs stable;
+  do not add more utility integrations without a concrete user need.
 - Keep unsupported utility ideas in a backlog instead of adding more pages.
 - Close or update stale issues that no longer match the roadmap.
 - Publish `v0.2.0` once the demo, docs, and core workflow improvements are in a
@@ -194,11 +194,11 @@ The next engineering work should favor maintainability over new feature count.
 
 Priority order:
 
-1. Shared domain validators and normalization helpers
-2. Prompt workflow page decomposition
-3. Browser smoke coverage for the core path
-4. Import/export and backup consistency
-5. Utility integrations that support saved prompt review
+1. Regression coverage for local schema, import, export, and recovery changes
+2. Smaller orchestration and test helpers when an affected workflow is changed
+3. Stable navigation and privacy boundaries between prompt workflow pages
+4. Demo, CI, documentation, and release consistency
+5. Issue-driven bug fixes and accessibility improvements
 
 Avoid building a backend until the local domain model is more stable.
 

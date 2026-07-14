@@ -242,7 +242,7 @@ Prompt Templates 和 Run History 的搜索词会以 `q` 保留在 URL 中，便�
 
 - 当前 `main` 改动推送后，验证公开 Demo 是否同步
 - 持续覆盖本地导入、导出和失败恢复的回归场景
-- 确认是否还有一个小型辅助工具操作适合连接到核心 Prompt 工作流
+- 暂停扩展辅助工具，先收集当前 Prompt 工作流的真实使用反馈
 - 在 CI、Demo、文档和 release notes 一致后准备 `v0.2.0`
 
 复盘后的实现路线图见 [docs/roadmap.md](./docs/roadmap.md)。

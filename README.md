@@ -274,7 +274,8 @@ Current next steps include:
 
 - Verify the public demo after the current `main` changes are pushed
 - Keep regression coverage around local import, export, and recovery behavior
-- Decide whether another small supporting utility action belongs in the prompt workflow
+- Pause supporting utility expansion until current workflow changes receive
+  user feedback
 - Prepare `v0.2.0` after CI, demo, documentation, and release notes agree
 
 See the implementation roadmap in [docs/roadmap.md](./docs/roadmap.md).
