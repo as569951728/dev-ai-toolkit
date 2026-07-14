@@ -90,9 +90,13 @@ Completed since the project review:
   from a saved prompt snapshot without changing the source run.
 - Connected Run Detail to JSON Tools so captured variables can be inspected as
   formatted JSON without copying them into the URL or changing the saved run.
+- Added direct comparison between historical template revisions and the current
+  template without placing prompt content in the URL.
 - Refreshed local collections across browser tabs, preserved dirty template and
   note drafts during external writes, and added recovery when their source
   records are deleted in another tab.
+- Preserved active template and run filters across detail or edit round trips,
+  and removed inactive filter values from shareable list URLs.
 
 Still open:
 
