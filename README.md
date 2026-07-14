@@ -211,9 +211,8 @@ The current storage model is intentionally local-first:
   notes, and recent Playground shortcuts after a storage change
 - Clean template and note editors adopt those refreshed values. Unsaved drafts
   stay visible and show a warning instead of being silently replaced
-- If an edited template is deleted in another tab, its draft can be restored as
-  a new template. An unsaved note cannot yet be recovered if its parent run is
-  deleted in another tab
+- If an edited template or a run with an unsaved note is deleted in another
+  tab, the visible draft can be restored with a new local record
 - Concurrent edits are still resolved by the browser's last persisted write;
   warnings protect the visible draft but do not merge fields automatically
 - Workspace backups can export and restore local templates, saved runs, notes, and recent playground shortcuts

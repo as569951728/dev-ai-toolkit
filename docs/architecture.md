@@ -170,8 +170,10 @@ their lifecycle may not be connected to browser storage.
 Clean template and note editors adopt the reloaded value. If an editor has an
 unsaved draft, it keeps that draft and reports that the saved value changed.
 A template draft also remains recoverable as a new template if another tab
-deletes its source record. The equivalent recovery path is not available for a
-note whose parent run is deleted because saving it would create an orphaned note.
+deletes its source record. If another tab deletes a run while its note editor is
+dirty, the detail page can create a replacement run and attach the draft to the
+new ID. That write is compensating: a failed note save removes the replacement
+run when possible rather than leaving an orphaned note.
 
 This is still refresh-on-change behavior, not collaborative editing. The
 storage API does not provide collection transactions or field-level conflict
