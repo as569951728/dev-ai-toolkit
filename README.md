@@ -209,6 +209,23 @@ The current storage model is intentionally local-first:
 - Workspace backups can export and restore local templates, saved runs, notes, and recent playground shortcuts
 - Repository boundaries are in place so future API-backed work does not require rewriting page structure first
 
+## Data And Privacy
+
+The app does not send prompt templates, saved runs, notes, or generated request
+snippets to a project backend. Persisted workflow data stays in the current
+browser profile until you export or delete it.
+
+Internal links to `Prompt Diff` and `Code Viewer` pass prompt or request content
+through browser history state instead of copying it into the URL. Saved-run
+links carry only a run ID and resolve the content from local storage. Older
+content-bearing links are still accepted for compatibility, but the app removes
+their content parameters from the current address after loading them.
+
+Local-first storage is not encryption. Anyone with access to the browser
+profile or its developer tools may be able to read the stored data. Avoid
+placing production secrets, access tokens, or other sensitive credentials in
+the workspace.
+
 ## How It Works
 
 The most complete workflow in the current version looks like this:

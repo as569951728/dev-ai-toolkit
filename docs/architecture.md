@@ -124,6 +124,25 @@ This is why the project now pays extra attention to:
 - legacy import handling
 - shared local persistence patterns
 
+### Workflow handoffs
+
+Prompt content and generated request snippets sometimes move between feature
+routes. Current in-app handoffs to Prompt Diff and Code Viewer use React Router
+history state rather than content-bearing query parameters. Saved-run handoffs
+use a URL-safe run ID and resolve the prompt content from the local run
+repository.
+
+Prompt Diff and Code Viewer still accept older `left` and `right` query
+parameters. After reading them, the page replaces the current history entry
+with a clean URL while retaining the content in history state. This is a
+compatibility measure, not a secure transport: the original legacy request may
+already have exposed its query string to browser history, server logs, or an
+upstream service before the client removes it.
+
+History state survives a normal reload in the supported browser flow, but it is
+not a portable share format. Content that must remain available across browser
+profiles should be saved as a run or included in an explicit workspace backup.
+
 ### Persisted data shape
 
 The current browser-stored collections use a lightweight versioned payload shape:
