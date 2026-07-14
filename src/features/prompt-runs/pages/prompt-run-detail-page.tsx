@@ -248,7 +248,7 @@ export function PromptRunDetailPage() {
       />
 
       <div className="detail-grid">
-        <PromptRunInputsPanel run={run} />
+        <PromptRunInputsPanel historyPath={historyPath} run={run} />
 
         <PromptRunNotePanel
           isSaveDisabled={sourceWasDeleted}

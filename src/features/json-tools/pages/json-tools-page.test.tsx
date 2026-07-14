@@ -6,10 +6,15 @@ import {
   waitFor,
 } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { MemoryRouter } from 'react-router-dom';
+import {
+  type InitialEntry,
+  MemoryRouter,
+  useLocation,
+} from 'react-router-dom';
 
 import { sampleJson } from '@/features/json-tools/lib/json-tools-utils';
 import { JsonToolsPage } from '@/features/json-tools/pages/json-tools-page';
+import { createPromptRunDetailNavigationState } from '@/features/prompt-runs/lib/prompt-run-links';
 import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs-provider';
 import type { PromptRunRepository } from '@/features/prompt-runs/repositories/prompt-run-repository';
 import type { PromptRunRecord } from '@/types/prompt-run';
@@ -25,16 +30,23 @@ function renderJsonTools({
   initialEntry = '/json-tools',
   runs = [],
 }: {
-  initialEntry?: string;
+  initialEntry?: InitialEntry;
   runs?: PromptRunRecord[];
 } = {}) {
   render(
     <MemoryRouter initialEntries={[initialEntry]}>
       <PromptRunsProvider repository={createRunRepository(runs)}>
         <JsonToolsPage />
+        <LocationStateProbe />
       </PromptRunsProvider>
     </MemoryRouter>,
   );
+}
+
+function LocationStateProbe() {
+  const location = useLocation();
+
+  return <div data-testid="location-state">{JSON.stringify(location.state)}</div>;
 }
 
 afterEach(() => {
@@ -95,8 +107,14 @@ describe('JsonToolsPage', () => {
     };
     const variablesJson = JSON.stringify(run.variables, null, 2);
 
+    const historyPath = '/runs?templateId=template-1&q=JSON';
+
     renderJsonTools({
-      initialEntry: '/json-tools?runId=imported%2Frun%20%231',
+      initialEntry: {
+        pathname: '/json-tools',
+        search: '?runId=imported%2Frun%20%231',
+        state: createPromptRunDetailNavigationState(historyPath),
+      },
       runs: [run],
     });
 
@@ -113,6 +131,12 @@ describe('JsonToolsPage', () => {
     expect(
       screen.getByRole('link', { name: 'Back to saved run' }),
     ).toHaveAttribute('href', '/runs/imported%2Frun%20%231');
+
+    fireEvent.click(screen.getByRole('link', { name: 'Back to saved run' }));
+
+    expect(screen.getByTestId('location-state')).toHaveTextContent(
+      JSON.stringify(createPromptRunDetailNavigationState(historyPath)),
+    );
   });
 
   it('minifies input and restores the sample workspace', () => {

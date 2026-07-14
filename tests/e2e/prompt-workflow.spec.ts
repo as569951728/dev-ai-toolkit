@@ -154,6 +154,9 @@ test('opens captured run variables in JSON Tools', async ({ page }) => {
   await page.getByLabel('Change Scope').fill('inspect variables');
   await page.getByRole('button', { name: 'Save prompt snapshot' }).click();
   await page.getByRole('link', { name: 'Open saved run' }).click();
+  await page.getByRole('link', { name: 'Back to Run History' }).click();
+  await page.getByLabel('Search runs').fill('inspect variables');
+  await page.getByRole('link', { name: 'View details' }).click();
   await page
     .getByRole('link', { name: 'Open variables in JSON Tools' })
     .click();
@@ -175,6 +178,11 @@ test('opens captured run variables in JSON Tools', async ({ page }) => {
   await expect(
     page.getByRole('heading', { name: 'Code Review Assistant', exact: true }),
   ).toBeVisible();
+
+  await page.getByRole('link', { name: 'Back to Run History' }).click();
+
+  await expect(page).toHaveURL(/\/runs\?q=inspect\+variables$/);
+  await expect(page.getByLabel('Search runs')).toHaveValue('inspect variables');
 });
 
 test('compares a saved prompt without exposing prompt text in the URL', async ({

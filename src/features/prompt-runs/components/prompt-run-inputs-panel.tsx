@@ -1,13 +1,20 @@
 import { Link } from 'react-router-dom';
 
-import { buildPromptRunJsonToolsPath } from '@/features/prompt-runs/lib/prompt-run-links';
+import {
+  buildPromptRunJsonToolsPath,
+  createPromptRunDetailNavigationState,
+} from '@/features/prompt-runs/lib/prompt-run-links';
 import type { PromptRunRecord } from '@/types/prompt-run';
 
 interface PromptRunInputsPanelProps {
+  historyPath: string;
   run: PromptRunRecord;
 }
 
-export function PromptRunInputsPanel({ run }: PromptRunInputsPanelProps) {
+export function PromptRunInputsPanel({
+  historyPath,
+  run,
+}: PromptRunInputsPanelProps) {
   const variableEntries = Object.entries(run.variables);
 
   return (
@@ -21,6 +28,7 @@ export function PromptRunInputsPanel({ run }: PromptRunInputsPanelProps) {
           <div className="panel__actions">
             <Link
               className="secondary-button"
+              state={createPromptRunDetailNavigationState(historyPath)}
               to={buildPromptRunJsonToolsPath(run.id)}
             >
               Open variables in JSON Tools

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 
 import { JsonEditorPanel } from '@/features/json-tools/components/json-editor-panel';
 import { JsonResultPanel } from '@/features/json-tools/components/json-result-panel';
@@ -14,7 +14,11 @@ import {
   validateJson,
 } from '@/features/json-tools/lib/json-tools-utils';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
-import { buildPromptRunDetailPath } from '@/features/prompt-runs/lib/prompt-run-links';
+import {
+  buildPromptRunDetailPath,
+  createPromptRunDetailNavigationState,
+  getPromptRunHistoryReturnPath,
+} from '@/features/prompt-runs/lib/prompt-run-links';
 import { writeClipboardText } from '@/lib/clipboard';
 
 function createInitialWorkspace(
@@ -56,6 +60,7 @@ function createInitialWorkspace(
 }
 
 export function JsonToolsPage() {
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const { getRunById } = usePromptRuns();
   const [initialWorkspace] = useState(() =>
@@ -65,6 +70,7 @@ export function JsonToolsPage() {
   const [resultValue, setResultValue] = useState(initialWorkspace.resultValue);
   const [message, setMessage] = useState(initialWorkspace.message);
   const [isValid, setIsValid] = useState(true);
+  const historyPath = getPromptRunHistoryReturnPath(location.state);
 
   const runAction = (
     action: (rawValue: string) => { content: string; isValid: boolean; message: string },
@@ -123,6 +129,7 @@ export function JsonToolsPage() {
             <div className="panel__actions">
               <Link
                 className="secondary-button"
+                state={createPromptRunDetailNavigationState(historyPath)}
                 to={buildPromptRunDetailPath(initialWorkspace.sourceRunId)}
               >
                 Back to saved run

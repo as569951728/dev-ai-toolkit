@@ -120,6 +120,10 @@ function renderRunDetail(
         path: '/runs',
         element: <div>Run History Destination</div>,
       },
+      {
+        path: '/json-tools',
+        element: <div>JSON Tools Destination</div>,
+      },
     ],
     { initialEntries: [initialEntry] },
   );
@@ -229,6 +233,37 @@ describe('PromptRunDetailPage', () => {
     expect(router.state.location.pathname).toBe('/runs');
     expect(router.state.location.search).toBe(
       `?templateId=${run.templateId}&q=System`,
+    );
+  });
+
+  it('passes the Run History return path into JSON Tools', () => {
+    const run: PromptRunRecord = {
+      id: 'run-1',
+      templateId: starterPromptTemplates[0]!.id,
+      templateName: starterPromptTemplates[0]!.name,
+      templateVersion: starterPromptTemplates[0]!.version,
+      variables: { repository_name: 'dev-ai-toolkit' },
+      systemPrompt: 'System',
+      userPrompt: 'User',
+      createdAt: '2026-05-07T09:00:00.000Z',
+    };
+    const historyPath = `/runs?templateId=${run.templateId}&q=toolkit`;
+    const { router } = renderRunDetail(
+      {
+        pathname: '/runs/run-1',
+        state: createPromptRunDetailNavigationState(historyPath),
+      },
+      [run],
+    );
+
+    fireEvent.click(
+      screen.getByRole('link', { name: 'Open variables in JSON Tools' }),
+    );
+
+    expect(screen.getByText('JSON Tools Destination')).toBeInTheDocument();
+    expect(router.state.location.search).toBe('?runId=run-1');
+    expect(router.state.location.state).toEqual(
+      createPromptRunDetailNavigationState(historyPath),
     );
   });
 
