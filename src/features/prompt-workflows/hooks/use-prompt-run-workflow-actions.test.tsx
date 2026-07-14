@@ -8,6 +8,7 @@ import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs
 import type { PromptRunRepository } from '@/features/prompt-runs/repositories/prompt-run-repository';
 import {
   PromptRunNoteRollbackError,
+  PromptRunRestoreRollbackError,
   usePromptRunWorkflowActions,
 } from '@/features/prompt-workflows/hooks/use-prompt-run-workflow-actions';
 import type { PromptRunNote } from '@/types/prompt-run-note';
@@ -75,11 +76,184 @@ function TestConsumer({
   );
 }
 
+function RestoreConsumer({
+  noteBody,
+  onError,
+  run,
+}: {
+  noteBody: string;
+  onError?: (error: unknown) => void;
+  run: PromptRunRecord;
+}) {
+  const { restoreRunWithNoteDraft } = usePromptRunWorkflowActions();
+  const [restoredRunId, setRestoredRunId] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => {
+          try {
+            setRestoredRunId(restoreRunWithNoteDraft(run, noteBody).id);
+          } catch (error) {
+            onError?.(error);
+            setErrorMessage(
+              error instanceof PromptRunRestoreRollbackError
+                ? error.message
+                : 'Restore failed.',
+            );
+          }
+        }}
+      >
+        Restore workflow run
+      </button>
+      {restoredRunId ? <p>Restored run: {restoredRunId}</p> : null}
+      {errorMessage ? <p role="alert">{errorMessage}</p> : null}
+    </>
+  );
+}
+
 afterEach(() => {
   cleanup();
 });
 
 describe('usePromptRunWorkflowActions', () => {
+  it('restores a deleted run with its current note draft', () => {
+    const sourceRun: PromptRunRecord = {
+      id: 'deleted-run',
+      templateId: 'template-1',
+      templateName: 'Code Review Assistant',
+      templateVersion: 2,
+      variables: { repository: 'dev-ai-toolkit' },
+      systemPrompt: 'System',
+      userPrompt: 'User',
+      createdAt: '2026-05-07T09:00:00.000Z',
+    };
+    const runRepository = createRunRepository();
+    const noteRepository = createNoteRepository();
+
+    render(
+      <PromptRunsProvider repository={runRepository}>
+        <PromptRunNotesProvider repository={noteRepository}>
+          <RestoreConsumer
+            noteBody="  Keep the recovered review context.  "
+            run={sourceRun}
+          />
+        </PromptRunNotesProvider>
+      </PromptRunsProvider>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Restore workflow run' }));
+
+    const restoredRun = runRepository.snapshot()[0];
+
+    expect(restoredRun).toMatchObject({
+      templateId: sourceRun.templateId,
+      templateName: sourceRun.templateName,
+      templateVersion: sourceRun.templateVersion,
+      variables: sourceRun.variables,
+      systemPrompt: sourceRun.systemPrompt,
+      userPrompt: sourceRun.userPrompt,
+    });
+    expect(restoredRun?.id).not.toBe(sourceRun.id);
+    expect(restoredRun?.createdAt).not.toBe(sourceRun.createdAt);
+    expect(noteRepository.snapshot()[0]).toMatchObject({
+      runId: restoredRun?.id,
+      body: 'Keep the recovered review context.',
+    });
+    expect(screen.getByText(`Restored run: ${restoredRun?.id}`)).toBeInTheDocument();
+  });
+
+  it('removes a restored run when its note draft cannot be saved', () => {
+    const sourceRun: PromptRunRecord = {
+      id: 'deleted-run',
+      templateId: 'template-1',
+      templateName: 'Code Review Assistant',
+      templateVersion: 2,
+      variables: {},
+      systemPrompt: 'System',
+      userPrompt: 'User',
+      createdAt: '2026-05-07T09:00:00.000Z',
+    };
+    const runRepository = createRunRepository();
+    const noteRepository: PromptRunNoteRepository = {
+      loadAll: () => [],
+      saveAll: () => {
+        throw new Error('Note storage failed.');
+      },
+    };
+
+    render(
+      <PromptRunsProvider repository={runRepository}>
+        <PromptRunNotesProvider repository={noteRepository}>
+          <RestoreConsumer noteBody="Keep this draft." run={sourceRun} />
+        </PromptRunNotesProvider>
+      </PromptRunsProvider>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Restore workflow run' }));
+
+    expect(screen.getByRole('alert')).toHaveTextContent('Restore failed.');
+    expect(runRepository.snapshot()).toEqual([]);
+  });
+
+  it('reports a partial restore when the replacement run cannot be removed', () => {
+    const sourceRun: PromptRunRecord = {
+      id: 'deleted-run',
+      templateId: 'template-1',
+      templateName: 'Code Review Assistant',
+      templateVersion: 2,
+      variables: {},
+      systemPrompt: 'System',
+      userPrompt: 'User',
+      createdAt: '2026-05-07T09:00:00.000Z',
+    };
+    let runs: PromptRunRecord[] = [];
+    const runRepository: PromptRunRepository & {
+      snapshot: () => PromptRunRecord[];
+    } = {
+      loadAll: () => [...runs],
+      saveAll: (nextRuns) => {
+        if (nextRuns.length === 0 && runs.length > 0) {
+          throw new Error('Run rollback failed.');
+        }
+
+        runs = [...nextRuns];
+      },
+      snapshot: () => [...runs],
+    };
+    const noteRepository: PromptRunNoteRepository = {
+      loadAll: () => [],
+      saveAll: () => {
+        throw new Error('Note storage failed.');
+      },
+    };
+    const onError = vi.fn();
+
+    render(
+      <PromptRunsProvider repository={runRepository}>
+        <PromptRunNotesProvider repository={noteRepository}>
+          <RestoreConsumer
+            noteBody="Keep this draft."
+            onError={onError}
+            run={sourceRun}
+          />
+        </PromptRunNotesProvider>
+      </PromptRunsProvider>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Restore workflow run' }));
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'A replacement snapshot was created, but its note could not be saved and the snapshot could not be removed.',
+    );
+    expect(onError.mock.calls[0]?.[0]).toBeInstanceOf(
+      PromptRunRestoreRollbackError,
+    );
+    expect(runRepository.snapshot()).toHaveLength(1);
+  });
+
   it('deletes a run without writing the note collection when no note exists', () => {
     const runRepository = createRunRepository([
       {
