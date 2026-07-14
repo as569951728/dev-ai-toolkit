@@ -231,6 +231,11 @@ links carry only a run ID and resolve the content from local storage. Older
 content-bearing links are still accepted for compatibility, but the app removes
 their content parameters from the current address after loading them.
 
+Prompt Template and Run History searches keep their `q` value in the URL so
+list filters survive navigation and can be bookmarked. Avoid using sensitive
+prompt text as a search term because that value remains visible in browser
+history and copied list URLs.
+
 Local-first storage is not encryption. Anyone with access to the browser
 profile or its developer tools may be able to read the stored data. Avoid
 placing production secrets, access tokens, or other sensitive credentials in

@@ -132,6 +132,11 @@ history state rather than content-bearing query parameters. Saved-run handoffs
 use a URL-safe run ID and resolve the prompt content from the local run
 repository.
 
+List filtering uses a different boundary. Prompt Template and Run History
+search values are stored in the `q` query parameter so the list state can be
+restored after a detail-page round trip. These values are navigation metadata,
+not a private transport, and may remain in browser history or copied URLs.
+
 Prompt Diff and Code Viewer still accept older `left` and `right` query
 parameters. After reading them, the page replaces the current history entry
 with a clean URL while retaining the content in history state. This is a
