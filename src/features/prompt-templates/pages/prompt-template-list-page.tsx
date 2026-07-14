@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { filterPromptTemplates } from '@/features/prompt-templates/lib/prompt-template-utils';
 import {
@@ -14,6 +14,7 @@ import {
   buildPromptTemplateEditPath,
   buildPromptTemplatePlaygroundPath,
   buildPromptTemplateRunHistoryPath,
+  createPromptTemplateNavigationState,
 } from '@/features/prompt-templates/lib/prompt-template-links';
 import { collectPromptTemplateTags } from '@/features/prompt-templates/services/prompt-template-service';
 import type { PromptTemplateFilters } from '@/types/prompt-template';
@@ -24,12 +25,16 @@ interface PromptTemplateFeedback {
 }
 
 export function PromptTemplateListPage() {
+  const location = useLocation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const { importTemplates, templates } = usePromptTemplates();
   const showArchived = searchParams.get('archived') === '1';
   const [feedback, setFeedback] = useState<PromptTemplateFeedback | null>(null);
+  const listNavigationState = createPromptTemplateNavigationState(
+    `${location.pathname}${location.search}`,
+  );
 
   const visibleTemplates = showArchived
     ? templates
@@ -158,8 +163,16 @@ export function PromptTemplateListPage() {
         archivedCount={archivedCount}
         showArchived={showArchived}
         onCreate={() => navigate(buildPromptTemplateCreatePath())}
-        onView={(id) => navigate(buildPromptTemplateDetailPath(id))}
-        onEdit={(id) => navigate(buildPromptTemplateEditPath(id))}
+        onView={(id) =>
+          navigate(buildPromptTemplateDetailPath(id), {
+            state: listNavigationState,
+          })
+        }
+        onEdit={(id) =>
+          navigate(buildPromptTemplateEditPath(id), {
+            state: listNavigationState,
+          })
+        }
         onOpenInPlayground={(id) =>
           navigate(buildPromptTemplatePlaygroundPath(id))
         }

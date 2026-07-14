@@ -1,8 +1,13 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
-import { createMemoryRouter, RouterProvider } from 'react-router-dom';
+import {
+  createMemoryRouter,
+  type InitialEntry,
+  RouterProvider,
+} from 'react-router-dom';
 
 import { PromptTemplateEditPage } from '@/features/prompt-templates/pages/prompt-template-edit-page';
+import { createPromptTemplateNavigationState } from '@/features/prompt-templates/lib/prompt-template-links';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
 import { PromptTemplatesProvider } from '@/features/prompt-templates/providers/prompt-templates-provider';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
@@ -32,7 +37,7 @@ function DeleteTemplateButton({ templateId }: { templateId: string }) {
   );
 }
 
-function renderEditPage(path: string, templates: PromptTemplate[]) {
+function renderEditPage(path: InitialEntry, templates: PromptTemplate[]) {
   const router = createMemoryRouter(
     [
       {
@@ -87,6 +92,23 @@ afterEach(() => {
 });
 
 describe('PromptTemplateEditPage', () => {
+  it('returns to the filtered template list when editing is cancelled', () => {
+    const template = starterPromptTemplates[0]!;
+    const listPath = '/prompts?search=Review&tag=review';
+    const router = renderEditPage(
+      {
+        pathname: `/prompts/${template.id}/edit`,
+        state: createPromptTemplateNavigationState(listPath),
+      },
+      [template],
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Back to list' }));
+
+    expect(router.state.location.pathname).toBe('/prompts');
+    expect(router.state.location.search).toBe('?search=Review&tag=review');
+  });
+
   it('explains when the requested template is missing', () => {
     const router = renderEditPage('/prompts/missing-template/edit', []);
 

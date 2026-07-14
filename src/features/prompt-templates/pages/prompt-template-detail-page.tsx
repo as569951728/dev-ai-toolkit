@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { PromptTemplateDetail } from '@/features/prompt-templates/components/prompt-template-detail';
 import { createPromptDiffNavigationState } from '@/features/prompt-diff/lib/prompt-diff-navigation';
@@ -11,10 +11,13 @@ import {
   buildPromptTemplateEditPath,
   buildPromptTemplatePlaygroundPath,
   buildPromptTemplateRunHistoryPath,
+  createPromptTemplateNavigationState,
+  getPromptTemplateListReturnPath,
 } from '@/features/prompt-templates/lib/prompt-template-links';
 import { formatPromptSections } from '@/lib/prompt-sections';
 
 export function PromptTemplateDetailPage() {
+  const location = useLocation();
   const navigate = useNavigate();
   const { promptId } = useParams();
   const [actionErrorMessage, setActionErrorMessage] = useState<string | null>(
@@ -31,13 +34,15 @@ export function PromptTemplateDetailPage() {
   } = usePromptTemplates();
 
   const template = promptId ? getTemplateById(promptId) : null;
+  const listPath = getPromptTemplateListReturnPath(location.state);
+  const listNavigationState = createPromptTemplateNavigationState(listPath);
 
   if (!template) {
     return (
       <section className="panel empty-state">
         <h1>Template not found</h1>
         <p>The prompt template may have been removed from local storage.</p>
-        <Link className="primary-button" to="/prompts">
+        <Link className="primary-button" to={listPath}>
           Back to Prompt Templates
         </Link>
       </section>
@@ -64,7 +69,7 @@ export function PromptTemplateDetailPage() {
       actionErrorMessage={actionErrorMessage}
       template={template}
       recentRuns={recentRuns}
-      onBack={() => navigate('/prompts')}
+      onBack={() => navigate(listPath)}
       onOpenInPlayground={(id) =>
         navigate(buildPromptTemplatePlaygroundPath(id))
       }
@@ -80,14 +85,20 @@ export function PromptTemplateDetailPage() {
           }),
         });
       }}
-      onEdit={(id) => navigate(buildPromptTemplateEditPath(id))}
+      onEdit={(id) =>
+        navigate(buildPromptTemplateEditPath(id), {
+          state: listNavigationState,
+        })
+      }
       onDuplicate={(id) => {
         const duplicatedTemplate = runTemplateAction(() =>
           duplicateTemplate(id),
         );
 
         if (duplicatedTemplate) {
-          navigate(buildPromptTemplateDetailPath(duplicatedTemplate.id));
+          navigate(buildPromptTemplateDetailPath(duplicatedTemplate.id), {
+            state: listNavigationState,
+          });
         }
       }}
       onDelete={(id) => {
@@ -97,7 +108,7 @@ export function PromptTemplateDetailPage() {
         });
 
         if (deleted) {
-          navigate('/prompts');
+          navigate(listPath);
         }
       }}
       onArchive={(id) => {

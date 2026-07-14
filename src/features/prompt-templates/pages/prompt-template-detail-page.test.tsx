@@ -8,7 +8,10 @@ import {
 } from 'react-router-dom';
 
 import { starterPromptTemplates } from '@/features/prompt-templates/seed/prompt-templates';
-import { buildPromptTemplateDetailPath } from '@/features/prompt-templates/lib/prompt-template-links';
+import {
+  buildPromptTemplateDetailPath,
+  createPromptTemplateNavigationState,
+} from '@/features/prompt-templates/lib/prompt-template-links';
 import { PromptTemplateDetailPage } from '@/features/prompt-templates/pages/prompt-template-detail-page';
 import { PromptTemplatesProvider } from '@/features/prompt-templates/providers/prompt-templates-provider';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
@@ -51,11 +54,51 @@ function LocationStateProbe() {
   return <div data-testid="location-state">{JSON.stringify(location.state)}</div>;
 }
 
+function LocationSearchProbe() {
+  const location = useLocation();
+
+  return <div data-testid="location-search">{location.search}</div>;
+}
+
 afterEach(() => {
   cleanup();
 });
 
 describe('PromptTemplateDetailPage', () => {
+  it('returns to the filtered list that opened the template detail', () => {
+    const template = starterPromptTemplates[0]!;
+    const listPath = '/prompts?search=Review&tag=review';
+
+    render(
+      <MemoryRouter
+        initialEntries={[
+          {
+            pathname: buildPromptTemplateDetailPath(template.id),
+            state: createPromptTemplateNavigationState(listPath),
+          },
+        ]}
+      >
+        <PromptTemplatesProvider repository={createTemplateRepository([template])}>
+          <PromptRunsProvider repository={createRunRepository()}>
+            <Routes>
+              <Route
+                path="/prompts/:promptId"
+                element={<PromptTemplateDetailPage />}
+              />
+              <Route path="/prompts" element={<LocationSearchProbe />} />
+            </Routes>
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Back to list' }));
+
+    expect(screen.getByTestId('location-search')).toHaveTextContent(
+      '?search=Review&tag=review',
+    );
+  });
+
   it('opens a template whose ID contains URL-sensitive characters', () => {
     const template = {
       ...starterPromptTemplates[0]!,

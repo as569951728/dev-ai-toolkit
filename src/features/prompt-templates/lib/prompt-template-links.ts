@@ -1,3 +1,26 @@
+export interface PromptTemplateNavigationState {
+  listPath: string;
+}
+
+export function createPromptTemplateNavigationState(
+  listPath: string,
+): PromptTemplateNavigationState {
+  return { listPath };
+}
+
+export function getPromptTemplateListReturnPath(state: unknown) {
+  if (!state || typeof state !== 'object' || !('listPath' in state)) {
+    return '/prompts';
+  }
+
+  const listPath = state.listPath;
+
+  return typeof listPath === 'string' &&
+    (listPath === '/prompts' || listPath.startsWith('/prompts?'))
+    ? listPath
+    : '/prompts';
+}
+
 export function buildPromptTemplateCreatePath(runId?: string) {
   return runId
     ? `/create-template?runId=${encodeURIComponent(runId)}`

@@ -54,7 +54,9 @@ describe('PromptTemplateListPage', () => {
     mockNavigate.mockReset();
 
     render(
-      <MemoryRouter>
+      <MemoryRouter
+        initialEntries={['/prompts?search=Review&tag=review']}
+      >
         <PromptTemplatesProvider repository={createMemoryRepository([template])}>
           <PromptTemplateListPage />
         </PromptTemplatesProvider>
@@ -64,11 +66,21 @@ describe('PromptTemplateListPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Preview' }));
     expect(mockNavigate).toHaveBeenLastCalledWith(
       '/prompts/imported%2Ftemplate%20%26%20%231',
+      {
+        state: {
+          listPath: '/prompts?search=Review&tag=review',
+        },
+      },
     );
 
     fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
     expect(mockNavigate).toHaveBeenLastCalledWith(
       '/prompts/imported%2Ftemplate%20%26%20%231/edit',
+      {
+        state: {
+          listPath: '/prompts?search=Review&tag=review',
+        },
+      },
     );
 
     fireEvent.click(screen.getByRole('button', { name: 'Open in Playground' }));

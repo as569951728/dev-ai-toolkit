@@ -378,6 +378,44 @@ test('opens an imported template whose ID is new', async ({ page }) => {
   ).toBeVisible();
 });
 
+test('preserves template list filters across preview and editing', async ({
+  page,
+}) => {
+  await page.goto('/prompts');
+  await page.getByLabel('Search prompt templates').fill('Code Review');
+  await page.getByRole('combobox').selectOption('review');
+
+  await expect(page).toHaveURL(
+    /\/prompts\?search=Code\+Review&tag=review$/,
+  );
+
+  const templateCard = page.getByRole('article').filter({
+    has: page.getByRole('heading', { name: 'Code Review Assistant' }),
+  });
+
+  await templateCard.getByRole('button', { name: 'Preview' }).click();
+  await page.getByRole('button', { name: 'Back to list' }).click();
+
+  await expect(page).toHaveURL(
+    /\/prompts\?search=Code\+Review&tag=review$/,
+  );
+  await expect(page.getByLabel('Search prompt templates')).toHaveValue(
+    'Code Review',
+  );
+  await expect(page.getByRole('combobox')).toHaveValue('review');
+
+  await templateCard.getByRole('button', { name: 'Edit' }).click();
+  await page.getByRole('button', { name: 'Back to list' }).click();
+
+  await expect(page).toHaveURL(
+    /\/prompts\?search=Code\+Review&tag=review$/,
+  );
+  await expect(page.getByLabel('Search prompt templates')).toHaveValue(
+    'Code Review',
+  );
+  await expect(page.getByRole('combobox')).toHaveValue('review');
+});
+
 test('restores a historical template as a new current version', async ({
   page,
 }) => {

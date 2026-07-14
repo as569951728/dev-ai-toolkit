@@ -6,6 +6,8 @@ import {
   buildPromptTemplateEditPath,
   buildPromptTemplatePlaygroundPath,
   buildPromptTemplateRunHistoryPath,
+  createPromptTemplateNavigationState,
+  getPromptTemplateListReturnPath,
 } from '@/features/prompt-templates/lib/prompt-template-links';
 
 describe('prompt-template-links', () => {
@@ -32,6 +34,20 @@ describe('prompt-template-links', () => {
     expect(buildPromptTemplateEditPath('template-1')).toBe(
       '/prompts/template-1/edit',
     );
+  });
+
+  it('keeps only Prompt Template list paths as return targets', () => {
+    const listPath = '/prompts?search=review&tag=code&archived=1';
+
+    expect(
+      getPromptTemplateListReturnPath(
+        createPromptTemplateNavigationState(listPath),
+      ),
+    ).toBe(listPath);
+    expect(
+      getPromptTemplateListReturnPath({ listPath: '/runs?search=review' }),
+    ).toBe('/prompts');
+    expect(getPromptTemplateListReturnPath(undefined)).toBe('/prompts');
   });
 
   it('encodes template IDs used in query navigation', () => {
