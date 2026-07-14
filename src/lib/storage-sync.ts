@@ -9,6 +9,16 @@ export function subscribeToStorageKey(
   }
 
   const handleStorageChange = (event: StorageEvent) => {
+    if (event.storageArea) {
+      try {
+        if (event.storageArea !== window.localStorage) {
+          return;
+        }
+      } catch {
+        return;
+      }
+    }
+
     if (event.key === storageKey || event.key === null) {
       onStorageChange();
     }

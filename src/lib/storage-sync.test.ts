@@ -20,9 +20,15 @@ describe('subscribeToStorageKey', () => {
     window.dispatchEvent(
       new StorageEvent('storage', {
         key: 'dev-ai-toolkit.prompt-templates',
+        storageArea: window.localStorage,
       }),
     );
-    window.dispatchEvent(new StorageEvent('storage', { key: null }));
+    window.dispatchEvent(
+      new StorageEvent('storage', {
+        key: null,
+        storageArea: window.localStorage,
+      }),
+    );
     window.dispatchEvent(
       new StorageEvent('storage', { key: 'unrelated-key' }),
     );
@@ -41,6 +47,28 @@ describe('subscribeToStorageKey', () => {
     window.dispatchEvent(
       new StorageEvent('storage', {
         key: 'dev-ai-toolkit.prompt-templates',
+      }),
+    );
+
+    expect(onStorageChange).not.toHaveBeenCalled();
+  });
+
+  it('ignores matching keys from session storage', () => {
+    const onStorageChange = vi.fn();
+    cleanups.push(
+      subscribeToStorageKey('dev-ai-toolkit.prompt-templates', onStorageChange),
+    );
+
+    window.dispatchEvent(
+      new StorageEvent('storage', {
+        key: 'dev-ai-toolkit.prompt-templates',
+        storageArea: window.sessionStorage,
+      }),
+    );
+    window.dispatchEvent(
+      new StorageEvent('storage', {
+        key: null,
+        storageArea: window.sessionStorage,
       }),
     );
 
