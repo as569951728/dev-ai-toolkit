@@ -1,9 +1,9 @@
+import type { PromptRunSortOrder } from '@/features/prompt-runs/lib/prompt-run-history-query';
+
 interface TemplateOption {
   id: string;
   name: string;
 }
-
-export type PromptRunSortOrder = 'newest' | 'oldest';
 
 interface PromptRunHistoryFiltersProps {
   availableTemplates: TemplateOption[];

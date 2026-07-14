@@ -3,12 +3,15 @@ import { Link, useSearchParams } from 'react-router-dom';
 
 import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
 import { PromptRunHistoryCard } from '@/features/prompt-runs/components/prompt-run-history-card';
-import {
-  PromptRunHistoryFilters,
-  type PromptRunSortOrder,
-} from '@/features/prompt-runs/components/prompt-run-history-filters';
+import { PromptRunHistoryFilters } from '@/features/prompt-runs/components/prompt-run-history-filters';
 import { usePromptRunImport } from '@/features/prompt-runs/hooks/use-prompt-run-import';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
+import {
+  buildPromptRunHistorySearchParams,
+  getPromptRunSortOrder,
+  normalizePromptRunHistorySearchParams,
+  type PromptRunSortOrder,
+} from '@/features/prompt-runs/lib/prompt-run-history-query';
 import { buildPromptRunDetailPath } from '@/features/prompt-runs/lib/prompt-run-links';
 import { matchesPromptRunSearch } from '@/features/prompt-runs/lib/prompt-run-search';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
@@ -41,38 +44,20 @@ export function PromptRunHistoryPage() {
     ? requestedTemplateId
     : 'all';
   const searchValue = searchParams.get('q') ?? '';
-  const requestedSortOrder = searchParams.get('order');
-  const sortOrder: PromptRunSortOrder =
-    requestedSortOrder === 'oldest' ? 'oldest' : 'newest';
+  const sortOrder = getPromptRunSortOrder(searchParams);
 
   useEffect(() => {
-    const hasUnsupportedSortOrder =
-      requestedSortOrder !== null && requestedSortOrder !== 'oldest';
-    const hasUnknownTemplateFilter =
-      requestedTemplateId !== 'all' && !hasRequestedTemplate;
+    const normalizedSearchParams = normalizePromptRunHistorySearchParams(
+      searchParams,
+      { hasRequestedTemplate },
+    );
 
-    if (!hasUnsupportedSortOrder && !hasUnknownTemplateFilter) {
+    if (!normalizedSearchParams) {
       return;
     }
 
-    const nextSearchParams = new URLSearchParams(searchParams);
-
-    if (hasUnsupportedSortOrder) {
-      nextSearchParams.delete('order');
-    }
-
-    if (hasUnknownTemplateFilter) {
-      nextSearchParams.delete('templateId');
-    }
-
-    setSearchParams(nextSearchParams, { replace: true });
-  }, [
-    hasRequestedTemplate,
-    requestedSortOrder,
-    requestedTemplateId,
-    searchParams,
-    setSearchParams,
-  ]);
+    setSearchParams(normalizedSearchParams, { replace: true });
+  }, [hasRequestedTemplate, searchParams, setSearchParams]);
 
   const availableTemplates = useMemo(
     () => {
@@ -134,22 +119,14 @@ export function PromptRunHistoryPage() {
     nextSortOrder?: PromptRunSortOrder;
     nextTemplateId?: string;
   }) => {
-    const nextSearchParams = new URLSearchParams();
-    const normalizedNextSearchValue = nextSearchValue.trim();
-
-    if (nextTemplateId !== 'all') {
-      nextSearchParams.set('templateId', nextTemplateId);
-    }
-
-    if (normalizedNextSearchValue) {
-      nextSearchParams.set('q', nextSearchValue);
-    }
-
-    if (nextSortOrder === 'oldest') {
-      nextSearchParams.set('order', 'oldest');
-    }
-
-    setSearchParams(nextSearchParams, { replace: true });
+    setSearchParams(
+      buildPromptRunHistorySearchParams({
+        searchValue: nextSearchValue,
+        sortOrder: nextSortOrder,
+        templateId: nextTemplateId,
+      }),
+      { replace: true },
+    );
   };
 
   const filteredRuns = useMemo(() => {
@@ -280,9 +257,11 @@ export function PromptRunHistoryPage() {
               filteredRunCount={filteredRuns.length}
               onClear={() =>
                 setSearchParams(
-                  sortOrder === 'oldest'
-                    ? new URLSearchParams({ order: 'oldest' })
-                    : new URLSearchParams(),
+                  buildPromptRunHistorySearchParams({
+                    searchValue: '',
+                    sortOrder,
+                    templateId: 'all',
+                  }),
                   { replace: true },
                 )
               }
