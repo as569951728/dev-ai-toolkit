@@ -194,6 +194,19 @@ npm run audit
 | Developer Utilities | Code Viewer | 单栏 / 双栏查看文本和代码输出 | 适合审阅 prompt 或生成结果 |
 | Workspace | Workspace Backup | 导出和导入本地模板、runs、notes 和最近使用模板入口的版本化 JSON | 当前浏览器 profile 的手动备份入口 |
 
+## 数据与隐私
+
+应用不会把 prompt 模板、已保存 runs、notes 或生成的请求代码发送到项目后端。
+持久化的工作流数据会留在当前浏览器 profile 中，直到你主动导出或删除。
+
+应用内部打开 `Prompt Diff` 和 `Code Viewer` 时，会通过浏览器 history state
+传递 prompt 或请求内容，而不是把正文放进 URL。已保存 run 的链接只携带 run ID，
+具体内容从本地存储读取。旧版带正文参数的链接仍可打开，但页面读取后会从当前
+地址中移除这些参数。
+
+本地优先不等于加密存储。能够访问当前浏览器 profile 或开发者工具的人，可能读到
+其中的数据。不要在工作区中保存生产环境密钥、访问令牌或其他敏感凭据。
+
 ## 典型使用路径
 
 当前比较完整的一条路径是：
