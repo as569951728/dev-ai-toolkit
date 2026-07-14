@@ -4,6 +4,12 @@ This roadmap captures the current implementation direction after the June 2026
 project review. It is intentionally practical: it should help decide what to
 build next, what to postpone, and how to keep the project maintainable.
 
+The dated [project review action plan](./maintenance/2026-07-14-project-review-action-plan.md)
+tracks immediate maintenance work. Use the
+[v0.2.0 release checklist](./maintenance/v0.2.0-release-readiness.md) for release
+decisions and the [issue triage ledger](./maintenance/issue-triage-ledger.md) when
+reconciling GitHub Issues with the current codebase.
+
 ## Current Direction
 
 `dev-ai-toolkit` should be treated as a local-first prompt workflow manager for
