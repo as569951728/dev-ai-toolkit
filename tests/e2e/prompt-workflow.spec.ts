@@ -230,6 +230,9 @@ test('opens a saved prompt in Code Viewer without exposing it in the URL', async
   await page.getByLabel('Change Scope').fill('private saved review');
   await page.getByRole('button', { name: 'Save prompt snapshot' }).click();
   await page.getByRole('link', { name: 'Open saved run' }).click();
+  await page.getByRole('link', { name: 'Back to Run History' }).click();
+  await page.getByLabel('Search runs').fill('private saved review');
+  await page.getByRole('link', { name: 'View details' }).click();
   await page
     .getByRole('link', { name: 'Open saved prompts in Code Viewer' })
     .click();
@@ -243,6 +246,14 @@ test('opens a saved prompt in Code Viewer without exposing it in the URL', async
     'Loaded saved prompts from Code Review Assistant.',
   );
   await expect(page.getByLabel('Right input')).toContainText(
+    'private saved review',
+  );
+
+  await page.getByRole('link', { name: 'Back to saved run' }).click();
+  await page.getByRole('link', { name: 'Back to Run History' }).click();
+
+  await expect(page).toHaveURL(/\/runs\?q=private\+saved\+review$/);
+  await expect(page.getByLabel('Search runs')).toHaveValue(
     'private saved review',
   );
 });

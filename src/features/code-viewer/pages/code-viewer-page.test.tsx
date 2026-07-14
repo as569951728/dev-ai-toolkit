@@ -18,6 +18,7 @@ import { createCodeViewerNavigationState } from '@/features/code-viewer/lib/code
 import { codeViewerSampleLeft } from '@/features/code-viewer/lib/code-viewer-utils';
 import { CodeViewerPage } from '@/features/code-viewer/pages/code-viewer-page';
 import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs-provider';
+import { createPromptRunDetailNavigationState } from '@/features/prompt-runs/lib/prompt-run-links';
 import type { PromptRunRepository } from '@/features/prompt-runs/repositories/prompt-run-repository';
 import type { PromptRunRecord } from '@/types/prompt-run';
 
@@ -48,6 +49,7 @@ function renderCodeViewer(
               </>
             }
           />
+          <Route path="/runs/:runId" element={<LocationStateProbe />} />
         </Routes>
       </PromptRunsProvider>
     </MemoryRouter>,
@@ -58,6 +60,12 @@ function LocationProbe() {
   const location = useLocation();
 
   return <div data-testid="location-search">{location.search}</div>;
+}
+
+function LocationStateProbe() {
+  const location = useLocation();
+
+  return <div data-testid="location-state">{JSON.stringify(location.state)}</div>;
 }
 
 describe('CodeViewerPage', () => {
@@ -165,7 +173,16 @@ describe('CodeViewerPage', () => {
       createdAt: '2026-07-13T08:00:00.000Z',
     };
 
-    renderCodeViewer('/code-viewer?runId=imported%2Frun%20%231', [run]);
+    const historyPath = '/runs?templateId=template-1&q=private';
+
+    renderCodeViewer(
+      {
+        pathname: '/code-viewer',
+        search: '?runId=imported%2Frun%20%231',
+        state: createPromptRunDetailNavigationState(historyPath),
+      },
+      [run],
+    );
 
     expect(screen.getByRole('textbox', { name: 'Left input' })).toHaveValue(
       'Private saved system prompt.',
@@ -180,6 +197,12 @@ describe('CodeViewerPage', () => {
     expect(
       screen.getByRole('link', { name: 'Back to saved run' }),
     ).toHaveAttribute('href', '/runs/imported%2Frun%20%231');
+
+    fireEvent.click(screen.getByRole('link', { name: 'Back to saved run' }));
+
+    expect(screen.getByTestId('location-state')).toHaveTextContent(
+      JSON.stringify(createPromptRunDetailNavigationState(historyPath)),
+    );
   });
 
   it('keeps the sample workspace available when a saved run is missing', () => {

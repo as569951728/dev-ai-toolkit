@@ -16,7 +16,11 @@ import {
   type CodeViewerMode,
 } from '@/features/code-viewer/lib/code-viewer-utils';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
-import { buildPromptRunDetailPath } from '@/features/prompt-runs/lib/prompt-run-links';
+import {
+  buildPromptRunDetailPath,
+  createPromptRunDetailNavigationState,
+  getPromptRunHistoryReturnPath,
+} from '@/features/prompt-runs/lib/prompt-run-links';
 import { writeClipboardText } from '@/lib/clipboard';
 
 type CodeViewerWorkspaceProps = {
@@ -24,6 +28,7 @@ type CodeViewerWorkspaceProps = {
   initialLanguage: CodeViewerLanguage;
   initialLeftValue: string;
   initialRightValue: string;
+  historyPath: string;
   loadNotice: string | null;
   sourceRun: {
     id: string;
@@ -41,6 +46,7 @@ function CodeViewerWorkspace({
   initialLanguage,
   initialLeftValue,
   initialRightValue,
+  historyPath,
   loadNotice,
   sourceRun,
 }: CodeViewerWorkspaceProps) {
@@ -79,7 +85,10 @@ function CodeViewerWorkspace({
       {sourceRun ? (
         <p className="status-banner" role="status">
           Loaded saved prompts from {sourceRun.templateName}.{' '}
-          <Link to={buildPromptRunDetailPath(sourceRun.id)}>
+          <Link
+            state={createPromptRunDetailNavigationState(historyPath)}
+            to={buildPromptRunDetailPath(sourceRun.id)}
+          >
             Back to saved run
           </Link>
         </p>
@@ -161,6 +170,7 @@ function CodeViewerWorkspace({
 
 export function CodeViewerPage() {
   const location = useLocation();
+  const historyPath = getPromptRunHistoryReturnPath(location.state);
   const [searchParams, setSearchParams] = useSearchParams();
   const { getRunById } = usePromptRuns();
   const requestedRunId = searchParams.get('runId');
@@ -244,6 +254,7 @@ export function CodeViewerPage() {
       initialLanguage={initialLanguage}
       initialLeftValue={initialLeftValue}
       initialRightValue={initialRightValue}
+      historyPath={historyPath}
       loadNotice={loadNotice}
       sourceRun={sourceRun}
     />

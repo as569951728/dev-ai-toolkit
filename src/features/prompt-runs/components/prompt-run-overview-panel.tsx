@@ -85,6 +85,7 @@ export function PromptRunOverviewPanel({
         </Link>
         <Link
           className="ghost-button"
+          state={createPromptRunDetailNavigationState(historyPath)}
           to={buildPromptRunCodeViewerPath(run.id)}
         >
           Open saved prompts in Code Viewer

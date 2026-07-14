@@ -282,6 +282,22 @@ describe('PromptRunHistoryPage', () => {
     );
   });
 
+  it('keeps the current filters as navigation state on Code Viewer links', () => {
+    const historyPath = `/runs?templateId=${starterPromptTemplates[1]!.id}&q=System`;
+
+    renderRunHistory({ initialEntry: historyPath });
+
+    fireEvent.click(
+      screen.getByRole('link', {
+        name: 'Open saved prompts in Code Viewer',
+      }),
+    );
+
+    expect(screen.getByTestId('location-state')).toHaveTextContent(
+      JSON.stringify({ historyPath }),
+    );
+  });
+
   it('copies a full saved prompt from the history card', async () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     Object.defineProperty(navigator, 'clipboard', {
