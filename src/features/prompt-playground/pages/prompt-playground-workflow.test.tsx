@@ -63,6 +63,7 @@ function LocationProbe() {
     <>
       <div data-testid="location-pathname">{location.pathname}</div>
       <div data-testid="location-search">{location.search}</div>
+      <div data-testid="location-state">{JSON.stringify(location.state)}</div>
     </>
   );
 }
@@ -453,15 +454,16 @@ describe('Prompt playground workflow', () => {
     });
     fireEvent.click(screen.getByRole('button', { name: 'Review in Prompt Diff' }));
 
-    const promptDiffParams = new URLSearchParams(
-      screen.getByTestId('location-search').textContent ?? '',
-    );
+    const promptDiffState = JSON.parse(
+      screen.getByTestId('location-state').textContent ?? 'null',
+    ) as { promptDiff: { left: string; right: string } };
 
     expect(screen.getByTestId('location-pathname')).toHaveTextContent(
       '/prompt-diff',
     );
-    expect(promptDiffParams.get('left')).toContain('{{repository_name}}');
-    expect(promptDiffParams.get('right')).toContain('dev-ai-toolkit');
+    expect(screen.getByTestId('location-search')).toBeEmptyDOMElement();
+    expect(promptDiffState.promptDiff.left).toContain('{{repository_name}}');
+    expect(promptDiffState.promptDiff.right).toContain('dev-ai-toolkit');
 
     cleanup();
 

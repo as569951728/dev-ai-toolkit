@@ -175,6 +175,27 @@ test('compares a saved prompt without exposing prompt text in the URL', async ({
   );
 });
 
+test('reviews a composed prompt without exposing prompt text in the URL', async ({
+  page,
+}) => {
+  await page.goto('/playground?templateId=code-review-assistant');
+
+  await page.getByLabel('Repository Name').fill('dev-ai-toolkit');
+  await page.getByLabel('Change Scope').fill('private draft comparison');
+  await page.getByRole('button', { name: 'Review in Prompt Diff' }).click();
+
+  await expect(page).toHaveURL(/\/prompt-diff$/);
+  await expect(page.getByLabel('Original prompt')).toContainText(
+    '{{repository_name}}',
+  );
+  await expect(page.getByLabel('Revised prompt')).toContainText(
+    'dev-ai-toolkit',
+  );
+  await expect(page.getByLabel('Revised prompt')).toContainText(
+    'private draft comparison',
+  );
+});
+
 test('resolves dotted template variables in the Playground', async ({
   page,
 }) => {

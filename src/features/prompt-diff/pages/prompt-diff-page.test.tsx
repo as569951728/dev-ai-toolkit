@@ -1,7 +1,9 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import type { MemoryRouterProps } from 'react-router-dom';
 
+import { createPromptDiffNavigationState } from '@/features/prompt-diff/lib/prompt-diff-navigation';
 import { PromptDiffPage } from '@/features/prompt-diff/pages/prompt-diff-page';
 import { promptDiffSampleLeft } from '@/features/prompt-diff/lib/prompt-diff-utils';
 import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs-provider';
@@ -76,7 +78,7 @@ function createTemplateRepository(
 }
 
 function renderPromptDiff(
-  initialEntry: string,
+  initialEntry: NonNullable<MemoryRouterProps['initialEntries']>[number],
   {
     runs = [],
     templates = [],
@@ -124,6 +126,23 @@ describe('PromptDiffPage', () => {
 
     expect(originalPromptInput).toHaveValue(rightPrompt);
     expect(revisedPromptInput).toHaveValue(leftPrompt);
+  });
+
+  it('loads prompt comparisons from router state', () => {
+    renderPromptDiff({
+      pathname: '/prompt-diff',
+      state: createPromptDiffNavigationState({
+        left: 'Private original prompt',
+        right: 'Private revised prompt',
+      }),
+    });
+
+    expect(screen.getByRole('textbox', { name: 'Original prompt' })).toHaveValue(
+      'Private original prompt',
+    );
+    expect(screen.getByRole('textbox', { name: 'Revised prompt' })).toHaveValue(
+      'Private revised prompt',
+    );
   });
 
   it('loads a saved run comparison from local data', () => {

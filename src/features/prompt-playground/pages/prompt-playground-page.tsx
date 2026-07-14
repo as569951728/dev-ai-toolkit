@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { buildCodeViewerUrl } from '@/features/code-viewer/lib/code-viewer-utils';
+import { createPromptDiffNavigationState } from '@/features/prompt-diff/lib/prompt-diff-navigation';
 import { PromptPlaygroundPreview } from '@/features/prompt-playground/components/prompt-playground-preview';
 import { PromptPlaygroundTemplatePicker } from '@/features/prompt-playground/components/prompt-playground-template-picker';
 import { PromptPlaygroundVariableForm } from '@/features/prompt-playground/components/prompt-playground-variable-form';
@@ -206,11 +207,12 @@ function PromptPlaygroundWorkspace({
             });
           }}
           onReviewInPromptDiff={() => {
-            const params = new URLSearchParams({
-              left: originalPromptText,
-              right: generatedPromptText,
+            navigate('/prompt-diff', {
+              state: createPromptDiffNavigationState({
+                left: originalPromptText,
+                right: generatedPromptText,
+              }),
             });
-            navigate(`/prompt-diff?${params.toString()}`);
           }}
           onOpenInCodeViewer={() => {
             navigate(

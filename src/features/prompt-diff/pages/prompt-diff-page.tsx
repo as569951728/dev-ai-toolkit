@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 
 import { PromptDiffEditorPanel } from '@/features/prompt-diff/components/prompt-diff-editor-panel';
 import { PromptDiffSummary } from '@/features/prompt-diff/components/prompt-diff-summary';
 import { PromptDiffToolbar } from '@/features/prompt-diff/components/prompt-diff-toolbar';
+import { readPromptDiffNavigationState } from '@/features/prompt-diff/lib/prompt-diff-navigation';
 import {
   promptDiffSampleLeft,
   promptDiffSampleRight,
@@ -145,6 +146,7 @@ function PromptDiffWorkspace({
 }
 
 export function PromptDiffPage() {
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const { getRunById } = usePromptRuns();
   const { getTemplateById } = usePromptTemplates();
@@ -156,17 +158,26 @@ export function PromptDiffPage() {
   const savedComparison = requestedRun
     ? resolvePromptRunSourceDiff({ run: requestedRun, sourceTemplate })
     : null;
+  const navigationComparison = requestedRunId
+    ? null
+    : readPromptDiffNavigationState(location.state);
   const initialLeftValue = savedComparison
     ? savedComparison.left
     : requestedRunId
       ? promptDiffSampleLeft
-      : searchParams.get('left') ?? promptDiffSampleLeft;
+      : navigationComparison?.left ??
+        searchParams.get('left') ??
+        promptDiffSampleLeft;
   const initialRightValue = savedComparison
     ? savedComparison.right
     : requestedRunId
       ? promptDiffSampleRight
-      : searchParams.get('right') ?? promptDiffSampleRight;
-  const workspaceKey = searchParams.toString() || 'default-prompt-diff';
+      : navigationComparison?.right ??
+        searchParams.get('right') ??
+        promptDiffSampleRight;
+  const workspaceKey = navigationComparison
+    ? location.key
+    : searchParams.toString() || 'default-prompt-diff';
   const sourceRun =
     savedComparison && requestedRun
       ? {
