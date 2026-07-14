@@ -98,6 +98,20 @@ function normalizeRevisions(
   return revisions.length > 0 ? revisions : undefined;
 }
 
+function hasSameTemplateContent(
+  template: PromptTemplate,
+  input: PromptTemplateInput,
+) {
+  return (
+    template.name === input.name &&
+    template.description === input.description &&
+    template.systemPrompt === input.systemPrompt &&
+    template.userPrompt === input.userPrompt &&
+    template.tags.length === input.tags.length &&
+    template.tags.every((tag, index) => tag === input.tags[index])
+  );
+}
+
 function normalizePromptTemplate(
   value: unknown,
   existingTemplate?: PromptTemplate,
@@ -120,26 +134,47 @@ function normalizePromptTemplate(
   const updatedAtValue = normalizeOptionalIsoDate(value.updatedAt);
   const archivedAtValue = normalizeOptionalIsoDate(value.archivedAt);
   const providedVersion =
-    isRecord(value) && typeof value.version === 'number' ? value.version : undefined;
+    typeof value.version === 'number' &&
+    Number.isInteger(value.version) &&
+    value.version > 0
+      ? value.version
+      : undefined;
   const providedRevisions = normalizeRevisions(value.revisions);
-
-  return ensurePromptTemplateVersioning({
-    id: providedId || existingTemplate?.id || createTemplateId(name),
+  const input: PromptTemplateInput = {
     name,
     description,
     systemPrompt,
     userPrompt,
     tags,
-    version: providedVersion ?? existingTemplate?.version,
-    revisions: providedRevisions ?? existingTemplate?.revisions,
+  };
+  const lightweightUpdateSource =
+    existingTemplate !== undefined &&
+    providedVersion === undefined &&
+    providedRevisions === undefined
+      ? existingTemplate
+      : null;
+  const shouldAppendRevision =
+    lightweightUpdateSource !== null &&
+    !hasSameTemplateContent(lightweightUpdateSource, input);
+  const updatedAt =
+    lightweightUpdateSource !== null && !shouldAppendRevision
+      ? lightweightUpdateSource.updatedAt
+      : updatedAtValue ?? existingTemplate?.updatedAt ?? new Date().toISOString();
+
+  return ensurePromptTemplateVersioning({
+    id: providedId || existingTemplate?.id || createTemplateId(name),
+    ...input,
+    version: shouldAppendRevision
+      ? lightweightUpdateSource.version + 1
+      : providedVersion ?? existingTemplate?.version,
+    revisions: shouldAppendRevision
+      ? lightweightUpdateSource.revisions
+      : providedRevisions ?? existingTemplate?.revisions,
     archivedAt:
       value.archivedAt === null
         ? null
         : archivedAtValue ?? existingTemplate?.archivedAt ?? null,
-    updatedAt:
-      updatedAtValue ??
-      existingTemplate?.updatedAt ??
-      new Date().toISOString(),
+    updatedAt,
   });
 }
 

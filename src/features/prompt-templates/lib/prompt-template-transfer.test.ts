@@ -263,6 +263,7 @@ describe('prompt-template-transfer', () => {
           systemPrompt: archivedTemplate.systemPrompt,
           userPrompt: archivedTemplate.userPrompt,
           tags: archivedTemplate.tags,
+          updatedAt: '2026-05-04T08:00:00.000Z',
         },
       ]),
       [archivedTemplate],
@@ -277,12 +278,67 @@ describe('prompt-template-transfer', () => {
     expect(result.importedTemplates[0]).toMatchObject({
       id: archivedTemplate.id,
       archivedAt: archivedTemplate.archivedAt,
-      version: archivedTemplate.version,
-      updatedAt: archivedTemplate.updatedAt,
+      version: archivedTemplate.version + 1,
+      updatedAt: '2026-05-04T08:00:00.000Z',
     });
     expect(
       mergePromptTemplates([archivedTemplate], result.importedTemplates),
     ).toHaveLength(1);
+  });
+
+  it('appends a revision when a lightweight import updates an existing template', () => {
+    const result = parsePromptTemplateImport(
+      JSON.stringify([
+        {
+          id: existingApiTemplate.id,
+          name: existingApiTemplate.name,
+          description: 'Updated from a lightweight template file.',
+          systemPrompt: existingApiTemplate.systemPrompt,
+          userPrompt: `${existingApiTemplate.userPrompt}\nInclude migration risks.`,
+          tags: [...existingApiTemplate.tags, 'migration'],
+          updatedAt: '2026-05-05T00:00:00.000Z',
+        },
+      ]),
+      [existingApiTemplate],
+    );
+
+    const importedTemplate = result.importedTemplates[0]!;
+
+    expect(importedTemplate.version).toBe(existingApiTemplate.version + 1);
+    expect(importedTemplate.revisions).toHaveLength(
+      existingApiTemplate.revisions.length + 1,
+    );
+    expect(importedTemplate.revisions[0]).toEqual(
+      existingApiTemplate.revisions[0],
+    );
+    expect(importedTemplate.revisions.at(-1)).toMatchObject({
+      version: existingApiTemplate.version + 1,
+      description: 'Updated from a lightweight template file.',
+      updatedAt: '2026-05-05T00:00:00.000Z',
+    });
+  });
+
+  it('does not append a revision when lightweight imported content is unchanged', () => {
+    const result = parsePromptTemplateImport(
+      JSON.stringify([
+        {
+          id: existingApiTemplate.id,
+          name: existingApiTemplate.name,
+          description: existingApiTemplate.description,
+          systemPrompt: existingApiTemplate.systemPrompt,
+          userPrompt: existingApiTemplate.userPrompt,
+          tags: existingApiTemplate.tags,
+          updatedAt: '2026-05-05T00:00:00.000Z',
+        },
+      ]),
+      [existingApiTemplate],
+    );
+
+    expect(result.importedTemplates[0]).toMatchObject({
+      version: existingApiTemplate.version,
+      revisions: existingApiTemplate.revisions,
+      updatedAt: existingApiTemplate.updatedAt,
+    });
   });
 
   it('normalizes archived template state from imported payloads', () => {
