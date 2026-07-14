@@ -383,7 +383,7 @@ test('preserves template list filters across preview and editing', async ({
 }) => {
   await page.goto('/prompts');
   await page.getByLabel('Search prompt templates').fill('Code Review');
-  await page.getByRole('combobox').selectOption('review');
+  await page.getByRole('combobox', { name: /^Tag$/ }).selectOption('review');
 
   await expect(page).toHaveURL(
     /\/prompts\?search=Code\+Review&tag=review$/,
@@ -402,7 +402,9 @@ test('preserves template list filters across preview and editing', async ({
   await expect(page.getByLabel('Search prompt templates')).toHaveValue(
     'Code Review',
   );
-  await expect(page.getByRole('combobox')).toHaveValue('review');
+  await expect(page.getByRole('combobox', { name: /^Tag$/ })).toHaveValue(
+    'review',
+  );
 
   await templateCard.getByRole('button', { name: 'Edit' }).click();
   await page.getByRole('button', { name: 'Back to list' }).click();
@@ -413,7 +415,9 @@ test('preserves template list filters across preview and editing', async ({
   await expect(page.getByLabel('Search prompt templates')).toHaveValue(
     'Code Review',
   );
-  await expect(page.getByRole('combobox')).toHaveValue('review');
+  await expect(page.getByRole('combobox', { name: /^Tag$/ })).toHaveValue(
+    'review',
+  );
 });
 
 test('restores a historical template as a new current version', async ({

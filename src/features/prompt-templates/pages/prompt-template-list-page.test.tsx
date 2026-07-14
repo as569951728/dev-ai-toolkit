@@ -46,6 +46,20 @@ afterEach(() => {
 });
 
 describe('PromptTemplateListPage', () => {
+  it('gives the tag filter a stable accessible name', () => {
+    render(
+      <MemoryRouter>
+        <PromptTemplatesProvider repository={createMemoryRepository()}>
+          <PromptTemplateListPage />
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    expect(
+      screen.getByRole('combobox', { name: /^Tag$/ }),
+    ).toBeInTheDocument();
+  });
+
   it('encodes imported template IDs in detail and edit navigation', () => {
     const template = {
       ...starterPromptTemplates[0]!,
