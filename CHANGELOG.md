@@ -65,6 +65,8 @@ The format is intentionally lightweight and human-readable.
 
 ### Fixed
 
+- Improved keyboard navigation with a skip link, visible focus treatment,
+  reduced-motion handling, and one page-level heading per route
 - Preserved active Prompt Template and Run History filters across detail, edit,
   Prompt Diff, JSON Tools, and Code Viewer round trips
 - Removed inactive or invalid list filters from shareable Prompt Template and

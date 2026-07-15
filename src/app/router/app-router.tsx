@@ -32,13 +32,18 @@ function RootLayout() {
       <PromptRunsProvider>
         <PromptRunNotesProvider>
           <ScrollToTop />
-          <main className="app-shell">
+          <a className="skip-link" href="#main-content">
+            Skip to main content
+          </a>
+          <div className="app-shell">
             <div className="page-frame">
               <AppNavigation />
-              <BrowserStorageNotice />
-              <Outlet />
+              <main id="main-content" tabIndex={-1}>
+                <BrowserStorageNotice />
+                <Outlet />
+              </main>
             </div>
-          </main>
+          </div>
         </PromptRunNotesProvider>
       </PromptRunsProvider>
     </PromptTemplatesProvider>
