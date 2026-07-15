@@ -2,7 +2,7 @@
 
 **Status:** Active
 **Last updated:** 2026-07-15
-**Open-issue snapshot:** 39
+**Open-issue snapshot:** 29
 
 GitHub Issues remains the source of truth. This ledger defines how the current
 backlog is reviewed without bulk-closing work or treating commit messages as
@@ -172,6 +172,26 @@ Playground fallback feedback. All were rechecked on current `main`.
 | [#79](https://github.com/as569951728/dev-ai-toolkit/issues/79#issuecomment-4976972763) Unchanged note writes | `a684a2c` | `close-implemented` | Unchanged and blank no-op saves preserve timestamps and avoid repository writes. |
 | [#80](https://github.com/as569951728/dev-ai-toolkit/issues/80#issuecomment-4976972807) Template import semantics | `e3c7b10` | `close-implemented` | Matching-ID replacement behavior is visible before the file picker opens. |
 
+## Eighth Triage Session
+
+The eighth set covered the next ten Batch C issues. One historical documentation
+issue described a single-tab model; its evidence records both the original fix
+and the later cross-tab refresh behavior so the current limitation is not
+misrepresented.
+
+| Issue | Implementation | Decision | Verification evidence |
+| --- | --- | --- | --- |
+| [#81](https://github.com/as569951728/dev-ai-toolkit/issues/81#issuecomment-4977011798) Browser-tab storage model | `27f9817`, `6779841` | `close-implemented` | Current docs describe cross-tab refresh and the remaining last-write-wins limitation instead of restoring obsolete single-tab wording. |
+| [#82](https://github.com/as569951728/dev-ai-toolkit/issues/82#issuecomment-4977011827) Missing template details | `44e52be` | `close-implemented` | Missing detail links show the local-data explanation and a return action without redirecting silently. |
+| [#83](https://github.com/as569951728/dev-ai-toolkit/issues/83#issuecomment-4977011796) Unsaved changes focus | `8a78879` | `close-implemented` | The named dialog focuses Continue editing while preserving stay, discard, save, and unload behavior. |
+| [#84](https://github.com/as569951728/dev-ai-toolkit/issues/84#issuecomment-4977011793) Run import confirmation | `b5ba362` | `close-implemented` | Conflicting runs and notes remain unchanged until the user confirms replacement. |
+| [#85](https://github.com/as569951728/dev-ai-toolkit/issues/85#issuecomment-4977011771) Run note draft protection | `6ca2c2e` | `close-implemented` | Internal navigation, unload, continue, discard, and confirmed deletion paths are covered. |
+| [#86](https://github.com/as569951728/dev-ai-toolkit/issues/86#issuecomment-4977011843) Workspace import preview | `303e4c5` | `close-implemented` | Valid backups show collection effects before writes; cancel, confirm, and invalid input remain distinct. |
+| [#87](https://github.com/as569951728/dev-ai-toolkit/issues/87#issuecomment-4977011790) Duplicate template IDs | `55d0306` | `close-implemented` | Duplicate and invalid counts are separate while the last valid template remains authoritative. |
+| [#88](https://github.com/as569951728/dev-ai-toolkit/issues/88#issuecomment-4977011854) Imported template ID normalization | `6bb765d` | `close-implemented` | Trimmed IDs match existing records and retain version and archive fallbacks. |
+| [#89](https://github.com/as569951728/dev-ai-toolkit/issues/89#issuecomment-4977011834) Duplicate workspace records | `516b1a7` | `close-implemented` | Duplicate primary records and note run IDs are rejected before preview. |
+| [#90](https://github.com/as569951728/dev-ai-toolkit/issues/90#issuecomment-4977011788) Workspace preview docs | `18db17f` | `close-implemented` | Docs match validation, confirmation, unique-key, and recent-shortcut behavior. |
+
 ## Remaining Review Batches
 
 Process no more than ten issues in one maintenance session. The ranges are
@@ -181,7 +201,7 @@ organizational only; they do not imply a shared disposition.
 | --- | --- | --- |
 | A | Complete | Reopen only if current behavior no longer matches the recorded evidence |
 | B | Complete | Reopen only if current behavior no longer matches the recorded evidence |
-| C | Remaining open issues in #81-#95: editor safety, imports, confirmations, and browser coverage | Separate behavior bugs from documentation or test follow-up |
+| C | Remaining open issues in #91-#95: missing routes, confirmation focus, and revision restores | Separate behavior bugs from documentation or test follow-up |
 | D | Remaining open issues in #96-#119: navigation, identifiers, reuse, and tool handoffs | Check recent commits and close only after end-to-end verification |
 | E | #14 and uncategorized maintenance items | Keep deployment and release blockers visible |
 
@@ -215,3 +235,4 @@ evidence.
 | 2026-07-15 | #57 through #66 | 10 `close-implemented` | npm registry check, 0 audit findings, 62 files with 401 coverage tests, production build, 28 Chromium tests, and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29389260195) on `b913164` | Finish Batch B with #67 through #69 |
 | 2026-07-15 | #67 through #69 | 3 `close-implemented` | 8 focused files with 95 passing tests and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29389547947) with 401 coverage tests, build, and 28 Chromium tests on `0532c0e` | Batch C |
 | 2026-07-15 | #70, #71, #72, #73, #75 through #80 | 10 `close-implemented` | 6 focused files with 68 passing tests, 2 focused Chromium scenarios, and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29389836302) with 401 coverage tests and 28 browser tests on `cd996bf` | Continue Batch C with no more than 10 open issues |
+| 2026-07-15 | #81 through #90 | 10 `close-implemented` | 8 focused files with 125 passing tests, 4 focused Chromium scenarios, and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29390151825) with 401 coverage tests and 28 browser tests on `35acea9` | Finish Batch C with #91 through #95 |
