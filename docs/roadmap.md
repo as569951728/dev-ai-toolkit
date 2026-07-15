@@ -24,43 +24,18 @@ JSON Tools, API Builder, Prompt Diff, and Code Viewer remain supporting
 utilities. New work should connect to the prompt workflow or solve a demonstrated
 local development need.
 
-## v0.2.0
+## Released Baseline: v0.2.0
 
-The [`v0.2.0` milestone](https://github.com/as569951728/dev-ai-toolkit/milestone/1)
-is due on 2026-08-12. It is a maintenance release, not a platform expansion.
+[`v0.2.0`](https://github.com/as569951728/dev-ai-toolkit/releases/tag/v0.2.0)
+was published on 2026-07-15. It established the local template-to-review
+workflow, workspace backup and recovery boundaries, and the protected release
+checks that future changes build on.
 
-### Release Confidence
-
-- Finish evidence-based triage of the pre-release issue backlog.
-- Verify setup instructions from a clean checkout on a supported Node.js version.
-- Select one protected `main` commit and run the complete audit, lint, coverage,
-  build, and browser suite against that exact SHA.
-- Match the release tag, GitHub Release, CI run, and public Vercel deployment to
-  the same commit.
-
-### Local Data Safety
-
-- Recheck compatibility with the data format used by `v0.1.0`.
-- Verify template, run, note, and workspace import validation on the candidate.
-- Confirm workspace export can restore the candidate's supported collections.
-- Keep recovery and rollback boundaries documented where automatic restoration
-  cannot be guaranteed.
-
-### Documentation And Access
-
-- Keep English and Simplified Chinese README files aligned with the current UI.
-- Keep README focused on setup and the core workflow, Changelog focused on
-  user-visible changes, and this roadmap focused on future outcomes.
-- Re-run keyboard skip navigation, visible focus, heading structure, and reduced
-  motion checks on the release candidate.
-- Publish release notes with current features, known limitations, and next steps
-  without adoption or performance claims.
-
-### Exit Criteria
-
-`v0.2.0` is ready only when every hard gate in the
-[release readiness checklist](./maintenance/v0.2.0-release-readiness.md) has
-evidence from one candidate SHA. A failed gate keeps the release blocked.
+The [release notes](./releases/v0.2.0.md) describe the shipped behavior and
+known limitations. The closed
+[`v0.2.0` milestone](https://github.com/as569951728/dev-ai-toolkit/milestone/1)
+and [release readiness record](./maintenance/v0.2.0-release-readiness.md) retain
+the detailed issue and verification evidence.
 
 ## After v0.2.0
 
