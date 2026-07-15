@@ -1,5 +1,20 @@
 import { expect, test } from '@playwright/test';
 
+test('starts the seeded prompt workflow from the overview', async ({ page }) => {
+  await page.goto('/');
+  await page
+    .getByRole('link', { name: 'Open Code Review Assistant' })
+    .click();
+
+  await expect(page).toHaveURL(
+    /\/playground\?templateId=code-review-assistant$/,
+  );
+  await expect(page.getByLabel('Active template')).toHaveValue(
+    'code-review-assistant',
+  );
+  await expect(page.getByLabel('Repository Name')).toBeVisible();
+});
+
 test('saves a prompt snapshot and protects its review note draft', async ({
   context,
   page,

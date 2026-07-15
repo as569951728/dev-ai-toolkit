@@ -37,10 +37,16 @@ function createRunRepository(
   };
 }
 
-function renderHomePage({ runs = [] }: { runs?: PromptRunRecord[] } = {}) {
+function renderHomePage({
+  runs = [],
+  templates = starterPromptTemplates,
+}: {
+  runs?: PromptRunRecord[];
+  templates?: PromptTemplate[];
+} = {}) {
   render(
     <MemoryRouter>
-      <PromptTemplatesProvider repository={createTemplateRepository()}>
+      <PromptTemplatesProvider repository={createTemplateRepository(templates)}>
         <PromptRunsProvider repository={createRunRepository(runs)}>
           <HomePage />
         </PromptRunsProvider>
@@ -64,6 +70,34 @@ describe('HomePage', () => {
     ).toBeInTheDocument();
     expect(screen.getByText('Template to Snapshot')).toBeInTheDocument();
     expect(screen.getByText('Prompt workflow foundation')).toBeInTheDocument();
+  });
+
+  it('opens the first active template from the primary action', () => {
+    renderHomePage({
+      templates: [
+        {
+          ...starterPromptTemplates[0]!,
+          archivedAt: '2026-05-08T09:00:00.000Z',
+          updatedAt: '2026-05-08T09:00:00.000Z',
+        },
+        starterPromptTemplates[1]!,
+      ],
+    });
+
+    expect(
+      screen.getByRole('link', { name: 'Open API Design Partner' }),
+    ).toHaveAttribute('href', '/playground?templateId=api-design-partner');
+    expect(
+      screen.getByRole('link', { name: 'Manage prompt templates' }),
+    ).toHaveAttribute('href', '/prompts');
+  });
+
+  it('offers template creation when no active template is available', () => {
+    renderHomePage({ templates: [] });
+
+    expect(
+      screen.getByRole('link', { name: 'Create first template' }),
+    ).toHaveAttribute('href', '/create-template');
   });
 
   it('describes API Builder outputs consistently with the current module', () => {

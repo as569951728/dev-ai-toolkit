@@ -10,6 +10,8 @@ commit.
 
 - Added a privacy-aware workflow feedback link from every application route to
   the dedicated GitHub feedback form.
+- Added a direct Overview action into the first available prompt template,
+  with template creation as the empty-workspace fallback.
 
 ### Fixed
 
