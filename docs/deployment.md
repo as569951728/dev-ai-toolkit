@@ -12,6 +12,8 @@ This project can be deployed to Vercel as a static Vite application.
   2026-07-15
 - Production deployment `dpl_5urjtm6eaMvLptwTh4tETaTj8gXc` serves application
   revision [`8ed3825`](https://github.com/as569951728/dev-ai-toolkit/commit/8ed3825fcf007bfa2965da015ec7066f437797b3)
+- This revision is the source of the published
+  [`v0.2.0` release](https://github.com/as569951728/dev-ai-toolkit/releases/tag/v0.2.0)
 - The verification covered template creation, Playground composition, saving
   and opening a run, refreshing its nested route, and workspace export
 - Vercel did not add a record to the repository's GitHub Deployments API, so
