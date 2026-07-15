@@ -59,7 +59,7 @@ export function BrowserStorageNotice({
         reloadPage();
       } catch {
         setActionError(
-          'The unreadable browser data could not be reset. It has not been replaced.',
+          'The unreadable browser data could not be fully reset. It remains available for download in this session.',
         );
         setIsResetConfirmationOpen(false);
       }

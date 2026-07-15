@@ -186,8 +186,26 @@ export function resetLocalStorageReadIssues(
     throw new Error('Browser storage cannot remove the unreadable data.');
   }
 
-  issues.forEach((issue) => {
-    storage.removeItem?.(issue.storageKey);
-    clearLocalStorageReadIssue(issue.storageKey);
-  });
+  const removedIssues: LocalStorageReadIssue[] = [];
+
+  try {
+    issues.forEach((issue) => {
+      storage.removeItem?.(issue.storageKey);
+      removedIssues.push(issue);
+    });
+  } catch (removeError) {
+    let rollbackError: unknown;
+
+    removedIssues.reverse().forEach((issue) => {
+      try {
+        storage.setItem(issue.storageKey, issue.rawValue);
+      } catch (error) {
+        rollbackError ??= error;
+      }
+    });
+
+    throw rollbackError ?? removeError;
+  }
+
+  issues.forEach((issue) => clearLocalStorageReadIssue(issue.storageKey));
 }

@@ -192,7 +192,7 @@ describe('BrowserStorageNotice', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Reset and reload' }));
 
     expect(screen.getByRole('alert')).toHaveTextContent(
-      'The unreadable browser data could not be reset. It has not been replaced.',
+      'The unreadable browser data could not be fully reset. It remains available for download in this session.',
     );
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(getLocalStorageReadIssues()).toHaveLength(1);

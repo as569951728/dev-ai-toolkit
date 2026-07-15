@@ -8,6 +8,8 @@ import {
   decodeLocalStorageValue,
   downloadLocalStorageRecovery,
   getLocalStorageReadIssues,
+  reportLocalStorageReadIssue,
+  resetLocalStorageReadIssues,
   subscribeToLocalStorageReadIssues,
 } from '@/lib/local-storage-recovery';
 
@@ -139,5 +141,80 @@ describe('local-storage-recovery', () => {
     expect(revokeObjectURL).toHaveBeenCalledWith(
       'blob:local-storage-recovery',
     );
+  });
+
+  it('restores earlier values when a later reset fails', () => {
+    const issues = [
+      {
+        label: 'Prompt templates',
+        rawValue: '{broken-templates',
+        reason: 'invalid-json' as const,
+        storageKey: 'templates',
+      },
+      {
+        label: 'Prompt runs',
+        rawValue: '{broken-runs',
+        reason: 'invalid-json' as const,
+        storageKey: 'runs',
+      },
+    ];
+    const state = new Map(issues.map((issue) => [issue.storageKey, issue.rawValue]));
+
+    issues.forEach(reportLocalStorageReadIssue);
+
+    expect(() =>
+      resetLocalStorageReadIssues(issues, {
+        getItem: (key) => state.get(key) ?? null,
+        removeItem(key) {
+          if (key === 'runs') {
+            throw new Error('Storage unavailable');
+          }
+
+          state.delete(key);
+        },
+        setItem: (key, value) => state.set(key, value),
+      }),
+    ).toThrow('Storage unavailable');
+
+    expect(Object.fromEntries(state)).toEqual({
+      runs: '{broken-runs',
+      templates: '{broken-templates',
+    });
+    expect(getLocalStorageReadIssues()).toEqual(issues);
+  });
+
+  it('retains recovery entries when reset rollback also fails', () => {
+    const issues = [
+      {
+        label: 'Prompt templates',
+        rawValue: '{broken-templates',
+        reason: 'invalid-json' as const,
+        storageKey: 'templates',
+      },
+      {
+        label: 'Prompt runs',
+        rawValue: '{broken-runs',
+        reason: 'invalid-json' as const,
+        storageKey: 'runs',
+      },
+    ];
+
+    issues.forEach(reportLocalStorageReadIssue);
+
+    expect(() =>
+      resetLocalStorageReadIssues(issues, {
+        getItem: () => null,
+        removeItem(key) {
+          if (key === 'runs') {
+            throw new Error('Remove unavailable');
+          }
+        },
+        setItem() {
+          throw new Error('Rollback unavailable');
+        },
+      }),
+    ).toThrow('Rollback unavailable');
+
+    expect(getLocalStorageReadIssues()).toEqual(issues);
   });
 });
