@@ -106,7 +106,6 @@ Completed since the project review:
 
 Still open:
 
-- Verify that the public Vercel demo tracks the current `main` branch (#14).
 - Keep local import, export, and recovery coverage aligned with schema changes.
 - Pause supporting utility expansion until the current prompt workflow receives
   user feedback.
@@ -122,7 +121,7 @@ Tasks:
 
 - Update homepage and README wording around local-first prompt workflows.
 - Keep JSON Tools and API Builder positioned as supporting utilities.
-- Verify whether the Vercel demo tracks the latest `main` branch.
+- Re-verify the Vercel demo for each release candidate.
 - Prepare an honest `v0.2.0` release summary for work completed after `v0.1.0`.
 - Align GitHub labels with issue templates and release categories.
 - Review roadmap and release docs for vague self-justifying language.
@@ -221,7 +220,7 @@ The project should keep a simple but visible maintenance loop:
 
 Near-term repository maintenance:
 
-- Verify the public demo or remove demo claims until it is current.
+- Re-verify the public demo before each release.
 - Keep `v0.1.0` as a historical release and use `v0.2.0` for current work.
 - Align GitHub labels, issue templates, and release categories.
 - Prefer factual documentation over marketing language.

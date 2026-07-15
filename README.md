@@ -159,14 +159,14 @@ npm run preview
 
 ## Live Demo
 
-A public Vercel URL is available, but it is not yet verified as tracking the
-latest `main` branch. If you need to test the exact current repository state,
-run the app locally for now.
+A public deployment is available at
+[https://dev-ai-toolkit.vercel.app](https://dev-ai-toolkit.vercel.app).
 
-- Candidate URL: [https://dev-ai-toolkit.vercel.app](https://dev-ai-toolkit.vercel.app)
-- Verification status: reachable on 2026-06-12, but the deployment has not
-  been tied back to the latest `main` commit yet
-- Tracking issue: [#14](https://github.com/as569951728/dev-ai-toolkit/issues/14)
+The production deployment was verified in a clean browser on 2026-07-15
+against application revision [`f487910`](https://github.com/as569951728/dev-ai-toolkit/commit/f4879101d913c9b4608d272dbac3b88760b0b599).
+Template creation, Playground composition, saving and reviewing a run,
+workspace export, and nested-route refresh all passed. Data created in the demo
+stays in that browser profile; it is not synchronized to a server.
 
 See [docs/deployment.md](./docs/deployment.md) for the current deployment notes.
 
@@ -272,7 +272,6 @@ Current maintenance priorities:
 
 Current next steps include:
 
-- Verify the public demo after the current `main` changes are pushed
 - Keep regression coverage around local import, export, and recovery behavior
 - Pause supporting utility expansion until current workflow changes receive
   user feedback
