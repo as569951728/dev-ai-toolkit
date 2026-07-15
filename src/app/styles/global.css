@@ -17,6 +17,7 @@
   --text-muted: #4b6077;
   --primary: #1f6feb;
   --primary-dark: #1556ba;
+  --focus-ring: #0b5fcc;
   --shadow-lg: 0 20px 60px rgba(19, 34, 56, 0.08);
 }
 
@@ -38,6 +39,11 @@ a {
   color: inherit;
 }
 
+:where(a, button, input, textarea, select, [tabindex]):focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
 button,
 input,
 textarea,
@@ -48,6 +54,25 @@ select {
 pre {
   margin: 0;
   white-space: pre-wrap;
+}
+
+.skip-link {
+  position: fixed;
+  z-index: 100;
+  top: 16px;
+  left: 16px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: #132238;
+  color: #ffffff;
+  font-weight: 700;
+  text-decoration: none;
+  transform: translateY(calc(-100% - 24px));
+  transition: transform 120ms ease;
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
 }
 
 .app-shell {
@@ -294,6 +319,7 @@ pre {
 .app-nav__title {
   margin: 0;
   font-size: 1.5rem;
+  font-weight: 700;
 }
 
 .app-nav__groups {
@@ -1399,5 +1425,16 @@ pre {
   .home-hero__content h1,
   .home-section__heading h2 {
     max-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
