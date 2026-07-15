@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:e2e": "playwright test",
+    "test:demo": "playwright test --config=playwright.demo.config.ts",
     "test:coverage": "vitest run --coverage",
     "audit": "npm audit --audit-level=moderate",
     "build": "tsc -b && vite build",
