@@ -678,6 +678,31 @@ pre {
   transform: translateY(-1px);
 }
 
+.primary-button:disabled,
+.secondary-button:disabled,
+.ghost-button:disabled,
+.danger-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+  transform: none;
+}
+
+.primary-button:disabled:hover {
+  background: var(--primary);
+  transform: none;
+}
+
+.secondary-button:disabled:hover,
+.ghost-button:disabled:hover {
+  border-color: rgba(19, 34, 56, 0.12);
+  transform: none;
+}
+
+.danger-button:disabled:hover {
+  background: rgba(195, 49, 79, 0.1);
+  transform: none;
+}
+
 .empty-state {
   padding: 48px 24px;
   border: 1px dashed rgba(19, 34, 56, 0.18);
