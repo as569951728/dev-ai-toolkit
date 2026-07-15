@@ -4,6 +4,7 @@ import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 
 import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs-provider';
 import type { PromptRunRepository } from '@/features/prompt-runs/repositories/prompt-run-repository';
+import { createPromptTemplateCreateNavigationState } from '@/features/prompt-templates/lib/prompt-template-links';
 import { PromptTemplateCreatePage } from '@/features/prompt-templates/pages/prompt-template-create-page';
 import { PromptTemplatesProvider } from '@/features/prompt-templates/providers/prompt-templates-provider';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
@@ -31,7 +32,14 @@ function createTemplateRepository(): PromptTemplateRepository & {
   };
 }
 
-function renderCreatePage(initialEntry: string, runs: PromptRunRecord[]) {
+type CreatePageEntry =
+  | string
+  | {
+      pathname: string;
+      state?: unknown;
+    };
+
+function renderCreatePage(initialEntry: CreatePageEntry, runs: PromptRunRecord[]) {
   const templateRepository = createTemplateRepository();
   const router = createMemoryRouter(
     [
@@ -49,13 +57,17 @@ function renderCreatePage(initialEntry: string, runs: PromptRunRecord[]) {
         path: '/prompts',
         element: <div>Prompt Template List Destination</div>,
       },
+      {
+        path: '/playground',
+        element: <div>Prompt Playground Destination</div>,
+      },
     ],
     { initialEntries: [initialEntry] },
   );
 
   render(<RouterProvider router={router} />);
 
-  return { templateRepository };
+  return { router, templateRepository };
 }
 
 afterEach(() => {
@@ -63,6 +75,47 @@ afterEach(() => {
 });
 
 describe('PromptTemplateCreatePage', () => {
+  it('continues an Overview template creation into the Playground', () => {
+    const { router, templateRepository } = renderCreatePage(
+      {
+        pathname: '/create-template',
+        state: createPromptTemplateCreateNavigationState(),
+      },
+      [],
+    );
+
+    fireEvent.change(screen.getByLabelText('Name'), {
+      target: { value: 'Incident Review' },
+    });
+    fireEvent.change(screen.getByLabelText('Description'), {
+      target: { value: 'Review one incident.' },
+    });
+    fireEvent.change(screen.getByLabelText('System prompt'), {
+      target: { value: 'Review {{incident}}.' },
+    });
+    fireEvent.change(screen.getByLabelText('User prompt'), {
+      target: { value: 'Summarize for {{audience}}.' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Create template' }));
+
+    expect(
+      screen.getByText('Prompt Playground Destination'),
+    ).toBeInTheDocument();
+    const [createdTemplate] = templateRepository.snapshot();
+
+    if (!createdTemplate) {
+      throw new Error('Expected the template to be created.');
+    }
+
+    expect(createdTemplate).toEqual(
+      expect.objectContaining({ name: 'Incident Review' }),
+    );
+    expect(router.state.location.pathname).toBe('/playground');
+    expect(router.state.location.search).toBe(
+      `?templateId=${encodeURIComponent(createdTemplate.id)}`,
+    );
+  });
+
   it('creates a template explicitly from a saved prompt snapshot', () => {
     const run: PromptRunRecord = {
       id: 'imported/run #1',

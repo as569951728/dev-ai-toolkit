@@ -6,7 +6,9 @@ import {
   buildPromptTemplateEditPath,
   buildPromptTemplatePlaygroundPath,
   buildPromptTemplateRunHistoryPath,
+  createPromptTemplateCreateNavigationState,
   createPromptTemplateNavigationState,
+  getPromptTemplateCreateDestination,
   getPromptTemplateListReturnPath,
 } from '@/features/prompt-templates/lib/prompt-template-links';
 
@@ -48,6 +50,18 @@ describe('prompt-template-links', () => {
       getPromptTemplateListReturnPath({ listPath: '/runs?search=review' }),
     ).toBe('/prompts');
     expect(getPromptTemplateListReturnPath(undefined)).toBe('/prompts');
+  });
+
+  it('keeps only the supported post-create destination', () => {
+    expect(
+      getPromptTemplateCreateDestination(
+        createPromptTemplateCreateNavigationState(),
+      ),
+    ).toBe('playground');
+    expect(
+      getPromptTemplateCreateDestination({ afterCreate: '/settings' }),
+    ).toBe('list');
+    expect(getPromptTemplateCreateDestination(undefined)).toBe('list');
   });
 
   it('encodes template IDs used in query navigation', () => {
