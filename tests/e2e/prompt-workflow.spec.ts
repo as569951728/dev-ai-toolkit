@@ -124,6 +124,9 @@ test('saves a prompt snapshot and protects its review note draft', async ({
   await expect(page.getByLabel('Change Scope')).toHaveValue(
     'frontend workflow',
   );
+  await expect(
+    page.getByRole('button', { name: 'Snapshot saved' }),
+  ).toBeDisabled();
 });
 
 test('prefills a new template from a saved prompt snapshot', async ({ page }) => {
