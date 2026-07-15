@@ -6,6 +6,10 @@ commit.
 
 ## [Unreleased]
 
+No changes yet.
+
+## [v0.2.0] - 2026-07-15
+
 ### Added
 
 - Added a dedicated Run History for saved prompt snapshots, including search,
