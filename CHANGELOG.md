@@ -12,6 +12,8 @@ commit.
   the dedicated GitHub feedback form.
 - Added a direct Overview action into the first available prompt template,
   with template creation as the empty-workspace fallback.
+- Continued that empty-workspace creation path into the new template's
+  Playground after a successful save.
 - Added a repeatable, read-only Playwright smoke command for the public demo.
 
 ### Fixed

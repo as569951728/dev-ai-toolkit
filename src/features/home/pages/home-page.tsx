@@ -5,6 +5,7 @@ import { buildPromptRunDetailPath } from '@/features/prompt-runs/lib/prompt-run-
 import {
   buildPromptTemplateCreatePath,
   buildPromptTemplatePlaygroundPath,
+  createPromptTemplateCreateNavigationState,
 } from '@/features/prompt-templates/lib/prompt-template-links';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
 
@@ -144,10 +145,12 @@ export function HomePage() {
     ? {
         href: buildPromptTemplatePlaygroundPath(firstActiveTemplate.id),
         label: `Open ${firstActiveTemplate.name}`,
+        state: undefined,
       }
     : {
         href: buildPromptTemplateCreatePath(),
         label: 'Create first template',
+        state: createPromptTemplateCreateNavigationState(),
       };
 
   return (
@@ -163,7 +166,11 @@ export function HomePage() {
           </p>
 
           <div className="home-hero__actions">
-            <Link className="primary-button" to={primaryAction.href}>
+            <Link
+              className="primary-button"
+              state={primaryAction.state}
+              to={primaryAction.href}
+            >
               {primaryAction.label}
             </Link>
             <Link className="secondary-button" to="/prompts">

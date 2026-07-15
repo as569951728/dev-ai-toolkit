@@ -2,10 +2,28 @@ export interface PromptTemplateNavigationState {
   listPath: string;
 }
 
+export interface PromptTemplateCreateNavigationState {
+  afterCreate: 'playground';
+}
+
 export function createPromptTemplateNavigationState(
   listPath: string,
 ): PromptTemplateNavigationState {
   return { listPath };
+}
+
+export function createPromptTemplateCreateNavigationState(
+): PromptTemplateCreateNavigationState {
+  return { afterCreate: 'playground' };
+}
+
+export function getPromptTemplateCreateDestination(state: unknown) {
+  return state &&
+    typeof state === 'object' &&
+    'afterCreate' in state &&
+    state.afterCreate === 'playground'
+    ? 'playground'
+    : 'list';
 }
 
 export function getPromptTemplateListReturnPath(state: unknown) {

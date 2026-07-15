@@ -15,6 +15,39 @@ test('starts the seeded prompt workflow from the overview', async ({ page }) => 
   await expect(page.getByLabel('Repository Name')).toBeVisible();
 });
 
+test('continues the first empty-workspace template into the Playground', async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem(
+      'dev-ai-toolkit.prompt-templates',
+      JSON.stringify({ version: 1, data: [] }),
+    );
+  });
+  await page.goto('/');
+  await page.getByRole('link', { name: 'Create first template' }).click();
+
+  await page.getByLabel('Name').fill('First Workflow');
+  await page
+    .getByLabel('Description')
+    .fill('Review a subject for a specific audience.');
+  await page.getByLabel('System prompt').fill('Review {{subject}} carefully.');
+  await page
+    .getByLabel('User prompt')
+    .fill('Summarize the result for {{audience}}.');
+  await page.getByRole('button', { name: 'Create template' }).click();
+
+  await expect(page).toHaveURL(/\/playground\?templateId=/);
+  const createdTemplateId = await page.getByLabel('Active template').inputValue();
+
+  expect(createdTemplateId).toMatch(/^first-workflow-/);
+  expect(new URL(page.url()).searchParams.get('templateId')).toBe(
+    createdTemplateId,
+  );
+  await expect(page.getByLabel('Subject')).toBeVisible();
+  await expect(page.getByLabel('Audience')).toBeVisible();
+});
+
 test('saves a prompt snapshot and protects its review note draft', async ({
   context,
   page,
