@@ -55,12 +55,13 @@ npm run preview
 The public build is available at
 [https://dev-ai-toolkit.vercel.app](https://dev-ai-toolkit.vercel.app).
 
-The application revision
-[`4808d6a`](https://github.com/as569951728/dev-ai-toolkit/commit/4808d6a6901a4e91f8424c7ed7a0a59829cfb7cf)
-was verified in a clean browser on 2026-07-15. Template creation, Playground
-composition, saving and reviewing a run, workspace export, nested-route refresh,
-and keyboard skip navigation passed. Demo data remains in that browser profile;
-it is not synchronized to a server.
+The canonical deployment currently serves
+[`8c44091`](https://github.com/as569951728/dev-ai-toolkit/commit/8c44091ccd40f86fc594cea85ef204e51a1d6c19).
+On 2026-07-15, its home, Playground, Run History, and Workspace Backup routes
+loaded successfully in a clean Chromium session. The complete template-to-run
+walkthrough was verified separately against the
+[`v0.2.0` release commit](https://github.com/as569951728/dev-ai-toolkit/commit/8ed3825fcf007bfa2965da015ec7066f437797b3).
+Demo data remains in that browser profile; it is not synchronized to a server.
 
 See [Deployment](./docs/deployment.md) for deployment and verification details.
 
