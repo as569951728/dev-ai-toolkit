@@ -1,8 +1,8 @@
 # Issue Triage Ledger
 
-**Status:** Active
+**Status:** Complete
 **Last updated:** 2026-07-15
-**Open-issue snapshot:** 4
+**Open-issue snapshot after #131 closes:** 2 release tasks
 
 GitHub Issues remains the source of truth. This ledger defines how the current
 backlog is reviewed without bulk-closing work or treating commit messages as
@@ -244,6 +244,24 @@ shared Playground links, and snapshot-to-template documentation.
 | [#114](https://github.com/as569951728/dev-ai-toolkit/issues/114#issuecomment-4977147687) Shared Playground links | `a3f8591` | `close-implemented` | Saved-run and template-only links use shared helpers with compatible output. |
 | [#116](https://github.com/as569951728/dev-ai-toolkit/issues/116#issuecomment-4977147648) Snapshot-to-template docs | `20ff9e5`, `c16166e` | `close-implemented` | Current user docs explain explicit reuse and resolved-value limits; completed history lives in Changelog and release notes rather than the future-only Roadmap. |
 
+## Twelfth Triage Session
+
+The twelfth set completed Batch D with the remaining saved-run handoff issue.
+The implementation, both README languages, the workflow guide, and the browser
+round trip were checked on current `main` before closure.
+
+| Issue | Implementation | Decision | Verification evidence |
+| --- | --- | --- | --- |
+| [#118](https://github.com/as569951728/dev-ai-toolkit/issues/118#issuecomment-4977196785) Saved variables in JSON Tools | `8832133`, `52672d0`, `c16166e` | `close-implemented` | Run Detail opens the saved variable object in JSON Tools; current user docs describe the local-only handoff, while completed history remains outside the future-only Roadmap. |
+
+## Final Disposition
+
+Every issue that was open when the `v0.2.0` backlog pass began now has a linked
+decision and current-main evidence. The only issues left open after the triage
+tracker closes are [#127](https://github.com/as569951728/dev-ai-toolkit/issues/127)
+and [#129](https://github.com/as569951728/dev-ai-toolkit/issues/129), which are
+the explicit release publication and candidate-verification gates.
+
 ## Remaining Review Batches
 
 Process no more than ten issues in one maintenance session. The ranges are
@@ -254,8 +272,8 @@ organizational only; they do not imply a shared disposition.
 | A | Complete | Reopen only if current behavior no longer matches the recorded evidence |
 | B | Complete | Reopen only if current behavior no longer matches the recorded evidence |
 | C | Complete | Reopen only if current behavior no longer matches the recorded evidence |
-| D | #118: saved run variables in JSON Tools | Check the current handoff, return path, and user documentation |
-| E | #14 and uncategorized maintenance items | Keep deployment and release blockers visible |
+| D | Complete | Reopen only if current behavior no longer matches the recorded evidence |
+| E | Complete | Release tasks remain visible in the release readiness checklist |
 
 ## New Work From The Review
 
@@ -291,3 +309,4 @@ evidence.
 | 2026-07-15 | #91 through #95 | 5 `close-implemented` | 3 focused files with 38 passing tests, 2 focused Chromium scenarios, and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29390490383) with 401 coverage tests and 28 browser tests on `4286772` | Batch D |
 | 2026-07-15 | #96 through #105 | 10 `close-implemented` | 8 focused files with 123 passing tests, 1 focused Chromium scenario, and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29390816057) with 401 coverage tests and 28 browser tests on `fc7f491` | Continue Batch D with no more than 10 open issues |
 | 2026-07-15 | #106 through #114, #116 | 10 `close-implemented` | 9 focused files with 127 passing tests, 2 focused Chromium scenarios, and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29391219589) with 401 coverage tests and 28 browser tests on `48989c7` | Finish Batch D with #118 |
+| 2026-07-15 | #118 | 1 `close-implemented` | 3 focused files with 35 passing tests, 1 focused Chromium scenario, and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29391633430) with 401 coverage tests and 28 browser tests on `8533d9d` | Backlog triage complete; proceed to release PR decisions |
