@@ -631,12 +631,13 @@ describe('PromptRunHistoryPage', () => {
   });
 
   it('rejects oversized run imports before reading them', async () => {
-    const text = vi.fn().mockResolvedValue('{}');
-    const oversizedFile = {
-      name: 'large-run.json',
-      size: MAX_JSON_IMPORT_BYTES + 1,
-      text,
-    } as File;
+    const oversizedFile = new File(['{}'], 'large-run.json', {
+      type: 'application/json',
+    });
+    Object.defineProperty(oversizedFile, 'size', {
+      value: MAX_JSON_IMPORT_BYTES + 1,
+    });
+    const text = vi.spyOn(oversizedFile, 'text');
     const { noteRepository, runRepository } = renderRunHistory({ runs: [] });
 
     fireEvent.change(screen.getByLabelText('Import run JSON'), {

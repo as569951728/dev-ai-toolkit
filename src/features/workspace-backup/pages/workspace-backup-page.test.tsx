@@ -381,12 +381,13 @@ describe('WorkspaceBackupPage', () => {
   });
 
   it('rejects oversized workspace imports before reading them', async () => {
-    const text = vi.fn().mockResolvedValue('{}');
-    const oversizedFile = {
-      name: 'large-workspace.json',
-      size: MAX_JSON_IMPORT_BYTES + 1,
-      text,
-    } as File;
+    const oversizedFile = new File(['{}'], 'large-workspace.json', {
+      type: 'application/json',
+    });
+    Object.defineProperty(oversizedFile, 'size', {
+      value: MAX_JSON_IMPORT_BYTES + 1,
+    });
+    const text = vi.spyOn(oversizedFile, 'text');
     const { noteRepository, runRepository, templateRepository } =
       renderWorkspaceBackupPage();
 

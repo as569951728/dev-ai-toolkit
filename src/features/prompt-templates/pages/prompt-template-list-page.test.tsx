@@ -222,12 +222,13 @@ describe('PromptTemplateListPage', () => {
   });
 
   it('rejects oversized template imports before reading them', async () => {
-    const text = vi.fn().mockResolvedValue('[]');
-    const oversizedFile = {
-      name: 'large-templates.json',
-      size: MAX_JSON_IMPORT_BYTES + 1,
-      text,
-    } as File;
+    const oversizedFile = new File(['[]'], 'large-templates.json', {
+      type: 'application/json',
+    });
+    Object.defineProperty(oversizedFile, 'size', {
+      value: MAX_JSON_IMPORT_BYTES + 1,
+    });
+    const text = vi.spyOn(oversizedFile, 'text');
 
     render(
       <MemoryRouter>
