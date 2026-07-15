@@ -2,7 +2,7 @@
 
 **Status:** Active
 **Last updated:** 2026-07-15
-**Open-issue snapshot:** 14
+**Open-issue snapshot:** 4
 
 GitHub Issues remains the source of truth. This ledger defines how the current
 backlog is reviewed without bulk-closing work or treating commit messages as
@@ -225,6 +225,25 @@ and legacy local-storage records on current `main`.
 | [#104](https://github.com/as569951728/dev-ai-toolkit/issues/104#issuecomment-4977103815) Stored note identifiers | `f57b154` | `close-implemented` | Normalized run IDs retain the latest valid note without trimming note bodies. |
 | [#105](https://github.com/as569951728/dev-ai-toolkit/issues/105#issuecomment-4977104094) Stored template identifiers | `bc8cffa` | `close-implemented` | Normalized IDs retain the latest valid template and current prompt content. |
 
+## Eleventh Triage Session
+
+The eleventh set covered the next ten Batch D issues. The review checked source
+comparison states, URL-safe route construction, the `new` route collision,
+shared Playground links, and snapshot-to-template documentation.
+
+| Issue | Implementation | Decision | Verification evidence |
+| --- | --- | --- | --- |
+| [#106](https://github.com/as569951728/dev-ai-toolkit/issues/106#issuecomment-4977147646) Unavailable source revisions | `9f3dbd8` | `close-implemented` | Run Detail distinguishes missing revision history from a missing source template. |
+| [#107](https://github.com/as569951728/dev-ai-toolkit/issues/107#issuecomment-4977147703) Unavailable history comparisons | `9656017` | `close-implemented` | Run History cards retain separate matching, missing-revision, and missing-template states. |
+| [#108](https://github.com/as569951728/dev-ai-toolkit/issues/108#issuecomment-4977147647) Imported run detail links | `b2f3d7d` | `close-implemented` | URL-sensitive run IDs stay within one encoded route segment. |
+| [#109](https://github.com/as569951728/dev-ai-toolkit/issues/109#issuecomment-4977147619) Shared run detail paths | `23e92e2` | `close-implemented` | Remaining workflow components use the same path helper without changing ordinary URLs. |
+| [#110](https://github.com/as569951728/dev-ai-toolkit/issues/110#issuecomment-4977147634) Source template paths | `e782047` | `close-implemented` | URL-sensitive source IDs resolve to the matching local template. |
+| [#111](https://github.com/as569951728/dev-ai-toolkit/issues/111#issuecomment-4977147631) Template detail and edit paths | `6a9e1b0` | `close-implemented` | Imported templates remain viewable and editable through shared encoded helpers. |
+| [#112](https://github.com/as569951728/dev-ai-toolkit/issues/112#issuecomment-4977147651) Template query navigation | `661a88c` | `close-implemented` | Playground and Run History receive the full decoded template ID. |
+| [#113](https://github.com/as569951728/dev-ai-toolkit/issues/113#issuecomment-4977147626) Imported `new` template ID | `e87184e` | `close-implemented` | The create route is separate, so the accepted ID remains viewable and editable. |
+| [#114](https://github.com/as569951728/dev-ai-toolkit/issues/114#issuecomment-4977147687) Shared Playground links | `a3f8591` | `close-implemented` | Saved-run and template-only links use shared helpers with compatible output. |
+| [#116](https://github.com/as569951728/dev-ai-toolkit/issues/116#issuecomment-4977147648) Snapshot-to-template docs | `20ff9e5`, `c16166e` | `close-implemented` | Current user docs explain explicit reuse and resolved-value limits; completed history lives in Changelog and release notes rather than the future-only Roadmap. |
+
 ## Remaining Review Batches
 
 Process no more than ten issues in one maintenance session. The ranges are
@@ -235,7 +254,7 @@ organizational only; they do not imply a shared disposition.
 | A | Complete | Reopen only if current behavior no longer matches the recorded evidence |
 | B | Complete | Reopen only if current behavior no longer matches the recorded evidence |
 | C | Complete | Reopen only if current behavior no longer matches the recorded evidence |
-| D | Remaining open issues in #106-#119: navigation, identifiers, reuse, and tool handoffs | Check recent commits and close only after end-to-end verification |
+| D | #118: saved run variables in JSON Tools | Check the current handoff, return path, and user documentation |
 | E | #14 and uncategorized maintenance items | Keep deployment and release blockers visible |
 
 ## New Work From The Review
@@ -271,3 +290,4 @@ evidence.
 | 2026-07-15 | #81 through #90 | 10 `close-implemented` | 8 focused files with 125 passing tests, 4 focused Chromium scenarios, and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29390151825) with 401 coverage tests and 28 browser tests on `35acea9` | Finish Batch C with #91 through #95 |
 | 2026-07-15 | #91 through #95 | 5 `close-implemented` | 3 focused files with 38 passing tests, 2 focused Chromium scenarios, and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29390490383) with 401 coverage tests and 28 browser tests on `4286772` | Batch D |
 | 2026-07-15 | #96 through #105 | 10 `close-implemented` | 8 focused files with 123 passing tests, 1 focused Chromium scenario, and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29390816057) with 401 coverage tests and 28 browser tests on `fc7f491` | Continue Batch D with no more than 10 open issues |
+| 2026-07-15 | #106 through #114, #116 | 10 `close-implemented` | 9 focused files with 127 passing tests, 2 focused Chromium scenarios, and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29391219589) with 401 coverage tests and 28 browser tests on `48989c7` | Finish Batch D with #118 |
