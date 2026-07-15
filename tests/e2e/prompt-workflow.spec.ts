@@ -48,6 +48,33 @@ test('continues the first empty-workspace template into the Playground', async (
   await expect(page.getByLabel('Audience')).toBeVisible();
 });
 
+test('recovers an empty Playground by creating a template', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem(
+      'dev-ai-toolkit.prompt-templates',
+      JSON.stringify({ version: 1, data: [] }),
+    );
+  });
+  await page.goto('/playground');
+
+  await page.getByRole('link', { name: 'Create a prompt template' }).click();
+
+  await expect(page).toHaveURL(/\/create-template$/);
+  await page.getByLabel('Name').fill('Playground Recovery');
+  await page
+    .getByLabel('Description')
+    .fill('Continue an empty Playground into a usable prompt workflow.');
+  await page.getByLabel('System prompt').fill('Review {{subject}} carefully.');
+  await page.getByLabel('User prompt').fill('Summarize {{subject}}.');
+  await page.getByRole('button', { name: 'Create template' }).click();
+
+  await expect(page).toHaveURL(/\/playground\?templateId=/);
+  await expect(page.getByLabel('Active template')).toHaveText(
+    'Playground Recovery',
+  );
+  await expect(page.getByLabel('Subject')).toBeVisible();
+});
+
 test('saves a prompt snapshot and protects its review note draft', async ({
   context,
   page,

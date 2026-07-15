@@ -896,5 +896,8 @@ describe('Prompt playground workflow', () => {
       screen.getByText('No active templates available'),
     ).toBeInTheDocument();
     expect(screen.queryByLabelText('Active template')).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'Create a prompt template' }),
+    ).toHaveAttribute('href', '/create-template');
   });
 });

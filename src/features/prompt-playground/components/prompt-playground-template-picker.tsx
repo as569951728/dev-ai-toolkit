@@ -1,3 +1,9 @@
+import { Link } from 'react-router-dom';
+
+import {
+  buildPromptTemplateCreatePath,
+  createPromptTemplateCreateNavigationState,
+} from '@/features/prompt-templates/lib/prompt-template-links';
 import type { PromptTemplate } from '@/types/prompt-template';
 
 interface PromptPlaygroundTemplatePickerProps {
@@ -40,6 +46,13 @@ export function PromptPlaygroundTemplatePicker({
         <div className="empty-state empty-state--compact">
           <h2>No active templates available</h2>
           <p>Restore an archived template or create a new prompt template first.</p>
+          <Link
+            className="primary-button"
+            state={createPromptTemplateCreateNavigationState()}
+            to={buildPromptTemplateCreatePath()}
+          >
+            Create a prompt template
+          </Link>
         </div>
       )}
 
