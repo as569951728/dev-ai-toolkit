@@ -2,7 +2,7 @@
 
 **Status:** Active
 **Last updated:** 2026-07-15
-**Open-issue snapshot:** 24
+**Open-issue snapshot:** 14
 
 GitHub Issues remains the source of truth. This ledger defines how the current
 backlog is reviewed without bulk-closing work or treating commit messages as
@@ -206,6 +206,25 @@ workflow evidence was checked on current `main` before closure.
 | [#94](https://github.com/as569951728/dev-ai-toolkit/issues/94#issuecomment-4977051616) Revision restore confirmation | `9a1f72d` | `close-implemented` | One historical revision can be pending; cancel and confirm preserve the versioning contract. |
 | [#95](https://github.com/as569951728/dev-ai-toolkit/issues/95#issuecomment-4977051585) Revision restore browser flow | `6014b20` | `close-implemented` | Chromium verifies edit to version 2, focused cancel, no early restore, and confirmed version 3. |
 
+## Tenth Triage Session
+
+The tenth set started Batch D with snapshot reuse and identifier normalization.
+The review covered user-visible handoffs, import boundaries, workspace validation,
+and legacy local-storage records on current `main`.
+
+| Issue | Implementation | Decision | Verification evidence |
+| --- | --- | --- | --- |
+| [#96](https://github.com/as569951728/dev-ai-toolkit/issues/96#issuecomment-4977103825) Single-run import boundary | `6c3eda2` | `close-implemented` | Docs distinguish prompt snapshot and note import from template-library restoration. |
+| [#97](https://github.com/as569951728/dev-ai-toolkit/issues/97#issuecomment-4977103806) Prompt snapshot labels | `00170cf` | `close-implemented` | Playground labels match the locally saved artifact without changing persistence. |
+| [#98](https://github.com/as569951728/dev-ai-toolkit/issues/98#issuecomment-4977103744) Direct snapshot reopen | `51016cc` | `close-implemented` | Active source templates expose Run History reuse; missing and archived sources do not. |
+| [#99](https://github.com/as569951728/dev-ai-toolkit/issues/99#issuecomment-4977103808) Snapshot reuse docs | `bde8e5c` | `close-implemented` | The workflow guide records direct reuse and the source-template boundary. |
+| [#100](https://github.com/as569951728/dev-ai-toolkit/issues/100#issuecomment-4977103760) Reopen fallback context | `5eef396` | `close-implemented` | Run Detail and Run History carry equivalent run and template context. |
+| [#101](https://github.com/as569951728/dev-ai-toolkit/issues/101#issuecomment-4977103746) Imported run identifiers | `b9e562f` | `close-implemented` | Normalized conflicts require confirmation while prompt, variable, and note content stays intact. |
+| [#102](https://github.com/as569951728/dev-ai-toolkit/issues/102#issuecomment-4977103836) Workspace identifiers | `5cbbf8a` | `close-implemented` | Normalized duplicates and relationships are validated before workspace preview. |
+| [#103](https://github.com/as569951728/dev-ai-toolkit/issues/103#issuecomment-4977103881) Stored run identifiers | `2816155` | `close-implemented` | Whitespace-equivalent stored runs collapse to the latest record without changing prompt content. |
+| [#104](https://github.com/as569951728/dev-ai-toolkit/issues/104#issuecomment-4977103815) Stored note identifiers | `f57b154` | `close-implemented` | Normalized run IDs retain the latest valid note without trimming note bodies. |
+| [#105](https://github.com/as569951728/dev-ai-toolkit/issues/105#issuecomment-4977104094) Stored template identifiers | `bc8cffa` | `close-implemented` | Normalized IDs retain the latest valid template and current prompt content. |
+
 ## Remaining Review Batches
 
 Process no more than ten issues in one maintenance session. The ranges are
@@ -216,7 +235,7 @@ organizational only; they do not imply a shared disposition.
 | A | Complete | Reopen only if current behavior no longer matches the recorded evidence |
 | B | Complete | Reopen only if current behavior no longer matches the recorded evidence |
 | C | Complete | Reopen only if current behavior no longer matches the recorded evidence |
-| D | Remaining open issues in #96-#119: navigation, identifiers, reuse, and tool handoffs | Check recent commits and close only after end-to-end verification |
+| D | Remaining open issues in #106-#119: navigation, identifiers, reuse, and tool handoffs | Check recent commits and close only after end-to-end verification |
 | E | #14 and uncategorized maintenance items | Keep deployment and release blockers visible |
 
 ## New Work From The Review
@@ -251,3 +270,4 @@ evidence.
 | 2026-07-15 | #70, #71, #72, #73, #75 through #80 | 10 `close-implemented` | 6 focused files with 68 passing tests, 2 focused Chromium scenarios, and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29389836302) with 401 coverage tests and 28 browser tests on `cd996bf` | Continue Batch C with no more than 10 open issues |
 | 2026-07-15 | #81 through #90 | 10 `close-implemented` | 8 focused files with 125 passing tests, 4 focused Chromium scenarios, and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29390151825) with 401 coverage tests and 28 browser tests on `35acea9` | Finish Batch C with #91 through #95 |
 | 2026-07-15 | #91 through #95 | 5 `close-implemented` | 3 focused files with 38 passing tests, 2 focused Chromium scenarios, and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29390490383) with 401 coverage tests and 28 browser tests on `4286772` | Batch D |
+| 2026-07-15 | #96 through #105 | 10 `close-implemented` | 8 focused files with 123 passing tests, 1 focused Chromium scenario, and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29390816057) with 401 coverage tests and 28 browser tests on `fc7f491` | Continue Batch D with no more than 10 open issues |
