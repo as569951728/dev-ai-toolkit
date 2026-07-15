@@ -419,6 +419,13 @@ describe('Prompt playground workflow', () => {
     expect(
       screen.getByRole('link', { name: 'Browse run history' }),
     ).toHaveAttribute('href', '/runs');
+    const savedButton = screen.getByRole('button', {
+      name: 'Snapshot saved',
+    });
+
+    expect(savedButton).toBeDisabled();
+    fireEvent.click(savedButton);
+    expect(runRepository.loadAll()).toHaveLength(1);
     expect(screen.getByText('Recently used')).toBeInTheDocument();
     expect(
       screen.getByRole('button', { name: /Code Review Assistant/ }),
@@ -470,6 +477,9 @@ describe('Prompt playground workflow', () => {
     expect(
       screen.queryByRole('link', { name: 'Open saved run' }),
     ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Save prompt snapshot' }),
+    ).toBeEnabled();
     expect(screen.queryByText('Recently used')).not.toBeInTheDocument();
   });
 
@@ -784,6 +794,9 @@ describe('Prompt playground workflow', () => {
         'Saved a prompt snapshot for Code Review Assistant v1.',
       ),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Snapshot saved' }),
+    ).toBeDisabled();
 
     fireEvent.change(screen.getByLabelText('Repository Name'), {
       target: { value: 'different-repo' },
@@ -792,6 +805,9 @@ describe('Prompt playground workflow', () => {
     expect(
       screen.queryByText('Saved a prompt snapshot for Code Review Assistant v1.'),
     ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Save prompt snapshot' }),
+    ).toBeEnabled();
   });
 
   it('falls back to the first template when the URL template id is missing', () => {

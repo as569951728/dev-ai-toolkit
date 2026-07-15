@@ -16,6 +16,9 @@ test('saves a prompt snapshot and protects its review note draft', async ({
   await expect(page.getByRole('status')).toContainText(
     'Saved a prompt snapshot for Code Review Assistant v1.',
   );
+  await expect(
+    page.getByRole('button', { name: 'Snapshot saved' }),
+  ).toBeDisabled();
 
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
   await page.getByRole('link', { name: 'Open saved run' }).click();

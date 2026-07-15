@@ -11,6 +11,11 @@ commit.
 - Added a privacy-aware workflow feedback link from every application route to
   the dedicated GitHub feedback form.
 
+### Fixed
+
+- Prevented an unchanged Playground preview from creating duplicate prompt
+  snapshots after it has been saved successfully.
+
 ## [v0.2.0] - 2026-07-15
 
 ### Added
