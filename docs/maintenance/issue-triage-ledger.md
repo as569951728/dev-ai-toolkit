@@ -2,7 +2,7 @@
 
 **Status:** Active
 **Last updated:** 2026-07-15
-**Open-issue snapshot:** 62
+**Open-issue snapshot:** 52
 
 GitHub Issues remains the source of truth. This ledger defines how the current
 backlog is reviewed without bulk-closing work or treating commit messages as
@@ -122,6 +122,25 @@ was checked against the original issue body with focused tests on current
 | [#55](https://github.com/as569951728/dev-ai-toolkit/issues/55#issuecomment-4976860492) Playground variable whitespace | `ce423ba` | `close-implemented` | Non-empty whitespace is preserved while whitespace-only values remain unresolved. |
 | [#56](https://github.com/as569951728/dev-ai-toolkit/issues/56#issuecomment-4976860539) Camel-case variable labels | `ccd3500` | `close-implemented` | Camel-case, dotted, and separator-based labels keep their original lookup keys. |
 
+## Fifth Triage Session
+
+The fifth set covered the next ten open issues in Batch B. Dependency claims
+were rechecked against the npm registry, and the full local quality sequence was
+run on current `main` instead of relying only on the historical implementation.
+
+| Issue | Implementation | Decision | Verification evidence |
+| --- | --- | --- | --- |
+| [#57](https://github.com/as569951728/dev-ai-toolkit/issues/57#issuecomment-4976903390) Reliability progress docs | `d469051` | `close-implemented` | Roadmap status and variable guidance remain factual while release gates stay open. |
+| [#58](https://github.com/as569951728/dev-ai-toolkit/issues/58#issuecomment-4976903404) Runtime dependency patches | `db91c6a` | `close-implemented` | The three runtime packages have no current compatible updates; the full quality sequence passed. |
+| [#59](https://github.com/as569951728/dev-ai-toolkit/issues/59#issuecomment-4976903386) Vitest patch alignment | `383f0e7` | `close-implemented` | Vitest and its coverage provider remain aligned at 4.1.10 with no current compatible update. |
+| [#60](https://github.com/as569951728/dev-ai-toolkit/issues/60#issuecomment-4976903392) Coverage baseline | `496aee1` | `close-implemented` | Explicit conservative thresholds passed, and CI runs coverage once before separate browser tests. |
+| [#61](https://github.com/as569951728/dev-ai-toolkit/issues/61#issuecomment-4976903414) Unresolved variable names | `01b5885` | `close-implemented` | The notice updates readable missing labels in form order without blocking partial actions. |
+| [#62](https://github.com/as569951728/dev-ai-toolkit/issues/62#issuecomment-4976903393) Rapid run writes | `7399dab` | `close-implemented` | Two synchronous run creates remain in provider state and the injected repository. |
+| [#63](https://github.com/as569951728/dev-ai-toolkit/issues/63#issuecomment-4976903432) Rapid template writes | `628da71` | `close-implemented` | Two synchronous template creates remain in provider state and the injected repository. |
+| [#64](https://github.com/as569951728/dev-ai-toolkit/issues/64#issuecomment-4976903449) Rapid note writes | `004fc49` | `close-implemented` | Notes saved synchronously for different runs remain in state and the injected repository. |
+| [#65](https://github.com/as569951728/dev-ai-toolkit/issues/65#issuecomment-4976903405) Backup relationship rules | `154148d` | `close-implemented` | Docs and parser tests distinguish standalone saved runs from required note-to-run references. |
+| [#66](https://github.com/as569951728/dev-ai-toolkit/issues/66#issuecomment-4976903424) Template deletion retention | `f36a54f` | `close-implemented` | Confirmation guidance, cancellation, deletion, and storage failures remain covered. |
+
 ## Remaining Review Batches
 
 Process no more than ten issues in one maintenance session. The ranges are
@@ -130,7 +149,7 @@ organizational only; they do not imply a shared disposition.
 | Batch | Scope | Required output |
 | --- | --- | --- |
 | A | Complete | Reopen only if current behavior no longer matches the recorded evidence |
-| B | Remaining open issues in #57-#69: storage reliability, dependencies, and same-event writes | Reproduction or current-main verification per issue |
+| B | Remaining open issues in #67-#69: rollback reporting and cleanup | Reproduction or current-main verification per issue |
 | C | Remaining open issues in #70-#95: editor safety, imports, confirmations, and browser coverage | Separate behavior bugs from documentation or test follow-up |
 | D | Remaining open issues in #96-#119: navigation, identifiers, reuse, and tool handoffs | Check recent commits and close only after end-to-end verification |
 | E | #14 and uncategorized maintenance items | Keep deployment and release blockers visible |
@@ -162,3 +181,4 @@ evidence.
 | 2026-07-15 | #32 through #36, #41 through #44 | 8 `close-implemented`, 1 `keep` | 8 focused files with 131 passing tests, 1 Chromium round trip on `6dc243b`, and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29387858229) | Batch B; #44 remains open for a separate README correction |
 | 2026-07-15 | #44 follow-up | 1 `close-implemented` | README parity, 2 focused files with 9 passing tests, and [green PR CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29388553835) on `45ba22c` | Batch B |
 | 2026-07-15 | #47 through #56 | 10 `close-implemented` | 13 focused files with 117 passing tests, 3 Chromium scenarios, and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29388840912) on `12accff` | Continue Batch B with no more than 10 open issues |
+| 2026-07-15 | #57 through #66 | 10 `close-implemented` | npm registry check, 0 audit findings, 62 files with 401 coverage tests, production build, 28 Chromium tests, and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29389260195) on `b913164` | Finish Batch B with #67 through #69 |
