@@ -1,239 +1,124 @@
-# Implementation Roadmap
+# Roadmap
 
-This roadmap captures the current implementation direction after the June 2026
-project review. It is intentionally practical: it should help decide what to
-build next, what to postpone, and how to keep the project maintainable.
+**Last reviewed:** 2026-07-15
 
-The dated [project review action plan](./maintenance/2026-07-14-project-review-action-plan.md)
-tracks immediate maintenance work. Use the
-[v0.2.0 release checklist](./maintenance/v0.2.0-release-readiness.md) for release
-decisions and the [issue triage ledger](./maintenance/issue-triage-ledger.md) when
-reconciling GitHub Issues with the current codebase.
+`dev-ai-toolkit` is being maintained as a local-first prompt workspace. The
+roadmap prioritizes the template-to-review workflow, local data safety, and
+release quality over adding more standalone utilities.
 
-## Current Direction
+GitHub Issues and milestones are the source of truth for scoped work. This file
+describes the intended outcomes and product boundaries rather than duplicating
+the issue backlog.
 
-`dev-ai-toolkit` should be treated as a local-first prompt workflow manager for
-developers, not as a broad AI platform.
+## Product Direction
 
-The strongest product path is:
+The primary workflow is:
 
-1. Create or choose a prompt template.
-2. Fill template variables in the playground.
-3. Save a composed prompt snapshot.
-4. Review saved snapshots in run history.
-5. Add notes, compare with source templates, or inspect output in Code Viewer.
-6. Back up the local workspace as versioned JSON.
+1. Maintain a reusable prompt template.
+2. Compose it with variables in the Playground.
+3. Save a local prompt snapshot.
+4. Review, compare, annotate, export, or reuse that snapshot.
+5. Back up the supported local workspace collections.
 
-Supporting utilities such as JSON Tools and API Builder are useful, but they
-should remain secondary unless they connect back into the prompt workflow.
+JSON Tools, API Builder, Prompt Diff, and Code Viewer remain supporting
+utilities. New work should connect to the prompt workflow or solve a demonstrated
+local development need.
 
-## Review Findings
+## v0.2.0
 
-The project review produced four shared conclusions:
+The [`v0.2.0` milestone](https://github.com/as569951728/dev-ai-toolkit/milestone/1)
+is due on 2026-08-12. It is a maintenance release, not a platform expansion.
 
-- The project has a real core workflow, but the positioning is still too broad
-  if described only as an "AI developer toolbox".
-- The prompt workflow is the main product value; standalone utility pages
-  should not become the center of the roadmap.
-- The local data model has grown enough that validators, import/export parsing,
-  and storage normalization need a more consistent domain layer.
-- Open-source maintenance needs a cleaner release and demo story before the
-  project is presented as mature.
+### Release Confidence
 
-## Product Boundary
+- Finish evidence-based triage of the pre-release issue backlog.
+- Verify setup instructions from a clean checkout on a supported Node.js version.
+- Select one protected `main` commit and run the complete audit, lint, coverage,
+  build, and browser suite against that exact SHA.
+- Match the release tag, GitHub Release, CI run, and public Vercel deployment to
+  the same commit.
 
-### Build Next
+### Local Data Safety
 
-- Clearer prompt workflow language across the homepage, README, and docs
-- Better guidance after saving a prompt snapshot
-- More useful run detail and review states
-- Stronger local data validation and import/export consistency
-- Demo verification and release hygiene
+- Recheck compatibility with the data format used by `v0.1.0`.
+- Verify template, run, note, and workspace import validation on the candidate.
+- Confirm workspace export can restore the candidate's supported collections.
+- Keep recovery and rollback boundaries documented where automatic restoration
+  cannot be guaranteed.
 
-### Do Not Build Yet
+### Documentation And Access
 
-- Backend accounts or cloud sync
-- Team permissions or shared workspaces
-- Plugin marketplace features
-- LLM runtime, tracing, evaluation, or observability features
-- More standalone utility pages unless they support the prompt workflow
+- Keep English and Simplified Chinese README files aligned with the current UI.
+- Keep README focused on setup and the core workflow, Changelog focused on
+  user-visible changes, and this roadmap focused on future outcomes.
+- Re-run keyboard skip navigation, visible focus, heading structure, and reduced
+  motion checks on the release candidate.
+- Publish release notes with current features, known limitations, and next steps
+  without adoption or performance claims.
 
-These items may become useful later, but adding them now would make the project
-harder to understand and maintain.
+### Exit Criteria
 
-## Near-Term Implementation Plan
+`v0.2.0` is ready only when every hard gate in the
+[release readiness checklist](./maintenance/v0.2.0-release-readiness.md) has
+evidence from one candidate SHA. A failed gate keeps the release blocked.
 
-### Progress As Of 2026-07-13
+## After v0.2.0
 
-Completed since the project review:
+### Validate The Prompt Workflow
 
-- Repositioned the homepage and documentation around the local-first prompt
-  workflow.
-- Improved the Playground post-save actions and Run Detail review flow.
-- Reused shared validators across prompt templates, runs, notes, and imports.
-- Split Run History card, filter, and import responsibilities out of the page.
-- Expanded Chrome smoke coverage across template-to-run, variable composition,
-  blocked storage, and workspace backup paths.
-- Aligned GitHub issue and release labels with repository templates.
-- Added user-facing failure and retry feedback for the main local storage writes
-  and JSON export actions.
-- Added compensating rollback for related run data and multi-collection
-  workspace imports.
-- Made provider writes use the latest persisted collection so synchronous local
-  actions do not overwrite one another.
-- Restored exact pre-import collections when workspace backup compensation runs,
-  including removal of records created by a failed import.
-- Reported partial local state when a compensating run or note write also fails.
-- Guarded browser storage initialization and added an early warning when local
-  persistence is unavailable.
-- Kept workspace downloads importable when older local data contains orphaned
-  notes, and disclosed invalid records skipped from mixed template imports.
-- Defined workspace backup relationships so saved runs can outlive source
-  templates while notes must remain attached to included runs.
-- Improved Playground variable handling for dotted and camel-case keys,
-  unresolved values, and whitespace-sensitive content.
-- Added an explicit review-to-reuse path that prefills a new template draft
-  from a saved prompt snapshot without changing the source run.
-- Connected Run Detail to JSON Tools so captured variables can be inspected as
-  formatted JSON without copying them into the URL or changing the saved run.
-- Added direct comparison between historical template revisions and the current
-  template without placing prompt content in the URL.
-- Refreshed local collections across browser tabs, preserved dirty template and
-  note drafts during external writes, and added recovery when their source
-  records are deleted in another tab.
-- Preserved active template and run filters across detail or edit round trips,
-  and removed inactive filter values from shareable list URLs.
+- Collect feedback from people using templates, saved prompt snapshots, and
+  manual workspace backup for real work.
+- Use that feedback to identify the most confusing or repetitive step before
+  adding new modules.
+- Prefer small improvements that shorten the path from a template to a reviewed
+  and reusable prompt.
 
-Still open:
+### Evolve Local Data Carefully
 
-- Keep local import, export, and recovery coverage aligned with schema changes.
-- Pause supporting utility expansion until the current prompt workflow receives
-  user feedback.
-- Prepare `v0.2.0` only after the demo, CI, docs, and release notes agree.
+- Add schema migrations only when a real data-model change requires them.
+- Keep imports, exports, recovery downloads, and rollback tests aligned with
+  each schema change.
+- Evaluate an optional storage adapter only after local persistence boundaries
+  are stable and there is a clear multi-device use case.
 
-### Week 1: Positioning And Open-Source Hygiene
+### Add Integrations From Evidence
 
-Goal:
-Make the repository describe the current product accurately and keep release
-history easy to audit.
+- Keep handoffs between Run History, Prompt Diff, JSON Tools, and Code Viewer
+  stable.
+- Consider a model-provider or external-tool integration only when it can remain
+  optional and does not expose local prompt data by default.
+- Avoid adding another utility page without a concrete user problem and an
+  issue-sized acceptance path.
 
-Tasks:
+## Not Planned Yet
 
-- Update homepage and README wording around local-first prompt workflows.
-- Keep JSON Tools and API Builder positioned as supporting utilities.
-- Re-verify the Vercel demo for each release candidate.
-- Prepare an honest `v0.2.0` release summary for work completed after `v0.1.0`.
-- Align GitHub labels with issue templates and release categories.
-- Review roadmap and release docs for vague self-justifying language.
+- User accounts, teams, roles, or cloud synchronization
+- A hosted prompt execution backend
+- Agent orchestration or autonomous coding workflows
+- Shared template marketplaces or community ratings
+- Provider-specific billing, token analytics, or benchmark claims
+- Additional developer utilities that do not support the core prompt workflow
 
-Expected outcome:
-New visitors should understand what the project does without expecting a model
-runtime, agent framework, or LLMOps platform.
-
-### Week 2: Main Workflow Clarity
-
-Goal:
-Make the core path from template to saved prompt review easier to follow.
-
-Tasks:
-
-- Standardize terms such as "run", "snapshot", "output", and "saved prompt".
-- Improve the post-save state in Prompt Playground with clearer next actions.
-- Make Run Detail feel like the review page for a saved prompt snapshot.
-- Add or refresh screenshots for the main path:
-  - Prompt Templates
-  - Prompt Playground
-  - Run History
-  - Run Detail or Prompt Diff
-- Keep the walkthrough aligned with the real UI.
-
-Expected outcome:
-A user should be able to follow the prompt workflow without reading the source
-code or guessing what a saved run represents.
-
-### Week 3: Data Boundary And Test Quality
-
-Goal:
-Reduce duplicated validation logic and protect local data as the schema grows.
-
-Tasks:
-
-- Introduce shared domain codecs or validators for:
-  - `PromptTemplate`
-  - `PromptRunRecord`
-  - `PromptRunNote`
-- Reuse those codecs from local storage repositories, imports, exports, and
-  workspace backup parsing.
-- Keep saved runs importable without their source templates while validating
-  note-to-run relationships during workspace import.
-- Split large orchestration-heavy pages, starting with `PromptRunHistoryPage`.
-- Add one or two browser-level smoke checks for the core prompt workflow.
-
-Expected outcome:
-Import/export behavior should be easier to reason about, and future storage
-changes should not require editing several separate validators by hand.
-
-### Week 4: Workflow Integration And Release
-
-Goal:
-Make supporting tools feel connected without expanding the scope too broadly.
-
-Tasks:
-
-- Keep the existing JSON Tools, Prompt Diff, and Code Viewer handoffs stable;
-  do not add more utility integrations without a concrete user need.
-- Keep unsupported utility ideas in a backlog instead of adding more pages.
-- Close or update stale issues that no longer match the roadmap.
-- Publish `v0.2.0` once the demo, docs, and core workflow improvements are in a
-  consistent state.
-- Start the next milestone from issues, not from a large untracked feature
-  batch.
-
-Expected outcome:
-The project should have a clearer story, a release that matches current
-functionality, and a more realistic issue-to-release maintenance loop.
-
-## Engineering Priorities
-
-The next engineering work should favor maintainability over new feature count.
-
-Priority order:
-
-1. Regression coverage for local schema, import, export, and recovery changes
-2. Smaller orchestration and test helpers when an affected workflow is changed
-3. Stable navigation and privacy boundaries between prompt workflow pages
-4. Demo, CI, documentation, and release consistency
-5. Issue-driven bug fixes and accessibility improvements
-
-Avoid building a backend until the local domain model is more stable.
-
-## Open-Source Maintenance Priorities
-
-The project should keep a simple but visible maintenance loop:
-
-1. Create or update a scoped issue.
-2. Make a small implementation change.
-3. Run local checks.
-4. Commit with a clear message.
-5. Let CI pass on `main`.
-6. Include meaningful changes in the next release notes.
-
-Near-term repository maintenance:
-
-- Re-verify the public demo before each release.
-- Keep `v0.1.0` as a historical release and use `v0.2.0` for current work.
-- Align GitHub labels, issue templates, and release categories.
-- Prefer factual documentation over marketing language.
-- Track Dependabot failures as normal maintenance work.
+These may be reconsidered if user feedback establishes a need and the local data
+model is ready for the added responsibility.
 
 ## Decision Filter
 
-Before adding a feature, answer these questions:
+Before accepting a feature, ask:
 
-1. Does it make the prompt workflow easier to create, review, reuse, or back up?
-2. Does it reduce confusion for a new user?
-3. Does it strengthen local data reliability or open-source maintainability?
-4. Can it be delivered as a small, reviewable change?
+1. Does it make prompts easier to create, review, reuse, or back up?
+2. Does it reduce a problem observed in real use?
+3. Does it preserve the local-first privacy boundary?
+4. Can it be implemented and reviewed as a small, testable change?
 
-If the answer is not clearly yes to at least one of the first three questions,
-the work should wait.
+Work that does not clearly satisfy the first three questions should remain out
+of the current milestone.
+
+## Maintenance Loop
+
+1. Start from a scoped issue with acceptance criteria.
+2. Make one reviewable behavior or documentation change.
+3. Run the checks appropriate to that change.
+4. Merge through the protected branch and required `quality` check.
+5. Verify public behavior when runtime code changes.
+6. Record user-visible changes in the next release notes.
