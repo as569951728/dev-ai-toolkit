@@ -75,6 +75,11 @@ See [Deployment](./docs/deployment.md) for deployment and verification details.
 5. Export individual records or use **Workspace Backup** to move the supported
    local collections between browser profiles.
 
+Playground variable names support letters, numbers, underscores, hyphens, and
+dots, including `{{repository_name}}` and `{{pull-request.title}}`. Empty values
+keep their placeholders in copied and saved prompts; a warning is shown without
+blocking either action.
+
 The [prompt workflow walkthrough](./docs/prompt-workflow-walkthrough.md) follows
 this path in more detail.
 
