@@ -10,10 +10,12 @@ This project can be deployed to Vercel as a static Vite application.
 - `vercel.json` is included so route refreshes fall back to `index.html`
 - `https://dev-ai-toolkit.vercel.app` was verified in a clean browser on
   2026-07-15
-- Production deployment `dpl_Cq6hFsDbB1a3SVEhNk8Pa7grBzfp` serves application
-  revision [`f487910`](https://github.com/as569951728/dev-ai-toolkit/commit/f4879101d913c9b4608d272dbac3b88760b0b599)
+- Production deployment `dpl_5urjtm6eaMvLptwTh4tETaTj8gXc` serves application
+  revision [`8ed3825`](https://github.com/as569951728/dev-ai-toolkit/commit/8ed3825fcf007bfa2965da015ec7066f437797b3)
+- This revision is the source of the published
+  [`v0.2.0` release](https://github.com/as569951728/dev-ai-toolkit/releases/tag/v0.2.0)
 - The verification covered template creation, Playground composition, saving
-  and reviewing a run, workspace export, and refreshing a nested route
+  and opening a run, refreshing its nested route, and workspace export
 - Vercel did not add a record to the repository's GitHub Deployments API, so
   deployment identity is recorded here and in
   [GitHub issue #14](https://github.com/as569951728/dev-ai-toolkit/issues/14)
