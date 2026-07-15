@@ -71,6 +71,10 @@ npm run preview
 5. 导出单条记录，或通过 **Workspace Backup** 在浏览器配置之间迁移受支持的本地
    数据集合。
 
+Playground 变量名支持字母、数字、下划线、连字符和点号，例如
+`{{repository_name}}` 和 `{{pull-request.title}}`。空值会在复制和保存的 Prompt 中
+保留原占位符；页面会显示提醒，但不会阻止这两个操作。
+
 [Prompt 工作流说明](./docs/prompt-workflow-walkthrough.md)提供了更完整的操作路径。
 
 ![dev-ai-toolkit overview](./docs/assets/app-overview.png)
