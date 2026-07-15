@@ -1,0 +1,80 @@
+name: Workflow feedback
+description: Share friction or missing context from using the prompt workflow
+title: "feedback: "
+labels:
+  - feedback
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for trying the prompt workflow in a real task.
+        Describe the situation and the point where the workflow became unclear or repetitive. Do not include prompt text, secrets, credentials, or private project data.
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Use case
+      description: What were you trying to complete with the toolkit?
+      placeholder: Describe the task and why you used the prompt workflow.
+    validations:
+      required: true
+  - type: dropdown
+    id: workflow_step
+    attributes:
+      label: Workflow step
+      description: Where did the friction occur?
+      options:
+        - Creating or editing a template
+        - Composing a prompt in Playground
+        - Copying a prompt to an external AI tool
+        - Saving or reviewing a run
+        - Comparing or annotating saved work
+        - Importing, exporting, or backing up the workspace
+        - Another part of the workflow
+    validations:
+      required: true
+  - type: dropdown
+    id: usage_stage
+    attributes:
+      label: Usage stage
+      description: How familiar were you with this workflow?
+      options:
+        - First attempt
+        - Used it a few times
+        - Part of a repeated task
+    validations:
+      required: true
+  - type: textarea
+    id: friction
+    attributes:
+      label: Friction
+      description: What was confusing, slow, repetitive, or missing?
+      placeholder: Describe what happened without including private prompt content.
+    validations:
+      required: true
+  - type: textarea
+    id: workaround
+    attributes:
+      label: Workaround
+      description: How did you continue, if you found a workaround?
+      placeholder: Describe any manual steps or other tool you used instead.
+  - type: textarea
+    id: desired_outcome
+    attributes:
+      label: Desired outcome
+      description: What result would make this workflow more useful for the task?
+      placeholder: Describe the outcome rather than prescribing a large solution.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser, operating system, and local or public Demo if relevant.
+      placeholder: Chrome / macOS / public Demo
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy check
+      options:
+        - label: I have not included secrets, credentials, private prompt text, or private project data.
+          required: true
