@@ -2,7 +2,7 @@
 
 **Status:** Active
 **Last updated:** 2026-07-15
-**Open-issue snapshot:** 49
+**Open-issue snapshot:** 39
 
 GitHub Issues remains the source of truth. This ledger defines how the current
 backlog is reviewed without bulk-closing work or treating commit messages as
@@ -153,6 +153,25 @@ current main-branch CI result was used as regression evidence.
 | [#68](https://github.com/as569951728/dev-ai-toolkit/issues/68#issuecomment-4976936836) Failed run import rollback | `f905e54` | `close-implemented` | New and replaced run rollback failures produce specific partial-import warnings. |
 | [#69](https://github.com/as569951728/dev-ai-toolkit/issues/69#issuecomment-4976936847) Exact workspace rollback | `43d26b6`, `3a6da41` | `close-implemented` | Exact collection restoration removes new records while retaining rollback failure warnings. |
 
+## Seventh Triage Session
+
+The seventh set started Batch C with ten issues covering no-op writes,
+documentation boundaries, test isolation, runtime support, imports, and
+Playground fallback feedback. All were rechecked on current `main`.
+
+| Issue | Implementation | Decision | Verification evidence |
+| --- | --- | --- | --- |
+| [#70](https://github.com/as569951728/dev-ai-toolkit/issues/70#issuecomment-4976972809) No-note run deletion | `79eed12` | `close-implemented` | Run deletion skips note storage only when no related note exists; rollback paths remain covered. |
+| [#71](https://github.com/as569951728/dev-ai-toolkit/issues/71#issuecomment-4976972745) Collection rollback boundaries | `49e19b2` | `close-implemented` | Architecture docs distinguish merge imports, exact replacement, and persistence-before-state. |
+| [#72](https://github.com/as569951728/dev-ai-toolkit/issues/72#issuecomment-4976972743) Global component cleanup | `85c1dda` | `close-implemented` | Shared cleanup runs after each Vitest case, and the complete coverage suite passes. |
+| [#73](https://github.com/as569951728/dev-ai-toolkit/issues/73#issuecomment-4976972741) Node runtime boundary | `686a590` | `close-implemented` | Manifest, CI, both READMEs, and deployment docs use the same supported Node range. |
+| [#75](https://github.com/as569951728/dev-ai-toolkit/issues/75#issuecomment-4976972774) Imported active templates | `00ff358` | `close-implemented` | Explicit null archive metadata restores active state while legacy fallbacks remain unchanged. |
+| [#76](https://github.com/as569951728/dev-ai-toolkit/issues/76#issuecomment-4976972770) Unavailable Playground template | `296dede` | `close-implemented` | Missing and archived template links select and name the active fallback. |
+| [#77](https://github.com/as569951728/dev-ai-toolkit/issues/77#issuecomment-4976972766) Unavailable Playground run | `edd2fdf` | `close-implemented` | Missing run, missing source, and archived source states show distinct fallback feedback. |
+| [#78](https://github.com/as569951728/dev-ai-toolkit/issues/78#issuecomment-4976972762) Unchanged template revisions | `9377d76` | `close-implemented` | No-op edits preserve history and avoid writes; real changes still create a revision. |
+| [#79](https://github.com/as569951728/dev-ai-toolkit/issues/79#issuecomment-4976972763) Unchanged note writes | `a684a2c` | `close-implemented` | Unchanged and blank no-op saves preserve timestamps and avoid repository writes. |
+| [#80](https://github.com/as569951728/dev-ai-toolkit/issues/80#issuecomment-4976972807) Template import semantics | `e3c7b10` | `close-implemented` | Matching-ID replacement behavior is visible before the file picker opens. |
+
 ## Remaining Review Batches
 
 Process no more than ten issues in one maintenance session. The ranges are
@@ -162,7 +181,7 @@ organizational only; they do not imply a shared disposition.
 | --- | --- | --- |
 | A | Complete | Reopen only if current behavior no longer matches the recorded evidence |
 | B | Complete | Reopen only if current behavior no longer matches the recorded evidence |
-| C | Remaining open issues in #70-#95: editor safety, imports, confirmations, and browser coverage | Separate behavior bugs from documentation or test follow-up |
+| C | Remaining open issues in #81-#95: editor safety, imports, confirmations, and browser coverage | Separate behavior bugs from documentation or test follow-up |
 | D | Remaining open issues in #96-#119: navigation, identifiers, reuse, and tool handoffs | Check recent commits and close only after end-to-end verification |
 | E | #14 and uncategorized maintenance items | Keep deployment and release blockers visible |
 
@@ -195,3 +214,4 @@ evidence.
 | 2026-07-15 | #47 through #56 | 10 `close-implemented` | 13 focused files with 117 passing tests, 3 Chromium scenarios, and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29388840912) on `12accff` | Continue Batch B with no more than 10 open issues |
 | 2026-07-15 | #57 through #66 | 10 `close-implemented` | npm registry check, 0 audit findings, 62 files with 401 coverage tests, production build, 28 Chromium tests, and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29389260195) on `b913164` | Finish Batch B with #67 through #69 |
 | 2026-07-15 | #67 through #69 | 3 `close-implemented` | 8 focused files with 95 passing tests and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29389547947) with 401 coverage tests, build, and 28 Chromium tests on `0532c0e` | Batch C |
+| 2026-07-15 | #70, #71, #72, #73, #75 through #80 | 10 `close-implemented` | 6 focused files with 68 passing tests, 2 focused Chromium scenarios, and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29389836302) with 401 coverage tests and 28 browser tests on `cd996bf` | Continue Batch C with no more than 10 open issues |
