@@ -1,5 +1,71 @@
 import { expect, test } from '@playwright/test';
 
+test('opens legacy local workspace collections without migration', async ({
+  page,
+}) => {
+  const template = {
+    id: 'legacy-release-template',
+    name: 'Legacy Release Checklist',
+    description: 'Verify a release created with the earlier storage format.',
+    systemPrompt: 'You are a careful release reviewer.',
+    userPrompt: 'Review the release notes for {{version}}.',
+    tags: ['release'],
+    version: 1,
+    revisions: [
+      {
+        version: 1,
+        updatedAt: '2026-05-01T08:00:00.000Z',
+        name: 'Legacy Release Checklist',
+        description: 'Verify a release created with the earlier storage format.',
+        systemPrompt: 'You are a careful release reviewer.',
+        userPrompt: 'Review the release notes for {{version}}.',
+        tags: ['release'],
+      },
+    ],
+    archivedAt: null,
+    updatedAt: '2026-05-01T08:00:00.000Z',
+  };
+  const run = {
+    id: 'legacy-release-run',
+    templateId: template.id,
+    templateName: template.name,
+    templateVersion: 1,
+    variables: { version: 'v0.1.0' },
+    systemPrompt: template.systemPrompt,
+    userPrompt: 'Review the release notes for v0.1.0.',
+    createdAt: '2026-05-01T09:00:00.000Z',
+  };
+
+  await page.addInitScript(
+    ({ legacyRun, legacyTemplate }) => {
+      window.localStorage.setItem(
+        'dev-ai-toolkit.prompt-templates',
+        JSON.stringify([legacyTemplate]),
+      );
+      window.localStorage.setItem(
+        'dev-ai-toolkit.prompt-runs',
+        JSON.stringify([legacyRun]),
+      );
+    },
+    { legacyRun: run, legacyTemplate: template },
+  );
+
+  await page.goto('/prompts');
+
+  await expect(
+    page.getByRole('heading', { level: 3, name: template.name }),
+  ).toBeVisible();
+  await expect(page.getByRole('alert')).toHaveCount(0);
+
+  await page.goto('/runs');
+
+  await expect(
+    page.getByRole('heading', { level: 3, name: template.name }),
+  ).toBeVisible();
+  await expect(page.getByText('version: v0.1.0')).toBeVisible();
+  await expect(page.getByRole('alert')).toHaveCount(0);
+});
+
 test('keeps the app usable when browser storage is blocked', async ({ page }) => {
   await page.addInitScript(() => {
     Object.defineProperty(window, 'localStorage', {
