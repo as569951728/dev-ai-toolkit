@@ -53,10 +53,12 @@ npm run preview
 公开部署地址：
 [https://dev-ai-toolkit.vercel.app](https://dev-ai-toolkit.vercel.app)。
 
-2026-07-15 已使用干净浏览器验证应用版本
-[`4808d6a`](https://github.com/as569951728/dev-ai-toolkit/commit/4808d6a6901a4e91f8424c7ed7a0a59829cfb7cf)。
-新建模板、Playground 变量组合、保存和复核运行记录、导出工作区、刷新嵌套路由和
-键盘跳过导航均通过。Demo 数据只保存在当前浏览器，不会同步到服务端。
+当前公开部署对应提交
+[`8c44091`](https://github.com/as569951728/dev-ai-toolkit/commit/8c44091ccd40f86fc594cea85ef204e51a1d6c19)。
+2026-07-15 已使用干净 Chromium 验证首页、Playground、Run History 和 Workspace
+Backup 路由均可正常打开。完整的模板到运行记录工作流另行在
+[`v0.2.0` 发布提交](https://github.com/as569951728/dev-ai-toolkit/commit/8ed3825fcf007bfa2965da015ec7066f437797b3)
+上完成验证。Demo 数据只保存在当前浏览器，不会同步到服务端。
 
 部署和验证细节见 [部署说明](./docs/deployment.md)。
 
