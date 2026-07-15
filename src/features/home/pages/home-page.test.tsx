@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 
@@ -55,6 +55,16 @@ function renderHomePage({
   );
 }
 
+function getActiveTemplateMetric() {
+  const metric = screen.getByText('Active templates').closest('.metric-card');
+
+  if (!(metric instanceof HTMLElement)) {
+    throw new Error('Expected the active-template metric card.');
+  }
+
+  return within(metric);
+}
+
 afterEach(() => {
   cleanup();
 });
@@ -90,14 +100,21 @@ describe('HomePage', () => {
     expect(
       screen.getByRole('link', { name: 'Manage prompt templates' }),
     ).toHaveAttribute('href', '/prompts');
+    expect(getActiveTemplateMetric().getByText('1')).toBeInTheDocument();
   });
 
   it('offers template creation when no active template is available', () => {
-    renderHomePage({ templates: [] });
+    renderHomePage({
+      templates: starterPromptTemplates.map((template) => ({
+        ...template,
+        archivedAt: '2026-05-08T09:00:00.000Z',
+      })),
+    });
 
     expect(
       screen.getByRole('link', { name: 'Create first template' }),
     ).toHaveAttribute('href', '/create-template');
+    expect(getActiveTemplateMetric().getByText('0')).toBeInTheDocument();
   });
 
   it('describes API Builder outputs consistently with the current module', () => {
