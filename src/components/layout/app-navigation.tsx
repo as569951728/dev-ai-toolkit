@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 
 type NavigationItem = {
@@ -72,14 +73,34 @@ const navigationGroups: NavigationGroup[] = [
 ];
 
 export function AppNavigation() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   return (
     <header className="app-nav">
-      <div>
+      <div className="app-nav__brand">
         <p className="app-nav__eyebrow">dev-ai-toolkit</p>
         <p className="app-nav__title">Local-first prompt workspace</p>
       </div>
 
-      <nav className="app-nav__groups" aria-label="Primary">
+      <button
+        type="button"
+        className="app-nav__toggle"
+        aria-controls="primary-navigation"
+        aria-expanded={isMenuOpen}
+        onClick={() => setIsMenuOpen((isOpen) => !isOpen)}
+      >
+        {isMenuOpen ? 'Close navigation' : 'Open navigation'}
+      </button>
+
+      <nav
+        id="primary-navigation"
+        className={
+          isMenuOpen
+            ? 'app-nav__groups app-nav__groups--open'
+            : 'app-nav__groups'
+        }
+        aria-label="Primary"
+      >
         {navigationGroups.map((group) => (
           <div className="app-nav__group" key={group.label}>
             <p className="app-nav__group-label">{group.label}</p>
@@ -89,6 +110,7 @@ export function AppNavigation() {
                   key={item.to}
                   to={item.to}
                   end={item.end}
+                  onClick={() => setIsMenuOpen(false)}
                   className={({ isActive }) =>
                     isActive ? 'app-nav__link app-nav__link--active' : 'app-nav__link'
                   }

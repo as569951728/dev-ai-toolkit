@@ -15,6 +15,8 @@ commit.
 
 ### Fixed
 
+- Kept the Overview's first prompt workflow action within common desktop and
+  phone viewports by compacting the navigation and hero layout.
 - Prevented unchanged Playground previews, including reopened saved runs, from
   creating duplicate prompt snapshots.
 - Rolled back browser-storage values removed before a later recovery reset

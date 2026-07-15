@@ -1,5 +1,60 @@
 import { expect, test } from '@playwright/test';
 
+test('keeps the first workflow action inside common initial viewports', async ({
+  page,
+}) => {
+  for (const viewport of [
+    { width: 1440, height: 900 },
+    { width: 375, height: 812 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto('/');
+
+    const primaryAction = page.getByRole('link', {
+      name: 'Open Code Review Assistant',
+    });
+    const actionBox = await primaryAction.boundingBox();
+    const documentWidth = await page.evaluate(
+      () => document.documentElement.scrollWidth,
+    );
+
+    expect(actionBox).not.toBeNull();
+    expect(actionBox!.y + actionBox!.height).toBeLessThanOrEqual(
+      viewport.height,
+    );
+    expect(documentWidth).toBeLessThanOrEqual(viewport.width);
+  }
+});
+
+test('keeps every navigation destination available from the phone menu', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto('/');
+
+  const navigation = page.getByRole('navigation', { name: 'Primary' });
+  const openButton = page.getByRole('button', { name: 'Open navigation' });
+
+  await expect(navigation).toBeHidden();
+  await expect(openButton).toHaveAttribute('aria-expanded', 'false');
+
+  await openButton.click();
+
+  await expect(navigation).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Close navigation' }),
+  ).toHaveAttribute('aria-expanded', 'true');
+  await expect(navigation.getByRole('link')).toHaveCount(9);
+
+  await navigation.getByRole('link', { name: 'Prompt Templates' }).click();
+
+  await expect(page).toHaveURL(/\/prompts$/);
+  await expect(navigation).toBeHidden();
+  await expect(
+    page.getByRole('button', { name: 'Open navigation' }),
+  ).toHaveAttribute('aria-expanded', 'false');
+});
+
 test('keeps the prompt playground inside a tablet viewport', async ({ page }) => {
   await page.setViewportSize({ width: 768, height: 1024 });
   await page.goto('/playground');
