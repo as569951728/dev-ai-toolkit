@@ -138,9 +138,10 @@ export function HomePage() {
   const { templates } = usePromptTemplates();
   const { runs } = usePromptRuns();
   const recentRuns = runs.slice(0, 3);
-  const firstActiveTemplate = templates.find(
+  const activeTemplates = templates.filter(
     (template) => !template.archivedAt,
   );
+  const firstActiveTemplate = activeTemplates[0];
   const primaryAction = firstActiveTemplate
     ? {
         href: buildPromptTemplatePlaygroundPath(firstActiveTemplate.id),
@@ -181,8 +182,8 @@ export function HomePage() {
 
         <aside className="home-hero__stats">
           <div className="metric-card">
-            <span className="metric-card__label">Reusable templates</span>
-            <strong>{templates.length}</strong>
+            <span className="metric-card__label">Active templates</span>
+            <strong>{activeTemplates.length}</strong>
             <p>Ready to preview, duplicate, import, and export.</p>
           </div>
           <div className="metric-card">
