@@ -1,5 +1,12 @@
 import { afterEach } from 'vitest';
-import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -676,9 +683,11 @@ describe('Prompt playground workflow', () => {
         userPrompt: starterPromptTemplates[0]!.userPrompt,
       }),
     );
-    expect(await screen.findByRole('status')).toHaveTextContent(
-      'Full prompt copied.',
-    );
+    await waitFor(() => {
+      expect(screen.getByRole('status')).toHaveTextContent(
+        'Full prompt copied.',
+      );
+    });
 
     fireEvent.change(screen.getByLabelText('Repository Name'), {
       target: { value: 'updated-repository' },
