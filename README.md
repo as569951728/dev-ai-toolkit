@@ -45,6 +45,7 @@ The current version includes:
 - API Builder for drafting request configurations, fetch snippets, and cURL commands
 - Code Viewer for reading code or generated output in single or compare mode
 - Workspace Backup for exporting and importing local templates, saved runs, notes, and recent playground shortcuts as JSON
+- A shared 5 MB limit for template, run, and workspace JSON imports
 - Recent template history in the playground
 - Local browser persistence via `localStorage`
 - Recovery controls for downloading and resetting unreadable local collections

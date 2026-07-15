@@ -176,6 +176,12 @@ file or confirm a reset that removes only the affected keys and reloads the
 application. The recovery file is diagnostic data, not a workspace backup, and
 cannot be imported through the normal workspace restore flow.
 
+Template, single-run, and workspace JSON imports share a 5 MB file-size limit.
+The limit is checked from the browser `File.size` value before `File.text()` is
+called, so an oversized file is rejected without first reading its full content
+into memory. Payload shape and schema validation still run after this boundary
+check for accepted files.
+
 Default providers also listen for the matching browser `storage` event. A write
 or clear from another tab reloads that collection through its repository, so
 open tabs in the same browser profile do not keep stale templates, runs, notes,

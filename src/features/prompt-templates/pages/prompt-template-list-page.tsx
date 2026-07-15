@@ -18,6 +18,7 @@ import {
   createPromptTemplateNavigationState,
 } from '@/features/prompt-templates/lib/prompt-template-links';
 import { collectPromptTemplateTags } from '@/features/prompt-templates/services/prompt-template-service';
+import { readJsonImportFile } from '@/lib/json-import-file';
 import type { PromptTemplateFilters } from '@/types/prompt-template';
 
 interface PromptTemplateFeedback {
@@ -125,7 +126,7 @@ export function PromptTemplateListPage() {
     }
 
     try {
-      const fileContent = await file.text();
+      const fileContent = await readJsonImportFile(file);
       const { importedTemplates, summary } = parsePromptTemplateImport(
         fileContent,
         templates,
