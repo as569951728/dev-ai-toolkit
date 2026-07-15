@@ -2,6 +2,10 @@ import { Link } from 'react-router-dom';
 
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { buildPromptRunDetailPath } from '@/features/prompt-runs/lib/prompt-run-links';
+import {
+  buildPromptTemplateCreatePath,
+  buildPromptTemplatePlaygroundPath,
+} from '@/features/prompt-templates/lib/prompt-template-links';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
 
 const moduleGroups = [
@@ -133,6 +137,18 @@ export function HomePage() {
   const { templates } = usePromptTemplates();
   const { runs } = usePromptRuns();
   const recentRuns = runs.slice(0, 3);
+  const firstActiveTemplate = templates.find(
+    (template) => !template.archivedAt,
+  );
+  const primaryAction = firstActiveTemplate
+    ? {
+        href: buildPromptTemplatePlaygroundPath(firstActiveTemplate.id),
+        label: `Open ${firstActiveTemplate.name}`,
+      }
+    : {
+        href: buildPromptTemplateCreatePath(),
+        label: 'Create first template',
+      };
 
   return (
     <section className="home-layout">
@@ -147,11 +163,11 @@ export function HomePage() {
           </p>
 
           <div className="home-hero__actions">
-            <Link className="primary-button" to="/prompts">
-              Explore prompt workflows
+            <Link className="primary-button" to={primaryAction.href}>
+              {primaryAction.label}
             </Link>
-            <Link className="secondary-button" to="/json-tools">
-              Open developer utilities
+            <Link className="secondary-button" to="/prompts">
+              Manage prompt templates
             </Link>
           </div>
         </div>
