@@ -5,6 +5,7 @@ import {
   RouterProvider,
 } from 'react-router-dom';
 
+import { AppFooter } from '@/components/layout/app-footer';
 import { AppNavigation } from '@/components/layout/app-navigation';
 import { BrowserStorageNotice } from '@/components/layout/browser-storage-notice';
 import { ScrollToTop } from '@/components/layout/scroll-to-top';
@@ -42,6 +43,7 @@ function RootLayout() {
                 <BrowserStorageNotice />
                 <Outlet />
               </main>
+              <AppFooter />
             </div>
           </div>
         </PromptRunNotesProvider>
