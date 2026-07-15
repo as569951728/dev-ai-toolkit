@@ -14,6 +14,7 @@ import { PromptTemplateListPage } from '@/features/prompt-templates/pages/prompt
 import { PromptTemplatesProvider } from '@/features/prompt-templates/providers/prompt-templates-provider';
 import type { PromptTemplateRepository } from '@/features/prompt-templates/repositories/prompt-template-repository';
 import { starterPromptTemplates } from '@/features/prompt-templates/seed/prompt-templates';
+import { MAX_JSON_IMPORT_BYTES } from '@/lib/json-import-file';
 
 const mockNavigate = vi.fn();
 
@@ -218,6 +219,32 @@ describe('PromptTemplateListPage', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'Invalid file format. Expected a template array or an exported dev-ai-toolkit payload.',
     );
+  });
+
+  it('rejects oversized template imports before reading them', async () => {
+    const text = vi.fn().mockResolvedValue('[]');
+    const oversizedFile = {
+      name: 'large-templates.json',
+      size: MAX_JSON_IMPORT_BYTES + 1,
+      text,
+    } as File;
+
+    render(
+      <MemoryRouter>
+        <PromptTemplatesProvider repository={createMemoryRepository()}>
+          <PromptTemplateListPage />
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.change(screen.getByLabelText('Import prompt templates JSON'), {
+      target: { files: [oversizedFile] },
+    });
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'The selected JSON file is larger than the 5 MB import limit.',
+    );
+    expect(text).not.toHaveBeenCalled();
   });
 
   it('discloses invalid records skipped from a mixed template import', async () => {

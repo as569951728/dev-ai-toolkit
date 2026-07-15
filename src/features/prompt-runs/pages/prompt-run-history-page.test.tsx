@@ -19,6 +19,7 @@ import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs
 import type { PromptRunRepository } from '@/features/prompt-runs/repositories/prompt-run-repository';
 import type { PromptRunNote } from '@/types/prompt-run-note';
 import type { PromptRunRecord } from '@/types/prompt-run';
+import { MAX_JSON_IMPORT_BYTES } from '@/lib/json-import-file';
 
 function createTemplateRepository(
   initialTemplates = starterPromptTemplates,
@@ -625,6 +626,27 @@ describe('PromptRunHistoryPage', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'Invalid prompt run export format.',
     );
+    expect(runRepository.snapshot()).toEqual([]);
+    expect(noteRepository.snapshot()).toEqual([]);
+  });
+
+  it('rejects oversized run imports before reading them', async () => {
+    const text = vi.fn().mockResolvedValue('{}');
+    const oversizedFile = {
+      name: 'large-run.json',
+      size: MAX_JSON_IMPORT_BYTES + 1,
+      text,
+    } as File;
+    const { noteRepository, runRepository } = renderRunHistory({ runs: [] });
+
+    fireEvent.change(screen.getByLabelText('Import run JSON'), {
+      target: { files: [oversizedFile] },
+    });
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'The selected JSON file is larger than the 5 MB import limit.',
+    );
+    expect(text).not.toHaveBeenCalled();
     expect(runRepository.snapshot()).toEqual([]);
     expect(noteRepository.snapshot()).toEqual([]);
   });

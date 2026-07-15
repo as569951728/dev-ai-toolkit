@@ -4,6 +4,7 @@ import type { ChangeEvent } from 'react';
 import type { PromptRunNotesContextValue } from '@/features/prompt-run-notes/providers/prompt-run-notes-context';
 import { parsePromptRunExportImport } from '@/features/prompt-runs/lib/prompt-run-export';
 import type { PromptRunsContextValue } from '@/features/prompt-runs/providers/prompt-runs-context';
+import { readJsonImportFile } from '@/lib/json-import-file';
 
 interface UsePromptRunImportOptions {
   deleteRun: PromptRunsContextValue['deleteRun'];
@@ -112,7 +113,7 @@ export function usePromptRunImport({
     setPendingImport(null);
 
     try {
-      const payload = parsePromptRunExportImport(await file.text());
+      const payload = parsePromptRunExportImport(await readJsonImportFile(file));
       const existingRun = getRunById(payload.run.id);
 
       if (existingRun) {

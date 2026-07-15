@@ -21,6 +21,7 @@ import { WorkspaceBackupPage } from '@/features/workspace-backup/pages/workspace
 import type { PromptRunNote } from '@/types/prompt-run-note';
 import type { PromptRunRecord } from '@/types/prompt-run';
 import type { PromptTemplate } from '@/types/prompt-template';
+import { MAX_JSON_IMPORT_BYTES } from '@/lib/json-import-file';
 
 vi.mock('@/features/workspace-backup/lib/workspace-backup-download', async (importOriginal) => {
   const actual =
@@ -374,6 +375,29 @@ describe('WorkspaceBackupPage', () => {
     expect(
       screen.getByText('Invalid workspace backup format.'),
     ).toBeInTheDocument();
+    expect(templateRepository.snapshot()).toEqual([template]);
+    expect(runRepository.snapshot()).toEqual([run]);
+    expect(noteRepository.snapshot()).toEqual([note]);
+  });
+
+  it('rejects oversized workspace imports before reading them', async () => {
+    const text = vi.fn().mockResolvedValue('{}');
+    const oversizedFile = {
+      name: 'large-workspace.json',
+      size: MAX_JSON_IMPORT_BYTES + 1,
+      text,
+    } as File;
+    const { noteRepository, runRepository, templateRepository } =
+      renderWorkspaceBackupPage();
+
+    fireEvent.change(screen.getByLabelText('Import workspace JSON'), {
+      target: { files: [oversizedFile] },
+    });
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'The selected JSON file is larger than the 5 MB import limit.',
+    );
+    expect(text).not.toHaveBeenCalled();
     expect(templateRepository.snapshot()).toEqual([template]);
     expect(runRepository.snapshot()).toEqual([run]);
     expect(noteRepository.snapshot()).toEqual([note]);

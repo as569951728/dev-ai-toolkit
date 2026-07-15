@@ -15,6 +15,7 @@ import {
 import { downloadWorkspaceBackup } from '@/features/workspace-backup/lib/workspace-backup-download';
 import type { WorkspaceBackupImportSummary } from '@/features/workspace-backup/lib/workspace-backup-merge';
 import { filterNotesForWorkspaceBackup } from '@/features/workspace-backup/lib/workspace-backup-transfer';
+import { readJsonImportFile } from '@/lib/json-import-file';
 import { subscribeToStorageKey } from '@/lib/storage-sync';
 
 type ExportFeedback = {
@@ -121,7 +122,7 @@ export function WorkspaceBackupPage() {
     setPendingImport(null);
 
     try {
-      const rawValue = await file.text();
+      const rawValue = await readJsonImportFile(file);
       const preview = previewWorkspaceBackupJson(rawValue);
 
       setPendingImport({ fileName: file.name, preview, rawValue });
