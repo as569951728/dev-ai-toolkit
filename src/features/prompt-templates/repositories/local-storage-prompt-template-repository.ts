@@ -50,6 +50,25 @@ function isValidStoredRevision(
   );
 }
 
+function hasInvalidOptionalTemplateData(value: unknown) {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  const hasInvalidArchivedAt =
+    value.archivedAt !== undefined &&
+    value.archivedAt !== null &&
+    typeof value.archivedAt !== 'string';
+  const hasInvalidVersion =
+    value.version !== undefined && typeof value.version !== 'number';
+  const hasInvalidRevisions =
+    value.revisions !== undefined &&
+    (!Array.isArray(value.revisions) ||
+      value.revisions.some((revision) => !isValidStoredRevision(revision)));
+
+  return hasInvalidArchivedAt || hasInvalidVersion || hasInvalidRevisions;
+}
+
 function clonePromptTemplate(template: PromptTemplate): PromptTemplate {
   return {
     ...template,
@@ -109,12 +128,18 @@ function normalizeStoredTemplates(
     return null;
   }
 
-  const normalizedTemplates = templates
-    .map((template) => normalizeStoredTemplate(template))
+  const normalizedEntries = templates.map((template) => ({
+    hasInvalidOptionalData: hasInvalidOptionalTemplateData(template),
+    template: normalizeStoredTemplate(template),
+  }));
+  const normalizedTemplates = normalizedEntries
+    .map((entry) => entry.template)
     .filter((template): template is PromptTemplate => template !== null);
 
   return {
-    recovered: normalizedTemplates.length !== templates.length,
+    recovered:
+      normalizedTemplates.length !== templates.length ||
+      normalizedEntries.some((entry) => entry.hasInvalidOptionalData),
     value: keepLastByKey(normalizedTemplates, (template) => template.id),
   };
 }

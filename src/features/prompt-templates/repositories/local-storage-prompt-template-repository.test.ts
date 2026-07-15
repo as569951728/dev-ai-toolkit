@@ -164,4 +164,34 @@ describe('local-storage-prompt-template-repository', () => {
       systemPrompt: '  Preserve prompt whitespace.  ',
     });
   });
+
+  it('reports discarded malformed template revisions', () => {
+    const storage = createMemoryStorage({
+      templates: JSON.stringify({
+        version: 1,
+        data: [
+          {
+            ...starterPromptTemplates[0],
+            revisions: [
+              starterPromptTemplates[0]!.revisions[0],
+              { version: 2, name: 'Incomplete revision' },
+            ],
+          },
+        ],
+      }),
+    });
+    const repository = createLocalStoragePromptTemplateRepository(
+      'templates',
+      storage,
+    );
+
+    expect(repository.loadAll()[0]!.revisions).toHaveLength(1);
+    expect(getLocalStorageReadIssues()).toEqual([
+      expect.objectContaining({
+        label: 'Prompt templates',
+        reason: 'invalid-data',
+        storageKey: 'templates',
+      }),
+    ]);
+  });
 });
