@@ -47,6 +47,7 @@ The current version includes:
 - Workspace Backup for exporting and importing local templates, saved runs, notes, and recent playground shortcuts as JSON
 - Recent template history in the playground
 - Local browser persistence via `localStorage`
+- Recovery controls for downloading and resetting unreadable local collections
 - Feature-based code organization
 - ESLint, tests, and GitHub Actions CI
 
@@ -217,6 +218,9 @@ The current storage model is intentionally local-first:
 - Concurrent edits are still resolved by the browser's last persisted write;
   warnings protect the visible draft but do not merge fields automatically
 - Workspace backups can export and restore local templates, saved runs, notes, and recent playground shortcuts
+- If a stored collection cannot be read, the app keeps its original browser
+  value, blocks writes to that collection, and offers a raw download before an
+  explicit reset
 - Repository boundaries are in place so future API-backed work does not require rewriting page structure first
 
 ## Data And Privacy
