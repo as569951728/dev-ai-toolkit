@@ -2,25 +2,38 @@
 
 This project can be deployed to Vercel as a static Vite application.
 
-## Current status
+## Deployment configuration
 
 - The app builds with `npm run build`
 - The production output directory is `dist`
 - Client-side routing is handled by `react-router-dom`
 - `vercel.json` is included so route refreshes fall back to `index.html`
-- `https://dev-ai-toolkit.vercel.app` was verified in a clean browser on
-  2026-07-15
-- Current production deployment `dpl_H6a8WEqHe2Z8Xo6fhMGhFvEvSCZm` serves
-  revision [`8c44091`](https://github.com/as569951728/dev-ai-toolkit/commit/8c44091ccd40f86fc594cea85ef204e51a1d6c19)
-- A clean Chromium smoke check loaded the home, Playground, Run History, and
-  Workspace Backup routes from that deployment
-- The complete template creation, Playground composition, saved-run review,
-  nested-route refresh, and workspace export walkthrough was verified on
-  release deployment `dpl_5urjtm6eaMvLptwTh4tETaTj8gXc`, which serves the
-  published [`v0.2.0` release](https://github.com/as569951728/dev-ai-toolkit/releases/tag/v0.2.0)
 - Vercel did not add a record to the repository's GitHub Deployments API, so
-  deployment identity is recorded here and in
-  [GitHub issue #14](https://github.com/as569951728/dev-ai-toolkit/issues/14)
+  immutable verification records include the Vercel deployment ID
+
+## Verification records
+
+These records describe the revision that was tested at that time. Use Vercel
+deployment metadata to identify the revision currently behind the canonical
+alias.
+
+### Post-release feedback smoke check
+
+- Date: 2026-07-15
+- Deployment: `dpl_85w2c998ShA4Wy6gxBifw4gSSQro`
+- Revision: [`ec58ced`](https://github.com/as569951728/dev-ai-toolkit/commit/ec58ced4347bfa3b54fefb0991b0b5a164e8ad68)
+- Scope: home, Playground, Run History, and Workspace Backup returned 200 at
+  desktop and 375px mobile sizes; the workflow feedback link was visible with
+  the expected destination and safe external-link attributes
+
+### v0.2.0 release walkthrough
+
+- Date: 2026-07-15
+- Deployment: `dpl_5urjtm6eaMvLptwTh4tETaTj8gXc`
+- Revision: [`8ed3825`](https://github.com/as569951728/dev-ai-toolkit/commit/8ed3825fcf007bfa2965da015ec7066f437797b3)
+- Scope: template creation, Playground composition, saved-run review,
+  nested-route refresh, and workspace export
+- Release: [`v0.2.0`](https://github.com/as569951728/dev-ai-toolkit/releases/tag/v0.2.0)
 
 ## Deploy to Vercel
 
