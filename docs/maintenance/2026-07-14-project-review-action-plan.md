@@ -3,7 +3,7 @@
 **Status:** Active
 **Last updated:** 2026-07-15
 **Review baseline:** `aab5aee`
-**Current evidence commit:** `9d2509b`
+**Current evidence commit:** `f487910`
 
 This document turns the July 2026 project review into a bounded maintenance
 plan. It should be updated when a task changes state or when completion evidence
@@ -17,7 +17,8 @@ The following facts were verified during the review:
 - The local quality suite passes: audit, lint, 388 unit tests, build, and 25
   browser tests. The same checks pass on current `main` in
   [CI run 29349675016](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29349675016).
-- The public Vercel URL has not been verified against the current `main` commit.
+- The public Vercel URL serves application revision `f487910`; the clean-browser
+  core workflow and nested-route refresh passed on 2026-07-15.
 - The review started with 99 open issues. The first evidence-backed triage
   session closed 10 implemented issues, leaving 89 open.
 - `v0.1.0` is the latest release; the current prompt workflow has changed
@@ -44,7 +45,7 @@ No task should be marked `done` from a commit subject alone.
 | ID | Priority | Status | Work item | Acceptance evidence | Suggested commit |
 | --- | --- | --- | --- | --- | --- |
 | MAINT-001 | P0 | `done` | Stabilize the Run Detail clipboard feedback test. | The focused test passes repeatedly, the full local suite passes, and CI is green on the same SHA. | `test: stabilize run detail clipboard feedback` |
-| MAINT-002 | P0 | `blocked` | Restore and verify the Vercel demo. | The public URL loads in a clean browser, the core template-to-run path works, and the deployed SHA is recorded. Depends on deployment access. | `docs: verify the public demo deployment` |
+| MAINT-002 | P0 | `done` | Restore and verify the Vercel demo. | The public URL loads in a clean browser, the core template-to-run path works, and the deployed SHA is recorded. | `docs: verify the public demo deployment` |
 | MAINT-003 | P0 | `in-progress` | Triage the existing issue backlog in reviewable batches. | Every issue receives one documented disposition and evidence; no issue is closed only because a similar commit exists. | `docs: record issue triage decisions` |
 | MAINT-004 | P1 | `done` | Protect `main` with required CI checks. | Direct pushes cannot bypass the required CI workflow and repository settings are captured in the progress log. Depends on MAINT-001. | No repository commit required unless workflow files change. |
 | MAINT-005 | P1 | `done` | Correct future GitHub commit attribution. | The repository-local Git email is verified by GitHub and a new commit is attributed to the maintainer account. Existing history is not rewritten. | No standalone commit required. |
@@ -128,3 +129,4 @@ Add one row only after evidence exists.
 | 2026-07-15 | MAINT-003 | `ready` to `in-progress` | [First triage session](./issue-triage-ledger.md#first-triage-session) closed 10 implemented issues with current-main evidence | Continue with no more than 10 open issues per session |
 | 2026-07-15 | MAINT-004 | `scheduled` to `done` | `main` requires a strict `quality` check and pull request; admin enforcement, conversation resolution, force-push blocking, and deletion blocking are enabled | Recheck settings before release |
 | 2026-07-15 | MAINT-005 | `ready` to `done` | Commits [`e56c730`](https://github.com/as569951728/dev-ai-toolkit/commit/e56c730) and [`12ba958`](https://github.com/as569951728/dev-ai-toolkit/commit/12ba958) are attributed to `as569951728` | Keep the repository-local noreply email |
+| 2026-07-15 | MAINT-002 | `blocked` to `done` | Production deployment `dpl_Cq6hFsDbB1a3SVEhNk8Pa7grBzfp` serves [`f487910`](https://github.com/as569951728/dev-ai-toolkit/commit/f4879101d913c9b4608d272dbac3b88760b0b599); the clean-browser core workflow, workspace export, and nested-route refresh passed | Re-verify the deployment for each release candidate |
