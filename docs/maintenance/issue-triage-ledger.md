@@ -2,7 +2,7 @@
 
 **Status:** Active
 **Last updated:** 2026-07-15
-**Open-issue snapshot:** 78
+**Open-issue snapshot:** 73
 
 GitHub Issues remains the source of truth. This ledger defines how the current
 backlog is reviewed without bulk-closing work or treating commit messages as
@@ -84,6 +84,24 @@ the closing comment was posted.
 | [#30](https://github.com/as569951728/dev-ai-toolkit/issues/30#issuecomment-4976360727) Run export failure | `f3fa527` | `close-implemented` | Export errors are announced and a later retry can succeed. |
 | [#31](https://github.com/as569951728/dev-ai-toolkit/issues/31#issuecomment-4976360772) Workspace export failure | `c42aff0` | `close-implemented` | Workspace export errors are announced and the action remains available. |
 
+## Third Triage Session
+
+The third set completed the remaining Batch A review. Eight issues still met
+their acceptance criteria on current `main`; #44 stays open because the current
+English and Chinese READMEs no longer document the verified variable behavior.
+
+| Issue | Implementation | Decision | Verification evidence |
+| --- | --- | --- | --- |
+| [#32](https://github.com/as569951728/dev-ai-toolkit/issues/32#issuecomment-4976752624) Template export failure | `ed10714` | `close-implemented` | Export errors are announced and the download action remains available. |
+| [#33](https://github.com/as569951728/dev-ai-toolkit/issues/33#issuecomment-4976752596) Workspace import rollback | `97c1440` | `close-implemented` | Failed multi-repository imports restore the previous workspace state. |
+| [#34](https://github.com/as569951728/dev-ai-toolkit/issues/34#issuecomment-4976752589) Workspace browser round trip | `5c0fadf` | `close-implemented` | A real Chromium export and import round trip passed. |
+| [#35](https://github.com/as569951728/dev-ai-toolkit/issues/35#issuecomment-4976752597) Copy composed prompt | `200a323` | `close-implemented` | The Playground copies the fully composed prompt in covered workflow tests. |
+| [#36](https://github.com/as569951728/dev-ai-toolkit/issues/36#issuecomment-4976752643) Copy saved prompt | `5b39c34` | `close-implemented` | Run Detail copies the saved composed prompt snapshot. |
+| [#41](https://github.com/as569951728/dev-ai-toolkit/issues/41#issuecomment-4976752617) Unresolved variable warning | `4a527ee` | `close-implemented` | Unresolved placeholders are reported without blocking copy or save actions. |
+| [#42](https://github.com/as569951728/dev-ai-toolkit/issues/42#issuecomment-4976752655) Failed download cleanup | `a8c9d2c` | `close-implemented` | Failed exports revoke the temporary object URL in focused tests. |
+| [#43](https://github.com/as569951728/dev-ai-toolkit/issues/43#issuecomment-4976752619) Unknown template filter | `2e9dbb4` | `close-implemented` | Unknown template filters fall back without hiding all templates. |
+| [#44](https://github.com/as569951728/dev-ai-toolkit/issues/44#issuecomment-4976756169) Variable behavior documentation | `42cc7eb` | `keep` | Walkthrough and tests still pass, but both current READMEs omit the required examples and empty-value behavior. |
+
 ## Remaining Review Batches
 
 Process no more than ten issues in one maintenance session. The ranges are
@@ -91,7 +109,7 @@ organizational only; they do not imply a shared disposition.
 
 | Batch | Scope | Required output |
 | --- | --- | --- |
-| A | Remaining open issues in #22-#45: storage errors and early prompt workflow changes | One decision and evidence comment per issue |
+| A | #44 remains open for a separate README correction | Close only after both language versions match current behavior |
 | B | Remaining open issues in #46-#69: storage availability, rollback, and same-event writes | Reproduction or current-main verification per issue |
 | C | Remaining open issues in #70-#95: editor safety, imports, confirmations, and browser coverage | Separate behavior bugs from documentation or test follow-up |
 | D | Remaining open issues in #96-#119: navigation, identifiers, reuse, and tool handoffs | Check recent commits and close only after end-to-end verification |
@@ -121,3 +139,4 @@ evidence.
 | --- | --- | --- | --- | --- |
 | 2026-07-15 | #37, #38, #39, #40, #45, #46, #74, #115, #117, #119 | 10 `close-implemented` | 11 targeted files with 105 passing tests and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29349675016) | Batch A, remaining open issues only |
 | 2026-07-15 | #22 through #31 | 10 `close-implemented` | 8 targeted files with 125 passing tests on `4808d6a` and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29384607278) | Continue Batch A with no more than 10 open issues |
+| 2026-07-15 | #32 through #36, #41 through #44 | 8 `close-implemented`, 1 `keep` | 8 focused files with 131 passing tests, 1 Chromium round trip on `6dc243b`, and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29387858229) | Batch B; #44 remains open for a separate README correction |
