@@ -135,3 +135,63 @@ test('downloads and resets unreadable local workspace data', async ({ page }) =>
     .poll(() => page.evaluate((key) => window.localStorage.getItem(key), storageKey))
     .toBeNull();
 });
+
+test('rolls back a partial unreadable storage reset', async ({ page }) => {
+  const storageValues = {
+    'dev-ai-toolkit.prompt-runs': '{broken-runs',
+    'dev-ai-toolkit.prompt-templates': '{broken-templates',
+  };
+
+  await page.goto('/');
+  await page.evaluate((values) => {
+    Object.entries(values).forEach(([key, value]) => {
+      window.localStorage.setItem(key, value);
+    });
+  }, storageValues);
+  await page.reload();
+
+  const recoveryAlert = page.getByRole('alert').filter({
+    hasText: 'Some local workspace data could not be read.',
+  });
+
+  await expect(recoveryAlert).toContainText('Prompt templates');
+  await expect(recoveryAlert).toContainText('Prompt runs');
+
+  await page.evaluate((affectedKeys) => {
+    const removeItem = Storage.prototype.removeItem;
+    let affectedRemovalCount = 0;
+
+    Storage.prototype.removeItem = function removeWithSecondFailure(key) {
+      if (affectedKeys.includes(key)) {
+        affectedRemovalCount += 1;
+
+        if (affectedRemovalCount === 2) {
+          throw new DOMException('Storage unavailable', 'SecurityError');
+        }
+      }
+
+      removeItem.call(this, key);
+    };
+  }, Object.keys(storageValues));
+
+  await recoveryAlert
+    .getByRole('button', { name: 'Reset affected data' })
+    .click();
+  await page
+    .getByRole('dialog', { name: 'Reset unreadable local data?' })
+    .getByRole('button', { name: 'Reset and reload' })
+    .click();
+
+  await expect(recoveryAlert).toContainText(
+    'The unreadable browser data could not be fully reset. It remains available for download in this session.',
+  );
+  await expect
+    .poll(() =>
+      page.evaluate((keys) => {
+        return Object.fromEntries(
+          keys.map((key) => [key, window.localStorage.getItem(key)]),
+        );
+      }, Object.keys(storageValues)),
+    )
+    .toEqual(storageValues);
+});

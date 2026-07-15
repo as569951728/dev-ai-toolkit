@@ -15,6 +15,8 @@ commit.
 
 - Prevented unchanged Playground previews, including reopened saved runs, from
   creating duplicate prompt snapshots.
+- Rolled back browser-storage values removed before a later recovery reset
+  failure, while keeping every recovery entry available for download.
 
 ## [v0.2.0] - 2026-07-15
 
