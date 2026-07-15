@@ -23,8 +23,8 @@ commit.
 - Excluded archived templates from the Overview's active-template count.
 - Kept the Overview's first prompt workflow action within common desktop and
   phone viewports by compacting the navigation and hero layout.
-- Prevented unchanged Playground previews, including reopened saved runs, from
-  creating duplicate prompt snapshots.
+- Prevented unchanged Playground previews, including reopened or previously
+  saved previews, from creating duplicate prompt snapshots.
 - Rolled back browser-storage values removed before a later recovery reset
   failure, while keeping every recovery entry available for download.
 

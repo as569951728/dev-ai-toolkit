@@ -699,6 +699,48 @@ describe('Prompt playground workflow', () => {
     expect(runRepository.loadAll()).toHaveLength(1);
   });
 
+  it('recognizes a previously saved preview after another snapshot is saved', async () => {
+    const runRepository = createRunRepository();
+
+    renderPlayground(
+      '/playground?templateId=code-review-assistant',
+      createTemplateRepository(),
+      runRepository,
+    );
+
+    fireEvent.change(screen.getByLabelText('Repository Name'), {
+      target: { value: 'dev-ai-toolkit' },
+    });
+    fireEvent.change(screen.getByLabelText('Change Scope'), {
+      target: { value: 'preview-a' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Save prompt snapshot' }));
+
+    expect(
+      await screen.findByRole('button', { name: 'Snapshot saved' }),
+    ).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText('Change Scope'), {
+      target: { value: 'preview-b' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Save prompt snapshot' }));
+
+    expect(runRepository.loadAll()).toHaveLength(2);
+
+    fireEvent.change(screen.getByLabelText('Change Scope'), {
+      target: { value: 'preview-a' },
+    });
+
+    const savedButton = screen.getByRole('button', { name: 'Snapshot saved' });
+
+    expect(savedButton).toBeDisabled();
+    expect(
+      screen.getByRole('link', { name: 'Open saved run' }),
+    ).toBeInTheDocument();
+    fireEvent.click(savedButton);
+    expect(runRepository.loadAll()).toHaveLength(2);
+  });
+
   it('copies generated prompt sections and announces the result', async () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     const templateRepository = createTemplateRepository();
