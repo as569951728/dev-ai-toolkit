@@ -1,32 +1,35 @@
 # Project Review Action Plan
 
-**Status:** Active
+**Status:** Completed
 **Last updated:** 2026-07-15
 **Review baseline:** `aab5aee`
-**Current evidence commit:** `f487910`
+**Release commit:** `8ed3825`
 
-This document turns the July 2026 project review into a bounded maintenance
-plan. It should be updated when a task changes state or when completion evidence
-is available. The [implementation roadmap](../roadmap.md) remains the source for
-product direction; this file controls the immediate maintenance sequence.
+This document records the bounded maintenance plan produced by the July 2026
+project review. The plan concluded with the `v0.2.0` release. The
+[implementation roadmap](../roadmap.md) remains the source for current product
+direction.
 
-## Current Baseline
+## Completion Snapshot
 
-The following facts were verified during the review:
+The following facts were verified when the plan closed:
 
-- The local quality suite passes: audit, lint, 388 unit tests, build, and 25
-  browser tests. The same checks pass on current `main` in
-  [CI run 29349675016](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29349675016).
-- The public Vercel URL serves application revision `f487910`; the clean-browser
-  core workflow and nested-route refresh passed on 2026-07-15.
-- The review started with 99 open issues. The first evidence-backed triage
-  session closed 10 implemented issues, leaving 89 open.
-- `v0.1.0` is the latest release; the current prompt workflow has changed
-  substantially since that tag.
+- Release CI passed dependency audit, lint, 401 tests with coverage, production
+  build, and 29 Chromium tests in
+  [run 29394307108](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29394307108).
+- Production deployment `dpl_5urjtm6eaMvLptwTh4tETaTj8gXc` served release
+  commit [`8ed3825`](https://github.com/as569951728/dev-ai-toolkit/commit/8ed3825fcf007bfa2965da015ec7066f437797b3),
+  and the clean-browser core workflow and nested-route refresh passed.
+- The review started with 99 open issues. Evidence-backed triage reviewed the
+  full backlog and closed the final release-triage task in
+  [issue #131](https://github.com/as569951728/dev-ai-toolkit/issues/131).
+- [`v0.2.0`](https://github.com/as569951728/dev-ai-toolkit/releases/tag/v0.2.0)
+  was published from the verified release commit.
 - The application remains a browser-only, local-first prompt workflow manager.
 
-These values are a dated snapshot, not permanent project claims. Recheck them
-before using this document for a release decision.
+These values are completion evidence for this plan, not permanent project
+claims. Recheck current CI, repository, and deployment state before making a
+future release decision.
 
 ## Status Vocabulary
 
@@ -46,14 +49,14 @@ No task should be marked `done` from a commit subject alone.
 | --- | --- | --- | --- | --- | --- |
 | MAINT-001 | P0 | `done` | Stabilize the Run Detail clipboard feedback test. | The focused test passes repeatedly, the full local suite passes, and CI is green on the same SHA. | `test: stabilize run detail clipboard feedback` |
 | MAINT-002 | P0 | `done` | Restore and verify the Vercel demo. | The public URL loads in a clean browser, the core template-to-run path works, and the deployed SHA is recorded. | `docs: verify the public demo deployment` |
-| MAINT-003 | P0 | `in-progress` | Triage the existing issue backlog in reviewable batches. | Every issue receives one documented disposition and evidence; no issue is closed only because a similar commit exists. | `docs: record issue triage decisions` |
+| MAINT-003 | P0 | `done` | Triage the existing issue backlog in reviewable batches. | Every issue receives one documented disposition and evidence; no issue is closed only because a similar commit exists. | `docs: record issue triage decisions` |
 | MAINT-004 | P1 | `done` | Protect `main` with required CI checks. | Direct pushes cannot bypass the required CI workflow and repository settings are captured in the progress log. Depends on MAINT-001. | No repository commit required unless workflow files change. |
 | MAINT-005 | P1 | `done` | Correct future GitHub commit attribution. | The repository-local Git email is verified by GitHub and a new commit is attributed to the maintainer account. Existing history is not rewritten. | No standalone commit required. |
 | DATA-001 | P1 | `done` | Surface malformed local data instead of silently showing an empty collection. | Corrupted template, run, note, and recent-template payloads produce a recoverable warning; original bytes remain available for backup or reset; repository tests cover each collection. | `fix: surface corrupted local workspace data` |
 | DATA-002 | P2 | `done` | Reject oversized JSON imports before calling `file.text()`. | Template, run, and workspace imports share a documented size limit and show a useful error; boundary tests cover accepted and rejected files. | `fix: limit local JSON import size` |
 | UX-001 | P2 | `done` | Complete the small accessibility structure pass. | The app has a skip link, one page-level `h1`, `:focus-visible` styles, reduced-motion handling, and passing browser checks. | `fix: improve keyboard navigation structure` |
 | DOCS-001 | P2 | `done` | Reduce duplicated and self-referential project documentation. | README leads with setup and the core workflow; Roadmap contains future outcomes; Changelog contains user-facing changes rather than a file log. | `docs: focus project maintenance guidance` |
-| REL-001 | P1 | `blocked` | Prepare and publish `v0.2.0`. | Every hard gate in the release checklist is complete and the GitHub release points to the verified tag. Depends on MAINT-001 through DOCS-001 as recorded in the checklist. | `docs: prepare v0.2.0 release` |
+| REL-001 | P1 | `done` | Prepare and publish `v0.2.0`. | Every hard gate in the release checklist is complete and the GitHub release points to the verified tag. Depends on MAINT-001 through DOCS-001 as recorded in the checklist. | `docs: prepare v0.2.0 release` |
 | COMM-001 | P3 | `scheduled` | Collect feedback from real users of the prompt workflow. | Feedback is linked to an external issue or an anonymized maintainer note with consent; no synthetic comments, accounts, or metrics are added. | Usually no repository commit. |
 
 ## Execution Sequence
@@ -69,46 +72,52 @@ Completed: 2026-07-15
 3. Start MAINT-003 with the first ten issues in the triage ledger.
 4. Do not start new product features during this phase.
 
-Exit condition: `main` is green and new commits are attributed correctly.
+Met: `main` was green and new commits were attributed correctly.
 
 ### Phase 2: Restore Public Verifiability
 
 Target: 2026-07-17 to 2026-07-20
 
+Completed: 2026-07-15
+
 1. Complete MAINT-002 and record the deployed SHA.
 2. Keep the completed MAINT-004 branch rules enabled.
 3. Continue MAINT-003 in batches of no more than ten issues.
 
-Exit condition: a visitor can open the demo and the protected branch reports a
-passing required check.
+Met: a visitor could open the demo and the protected branch reported a passing
+required check.
 
 ### Phase 3: Protect Local Data
 
 Target: 2026-07-21 to 2026-07-27
 
+Completed: 2026-07-15
+
 1. Complete DATA-001 as one focused behavior change.
 2. Complete DATA-002 in a separate change.
 3. Complete UX-001 without redesigning the interface.
 
-Exit condition: malformed or oversized imports cannot silently replace the
-workspace with an empty-looking state.
+Met: malformed or oversized imports could not silently replace the workspace
+with an empty-looking state.
 
 ### Phase 4: Prepare The Next Release
 
 Target: 2026-07-28 to 2026-08-12
 
+Completed: 2026-07-15
+
 1. Complete DOCS-001 after the behavior and demo are stable.
 2. Reduce the open issue set to a reviewed backlog and assign five to eight
    issues to a `v0.2.0` milestone.
 3. Complete the release checklist and publish only from a green commit.
-4. Begin COMM-001 after the public demo is usable.
+4. Transfer COMM-001 to post-release follow-up after the public demo is usable.
 
-Exit condition: the tag, release notes, demo, documentation, and CI describe the
-same behavior.
+Met: the tag, release notes, demo, documentation, and CI described the same
+release behavior.
 
-## Scope Guard
+## Release Scope Guard
 
-Until `v0.2.0` is published, do not add:
+During `v0.2.0` preparation, this plan excluded:
 
 - Backend accounts, cloud sync, or shared workspaces
 - LLM execution, tracing, evaluation, or agent runtime features
@@ -134,3 +143,5 @@ Add one row only after evidence exists.
 | 2026-07-15 | DATA-002 | `scheduled` to `done` | Commit `5435bad`; shared 5 MB boundary tests confirm accepted files are read and oversized template, run, and workspace files are rejected before `file.text()` | Revisit the limit only with a measured local-workspace use case |
 | 2026-07-15 | UX-001 | `scheduled` to `done` | [PR #125](https://github.com/as569951728/dev-ai-toolkit/pull/125), commit `dc65893`, 401 unit tests, and 28 browser tests; keyboard checks cover the skip target, focus ring, reduced motion, and one `h1` across 14 routes | Re-run the keyboard checks on the release candidate |
 | 2026-07-15 | DOCS-001 | `scheduled` to `done` | [PR #134](https://github.com/as569951728/dev-ai-toolkit/pull/134) focused both README languages; [PR #135](https://github.com/as569951728/dev-ai-toolkit/pull/135) separated Roadmap and Changelog responsibilities; [main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29386646759) passed on `132b65d` | Verify clean-checkout commands and language parity in #130 |
+| 2026-07-15 | MAINT-003 | `in-progress` to `done` | [Issue #131](https://github.com/as569951728/dev-ai-toolkit/issues/131) and the [twelfth triage session](./issue-triage-ledger.md#twelfth-triage-session) record the final backlog dispositions | Start future work from new, evidence-backed issues |
+| 2026-07-15 | REL-001 | `blocked` to `done` | [PR #155](https://github.com/as569951728/dev-ai-toolkit/pull/155) prepared the release commit; [PR #156](https://github.com/as569951728/dev-ai-toolkit/pull/156) recorded publication evidence; the [v0.2.0 Release](https://github.com/as569951728/dev-ai-toolkit/releases/tag/v0.2.0) is public | Continue COMM-001 without inventing user evidence |
