@@ -2,7 +2,7 @@
 
 **Status:** Active
 **Last updated:** 2026-07-15
-**Open-issue snapshot:** 72
+**Open-issue snapshot:** 62
 
 GitHub Issues remains the source of truth. This ledger defines how the current
 backlog is reviewed without bulk-closing work or treating commit messages as
@@ -103,6 +103,25 @@ That documentation gap was then corrected and closed separately in PR #140.
 | [#43](https://github.com/as569951728/dev-ai-toolkit/issues/43#issuecomment-4976752619) Unknown template filter | `2e9dbb4` | `close-implemented` | Unknown template filters fall back without hiding all templates. |
 | [#44](https://github.com/as569951728/dev-ai-toolkit/issues/44#issuecomment-4976818819) Variable behavior documentation | `42cc7eb`, [#140](https://github.com/as569951728/dev-ai-toolkit/pull/140) | `close-implemented` | Both READMEs and the walkthrough now match the parser and unresolved-value behavior on `45ba22c`. |
 
+## Fourth Triage Session
+
+The fourth set covered the first ten open issues in Batch B. Each implementation
+was checked against the original issue body with focused tests on current
+`main`, including real Chromium coverage for the two browser-level behaviors.
+
+| Issue | Implementation | Decision | Verification evidence |
+| --- | --- | --- | --- |
+| [#47](https://github.com/as569951728/dev-ai-toolkit/issues/47#issuecomment-4976860489) Run Detail copy feedback test | `4cd55c6` | `close-implemented` | The asynchronous full-copy assertion passed in the focused Run Detail tests. |
+| [#48](https://github.com/as569951728/dev-ai-toolkit/issues/48#issuecomment-4976860475) Dotted variable browser coverage | `8a36b0b` | `close-implemented` | The create-template-to-preview Chromium scenario passed. |
+| [#49](https://github.com/as569951728/dev-ai-toolkit/issues/49#issuecomment-4976860493) Guarded storage initialization | `abd9da2` | `close-implemented` | Guarded resolution, repository fallbacks, write failures, and blocked-storage startup passed. |
+| [#50](https://github.com/as569951728/dev-ai-toolkit/issues/50#issuecomment-4976860524) Guarded storage architecture guide | `5479e55` | `close-implemented` | The guide identifies both helpers and distinguishes read fallbacks from write failures. |
+| [#51](https://github.com/as569951728/dev-ai-toolkit/issues/51#issuecomment-4976860490) Unavailable storage notice | `3f06cf5` | `close-implemented` | Notice unit tests and the blocked-storage Chromium path passed. |
+| [#52](https://github.com/as569951728/dev-ai-toolkit/issues/52#issuecomment-4976860532) Write-blocked storage detection | `be6df56` | `close-implemented` | Read/write probe success, failure, and temporary-key cleanup passed. |
+| [#53](https://github.com/as569951728/dev-ai-toolkit/issues/53#issuecomment-4976860505) Orphaned backup notes | `a7d52a2` | `close-implemented` | Hook, transfer, and page exports retain valid notes and exclude orphaned notes. |
+| [#54](https://github.com/as569951728/dev-ai-toolkit/issues/54#issuecomment-4976860496) Skipped template imports | `6dc74a7` | `close-implemented` | Parser and list feedback disclose invalid records without changing valid-only feedback. |
+| [#55](https://github.com/as569951728/dev-ai-toolkit/issues/55#issuecomment-4976860492) Playground variable whitespace | `ce423ba` | `close-implemented` | Non-empty whitespace is preserved while whitespace-only values remain unresolved. |
+| [#56](https://github.com/as569951728/dev-ai-toolkit/issues/56#issuecomment-4976860539) Camel-case variable labels | `ccd3500` | `close-implemented` | Camel-case, dotted, and separator-based labels keep their original lookup keys. |
+
 ## Remaining Review Batches
 
 Process no more than ten issues in one maintenance session. The ranges are
@@ -111,7 +130,7 @@ organizational only; they do not imply a shared disposition.
 | Batch | Scope | Required output |
 | --- | --- | --- |
 | A | Complete | Reopen only if current behavior no longer matches the recorded evidence |
-| B | Remaining open issues in #46-#69: storage availability, rollback, and same-event writes | Reproduction or current-main verification per issue |
+| B | Remaining open issues in #57-#69: storage reliability, dependencies, and same-event writes | Reproduction or current-main verification per issue |
 | C | Remaining open issues in #70-#95: editor safety, imports, confirmations, and browser coverage | Separate behavior bugs from documentation or test follow-up |
 | D | Remaining open issues in #96-#119: navigation, identifiers, reuse, and tool handoffs | Check recent commits and close only after end-to-end verification |
 | E | #14 and uncategorized maintenance items | Keep deployment and release blockers visible |
@@ -142,3 +161,4 @@ evidence.
 | 2026-07-15 | #22 through #31 | 10 `close-implemented` | 8 targeted files with 125 passing tests on `4808d6a` and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29384607278) | Continue Batch A with no more than 10 open issues |
 | 2026-07-15 | #32 through #36, #41 through #44 | 8 `close-implemented`, 1 `keep` | 8 focused files with 131 passing tests, 1 Chromium round trip on `6dc243b`, and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29387858229) | Batch B; #44 remains open for a separate README correction |
 | 2026-07-15 | #44 follow-up | 1 `close-implemented` | README parity, 2 focused files with 9 passing tests, and [green PR CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29388553835) on `45ba22c` | Batch B |
+| 2026-07-15 | #47 through #56 | 10 `close-implemented` | 13 focused files with 117 passing tests, 3 Chromium scenarios, and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29388840912) on `12accff` | Continue Batch B with no more than 10 open issues |
