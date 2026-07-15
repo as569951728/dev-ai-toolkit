@@ -2,7 +2,7 @@
 
 **Status:** Active
 **Last updated:** 2026-07-15
-**Open-issue snapshot:** 29
+**Open-issue snapshot:** 24
 
 GitHub Issues remains the source of truth. This ledger defines how the current
 backlog is reviewed without bulk-closing work or treating commit messages as
@@ -192,6 +192,20 @@ misrepresented.
 | [#89](https://github.com/as569951728/dev-ai-toolkit/issues/89#issuecomment-4977011834) Duplicate workspace records | `516b1a7` | `close-implemented` | Duplicate primary records and note run IDs are rejected before preview. |
 | [#90](https://github.com/as569951728/dev-ai-toolkit/issues/90#issuecomment-4977011788) Workspace preview docs | `18db17f` | `close-implemented` | Docs match validation, confirmation, unique-key, and recent-shortcut behavior. |
 
+## Ninth Triage Session
+
+The ninth set completed Batch C with five issues covering missing edit routes,
+confirmation focus, and template revision restore behavior. Focus and browser
+workflow evidence was checked on current `main` before closure.
+
+| Issue | Implementation | Decision | Verification evidence |
+| --- | --- | --- | --- |
+| [#91](https://github.com/as569951728/dev-ai-toolkit/issues/91#issuecomment-4977051621) Missing template edit routes | `03bc57d` | `close-implemented` | Missing IDs keep the requested URL and show a return action; existing IDs still render the form. |
+| [#92](https://github.com/as569951728/dev-ai-toolkit/issues/92#issuecomment-4977051615) Template delete focus | `3d0395d` | `close-implemented` | The non-destructive Cancel action receives focus and restores the regular Delete action. |
+| [#93](https://github.com/as569951728/dev-ai-toolkit/issues/93#issuecomment-4977051641) Run delete focus | `8e333f0` | `close-implemented` | The existing run confirmation now moves focus to Cancel without changing deletion behavior. |
+| [#94](https://github.com/as569951728/dev-ai-toolkit/issues/94#issuecomment-4977051616) Revision restore confirmation | `9a1f72d` | `close-implemented` | One historical revision can be pending; cancel and confirm preserve the versioning contract. |
+| [#95](https://github.com/as569951728/dev-ai-toolkit/issues/95#issuecomment-4977051585) Revision restore browser flow | `6014b20` | `close-implemented` | Chromium verifies edit to version 2, focused cancel, no early restore, and confirmed version 3. |
+
 ## Remaining Review Batches
 
 Process no more than ten issues in one maintenance session. The ranges are
@@ -201,7 +215,7 @@ organizational only; they do not imply a shared disposition.
 | --- | --- | --- |
 | A | Complete | Reopen only if current behavior no longer matches the recorded evidence |
 | B | Complete | Reopen only if current behavior no longer matches the recorded evidence |
-| C | Remaining open issues in #91-#95: missing routes, confirmation focus, and revision restores | Separate behavior bugs from documentation or test follow-up |
+| C | Complete | Reopen only if current behavior no longer matches the recorded evidence |
 | D | Remaining open issues in #96-#119: navigation, identifiers, reuse, and tool handoffs | Check recent commits and close only after end-to-end verification |
 | E | #14 and uncategorized maintenance items | Keep deployment and release blockers visible |
 
@@ -236,3 +250,4 @@ evidence.
 | 2026-07-15 | #67 through #69 | 3 `close-implemented` | 8 focused files with 95 passing tests and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29389547947) with 401 coverage tests, build, and 28 Chromium tests on `0532c0e` | Batch C |
 | 2026-07-15 | #70, #71, #72, #73, #75 through #80 | 10 `close-implemented` | 6 focused files with 68 passing tests, 2 focused Chromium scenarios, and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29389836302) with 401 coverage tests and 28 browser tests on `cd996bf` | Continue Batch C with no more than 10 open issues |
 | 2026-07-15 | #81 through #90 | 10 `close-implemented` | 8 focused files with 125 passing tests, 4 focused Chromium scenarios, and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29390151825) with 401 coverage tests and 28 browser tests on `35acea9` | Finish Batch C with #91 through #95 |
+| 2026-07-15 | #91 through #95 | 5 `close-implemented` | 3 focused files with 38 passing tests, 2 focused Chromium scenarios, and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29390490383) with 401 coverage tests and 28 browser tests on `4286772` | Batch D |
