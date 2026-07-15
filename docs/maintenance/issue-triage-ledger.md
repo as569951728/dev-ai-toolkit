@@ -2,7 +2,7 @@
 
 **Status:** Active
 **Last updated:** 2026-07-15
-**Open-issue snapshot:** 89
+**Open-issue snapshot:** 78
 
 GitHub Issues remains the source of truth. This ledger defines how the current
 backlog is reviewed without bulk-closing work or treating commit messages as
@@ -65,6 +65,25 @@ The first set was reviewed against each issue body, targeted tests on current
 | [#117](https://github.com/as569951728/dev-ai-toolkit/issues/117#issuecomment-4971608734) Saved variables in JSON Tools | `8832133` | `close-implemented` | Run Detail, JSON Tools, and browser handoff tests passed. |
 | [#119](https://github.com/as569951728/dev-ai-toolkit/issues/119#issuecomment-4971609456) Return from JSON Tools | `e05144f` | `close-implemented` | JSON Tools unit and browser round-trip tests passed. |
 
+## Second Triage Session
+
+The second set covered the first ten remaining issues in Batch A. Each issue
+was checked against its original acceptance criteria on current `main` before
+the closing comment was posted.
+
+| Issue | Implementation | Decision | Verification evidence |
+| --- | --- | --- | --- |
+| [#22](https://github.com/as569951728/dev-ai-toolkit/issues/22#issuecomment-4976357529) Duplicate run replacement feedback | `9161f63` | `close-implemented` | New and replacement imports have separate covered feedback paths. |
+| [#23](https://github.com/as569951728/dev-ai-toolkit/issues/23#issuecomment-4976360701) Snapshot storage failure | `0149345` | `close-implemented` | Failed saves retain the workflow and render an alert without a saved-run action. |
+| [#24](https://github.com/as569951728/dev-ai-toolkit/issues/24#issuecomment-4976360687) Run note storage failure | `c2db16c` | `close-implemented` | Failed note writes preserve the editor draft and render an alert. |
+| [#25](https://github.com/as569951728/dev-ai-toolkit/issues/25#issuecomment-4976360714) Template form storage failure | `844731b` | `close-implemented` | Failed create or edit writes keep form values available for retry. |
+| [#26](https://github.com/as569951728/dev-ai-toolkit/issues/26#issuecomment-4976360679) Template lifecycle storage failure | `0f37e8a` | `close-implemented` | Failed deletion keeps the detail and confirmation open with an alert. |
+| [#27](https://github.com/as569951728/dev-ai-toolkit/issues/27#issuecomment-4976360704) Run note deletion rollback | `71e995b` | `close-implemented` | A failed run deletion restores its note and keeps Run Detail open. |
+| [#28](https://github.com/as569951728/dev-ai-toolkit/issues/28#issuecomment-4976360699) Run import rollback | `707cca0` | `close-implemented` | Failed note writes remove new runs or restore the replaced run. |
+| [#29](https://github.com/as569951728/dev-ai-toolkit/issues/29#issuecomment-4976360784) Recent-template storage failure | `d2ff32b` | `close-implemented` | Optional recent-template writes cannot interrupt selection or snapshot saving. |
+| [#30](https://github.com/as569951728/dev-ai-toolkit/issues/30#issuecomment-4976360727) Run export failure | `f3fa527` | `close-implemented` | Export errors are announced and a later retry can succeed. |
+| [#31](https://github.com/as569951728/dev-ai-toolkit/issues/31#issuecomment-4976360772) Workspace export failure | `c42aff0` | `close-implemented` | Workspace export errors are announced and the action remains available. |
+
 ## Remaining Review Batches
 
 Process no more than ten issues in one maintenance session. The ranges are
@@ -101,3 +120,4 @@ evidence.
 | Date | Issues reviewed | Decisions | Evidence | Next batch |
 | --- | --- | --- | --- | --- |
 | 2026-07-15 | #37, #38, #39, #40, #45, #46, #74, #115, #117, #119 | 10 `close-implemented` | 11 targeted files with 105 passing tests and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29349675016) | Batch A, remaining open issues only |
+| 2026-07-15 | #22 through #31 | 10 `close-implemented` | 8 targeted files with 125 passing tests on `4808d6a` and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29384607278) | Continue Batch A with no more than 10 open issues |
