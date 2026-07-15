@@ -56,7 +56,7 @@ function PromptPlaygroundWorkspace({
   sourceRun,
 }: PromptPlaygroundWorkspaceProps) {
   const navigate = useNavigate();
-  const { createRun } = usePromptRuns();
+  const { createRun, runs } = usePromptRuns();
   const [saveStatus, setSaveStatus] = useState<SaveStatus | null>(null);
   const {
     selectedTemplate,
@@ -104,10 +104,6 @@ function PromptPlaygroundWorkspace({
     );
   }, [preview, selectedTemplate]);
 
-  const saveStatusMessage =
-    saveStatus && saveStatus.contextKey === currentPreviewContextKey
-      ? saveStatus.message
-      : null;
   const savedRunIdFromStatus =
     saveStatus && saveStatus.contextKey === currentPreviewContextKey
       ? saveStatus.runId
@@ -121,9 +117,25 @@ function PromptPlaygroundWorkspace({
       sourceRun.systemPrompt === preview.systemPrompt &&
       sourceRun.userPrompt === preview.userPrompt,
   );
-  const savedRunId = sourceRunMatchesPreview
-    ? sourceRun?.id ?? null
-    : savedRunIdFromStatus;
+  const matchingRunId =
+    selectedTemplate && preview
+      ? (runs.find(
+          (run) =>
+            run.templateId === selectedTemplate.id &&
+            run.templateVersion === selectedTemplate.version &&
+            run.systemPrompt === preview.systemPrompt &&
+            run.userPrompt === preview.userPrompt,
+        )?.id ?? null)
+      : null;
+  const savedRunId =
+    matchingRunId ??
+    (sourceRunMatchesPreview ? sourceRun?.id ?? null : savedRunIdFromStatus);
+  const saveStatusMessage =
+    saveStatus && saveStatus.contextKey === currentPreviewContextKey
+      ? saveStatus.message
+      : matchingRunId && !sourceRunMatchesPreview
+        ? 'This prompt preview already has a saved snapshot.'
+        : null;
   const saveStatusTone =
     saveStatus && saveStatus.contextKey === currentPreviewContextKey
       ? saveStatus.tone
