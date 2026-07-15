@@ -1,3 +1,5 @@
+import type { StorageLike } from '@/lib/browser-storage';
+
 export type LocalStorageReadIssueReason = 'invalid-data' | 'invalid-json';
 
 export interface LocalStorageReadIssue {
@@ -128,4 +130,64 @@ export function decodeLocalStorageValue<T>({
   }
 
   return result.value;
+}
+
+export function createLocalStorageRecoveryFilename(
+  exportedAt = new Date().toISOString(),
+) {
+  const exportedDate = exportedAt.slice(0, 10) || 'undated';
+
+  return `dev-ai-toolkit-unreadable-local-data-${exportedDate}.json`;
+}
+
+export function createLocalStorageRecoveryPayload(
+  issues: LocalStorageReadIssue[],
+  exportedAt = new Date().toISOString(),
+) {
+  return JSON.stringify(
+    {
+      version: 1,
+      exportedAt,
+      entries: issues,
+    },
+    null,
+    2,
+  );
+}
+
+export function downloadLocalStorageRecovery(
+  issues: LocalStorageReadIssue[],
+) {
+  const exportedAt = new Date().toISOString();
+  const blob = new Blob(
+    [createLocalStorageRecoveryPayload(issues, exportedAt)],
+    { type: 'application/json' },
+  );
+  const url = URL.createObjectURL(blob);
+  let link: HTMLAnchorElement | null = null;
+
+  try {
+    link = document.createElement('a');
+    link.href = url;
+    link.download = createLocalStorageRecoveryFilename(exportedAt);
+    document.body.append(link);
+    link.click();
+  } finally {
+    link?.remove();
+    URL.revokeObjectURL(url);
+  }
+}
+
+export function resetLocalStorageReadIssues(
+  issues: LocalStorageReadIssue[],
+  storage: StorageLike | null,
+) {
+  if (!storage?.removeItem) {
+    throw new Error('Browser storage cannot remove the unreadable data.');
+  }
+
+  issues.forEach((issue) => {
+    storage.removeItem?.(issue.storageKey);
+    clearLocalStorageReadIssue(issue.storageKey);
+  });
 }
