@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { createLocalStoragePromptRunRepository } from '@/features/prompt-runs/repositories/local-storage-prompt-run-repository';
+import { getLocalStorageReadIssues } from '@/lib/local-storage-recovery';
 import type { PromptRunRecord } from '@/types/prompt-run';
 
 function createMemoryStorage(initialState: Record<string, string> = {}) {
@@ -119,6 +120,13 @@ describe('local-storage-prompt-run-repository', () => {
     const repository = createLocalStoragePromptRunRepository('runs', storage);
 
     expect(repository.loadAll()).toEqual(sampleRuns);
+    expect(getLocalStorageReadIssues()).toEqual([
+      expect.objectContaining({
+        label: 'Prompt runs',
+        reason: 'invalid-data',
+        storageKey: 'runs',
+      }),
+    ]);
   });
 
   it('normalizes stored ids before keeping the last repeated run', () => {

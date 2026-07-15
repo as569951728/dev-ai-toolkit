@@ -6,24 +6,35 @@ import {
   resolveBrowserStorage,
   type StorageLike,
 } from '@/lib/browser-storage';
+import {
+  assertLocalStorageKeyWritable,
+  clearLocalStorageReadIssue,
+  decodeLocalStorageValue,
+  type LocalStorageDecodeResult,
+} from '@/lib/local-storage-recovery';
 
 export const RECENT_TEMPLATE_STORAGE_KEY =
   'dev-ai-toolkit.playground-recent-template-ids';
 
-function normalizeRecentTemplateIds(value: unknown) {
+function normalizeRecentTemplateIds(
+  value: unknown,
+): LocalStorageDecodeResult<string[]> | null {
   const templateIds = readVersionedCollection<string>(value);
 
-  return templateIds
-    ? [
-        ...new Set(
-          templateIds
-            .map((templateId) =>
-              typeof templateId === 'string' ? templateId.trim() : '',
-            )
-            .filter(Boolean),
-        ),
-      ]
-    : [];
+  if (!templateIds) {
+    return null;
+  }
+
+  const validTemplateIds = templateIds
+    .map((templateId) =>
+      typeof templateId === 'string' ? templateId.trim() : '',
+    )
+    .filter(Boolean);
+
+  return {
+    recovered: validTemplateIds.length !== templateIds.length,
+    value: [...new Set(validTemplateIds)],
+  };
 }
 
 export function loadRecentTemplateIds(
@@ -34,17 +45,27 @@ export function loadRecentTemplateIds(
     return [] as string[];
   }
 
+  let storedValue: string | null;
+
   try {
-    const storedValue = storage.getItem(storageKey);
-
-    if (!storedValue) {
-      return [];
-    }
-
-    return normalizeRecentTemplateIds(JSON.parse(storedValue));
+    storedValue = storage.getItem(storageKey);
   } catch {
     return [];
   }
+
+  if (storedValue === null) {
+    clearLocalStorageReadIssue(storageKey);
+    return [];
+  }
+
+  return (
+    decodeLocalStorageValue({
+      decode: normalizeRecentTemplateIds,
+      label: 'Recent template shortcuts',
+      rawValue: storedValue,
+      storageKey,
+    }) ?? []
+  );
 }
 
 export function saveRecentTemplateIds(
@@ -56,10 +77,13 @@ export function saveRecentTemplateIds(
     return;
   }
 
+  assertLocalStorageKeyWritable(storageKey);
+  const normalizedTemplateIds = normalizeRecentTemplateIds(templateIds);
+
   storage.setItem(
     storageKey,
     JSON.stringify(
-      writeVersionedCollection(normalizeRecentTemplateIds(templateIds)),
+      writeVersionedCollection(normalizedTemplateIds?.value ?? []),
     ),
   );
 }

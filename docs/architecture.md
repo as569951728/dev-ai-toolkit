@@ -165,6 +165,16 @@ Repositories for prompt templates, prompt runs, prompt run notes, and recent pro
 - read legacy raw arrays when they already exist
 - read versioned payloads when the schema matches the current version
 - write back using the current versioned payload shape
+- retain valid records from a partially malformed collection while reporting
+  that recovery was incomplete
+- preserve the original stored string and block writes when a collection cannot
+  be read completely
+
+The shared recovery notice lists affected collections without rendering their
+raw content. A user can download the original strings in a separate recovery
+file or confirm a reset that removes only the affected keys and reloads the
+application. The recovery file is diagnostic data, not a workspace backup, and
+cannot be imported through the normal workspace restore flow.
 
 Default providers also listen for the matching browser `storage` event. A write
 or clear from another tab reloads that collection through its repository, so
@@ -191,7 +201,8 @@ The current migration strategy is intentionally simple:
 
 - compatibility is handled at the repository boundary
 - providers and UI components should not know about storage schema versions
-- invalid or unreadable payloads fall back to a safe local default
+- invalid or unreadable payloads use a safe in-memory fallback while the
+  original stored value remains available for recovery
 - blocked browser storage reads use the same safe defaults
 - blocked writes remain errors so the UI does not report data as persisted
 - new schema versions should be introduced only when the stored shape actually changes

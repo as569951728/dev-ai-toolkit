@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { starterPromptTemplates } from '@/features/prompt-templates/seed/prompt-templates';
 import { createLocalStoragePromptTemplateRepository } from '@/features/prompt-templates/repositories/local-storage-prompt-template-repository';
+import { getLocalStorageReadIssues } from '@/lib/local-storage-recovery';
 
 function createMemoryStorage(initialState: Record<string, string> = {}) {
   const state = new Map(Object.entries(initialState));
@@ -119,6 +120,16 @@ describe('local-storage-prompt-template-repository', () => {
     );
 
     expect(repository.loadAll()).toEqual([starterPromptTemplates[1]]);
+    expect(getLocalStorageReadIssues()).toEqual([
+      expect.objectContaining({
+        label: 'Prompt templates',
+        reason: 'invalid-data',
+        storageKey: 'templates',
+      }),
+    ]);
+    expect(() => repository.saveAll([starterPromptTemplates[1]!])).toThrow(
+      'Unreadable local data must be downloaded or reset before it can be replaced.',
+    );
   });
 
   it('normalizes stored ids before keeping the last repeated template', () => {
@@ -152,5 +163,35 @@ describe('local-storage-prompt-template-repository', () => {
       id: starterPromptTemplates[0]!.id,
       systemPrompt: '  Preserve prompt whitespace.  ',
     });
+  });
+
+  it('reports discarded malformed template revisions', () => {
+    const storage = createMemoryStorage({
+      templates: JSON.stringify({
+        version: 1,
+        data: [
+          {
+            ...starterPromptTemplates[0],
+            revisions: [
+              starterPromptTemplates[0]!.revisions[0],
+              { version: 2, name: 'Incomplete revision' },
+            ],
+          },
+        ],
+      }),
+    });
+    const repository = createLocalStoragePromptTemplateRepository(
+      'templates',
+      storage,
+    );
+
+    expect(repository.loadAll()[0]!.revisions).toHaveLength(1);
+    expect(getLocalStorageReadIssues()).toEqual([
+      expect.objectContaining({
+        label: 'Prompt templates',
+        reason: 'invalid-data',
+        storageKey: 'templates',
+      }),
+    ]);
   });
 });

@@ -1,4 +1,5 @@
-export type StorageLike = Pick<Storage, 'getItem' | 'setItem'>;
+export type StorageLike = Pick<Storage, 'getItem' | 'setItem'> &
+  Partial<Pick<Storage, 'removeItem'>>;
 
 type StorageProbeLike = StorageLike & Partial<Pick<Storage, 'removeItem'>>;
 
