@@ -9,21 +9,36 @@ import {
   resolveBrowserStorage,
   type StorageLike,
 } from '@/lib/browser-storage';
+import {
+  assertLocalStorageKeyWritable,
+  clearLocalStorageReadIssue,
+  decodeLocalStorageValue,
+  type LocalStorageDecodeResult,
+} from '@/lib/local-storage-recovery';
+import type { PromptRunNote } from '@/types/prompt-run-note';
 
 export const PROMPT_RUN_NOTE_STORAGE_KEY =
   'dev-ai-toolkit.prompt-run-notes';
 
-function normalizeNotes(value: unknown) {
-  const notes =
-    readVersionedCollection<unknown>(value)
-      ?.filter(isPromptRunNote)
-      .map((note) => ({
-        ...note,
-        id: note.id.trim(),
-        runId: note.runId.trim(),
-      })) ?? [];
+function normalizeNotes(
+  value: unknown,
+): LocalStorageDecodeResult<PromptRunNote[]> | null {
+  const storedNotes = readVersionedCollection<unknown>(value);
 
-  return keepLastByKey(notes, (note) => note.runId);
+  if (!storedNotes) {
+    return null;
+  }
+
+  const notes = storedNotes.filter(isPromptRunNote).map((note) => ({
+    ...note,
+    id: note.id.trim(),
+    runId: note.runId.trim(),
+  }));
+
+  return {
+    recovered: notes.length !== storedNotes.length,
+    value: keepLastByKey(notes, (note) => note.runId),
+  };
 }
 
 export function createLocalStoragePromptRunNoteRepository(
@@ -36,24 +51,38 @@ export function createLocalStoragePromptRunNoteRepository(
         return [];
       }
 
+      let storedValue: string | null;
+
       try {
-        const storedValue = storage.getItem(storageKey);
-
-        if (!storedValue) {
-          return [];
-        }
-
-        return normalizeNotes(JSON.parse(storedValue));
+        storedValue = storage.getItem(storageKey);
       } catch {
         return [];
       }
+
+      if (storedValue === null) {
+        clearLocalStorageReadIssue(storageKey);
+        return [];
+      }
+
+      return (
+        decodeLocalStorageValue({
+          decode: normalizeNotes,
+          label: 'Run notes',
+          rawValue: storedValue,
+          storageKey,
+        }) ?? []
+      );
     },
     saveAll(notes) {
       if (!storage) {
         return;
       }
 
-      storage.setItem(storageKey, JSON.stringify(writeVersionedCollection(notes)));
+      assertLocalStorageKeyWritable(storageKey);
+      storage.setItem(
+        storageKey,
+        JSON.stringify(writeVersionedCollection(notes)),
+      );
     },
   };
 }

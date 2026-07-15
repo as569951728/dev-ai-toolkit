@@ -14,6 +14,12 @@ import {
   writeVersionedCollection,
 } from '@/lib/local-storage-schema';
 import { keepLastByKey } from '@/lib/collection-utils';
+import {
+  assertLocalStorageKeyWritable,
+  clearLocalStorageReadIssue,
+  decodeLocalStorageValue,
+  type LocalStorageDecodeResult,
+} from '@/lib/local-storage-recovery';
 
 export const PROMPT_TEMPLATE_STORAGE_KEY = 'dev-ai-toolkit.prompt-templates';
 
@@ -94,18 +100,23 @@ function normalizeStoredTemplate(value: unknown): PromptTemplate | null {
   });
 }
 
-function normalizeStoredTemplates(value: unknown) {
+function normalizeStoredTemplates(
+  value: unknown,
+): LocalStorageDecodeResult<PromptTemplate[]> | null {
   const templates = readVersionedCollection<unknown>(value);
 
   if (!templates) {
-    return loadStarterTemplates();
+    return null;
   }
 
   const normalizedTemplates = templates
     .map((template) => normalizeStoredTemplate(template))
     .filter((template): template is PromptTemplate => template !== null);
 
-  return keepLastByKey(normalizedTemplates, (template) => template.id);
+  return {
+    recovered: normalizedTemplates.length !== templates.length,
+    value: keepLastByKey(normalizedTemplates, (template) => template.id),
+  };
 }
 
 export function createLocalStoragePromptTemplateRepository(
@@ -118,23 +129,34 @@ export function createLocalStoragePromptTemplateRepository(
         return loadStarterTemplates();
       }
 
+      let storedValue: string | null;
+
       try {
-        const storedValue = storage.getItem(storageKey);
-
-        if (!storedValue) {
-          return loadStarterTemplates();
-        }
-
-        return normalizeStoredTemplates(JSON.parse(storedValue));
+        storedValue = storage.getItem(storageKey);
       } catch {
         return loadStarterTemplates();
       }
+
+      if (storedValue === null) {
+        clearLocalStorageReadIssue(storageKey);
+        return loadStarterTemplates();
+      }
+
+      return (
+        decodeLocalStorageValue({
+          decode: normalizeStoredTemplates,
+          label: 'Prompt templates',
+          rawValue: storedValue,
+          storageKey,
+        }) ?? loadStarterTemplates()
+      );
     },
     saveAll(templates: PromptTemplate[]) {
       if (!storage) {
         return;
       }
 
+      assertLocalStorageKeyWritable(storageKey);
       storage.setItem(
         storageKey,
         JSON.stringify(writeVersionedCollection(templates)),

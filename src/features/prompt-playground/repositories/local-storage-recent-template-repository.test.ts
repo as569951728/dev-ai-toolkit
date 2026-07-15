@@ -4,6 +4,7 @@ import {
   loadRecentTemplateIds,
   saveRecentTemplateIds,
 } from '@/features/prompt-playground/repositories/local-storage-recent-template-repository';
+import { getLocalStorageReadIssues } from '@/lib/local-storage-recovery';
 
 function createMemoryStorage(initialState: Record<string, string> = {}) {
   const state = new Map(Object.entries(initialState));
@@ -51,6 +52,13 @@ describe('local-storage-recent-template-repository', () => {
     expect(loadRecentTemplateIds('recent', storage)).toEqual([
       'template-1',
       'template-2',
+    ]);
+    expect(getLocalStorageReadIssues()).toEqual([
+      expect.objectContaining({
+        label: 'Recent template shortcuts',
+        reason: 'invalid-data',
+        storageKey: 'recent',
+      }),
     ]);
   });
 

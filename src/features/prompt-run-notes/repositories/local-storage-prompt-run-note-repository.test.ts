@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { createLocalStoragePromptRunNoteRepository } from '@/features/prompt-run-notes/repositories/local-storage-prompt-run-note-repository';
+import { getLocalStorageReadIssues } from '@/lib/local-storage-recovery';
 import type { PromptRunNote } from '@/types/prompt-run-note';
 
 function createMemoryStorage(initialState: Record<string, string> = {}) {
@@ -118,6 +119,13 @@ describe('local-storage-prompt-run-note-repository', () => {
     );
 
     expect(repository.loadAll()).toEqual(sampleNotes);
+    expect(getLocalStorageReadIssues()).toEqual([
+      expect.objectContaining({
+        label: 'Run notes',
+        reason: 'invalid-data',
+        storageKey: 'notes',
+      }),
+    ]);
   });
 
   it('normalizes stored ids before keeping the last note for a run', () => {
