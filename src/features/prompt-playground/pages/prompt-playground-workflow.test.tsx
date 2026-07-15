@@ -12,6 +12,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { PromptPlaygroundPage } from '@/features/prompt-playground/pages/prompt-playground-page';
 import { usePromptPlayground } from '@/features/prompt-playground/hooks/use-prompt-playground';
+import { buildPromptPreview } from '@/features/prompt-playground/lib/prompt-playground-utils';
 import {
   RECENT_TEMPLATE_STORAGE_KEY,
   saveRecentTemplateIds,
@@ -610,8 +611,9 @@ describe('Prompt playground workflow', () => {
   });
 
   it('reopens a saved run with its captured variables', () => {
-    const templateRepository = createTemplateRepository();
     const template = starterPromptTemplates[0]!;
+    const currentTemplate = { ...template, version: template.version + 1 };
+    const templateRepository = createTemplateRepository([currentTemplate]);
     const runRepository = createRunRepository([
       {
         id: 'imported/run #1',
@@ -653,6 +655,48 @@ describe('Prompt playground workflow', () => {
     expect(
       screen.getByRole('link', { name: 'saved prompt snapshot' }),
     ).toHaveAttribute('href', '/runs/imported%2Frun%20%231');
+    expect(
+      screen.getByRole('button', { name: 'Save prompt snapshot' }),
+    ).toBeEnabled();
+  });
+
+  it('recognizes an unchanged reopened run as already saved', () => {
+    const template = starterPromptTemplates[0]!;
+    const variables = {
+      repository_name: 'dev-ai-toolkit',
+      change_scope: 'saved workflow review',
+    };
+    const preview = buildPromptPreview(template, variables);
+    const runRepository = createRunRepository([
+      {
+        id: 'saved-run',
+        templateId: template.id,
+        templateName: template.name,
+        templateVersion: template.version,
+        variables,
+        ...preview,
+        createdAt: '2026-05-07T09:00:00.000Z',
+      },
+    ]);
+
+    renderPlayground(
+      '/playground?runId=saved-run',
+      createTemplateRepository([template]),
+      runRepository,
+    );
+
+    expect(
+      screen.getByRole('button', { name: 'Snapshot saved' }),
+    ).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText('Change Scope'), {
+      target: { value: 'updated workflow review' },
+    });
+
+    expect(
+      screen.getByRole('button', { name: 'Save prompt snapshot' }),
+    ).toBeEnabled();
+    expect(runRepository.loadAll()).toHaveLength(1);
   });
 
   it('copies generated prompt sections and announces the result', async () => {

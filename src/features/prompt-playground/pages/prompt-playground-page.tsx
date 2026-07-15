@@ -11,12 +11,13 @@ import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { buildPromptRunDetailPath } from '@/features/prompt-runs/lib/prompt-run-links';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
 import { formatPromptSections } from '@/lib/prompt-sections';
+import type { PromptRunRecord } from '@/types/prompt-run';
 
 type PromptPlaygroundWorkspaceProps = {
   initialTemplateId?: string;
   initialVariableValues?: Record<string, string>;
   loadNotice?: string;
-  sourceRunId?: string;
+  sourceRun?: PromptRunRecord;
 };
 
 type SaveStatus = {
@@ -52,7 +53,7 @@ function PromptPlaygroundWorkspace({
   initialTemplateId,
   initialVariableValues,
   loadNotice,
-  sourceRunId,
+  sourceRun,
 }: PromptPlaygroundWorkspaceProps) {
   const navigate = useNavigate();
   const { createRun } = usePromptRuns();
@@ -107,10 +108,22 @@ function PromptPlaygroundWorkspace({
     saveStatus && saveStatus.contextKey === currentPreviewContextKey
       ? saveStatus.message
       : null;
-  const savedRunId =
+  const savedRunIdFromStatus =
     saveStatus && saveStatus.contextKey === currentPreviewContextKey
       ? saveStatus.runId
       : null;
+  const sourceRunMatchesPreview = Boolean(
+    sourceRun &&
+      selectedTemplate &&
+      preview &&
+      sourceRun.templateId === selectedTemplate.id &&
+      sourceRun.templateVersion === selectedTemplate.version &&
+      sourceRun.systemPrompt === preview.systemPrompt &&
+      sourceRun.userPrompt === preview.userPrompt,
+  );
+  const savedRunId = sourceRunMatchesPreview
+    ? sourceRun?.id ?? null
+    : savedRunIdFromStatus;
   const saveStatusTone =
     saveStatus && saveStatus.contextKey === currentPreviewContextKey
       ? saveStatus.tone
@@ -133,10 +146,10 @@ function PromptPlaygroundWorkspace({
         </p>
       ) : null}
 
-      {sourceRunId ? (
+      {sourceRun ? (
         <p className="status-banner" role="status">
           Loaded captured variables from a{' '}
-          <Link to={buildPromptRunDetailPath(sourceRunId)}>
+          <Link to={buildPromptRunDetailPath(sourceRun.id)}>
             saved prompt snapshot
           </Link>. Changes
           here will create a new snapshot and leave the original unchanged.
@@ -289,7 +302,7 @@ export function PromptPlaygroundPage() {
         canLoadRequestedRun ? requestedRun?.variables : undefined
       }
       loadNotice={loadNotice}
-      sourceRunId={sourceRunId}
+      sourceRun={canLoadRequestedRun ? requestedRun : undefined}
     />
   );
 }

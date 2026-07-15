@@ -13,8 +13,8 @@ commit.
 
 ### Fixed
 
-- Prevented an unchanged Playground preview from creating duplicate prompt
-  snapshots after it has been saved successfully.
+- Prevented unchanged Playground previews, including reopened saved runs, from
+  creating duplicate prompt snapshots.
 
 ## [v0.2.0] - 2026-07-15
 
