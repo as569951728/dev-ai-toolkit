@@ -1,6 +1,16 @@
 import { defineConfig } from '@playwright/test';
 
 const localChromiumPath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH;
+const browserProxyServer = process.env.PLAYWRIGHT_PROXY_SERVER;
+const launchOptions =
+  localChromiumPath || browserProxyServer
+    ? {
+        ...(localChromiumPath ? { executablePath: localChromiumPath } : {}),
+        ...(browserProxyServer
+          ? { proxy: { server: browserProxyServer } }
+          : {}),
+      }
+    : undefined;
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -11,9 +21,7 @@ export default defineConfig({
   reporter: process.env.CI ? 'github' : 'list',
   use: {
     baseURL: 'http://127.0.0.1:4173',
-    launchOptions: localChromiumPath
-      ? { executablePath: localChromiumPath }
-      : undefined,
+    launchOptions,
     screenshot: 'only-on-failure',
     trace: 'retain-on-failure',
   },

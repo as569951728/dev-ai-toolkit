@@ -8,6 +8,8 @@ This project can be deployed to Vercel as a static Vite application.
 - The production output directory is `dist`
 - Client-side routing is handled by `react-router-dom`
 - `vercel.json` is included so route refreshes fall back to `index.html`
+- `npm run test:demo` runs the read-only production smoke check without starting
+  the local Vite server
 - Vercel did not add a record to the repository's GitHub Deployments API, so
   immutable verification records include the Vercel deployment ID
 
@@ -78,6 +80,18 @@ Then use a clean browser to create a template, compose and save a prompt run,
 open it from Run History, export the workspace, and refresh a nested route. The
 demo should be considered current only when the deployed application revision
 has passed CI and the walkthrough succeeds.
+
+Run the repeatable, read-only part of that check with:
+
+```bash
+npm run test:demo
+```
+
+This checks the main public routes, the Overview-to-Playground entry, and a
+direct Playground refresh. It does not replace the release walkthrough above.
+If Chromium needs an HTTP proxy on the current network, set
+`PLAYWRIGHT_PROXY_SERVER` before running the command. Keep machine-specific
+proxy values out of repository files.
 
 ## Notes
 
