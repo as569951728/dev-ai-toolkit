@@ -2,7 +2,7 @@
 
 **Status:** Active
 **Last updated:** 2026-07-15
-**Open-issue snapshot:** 52
+**Open-issue snapshot:** 49
 
 GitHub Issues remains the source of truth. This ledger defines how the current
 backlog is reviewed without bulk-closing work or treating commit messages as
@@ -141,6 +141,18 @@ run on current `main` instead of relying only on the historical implementation.
 | [#65](https://github.com/as569951728/dev-ai-toolkit/issues/65#issuecomment-4976903405) Backup relationship rules | `154148d` | `close-implemented` | Docs and parser tests distinguish standalone saved runs from required note-to-run references. |
 | [#66](https://github.com/as569951728/dev-ai-toolkit/issues/66#issuecomment-4976903424) Template deletion retention | `f36a54f` | `close-implemented` | Confirmation guidance, cancellation, deletion, and storage failures remain covered. |
 
+## Sixth Triage Session
+
+The sixth set completed Batch B with three rollback and data-integrity issues.
+Each failure path was verified in focused workflow or provider tests before the
+current main-branch CI result was used as regression evidence.
+
+| Issue | Implementation | Decision | Verification evidence |
+| --- | --- | --- | --- |
+| [#67](https://github.com/as569951728/dev-ai-toolkit/issues/67#issuecomment-4976936871) Failed note rollback | `aa8f4d9` | `close-implemented` | Run Detail distinguishes failed note restoration from an ordinary deletion error. |
+| [#68](https://github.com/as569951728/dev-ai-toolkit/issues/68#issuecomment-4976936836) Failed run import rollback | `f905e54` | `close-implemented` | New and replaced run rollback failures produce specific partial-import warnings. |
+| [#69](https://github.com/as569951728/dev-ai-toolkit/issues/69#issuecomment-4976936847) Exact workspace rollback | `43d26b6`, `3a6da41` | `close-implemented` | Exact collection restoration removes new records while retaining rollback failure warnings. |
+
 ## Remaining Review Batches
 
 Process no more than ten issues in one maintenance session. The ranges are
@@ -149,7 +161,7 @@ organizational only; they do not imply a shared disposition.
 | Batch | Scope | Required output |
 | --- | --- | --- |
 | A | Complete | Reopen only if current behavior no longer matches the recorded evidence |
-| B | Remaining open issues in #67-#69: rollback reporting and cleanup | Reproduction or current-main verification per issue |
+| B | Complete | Reopen only if current behavior no longer matches the recorded evidence |
 | C | Remaining open issues in #70-#95: editor safety, imports, confirmations, and browser coverage | Separate behavior bugs from documentation or test follow-up |
 | D | Remaining open issues in #96-#119: navigation, identifiers, reuse, and tool handoffs | Check recent commits and close only after end-to-end verification |
 | E | #14 and uncategorized maintenance items | Keep deployment and release blockers visible |
@@ -182,3 +194,4 @@ evidence.
 | 2026-07-15 | #44 follow-up | 1 `close-implemented` | README parity, 2 focused files with 9 passing tests, and [green PR CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29388553835) on `45ba22c` | Batch B |
 | 2026-07-15 | #47 through #56 | 10 `close-implemented` | 13 focused files with 117 passing tests, 3 Chromium scenarios, and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29388840912) on `12accff` | Continue Batch B with no more than 10 open issues |
 | 2026-07-15 | #57 through #66 | 10 `close-implemented` | npm registry check, 0 audit findings, 62 files with 401 coverage tests, production build, 28 Chromium tests, and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29389260195) on `b913164` | Finish Batch B with #67 through #69 |
+| 2026-07-15 | #67 through #69 | 3 `close-implemented` | 8 focused files with 95 passing tests and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29389547947) with 401 coverage tests, build, and 28 Chromium tests on `0532c0e` | Batch C |
