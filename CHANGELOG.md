@@ -6,7 +6,10 @@ commit.
 
 ## [Unreleased]
 
-No changes yet.
+### Added
+
+- Added a privacy-aware workflow feedback link from every application route to
+  the dedicated GitHub feedback form.
 
 ## [v0.2.0] - 2026-07-15
 

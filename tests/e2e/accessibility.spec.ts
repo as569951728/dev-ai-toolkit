@@ -32,6 +32,9 @@ test('skips navigation and exposes one page heading per route', async ({ page })
   for (const route of pageRoutes) {
     await page.goto(route);
     await expect(page.locator('h1')).toHaveCount(1);
+    await expect(
+      page.getByRole('link', { name: 'Share workflow feedback' }),
+    ).toBeVisible();
   }
 });
 
