@@ -2,7 +2,7 @@
 
 **Status:** Active
 **Last updated:** 2026-07-15
-**Open-issue snapshot:** 73
+**Open-issue snapshot:** 72
 
 GitHub Issues remains the source of truth. This ledger defines how the current
 backlog is reviewed without bulk-closing work or treating commit messages as
@@ -87,8 +87,9 @@ the closing comment was posted.
 ## Third Triage Session
 
 The third set completed the remaining Batch A review. Eight issues still met
-their acceptance criteria on current `main`; #44 stays open because the current
-English and Chinese READMEs no longer document the verified variable behavior.
+their acceptance criteria on current `main`; #44 was kept open because the
+English and Chinese READMEs no longer documented the verified variable behavior.
+That documentation gap was then corrected and closed separately in PR #140.
 
 | Issue | Implementation | Decision | Verification evidence |
 | --- | --- | --- | --- |
@@ -100,7 +101,7 @@ English and Chinese READMEs no longer document the verified variable behavior.
 | [#41](https://github.com/as569951728/dev-ai-toolkit/issues/41#issuecomment-4976752617) Unresolved variable warning | `4a527ee` | `close-implemented` | Unresolved placeholders are reported without blocking copy or save actions. |
 | [#42](https://github.com/as569951728/dev-ai-toolkit/issues/42#issuecomment-4976752655) Failed download cleanup | `a8c9d2c` | `close-implemented` | Failed exports revoke the temporary object URL in focused tests. |
 | [#43](https://github.com/as569951728/dev-ai-toolkit/issues/43#issuecomment-4976752619) Unknown template filter | `2e9dbb4` | `close-implemented` | Unknown template filters fall back without hiding all templates. |
-| [#44](https://github.com/as569951728/dev-ai-toolkit/issues/44#issuecomment-4976756169) Variable behavior documentation | `42cc7eb` | `keep` | Walkthrough and tests still pass, but both current READMEs omit the required examples and empty-value behavior. |
+| [#44](https://github.com/as569951728/dev-ai-toolkit/issues/44#issuecomment-4976818819) Variable behavior documentation | `42cc7eb`, [#140](https://github.com/as569951728/dev-ai-toolkit/pull/140) | `close-implemented` | Both READMEs and the walkthrough now match the parser and unresolved-value behavior on `45ba22c`. |
 
 ## Remaining Review Batches
 
@@ -109,7 +110,7 @@ organizational only; they do not imply a shared disposition.
 
 | Batch | Scope | Required output |
 | --- | --- | --- |
-| A | #44 remains open for a separate README correction | Close only after both language versions match current behavior |
+| A | Complete | Reopen only if current behavior no longer matches the recorded evidence |
 | B | Remaining open issues in #46-#69: storage availability, rollback, and same-event writes | Reproduction or current-main verification per issue |
 | C | Remaining open issues in #70-#95: editor safety, imports, confirmations, and browser coverage | Separate behavior bugs from documentation or test follow-up |
 | D | Remaining open issues in #96-#119: navigation, identifiers, reuse, and tool handoffs | Check recent commits and close only after end-to-end verification |
@@ -140,3 +141,4 @@ evidence.
 | 2026-07-15 | #37, #38, #39, #40, #45, #46, #74, #115, #117, #119 | 10 `close-implemented` | 11 targeted files with 105 passing tests and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29349675016) | Batch A, remaining open issues only |
 | 2026-07-15 | #22 through #31 | 10 `close-implemented` | 8 targeted files with 125 passing tests on `4808d6a` and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29384607278) | Continue Batch A with no more than 10 open issues |
 | 2026-07-15 | #32 through #36, #41 through #44 | 8 `close-implemented`, 1 `keep` | 8 focused files with 131 passing tests, 1 Chromium round trip on `6dc243b`, and [green main CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29387858229) | Batch B; #44 remains open for a separate README correction |
+| 2026-07-15 | #44 follow-up | 1 `close-implemented` | README parity, 2 focused files with 9 passing tests, and [green PR CI](https://github.com/as569951728/dev-ai-toolkit/actions/runs/29388553835) on `45ba22c` | Batch B |
