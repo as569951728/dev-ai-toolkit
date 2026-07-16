@@ -4,6 +4,8 @@ export interface ApiFieldPair {
   value: string;
 }
 
+export type ApiHeaderEntry = [name: string, value: string];
+
 export interface ApiBuilderState {
   method: string;
   url: string;
@@ -121,25 +123,39 @@ export function buildRequestUrl(
   }
 }
 
-export function buildHeadersObject(headers: ApiFieldPair[]) {
-  return Object.fromEntries(
-    cleanPairs(headers)
-      .filter((pair) => pair.key.trim())
-      .map((pair) => [pair.key.trim(), pair.value.trim()]),
-  );
+export function buildHeaderEntries(headers: ApiFieldPair[]): ApiHeaderEntry[] {
+  return cleanPairs(headers)
+    .filter((pair) => pair.key.trim())
+    .map((pair) => [pair.key.trim(), pair.value.trim()]);
+}
+
+function buildFetchHeaders(headerEntries: ApiHeaderEntry[]) {
+  const seenNames = new Set<string>();
+  const hasRepeatedNames = headerEntries.some(([name]) => {
+    const normalizedName = name.toLowerCase();
+    const isRepeated = seenNames.has(normalizedName);
+    seenNames.add(normalizedName);
+    return isRepeated;
+  });
+
+  return hasRepeatedNames
+    ? headerEntries
+    : Object.fromEntries(headerEntries);
 }
 
 export function buildFetchSnippet(state: ApiBuilderState) {
   const requestUrl = buildRequestUrl(state.url, state.queryParams);
-  const headersObject = buildHeadersObject(state.headers);
-  const hasHeaders = Object.keys(headersObject).length > 0;
+  const headerEntries = buildHeaderEntries(state.headers);
+  const hasHeaders = headerEntries.length > 0;
   const bodyValue = state.body.trim();
   const includeBody = bodyValue.length > 0 && supportsRequestBody(state.method);
 
   const optionsLines = [`method: '${normalizeHttpMethod(state.method)}'`];
 
   if (hasHeaders) {
-    optionsLines.push(`headers: ${JSON.stringify(headersObject, null, 2)}`);
+    optionsLines.push(
+      `headers: ${JSON.stringify(buildFetchHeaders(headerEntries), null, 2)}`,
+    );
   }
 
   if (includeBody) {
@@ -157,14 +173,14 @@ function shellQuote(value: string) {
 
 export function buildCurlCommand(state: ApiBuilderState) {
   const requestUrl = buildRequestUrl(state.url, state.queryParams);
-  const headersObject = buildHeadersObject(state.headers);
+  const headerEntries = buildHeaderEntries(state.headers);
   const bodyValue = state.body.trim();
   const includeBody = bodyValue.length > 0 && supportsRequestBody(state.method);
   const commandLines = [
     `curl -X ${normalizeHttpMethod(state.method)} ${shellQuote(requestUrl || 'https://api.example.com')}`,
   ];
 
-  for (const [key, value] of Object.entries(headersObject)) {
+  for (const [key, value] of headerEntries) {
     commandLines.push(`-H ${shellQuote(`${key}: ${value}`)}`);
   }
 
@@ -181,7 +197,7 @@ export function summarizeRequest(state: ApiBuilderState) {
 
   return {
     requestUrl: buildRequestUrl(state.url, state.queryParams),
-    headers: buildHeadersObject(state.headers),
+    headerCount: buildHeaderEntries(state.headers).length,
     hasBody: hasBodyInput && bodySupported,
     isBodyOmitted: hasBodyInput && !bodySupported,
     isBodyInvalid:

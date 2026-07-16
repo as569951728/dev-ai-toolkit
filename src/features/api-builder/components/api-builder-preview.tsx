@@ -23,7 +23,7 @@ export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
   const [fetchCopyLabel, setFetchCopyLabel] = useState('Copy fetch code');
   const [curlCopyLabel, setCurlCopyLabel] = useState('Copy cURL command');
   const [copyFeedback, setCopyFeedback] = useState<CopyFeedback | null>(null);
-  const { requestUrl, headers, hasBody, isBodyOmitted, isBodyInvalid } =
+  const { requestUrl, headerCount, hasBody, isBodyOmitted, isBodyInvalid } =
     summarizeRequest(state);
   const fetchSnippet = buildFetchSnippet(state);
   const curlCommand = buildCurlCommand(state);
@@ -129,7 +129,7 @@ export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
         </div>
         <div className="metric-card metric-card--compact">
           <span className="metric-card__label">Headers</span>
-          <strong>{Object.keys(headers).length}</strong>
+          <strong>{headerCount}</strong>
           <p>Configured header entries</p>
         </div>
       </div>

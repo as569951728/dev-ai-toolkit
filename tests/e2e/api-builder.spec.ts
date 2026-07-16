@@ -71,6 +71,33 @@ test('preserves repeated query parameters for absolute URLs', async ({
   );
 });
 
+test('preserves repeated request headers in generated output', async ({
+  page,
+}) => {
+  await page.goto('/api-builder');
+
+  await page.getByLabel('Headers key 1').fill('X-Trace');
+  await page.getByLabel('Headers value 1').fill('first');
+  await page.getByLabel('Headers key 2').fill('x-trace');
+  await page.getByLabel('Headers value 2').fill('second');
+
+  await expect(
+    page.locator('.metric-card').filter({ hasText: 'Headers' }),
+  ).toContainText('2');
+  await expect(page.getByLabel('Generated fetch snippet')).toContainText(
+    '"X-Trace"',
+  );
+  await expect(page.getByLabel('Generated fetch snippet')).toContainText(
+    '"x-trace"',
+  );
+  await expect(page.getByLabel('Generated cURL command')).toContainText(
+    "-H 'X-Trace: first'",
+  );
+  await expect(page.getByLabel('Generated cURL command')).toContainText(
+    "-H 'x-trace: second'",
+  );
+});
+
 test('warns while keeping malformed JSON fetch code executable', async ({
   page,
 }) => {

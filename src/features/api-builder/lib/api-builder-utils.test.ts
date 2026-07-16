@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildCurlCommand,
   buildFetchSnippet,
-  buildHeadersObject,
+  buildHeaderEntries,
   buildRequestUrl,
   summarizeRequest,
   type ApiBuilderState,
@@ -51,15 +51,13 @@ describe('api-builder-utils', () => {
     );
   });
 
-  it('builds headers from filled key-value pairs', () => {
+  it('builds header entries from filled key-value pairs', () => {
     expect(
-      buildHeadersObject([
+      buildHeaderEntries([
         { id: 'header-1', key: ' Authorization ', value: ' Bearer token ' },
         { id: 'header-2', key: '', value: 'ignored' },
       ]),
-    ).toEqual({
-      Authorization: 'Bearer token',
-    });
+    ).toEqual([['Authorization', 'Bearer token']]);
   });
 
   it('builds a fetch snippet and request summary', () => {
@@ -76,11 +74,36 @@ describe('api-builder-utils', () => {
     );
     expect(summarizeRequest(state)).toEqual({
       requestUrl: '/api/prompts?workspace=dev-ai-toolkit&empty-value=',
-      headers: { 'Content-Type': 'application/json' },
+      headerCount: 1,
       hasBody: true,
       isBodyOmitted: false,
       isBodyInvalid: false,
     });
+  });
+
+  it('preserves repeated headers in fetch and curl output', () => {
+    const state: ApiBuilderState = {
+      method: 'GET',
+      url: '/api/prompts',
+      queryParams: [],
+      headers: [
+        { id: 'header-1', key: 'X-Trace', value: 'first' },
+        { id: 'header-2', key: 'x-trace', value: 'second' },
+      ],
+      body: '',
+    };
+
+    const fetchSnippet = buildFetchSnippet(state);
+    const curlCommand = buildCurlCommand(state);
+
+    expect(fetchSnippet).toContain('"X-Trace"');
+    expect(fetchSnippet).toContain('"first"');
+    expect(fetchSnippet).toContain('"x-trace"');
+    expect(fetchSnippet).toContain('"second"');
+    expect(() => new Function(fetchSnippet)).not.toThrow();
+    expect(curlCommand).toContain("-H 'X-Trace: first'");
+    expect(curlCommand).toContain("-H 'x-trace: second'");
+    expect(summarizeRequest(state).headerCount).toBe(2);
   });
 
   it('escapes apostrophes in generated fetch URLs', () => {
@@ -121,7 +144,7 @@ describe('api-builder-utils', () => {
     expect(() => new Function(fetchSnippet)).not.toThrow();
     expect(summarizeRequest(state)).toEqual({
       requestUrl: '/api/prompts',
-      headers: { 'Content-Type': 'application/json' },
+      headerCount: 1,
       hasBody: true,
       isBodyOmitted: false,
       isBodyInvalid: true,
@@ -141,7 +164,7 @@ describe('api-builder-utils', () => {
     expect(buildCurlCommand(state)).not.toContain('--data-raw');
     expect(summarizeRequest(state)).toEqual({
       requestUrl: '/api/prompts',
-      headers: {},
+      headerCount: 0,
       hasBody: false,
       isBodyOmitted: true,
       isBodyInvalid: false,
