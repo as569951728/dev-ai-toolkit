@@ -1054,6 +1054,11 @@ pre {
   color: #a53049;
 }
 
+.json-status--idle {
+  background: rgba(75, 96, 119, 0.12);
+  color: var(--text-muted);
+}
+
 .json-metrics {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
