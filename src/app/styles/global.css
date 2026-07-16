@@ -827,6 +827,12 @@ pre {
   line-height: 1.7;
 }
 
+.prompt-text-output {
+  min-width: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 .detail-card__version {
   margin: 0 0 16px;
   color: var(--primary-dark);

@@ -204,7 +204,7 @@ export function PromptPlaygroundPreview({
                 {activeCopiedSection === 'system' ? 'Copied' : 'Copy'}
               </button>
             </div>
-            <pre className="prompt-preview">{preview.systemPrompt}</pre>
+            <pre className="prompt-preview prompt-text-output">{preview.systemPrompt}</pre>
           </article>
 
           <article className="detail-card">
@@ -218,7 +218,7 @@ export function PromptPlaygroundPreview({
                 {activeCopiedSection === 'user' ? 'Copied' : 'Copy'}
               </button>
             </div>
-            <pre className="prompt-preview">{preview.userPrompt}</pre>
+            <pre className="prompt-preview prompt-text-output">{preview.userPrompt}</pre>
           </article>
         </div>
       ) : (
