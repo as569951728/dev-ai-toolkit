@@ -15,6 +15,7 @@ commit.
 - Continued that empty-workspace creation path into the new template's
   Playground after a successful save.
 - Added a repeatable, read-only Playwright smoke command for the public demo.
+- Added a direct link from the public application to its source repository.
 
 ### Fixed
 
@@ -25,6 +26,9 @@ commit.
   phone viewports by compacting the navigation and hero layout.
 - Prevented unchanged Playground previews, including reopened or previously
   saved previews, from creating duplicate prompt snapshots.
+- Preserved in-session variable drafts while switching between Playground
+  templates.
+- Limited saved-run source context to its matching Playground template.
 - Rolled back browser-storage values removed before a later recovery reset
   failure, while keeping every recovery entry available for download.
 
