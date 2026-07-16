@@ -13,7 +13,15 @@ interface CodePreviewPanelProps {
 }
 
 function renderWithLineNumbers(value: string) {
-  const lines = value.length === 0 ? [''] : value.split('\n');
+  if (value.length === 0) {
+    return (
+      <div className="code-block code-block--empty">
+        <p>No content yet.</p>
+      </div>
+    );
+  }
+
+  const lines = value.split('\n');
 
   return (
     <div className="code-block">

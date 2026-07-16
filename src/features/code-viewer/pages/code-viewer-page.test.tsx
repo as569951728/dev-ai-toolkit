@@ -216,6 +216,14 @@ describe('CodeViewerPage', () => {
     );
   });
 
+  it('shows empty preview messages after resetting the workspace', () => {
+    renderCodeViewer('/code-viewer');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
+
+    expect(screen.getAllByText('No content yet.')).toHaveLength(2);
+  });
+
   it('copies left content and announces the result', async () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
 

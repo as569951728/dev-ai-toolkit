@@ -1145,6 +1145,11 @@ pre {
   font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
 }
 
+.code-block--empty p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
 .code-block__line {
   display: grid;
   grid-template-columns: auto 1fr;
