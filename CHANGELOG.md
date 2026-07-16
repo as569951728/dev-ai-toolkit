@@ -38,6 +38,8 @@ commit.
 - Escaped generated fetch URLs that contain apostrophes or other
   JavaScript-sensitive characters.
 - Made scrollable API Builder and JSON Tools output regions keyboard-focusable.
+- Kept JSON import actions visible in keyboard navigation instead of focusing
+  hidden native file inputs.
 - Improved the Prompt Templates heading hierarchy and Code Viewer line-number
   contrast.
 - Cleared stale JSON Tools output after input edits and disabled copying until

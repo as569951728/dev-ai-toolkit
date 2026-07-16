@@ -209,6 +209,19 @@ afterEach(() => {
 });
 
 describe('PromptRunHistoryPage', () => {
+  it('opens the hidden run input from a visible import button', () => {
+    renderRunHistory();
+    const fileInput = screen.getByLabelText('Import run JSON');
+    const click = vi.spyOn(fileInput, 'click');
+
+    expect(fileInput).not.toBeVisible();
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Import run JSON' }),
+    );
+
+    expect(click).toHaveBeenCalledOnce();
+  });
+
   it('lists saved runs and links back to the source template', () => {
     renderRunHistory();
 
