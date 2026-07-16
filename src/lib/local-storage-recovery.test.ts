@@ -86,6 +86,7 @@ describe('local-storage-recovery', () => {
 
   it('creates a dated recovery file that preserves raw values', () => {
     const exportedAt = '2026-07-15T01:00:00.000Z';
+    const exportedOn = new Date(2026, 6, 15, 1);
     const issues = [
       {
         label: 'Prompt templates',
@@ -95,7 +96,7 @@ describe('local-storage-recovery', () => {
       },
     ];
 
-    expect(createLocalStorageRecoveryFilename(exportedAt)).toBe(
+    expect(createLocalStorageRecoveryFilename(exportedOn)).toBe(
       'dev-ai-toolkit-unreadable-local-data-2026-07-15.json',
     );
     expect(JSON.parse(createLocalStorageRecoveryPayload(issues, exportedAt)))
@@ -108,7 +109,7 @@ describe('local-storage-recovery', () => {
 
   it('downloads the recovery payload and removes its temporary URL', () => {
     vi.useFakeTimers();
-    vi.setSystemTime(new Date('2026-07-15T01:00:00.000Z'));
+    vi.setSystemTime(new Date(2026, 6, 15, 1));
     const createObjectURL = vi.fn(() => 'blob:local-storage-recovery');
     const revokeObjectURL = vi.fn();
     const link = document.createElement('a');

@@ -5,6 +5,7 @@ import type { PromptRunNote } from '@/types/prompt-run-note';
 import type { PromptRunRecord } from '@/types/prompt-run';
 import type { PromptTemplateRevision } from '@/types/prompt-template';
 import { isValidDateString } from '@/lib/date-validation';
+import { formatLocalDateForFilename } from '@/lib/filename-date';
 
 export interface PromptRunExportPayload {
   schemaVersion: 1;
@@ -107,10 +108,7 @@ export function parsePromptRunExportImport(
 }
 
 export function createPromptRunExportFilename(run: PromptRunRecord) {
-  const parsedCreatedAt = new Date(run.createdAt);
-  const createdDate = Number.isNaN(parsedCreatedAt.getTime())
-    ? 'undated'
-    : parsedCreatedAt.toISOString().slice(0, 10);
+  const createdDate = formatLocalDateForFilename(run.createdAt);
   const templateName = run.templateName
     .trim()
     .toLowerCase()

@@ -50,6 +50,7 @@ function LocationSearchProbe() {
 
 afterEach(() => {
   cleanup();
+  vi.useRealTimers();
   vi.restoreAllMocks();
 });
 
@@ -117,11 +118,16 @@ describe('PromptTemplateListPage', () => {
   });
 
   it('announces template export feedback', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 6, 17, 0, 30));
     const createObjectURL = vi.fn(() => 'blob:prompt-template-export');
     const revokeObjectURL = vi.fn();
+    let downloadedFilename = '';
     const click = vi
       .spyOn(HTMLAnchorElement.prototype, 'click')
-      .mockImplementation(() => undefined);
+      .mockImplementation(function (this: HTMLAnchorElement) {
+        downloadedFilename = this.download;
+      });
 
     Object.defineProperty(window.URL, 'createObjectURL', {
       configurable: true,
@@ -146,6 +152,9 @@ describe('PromptTemplateListPage', () => {
       `Exported ${starterPromptTemplates.length} templates to JSON.`,
     );
     expect(click).toHaveBeenCalled();
+    expect(downloadedFilename).toBe(
+      'dev-ai-toolkit-prompts-2026-07-17.json',
+    );
   });
 
   it('announces a failed template export and allows retrying', () => {
@@ -350,7 +359,7 @@ describe('PromptTemplateListPage', () => {
       starterPromptTemplates[0]!,
       {
         ...starterPromptTemplates[1]!,
-        archivedAt: '2026-05-07T08:00:00.000Z',
+        archivedAt: new Date(2026, 4, 7, 8).toISOString(),
       },
       starterPromptTemplates[2]!,
     ]);

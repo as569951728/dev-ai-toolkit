@@ -3,9 +3,12 @@ import {
   buildWorkspaceBackup,
   stringifyWorkspaceBackup,
 } from '@/features/workspace-backup/lib/workspace-backup-transfer';
+import { formatLocalDateForFilename } from '@/lib/filename-date';
 
-export function createWorkspaceBackupFilename(exportedAt = new Date().toISOString()) {
-  const exportedDate = exportedAt.slice(0, 10) || 'undated';
+export function createWorkspaceBackupFilename(
+  exportedAt: Date | string = new Date(),
+) {
+  const exportedDate = formatLocalDateForFilename(exportedAt);
 
   return `dev-ai-toolkit-workspace-${exportedDate}.json`;
 }
@@ -29,12 +32,12 @@ export function createWorkspaceBackupPayload({
 }
 
 export function downloadWorkspaceBackup(data: WorkspaceBackupData) {
-  const exportedAt = new Date().toISOString();
+  const exportedAt = new Date();
   const blob = new Blob(
     [
       createWorkspaceBackupPayload({
         ...data,
-        exportedAt,
+        exportedAt: exportedAt.toISOString(),
       }),
     ],
     { type: 'application/json' },

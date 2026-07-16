@@ -14,7 +14,7 @@ afterEach(() => {
 describe('workspace-backup-download', () => {
   it('creates a readable backup filename from an export date', () => {
     expect(
-      createWorkspaceBackupFilename('2026-06-10T08:30:00.000Z'),
+      createWorkspaceBackupFilename(new Date(2026, 5, 10, 8, 30)),
     ).toBe('dev-ai-toolkit-workspace-2026-06-10.json');
   });
 
@@ -41,7 +41,7 @@ describe('workspace-backup-download', () => {
 
   it('downloads workspace backup JSON with a date-based filename', () => {
     vi.useFakeTimers();
-    vi.setSystemTime(new Date('2026-06-10T08:30:00.000Z'));
+    vi.setSystemTime(new Date(2026, 5, 10, 8, 30));
 
     const createObjectURL = vi.fn(() => 'blob:workspace-backup');
     const revokeObjectURL = vi.fn();

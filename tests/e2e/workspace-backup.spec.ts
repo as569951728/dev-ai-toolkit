@@ -22,11 +22,22 @@ test('exports and restores a local workspace backup', async ({ page }) => {
   ).toBeVisible();
 
   await page.goto('/workspace');
+  const localExportDate = await page.evaluate(() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  });
   const downloadPromise = page.waitForEvent('download');
   await page
     .getByRole('button', { name: 'Export workspace JSON' })
     .click();
   const download = await downloadPromise;
+  expect(download.suggestedFilename()).toBe(
+    `dev-ai-toolkit-workspace-${localExportDate}.json`,
+  );
   const backupPath = await download.path();
 
   if (!backupPath) {
