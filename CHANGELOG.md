@@ -37,6 +37,11 @@ commit.
   when requests would send the entered text unchanged.
 - Escaped generated fetch URLs that contain apostrophes or other
   JavaScript-sensitive characters.
+- Made scrollable API Builder and JSON Tools output regions keyboard-focusable.
+- Improved the Prompt Templates heading hierarchy and Code Viewer line-number
+  contrast.
+- Cleared stale JSON Tools output after input edits and disabled copying until
+  the current input is processed again.
 - Rolled back browser-storage values removed before a later recovery reset
   failure, while keeping every recovery entry available for download.
 
