@@ -16,6 +16,8 @@ commit.
   Playground after a successful save.
 - Added a repeatable, read-only Playwright smoke command for the public demo.
 - Added a direct link from the public application to its source repository.
+- Added baseline browser security headers to Vercel responses without enabling
+  cross-origin isolation.
 
 ### Fixed
 
