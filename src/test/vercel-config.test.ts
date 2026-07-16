@@ -13,6 +13,11 @@ interface VercelConfig {
     source: string;
     headers: VercelHeader[];
   }>;
+  rewrites?: Array<{
+    source: string;
+    destination: string;
+  }>;
+  routes?: unknown;
 }
 
 describe('Vercel deployment config', () => {
@@ -35,5 +40,12 @@ describe('Vercel deployment config', () => {
       'X-Content-Type-Options': 'nosniff',
       'X-Frame-Options': 'DENY',
     });
+    expect(config.routes).toBeUndefined();
+    expect(config.rewrites).toEqual([
+      {
+        source: '/(.*)',
+        destination: '/index.html',
+      },
+    ]);
   });
 });
