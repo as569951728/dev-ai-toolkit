@@ -46,8 +46,12 @@ commit.
   a removal and addition instead of leaving both sides unchanged.
 - Preserved repeated query parameters when API Builder generates absolute or
   relative request URLs.
+- Preserved repeated API Builder header rows in Fetch and cURL output.
+- Displayed added and removed blank lines explicitly in Prompt Diff summaries.
 - Replaced Code Viewer's phantom numbered line with an explicit empty state
   when a preview has no content.
+- Wrapped long unbroken values in prompt previews without changing
+  code-oriented output scrolling.
 - Rolled back browser-storage values removed before a later recovery reset
   failure, while keeping every recovery entry available for download.
 
