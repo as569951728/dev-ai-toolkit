@@ -1,4 +1,5 @@
 import type { StorageLike } from '@/lib/browser-storage';
+import { formatLocalDateForFilename } from '@/lib/filename-date';
 
 export type LocalStorageReadIssueReason = 'invalid-data' | 'invalid-json';
 
@@ -133,9 +134,9 @@ export function decodeLocalStorageValue<T>({
 }
 
 export function createLocalStorageRecoveryFilename(
-  exportedAt = new Date().toISOString(),
+  exportedAt: Date | string = new Date(),
 ) {
-  const exportedDate = exportedAt.slice(0, 10) || 'undated';
+  const exportedDate = formatLocalDateForFilename(exportedAt);
 
   return `dev-ai-toolkit-unreadable-local-data-${exportedDate}.json`;
 }
@@ -158,9 +159,9 @@ export function createLocalStorageRecoveryPayload(
 export function downloadLocalStorageRecovery(
   issues: LocalStorageReadIssue[],
 ) {
-  const exportedAt = new Date().toISOString();
+  const exportedAt = new Date();
   const blob = new Blob(
-    [createLocalStorageRecoveryPayload(issues, exportedAt)],
+    [createLocalStorageRecoveryPayload(issues, exportedAt.toISOString())],
     { type: 'application/json' },
   );
   const url = URL.createObjectURL(blob);

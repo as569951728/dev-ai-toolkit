@@ -18,7 +18,7 @@ const sampleRun: PromptRunRecord = {
   variables: { endpoint: '/v1/users' },
   systemPrompt: 'You are a practical API design reviewer.',
   userPrompt: 'Review the user endpoint draft.',
-  createdAt: '2026-05-07T09:00:00.000Z',
+  createdAt: new Date(2026, 4, 7, 9).toISOString(),
 };
 
 const sampleNote: PromptRunNote = {
@@ -85,6 +85,17 @@ describe('prompt run export helpers', () => {
     );
   });
 
+  it('uses the local calendar date for the saved run', () => {
+    const createdAt = new Date(2026, 6, 17, 0, 30).toISOString();
+
+    expect(
+      createPromptRunExportFilename({
+        ...sampleRun,
+        createdAt,
+      }),
+    ).toBe('2026-07-17-api-design-partner-run-1.json');
+  });
+
   it('removes path and fragment characters from imported run IDs', () => {
     expect(
       createPromptRunExportFilename({
@@ -107,7 +118,7 @@ describe('prompt run export helpers', () => {
     expect(
       createPromptRunExportFilename({
         ...sampleRun,
-        createdAt: 'Thu, 07 May 2026 09:00:00 GMT',
+        createdAt: new Date(2026, 4, 7, 9).toUTCString(),
       }),
     ).toBe('2026-05-07-api-design-partner-run-1.json');
   });

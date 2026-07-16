@@ -18,6 +18,7 @@ import {
   createPromptTemplateNavigationState,
 } from '@/features/prompt-templates/lib/prompt-template-links';
 import { collectPromptTemplateTags } from '@/features/prompt-templates/services/prompt-template-service';
+import { formatLocalDateForFilename } from '@/lib/filename-date';
 import { readJsonImportFile } from '@/lib/json-import-file';
 import type { PromptTemplateFilters } from '@/types/prompt-template';
 
@@ -97,7 +98,8 @@ export function PromptTemplateListPage() {
 
       objectUrl = window.URL.createObjectURL(blob);
       link.href = objectUrl;
-      link.download = `dev-ai-toolkit-prompts-${new Date().toISOString().slice(0, 10)}.json`;
+      link.download =
+        `dev-ai-toolkit-prompts-${formatLocalDateForFilename()}.json`;
       link.click();
 
       setFeedback({
