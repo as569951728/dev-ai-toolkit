@@ -58,7 +58,7 @@ describe('api-builder-utils', () => {
     };
 
     expect(buildFetchSnippet(state)).toContain(
-      "fetch('/api/prompts?workspace=dev-ai-toolkit&empty-value=',",
+      'fetch("/api/prompts?workspace=dev-ai-toolkit&empty-value=",',
     );
     expect(summarizeRequest(state)).toEqual({
       requestUrl: '/api/prompts?workspace=dev-ai-toolkit&empty-value=',
@@ -67,6 +67,23 @@ describe('api-builder-utils', () => {
       isBodyOmitted: false,
       isBodyInvalid: false,
     });
+  });
+
+  it('escapes apostrophes in generated fetch URLs', () => {
+    const state: ApiBuilderState = {
+      method: 'GET',
+      url: "https://api.example.com/users/O'Reilly",
+      queryParams: [],
+      headers: [],
+      body: '',
+    };
+
+    const fetchSnippet = buildFetchSnippet(state);
+
+    expect(fetchSnippet).toContain(
+      'fetch("https://api.example.com/users/O\'Reilly",',
+    );
+    expect(() => new Function(fetchSnippet)).not.toThrow();
   });
 
   it('keeps fetch snippets valid when the JSON body is malformed', () => {

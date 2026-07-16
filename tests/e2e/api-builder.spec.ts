@@ -32,7 +32,7 @@ test('omits a saved JSON body from generated GET requests', async ({ page }) => 
     'GET requests cannot include a body in browser fetch.',
   );
   await expect(page.getByText('Request body omitted')).toBeVisible();
-  await expect(page.getByText(/fetch\('/)).not.toContainText('body:');
+  await expect(page.getByText(/fetch\(/)).not.toContainText('body:');
   await expect(page.getByText(/curl -X GET/)).not.toContainText('--data-raw');
 });
 
@@ -46,8 +46,8 @@ test('keeps query parameters before relative URL fragments', async ({ page }) =>
       exact: true,
     }),
   ).toBeVisible();
-  await expect(page.getByText(/fetch\('/)).toContainText(
-    "fetch('/api/prompts?workspace=dev-ai-toolkit#debug'",
+  await expect(page.getByText(/fetch\(/)).toContainText(
+    'fetch("/api/prompts?workspace=dev-ai-toolkit#debug"',
   );
 });
 
@@ -61,10 +61,22 @@ test('warns while keeping malformed JSON fetch code executable', async ({
   await expect(page.getByRole('alert')).toContainText(
     'JSON body is not valid JSON.',
   );
-  await expect(page.getByText(/fetch\('/)).toContainText(
+  await expect(page.getByText(/fetch\(/)).toContainText(
     'body: "{bad-json"',
   );
   await expect(page.getByText(/curl -X POST/)).toContainText(
     "--data-raw '{bad-json'",
+  );
+});
+
+test('escapes apostrophes in generated fetch URLs', async ({ page }) => {
+  await page.goto('/api-builder');
+
+  await page
+    .getByLabel('Base URL')
+    .fill("https://api.example.com/users/O'Reilly");
+
+  await expect(page.getByText(/fetch\(/)).toContainText(
+    'fetch("https://api.example.com/users/O\'Reilly?workspace=dev-ai-toolkit"',
   );
 });

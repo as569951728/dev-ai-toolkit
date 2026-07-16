@@ -146,7 +146,9 @@ export function buildFetchSnippet(state: ApiBuilderState) {
     optionsLines.push(`body: ${JSON.stringify(bodyValue)}`);
   }
 
-  return `fetch('${requestUrl || 'https://api.example.com'}', {\n  ${optionsLines.join(',\n  ')}\n});`;
+  const fetchUrl = JSON.stringify(requestUrl || 'https://api.example.com');
+
+  return `fetch(${fetchUrl}, {\n  ${optionsLines.join(',\n  ')}\n});`;
 }
 
 function shellQuote(value: string) {
