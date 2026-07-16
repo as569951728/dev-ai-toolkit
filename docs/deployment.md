@@ -10,8 +10,20 @@ This project can be deployed to Vercel as a static Vite application.
 - `vercel.json` is included so route refreshes fall back to `index.html`
 - `npm run test:demo` runs the read-only production smoke check without starting
   the local Vite server
-- Vercel did not add a record to the repository's GitHub Deployments API, so
-  immutable verification records include the Vercel deployment ID
+- The canonical Vercel project is connected to
+  `as569951728/dev-ai-toolkit`, with `main` as its production branch
+
+## Deployment workflow
+
+Merging a reviewed pull request to `main` is the normal production deployment
+path. Vercel creates preview deployments for pull requests and a production
+deployment for the resulting `main` revision. Repository credentials and
+Vercel tokens are not stored in this project.
+
+Use a manual `vercel deploy --prod` only to recover a stale or failed public
+demo. Before using that fallback, confirm that CI passed and record why the Git
+deployment did not complete. Verification records should include both the
+Vercel deployment ID and the exact commit SHA.
 
 ## Verification records
 

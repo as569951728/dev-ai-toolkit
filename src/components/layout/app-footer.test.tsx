@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { AppFooter } from '@/components/layout/app-footer';
 
 describe('AppFooter', () => {
-  it('links safely to the workflow form and warns about private content', () => {
+  it('links safely to the project and warns about private content', () => {
     render(<AppFooter />);
 
     expect(
@@ -21,5 +21,14 @@ describe('AppFooter', () => {
     );
     expect(feedbackLink).toHaveAttribute('target', '_blank');
     expect(feedbackLink).toHaveAttribute('rel', 'noopener noreferrer');
+
+    const sourceLink = screen.getByRole('link', { name: 'View source' });
+
+    expect(sourceLink).toHaveAttribute(
+      'href',
+      'https://github.com/as569951728/dev-ai-toolkit',
+    );
+    expect(sourceLink).toHaveAttribute('target', '_blank');
+    expect(sourceLink).toHaveAttribute('rel', 'noopener noreferrer');
   });
 });
