@@ -48,7 +48,7 @@ function VariableList({
             }
             key={`${index}-${value}`}
           >
-            {value.length === 0 ? emptyValueLabel : value}
+            {value.trim().length === 0 ? emptyValueLabel : value}
           </span>
         ))}
       </div>

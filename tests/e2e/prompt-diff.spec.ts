@@ -71,7 +71,9 @@ test('reports reordered prompt lines as removed and added', async ({ page }) => 
   ).toBeVisible();
 });
 
-test('shows added blank lines in the line summary', async ({ page }) => {
+test('shows added blank and whitespace-only lines in the summary', async ({
+  page,
+}) => {
   await page.goto('/prompt-diff');
 
   await page
@@ -79,12 +81,12 @@ test('shows added blank lines in the line summary', async ({ page }) => {
     .fill('First instruction.\nSecond instruction.');
   await page
     .getByLabel('Revised prompt')
-    .fill('First instruction.\n\nSecond instruction.');
+    .fill('First instruction.\n\n   \nSecond instruction.');
 
   const addedLines = page.locator('.prompt-diff-card').filter({
     has: page.getByRole('heading', { name: 'Added lines' }),
   });
 
-  await expect(addedLines.getByText('(blank line)')).toBeVisible();
+  await expect(addedLines.getByText('(blank line)')).toHaveCount(2);
   await expect(addedLines.getByText('No changes detected.')).toHaveCount(0);
 });
