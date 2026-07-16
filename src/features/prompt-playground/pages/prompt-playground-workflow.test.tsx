@@ -182,6 +182,44 @@ describe('Prompt playground workflow', () => {
     );
   });
 
+  it('preserves variable drafts while switching between templates', () => {
+    renderPlayground('/playground');
+
+    fireEvent.change(screen.getByLabelText('Repository Name'), {
+      target: { value: 'draft-repository' },
+    });
+    fireEvent.change(screen.getByLabelText('Active template'), {
+      target: { value: starterPromptTemplates[1]!.id },
+    });
+    fireEvent.change(screen.getByLabelText('Product Area'), {
+      target: { value: 'billing' },
+    });
+
+    fireEvent.change(screen.getByLabelText('Active template'), {
+      target: { value: starterPromptTemplates[0]!.id },
+    });
+
+    expect(screen.getByLabelText('Repository Name')).toHaveValue(
+      'draft-repository',
+    );
+    expect(
+      screen.getByText(
+        'You are a senior software engineer reviewing changes in the draft-repository repository. Prioritize correctness, regressions, and maintainability.',
+      ),
+    ).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText('Active template'), {
+      target: { value: starterPromptTemplates[1]!.id },
+    });
+
+    expect(screen.getByLabelText('Product Area')).toHaveValue('billing');
+    expect(
+      screen.getByText(
+        'You are an API architect working on the billing domain. Produce practical, implementation-ready suggestions with clear tradeoffs.',
+      ),
+    ).toBeInTheDocument();
+  });
+
   it('surfaces unresolved variables until all prompt inputs are filled', () => {
     render(
       <MemoryRouter initialEntries={['/playground']}>
