@@ -79,3 +79,42 @@ test('keeps prompt template card headings below the page heading', async ({
   );
   await expect(cards.getByRole('heading', { level: 3 })).toHaveCount(0);
 });
+
+test('keeps JSON import actions in the visible keyboard order', async ({
+  page,
+}) => {
+  const routes = [
+    { path: '/prompts', importName: 'Import JSON', leadingAction: null },
+    { path: '/runs', importName: 'Import run JSON', leadingAction: null },
+    {
+      path: '/workspace',
+      importName: 'Import workspace JSON',
+      leadingAction: 'Export workspace JSON',
+    },
+  ];
+
+  for (const route of routes) {
+    await page.goto(route.path);
+    await page.getByRole('link', { name: 'Backup' }).focus();
+    await page.keyboard.press('Tab');
+
+    if (route.leadingAction) {
+      await expect(
+        page.getByRole('button', { name: route.leadingAction }),
+      ).toBeFocused();
+      await page.keyboard.press('Tab');
+    }
+
+    const importButton = page.getByRole('button', {
+      name: route.importName,
+    });
+
+    await expect(importButton).toBeVisible();
+    await expect(importButton).toBeFocused();
+
+    const fileChooserPromise = page.waitForEvent('filechooser');
+    await page.keyboard.press('Enter');
+    const fileChooser = await fileChooserPromise;
+    await fileChooser.setFiles([]);
+  }
+});

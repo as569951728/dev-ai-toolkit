@@ -55,6 +55,23 @@ afterEach(() => {
 });
 
 describe('PromptTemplateListPage', () => {
+  it('opens the hidden template input from a visible import button', () => {
+    render(
+      <MemoryRouter>
+        <PromptTemplatesProvider repository={createMemoryRepository()}>
+          <PromptTemplateListPage />
+        </PromptTemplatesProvider>
+      </MemoryRouter>,
+    );
+    const fileInput = screen.getByLabelText('Import prompt templates JSON');
+    const click = vi.spyOn(fileInput, 'click');
+
+    expect(fileInput).not.toBeVisible();
+    fireEvent.click(screen.getByRole('button', { name: 'Import JSON' }));
+
+    expect(click).toHaveBeenCalledOnce();
+  });
+
   it('gives the tag filter a stable accessible name', () => {
     render(
       <MemoryRouter>

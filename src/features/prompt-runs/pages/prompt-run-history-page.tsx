@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 
 import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
@@ -21,6 +21,7 @@ import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt
 import { buildPromptTemplatePlaygroundPath } from '@/features/prompt-templates/lib/prompt-template-links';
 
 export function PromptRunHistoryPage() {
+  const importInputRef = useRef<HTMLInputElement | null>(null);
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const { deleteRun, getRunById, importRuns, runs } = usePromptRuns();
@@ -181,11 +182,16 @@ export function PromptRunHistoryPage() {
             </p>
           </div>
           <div className="detail-actions detail-actions--inline">
-            <label className="ghost-button" htmlFor="prompt-run-import">
+            <button
+              className="ghost-button"
+              type="button"
+              onClick={() => importInputRef.current?.click()}
+            >
               Import run JSON
-            </label>
+            </button>
             <input
-              className="sr-only"
+              ref={importInputRef}
+              hidden
               id="prompt-run-import"
               type="file"
               accept="application/json,.json"

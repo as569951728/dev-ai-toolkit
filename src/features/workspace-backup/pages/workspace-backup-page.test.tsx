@@ -168,6 +168,19 @@ afterEach(() => {
 });
 
 describe('WorkspaceBackupPage', () => {
+  it('opens the hidden workspace input from a visible import button', () => {
+    renderWorkspaceBackupPage();
+    const fileInput = screen.getByLabelText('Import workspace JSON');
+    const click = vi.spyOn(fileInput, 'click');
+
+    expect(fileInput).not.toBeVisible();
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Import workspace JSON' }),
+    );
+
+    expect(click).toHaveBeenCalledOnce();
+  });
+
   it('refreshes recent template counts after another tab updates them', () => {
     renderWorkspaceBackupPage();
 

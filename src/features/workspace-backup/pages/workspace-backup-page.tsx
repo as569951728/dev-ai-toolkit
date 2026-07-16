@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ChangeEvent } from 'react';
 
 import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
@@ -59,6 +59,7 @@ function WorkspaceImportCounts({
 }
 
 export function WorkspaceBackupPage() {
+  const importInputRef = useRef<HTMLInputElement | null>(null);
   const { notes } = usePromptRunNotes();
   const { runs } = usePromptRuns();
   const { templates } = usePromptTemplates();
@@ -243,11 +244,16 @@ export function WorkspaceBackupPage() {
         </p>
 
         <div className="detail-actions detail-actions--inline">
-          <label className="ghost-button" htmlFor="workspace-backup-import">
+          <button
+            className="ghost-button"
+            type="button"
+            onClick={() => importInputRef.current?.click()}
+          >
             Import workspace JSON
-          </label>
+          </button>
           <input
-            className="sr-only"
+            ref={importInputRef}
+            hidden
             id="workspace-backup-import"
             type="file"
             accept="application/json,.json"
