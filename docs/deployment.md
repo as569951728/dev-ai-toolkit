@@ -31,6 +31,15 @@ These records describe the revision that was tested at that time. Use Vercel
 deployment metadata to identify the revision currently behind the canonical
 alias.
 
+### Current main smoke check
+
+- Date: 2026-07-17
+- Deployment: `dpl_9Vd3Cy8XNCiwbcMqpbYtc135LksR`
+- Revision: [`324109c`](https://github.com/as569951728/dev-ai-toolkit/commit/324109c47b6df5179bbe8f9fe197d39c1dba1e26)
+- Scope: `npm run test:demo` passed against the canonical alias, covering the
+  home, Playground, Run History, and Workspace Backup routes, the Overview
+  entry into the first prompt template, and a direct Playground refresh
+
 ### Post-release feedback smoke check
 
 - Date: 2026-07-15

@@ -54,10 +54,11 @@ npm run preview
 [https://dev-ai-toolkit.vercel.app](https://dev-ai-toolkit.vercel.app)。
 
 Demo 验收记录绑定不可变的提交，而不把 README 中的 SHA 当作永久在线状态。
-2026-07-15 已使用干净 Chromium 验证提交
-[`ec58ced`](https://github.com/as569951728/dev-ai-toolkit/commit/ec58ced4347bfa3b54fefb0991b0b5a164e8ad68)
-的首页、Playground、Run History 和 Workspace Backup 路由在桌面端和移动端均可
-正常打开，并包含工作流反馈入口。完整的模板到运行记录工作流另行在
+2026-07-17 已对提交
+[`324109c`](https://github.com/as569951728/dev-ai-toolkit/commit/324109c47b6df5179bbe8f9fe197d39c1dba1e26)
+运行只读公开 Demo smoke，确认首页、Playground、Run History 和 Workspace Backup
+路由，以及直接进入 Prompt 工作流和刷新 Playground 的路径可用。完整的模板到
+运行记录工作流另行在
 [`v0.2.0` 发布提交](https://github.com/as569951728/dev-ai-toolkit/commit/8ed3825fcf007bfa2965da015ec7066f437797b3)
 上完成验证。Demo 数据只保存在当前浏览器，不会同步到服务端。
 
