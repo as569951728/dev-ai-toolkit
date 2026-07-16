@@ -54,6 +54,8 @@ commit.
   code-oriented output scrolling.
 - Kept long captured values inside Run Detail cards and made scrollable saved
   prompt blocks keyboard-focusable.
+- Used the browser's local calendar date in workspace, template, saved-run, and
+  local-data recovery filenames while keeping exported timestamps in UTC.
 - Rolled back browser-storage values removed before a later recovery reset
   failure, while keeping every recovery entry available for download.
 
