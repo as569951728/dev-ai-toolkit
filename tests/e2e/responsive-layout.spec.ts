@@ -79,6 +79,29 @@ test('wraps long prompt values without widening the page', async ({ page }) => {
   await expect(page.locator('.prompt-text-output')).toHaveCount(2);
 });
 
+test('keeps long saved run content usable at phone width', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto('/playground');
+  await page.getByLabel('Repository Name').fill('a'.repeat(2000));
+  await page.getByLabel('Change Scope').fill('frontend');
+  await page.getByRole('button', { name: 'Save prompt snapshot' }).click();
+  await page.getByRole('link', { name: 'Open saved run' }).click();
+
+  const documentWidth = await page.evaluate(
+    () => document.documentElement.scrollWidth,
+  );
+  const promptBlocks = page.locator('.code-block');
+
+  expect(documentWidth).toBeLessThanOrEqual(375);
+  await expect(page.locator('.run-input-value')).toHaveCount(2);
+  await expect(promptBlocks).toHaveCount(2);
+
+  for (const promptBlock of await promptBlocks.all()) {
+    await promptBlock.focus();
+    await expect(promptBlock).toBeFocused();
+  }
+});
+
 test('keeps workflow feedback available inside a mobile viewport', async ({
   page,
 }) => {

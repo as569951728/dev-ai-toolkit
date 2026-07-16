@@ -164,14 +164,17 @@ describe('PromptRunDetailPage', () => {
     expect(screen.getByText('Saved prompt snapshot')).toBeInTheDocument();
     expect(screen.getByText('Snapshot content')).toBeInTheDocument();
     expect(screen.getByText('repository_name')).toBeInTheDocument();
-    expect(screen.getByText('dev-ai-toolkit')).toBeInTheDocument();
+    expect(screen.getByText('dev-ai-toolkit')).toHaveClass('run-input-value');
     expect(
       screen.getByRole('link', { name: 'Open variables in JSON Tools' }),
     ).toHaveAttribute('href', '/json-tools?runId=run-1');
-    expect(screen.getByText('Review the code carefully.')).toBeInTheDocument();
+    expect(screen.getByText('Review the code carefully.')).toHaveAttribute(
+      'tabindex',
+      '0',
+    );
     expect(
       screen.getByText('Focus on bugs and missing tests.'),
-    ).toBeInTheDocument();
+    ).toHaveAttribute('tabindex', '0');
     expect(
       screen.getByRole('link', { name: 'View source template' }),
     ).toHaveAttribute('href', `/prompts/${starterPromptTemplates[0]!.id}`);
