@@ -51,6 +51,26 @@ test('keeps query parameters before relative URL fragments', async ({ page }) =>
   );
 });
 
+test('preserves repeated query parameters for absolute URLs', async ({
+  page,
+}) => {
+  await page.goto('/api-builder');
+
+  await page.getByRole('textbox', { name: 'Query params key 1' }).fill('tag');
+  await page
+    .getByRole('textbox', { name: 'Query params value 1' })
+    .fill('alpha');
+  await page.getByRole('button', { name: 'Add Query params row' }).click();
+  await page.getByRole('textbox', { name: 'Query params key 2' }).fill('tag');
+  await page
+    .getByRole('textbox', { name: 'Query params value 2' })
+    .fill('beta');
+
+  await expect(page.getByLabel('Resolved request URL')).toHaveText(
+    'https://api.example.com/v1/prompts/render?tag=alpha&tag=beta',
+  );
+});
+
 test('warns while keeping malformed JSON fetch code executable', async ({
   page,
 }) => {

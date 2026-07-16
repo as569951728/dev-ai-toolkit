@@ -22,6 +22,20 @@ describe('api-builder-utils', () => {
     ).toBe('https://api.example.com/v1/prompts?workspace=dev-ai-toolkit&empty-value=');
   });
 
+  it('preserves repeated query parameters in absolute URLs', () => {
+    expect(
+      buildRequestUrl(
+        'https://api.example.com/v1/items?limit=10#results',
+        [
+          { id: 'query-1', key: 'tag', value: 'alpha' },
+          { id: 'query-2', key: 'tag', value: 'beta' },
+        ],
+      ),
+    ).toBe(
+      'https://api.example.com/v1/items?limit=10&tag=alpha&tag=beta#results',
+    );
+  });
+
   it('appends query parameters to relative URLs with existing queries', () => {
     expect(buildRequestUrl('/api/prompts?limit=10', queryParams)).toBe(
       '/api/prompts?limit=10&workspace=dev-ai-toolkit&empty-value=',

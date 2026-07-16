@@ -85,7 +85,7 @@ export function buildRequestUrl(
 
     for (const pair of activeParams) {
       if (pair.key.trim()) {
-        parsedUrl.searchParams.set(pair.key.trim(), pair.value.trim());
+        parsedUrl.searchParams.append(pair.key.trim(), pair.value.trim());
       }
     }
 
