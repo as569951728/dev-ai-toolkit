@@ -56,11 +56,12 @@ The public build is available at
 [https://dev-ai-toolkit.vercel.app](https://dev-ai-toolkit.vercel.app).
 
 Demo checks are recorded against immutable revisions rather than treating a
-README commit as permanent live status. On 2026-07-15,
-[`ec58ced`](https://github.com/as569951728/dev-ai-toolkit/commit/ec58ced4347bfa3b54fefb0991b0b5a164e8ad68)
-loaded the home, Playground, Run History, and Workspace Backup routes at desktop
-and mobile sizes, including the workflow feedback link. The complete
-template-to-run walkthrough was verified separately against the
+README commit as permanent live status. On 2026-07-17,
+[`324109c`](https://github.com/as569951728/dev-ai-toolkit/commit/324109c47b6df5179bbe8f9fe197d39c1dba1e26)
+passed the read-only public smoke check for the home, Playground, Run History,
+and Workspace Backup routes, including the direct prompt workflow entry and a
+Playground refresh. The complete template-to-run walkthrough was verified
+separately against the
 [`v0.2.0` release commit](https://github.com/as569951728/dev-ai-toolkit/commit/8ed3825fcf007bfa2965da015ec7066f437797b3).
 Demo data remains in that browser profile; it is not synchronized to a server.
 
