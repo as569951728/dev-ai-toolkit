@@ -1149,7 +1149,7 @@ pre {
 
 .code-block__line-number {
   min-width: 28px;
-  color: #7c90a6;
+  color: var(--text-muted);
   text-align: right;
   user-select: none;
 }
