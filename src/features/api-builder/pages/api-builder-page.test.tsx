@@ -130,6 +130,22 @@ describe('ApiBuilderPage', () => {
     ).toBeInTheDocument();
   });
 
+  it('escapes apostrophes in generated fetch URLs', () => {
+    renderApiBuilderPage();
+
+    fireEvent.change(screen.getByLabelText('Base URL'), {
+      target: { value: "https://api.example.com/users/O'Reilly" },
+    });
+
+    expect(
+      screen.getByText((content) =>
+        content.includes(
+          'fetch("https://api.example.com/users/O\'Reilly?workspace=dev-ai-toolkit"',
+        ),
+      ),
+    ).toBeInTheDocument();
+  });
+
   it('labels query and header pair controls for assistive technology', () => {
     renderApiBuilderPage();
 
@@ -249,7 +265,7 @@ describe('ApiBuilderPage', () => {
     expect(state.codeViewer.mode).toBe('single');
     expect(state.codeViewer.language).toBe('javascript');
     expect(state.codeViewer.left).toContain(
-      "fetch('https://api.example.com/v1/prompts/render?workspace=dev-ai-toolkit'",
+      'fetch("https://api.example.com/v1/prompts/render?workspace=dev-ai-toolkit"',
     );
   });
 });
