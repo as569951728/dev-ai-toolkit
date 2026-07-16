@@ -70,3 +70,21 @@ test('reports reordered prompt lines as removed and added', async ({ page }) => 
     removedLines.getByText('First instruction.', { exact: true }),
   ).toBeVisible();
 });
+
+test('shows added blank lines in the line summary', async ({ page }) => {
+  await page.goto('/prompt-diff');
+
+  await page
+    .getByLabel('Original prompt')
+    .fill('First instruction.\nSecond instruction.');
+  await page
+    .getByLabel('Revised prompt')
+    .fill('First instruction.\n\nSecond instruction.');
+
+  const addedLines = page.locator('.prompt-diff-card').filter({
+    has: page.getByRole('heading', { name: 'Added lines' }),
+  });
+
+  await expect(addedLines.getByText('(blank line)')).toBeVisible();
+  await expect(addedLines.getByText('No changes detected.')).toHaveCount(0);
+});

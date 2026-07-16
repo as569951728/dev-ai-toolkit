@@ -17,10 +17,12 @@ function VariableList({
   title,
   values,
   tone,
+  emptyValueLabel,
 }: {
   title: string;
   values: string[];
   tone?: 'added' | 'removed';
+  emptyValueLabel?: string;
 }) {
   if (values.length === 0) {
     return (
@@ -46,7 +48,7 @@ function VariableList({
             }
             key={`${index}-${value}`}
           >
-            {value}
+            {value.length === 0 ? emptyValueLabel : value}
           </span>
         ))}
       </div>
@@ -65,8 +67,6 @@ export function PromptDiffSummary({
   const leftLines = splitPromptLines(leftValue);
   const rightLines = splitPromptLines(rightValue);
   const lineChanges = getLineChanges(leftLines, rightLines);
-  const addedLines = lineChanges.added.filter(Boolean);
-  const removedLines = lineChanges.removed.filter(Boolean);
 
   return (
     <section className="prompt-diff-summary">
@@ -101,11 +101,17 @@ export function PromptDiffSummary({
           values={removedVariables}
           tone="removed"
         />
-        <VariableList title="Added lines" values={addedLines} tone="added" />
+        <VariableList
+          title="Added lines"
+          values={lineChanges.added}
+          tone="added"
+          emptyValueLabel="(blank line)"
+        />
         <VariableList
           title="Removed lines"
-          values={removedLines}
+          values={lineChanges.removed}
           tone="removed"
+          emptyValueLabel="(blank line)"
         />
       </div>
     </section>
