@@ -53,7 +53,7 @@ test('opens legacy local workspace collections without migration', async ({
   await page.goto('/prompts');
 
   await expect(
-    page.getByRole('heading', { level: 3, name: template.name }),
+    page.getByRole('heading', { level: 2, name: template.name }),
   ).toBeVisible();
   await expect(page.getByRole('alert')).toHaveCount(0);
 

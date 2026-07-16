@@ -35,7 +35,7 @@ export function PromptTemplateCard({
     <article className="prompt-card">
       <div className="prompt-card__header">
         <div>
-          <h3>{template.name}</h3>
+          <h2>{template.name}</h2>
           <p>{template.description}</p>
         </div>
         <div className="prompt-card__actions">

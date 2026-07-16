@@ -66,3 +66,16 @@ test('keeps focus visible and reduces interface motion when requested', async ({
   expect(styles.outlineWidth).not.toBe('0px');
   expect(styles.maxTransitionDuration).toBeLessThanOrEqual(1);
 });
+
+test('keeps prompt template card headings below the page heading', async ({
+  page,
+}) => {
+  await page.goto('/prompts');
+
+  const cards = page.locator('.prompt-card');
+  await expect(cards.first()).toBeVisible();
+  await expect(cards.getByRole('heading', { level: 2 })).toHaveCount(
+    await cards.count(),
+  );
+  await expect(cards.getByRole('heading', { level: 3 })).toHaveCount(0);
+});
