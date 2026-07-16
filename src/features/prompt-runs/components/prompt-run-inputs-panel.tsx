@@ -44,7 +44,7 @@ export function PromptRunInputsPanel({
               <div className="revision-card__header">
                 <h3>{name}</h3>
               </div>
-              <p className="revision-card__description">{value}</p>
+              <p className="revision-card__description run-input-value">{value}</p>
             </article>
           ))}
         </div>

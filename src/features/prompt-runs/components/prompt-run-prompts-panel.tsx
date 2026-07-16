@@ -60,7 +60,7 @@ export function PromptRunPromptsPanel({
               Copy system prompt
             </button>
           </div>
-          <pre className="code-block">{run.systemPrompt}</pre>
+          <pre className="code-block" tabIndex={0}>{run.systemPrompt}</pre>
         </article>
         <article>
           <div className="detail-card__header">
@@ -73,7 +73,7 @@ export function PromptRunPromptsPanel({
               Copy user prompt
             </button>
           </div>
-          <pre className="code-block">{run.userPrompt}</pre>
+          <pre className="code-block" tabIndex={0}>{run.userPrompt}</pre>
         </article>
       </div>
     </section>

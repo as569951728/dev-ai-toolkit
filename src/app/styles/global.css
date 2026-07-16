@@ -873,6 +873,10 @@ pre {
   color: var(--text-muted);
 }
 
+.run-input-value {
+  overflow-wrap: anywhere;
+}
+
 .run-history-note {
   display: inline-flex;
   align-items: center;
