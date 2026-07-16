@@ -18,12 +18,10 @@ release.
 
 ## Reporting A Security Issue
 
-Please avoid sharing sensitive proof-of-concept details in a public issue.
+Please do not share vulnerability details in a public issue.
 
-If you find a security issue, use GitHub private vulnerability reporting if it is
-available for the repository. If it is not available, open a GitHub issue with a
-short, low-detail summary and ask to coordinate reproduction details privately.
-Include:
+Use [GitHub private vulnerability reporting](https://github.com/as569951728/dev-ai-toolkit/security/advisories/new)
+to send the maintainer a private report. Include:
 
 - Affected feature or file
 - Steps to reproduce, if safe to share
