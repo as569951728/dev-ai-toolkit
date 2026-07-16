@@ -51,6 +51,10 @@ function normalizeHttpMethod(method: string) {
   return method.trim().toUpperCase() || 'GET';
 }
 
+function supportsRequestBody(method: string) {
+  return !['GET', 'HEAD'].includes(normalizeHttpMethod(method));
+}
+
 export function buildRequestUrl(
   baseUrl: string,
   queryParams: ApiFieldPair[],
@@ -114,7 +118,7 @@ export function buildFetchSnippet(state: ApiBuilderState) {
   const headersObject = buildHeadersObject(state.headers);
   const hasHeaders = Object.keys(headersObject).length > 0;
   const bodyValue = state.body.trim();
-  const includeBody = bodyValue.length > 0;
+  const includeBody = bodyValue.length > 0 && supportsRequestBody(state.method);
 
   const optionsLines = [`method: '${normalizeHttpMethod(state.method)}'`];
 
@@ -137,6 +141,7 @@ export function buildCurlCommand(state: ApiBuilderState) {
   const requestUrl = buildRequestUrl(state.url, state.queryParams);
   const headersObject = buildHeadersObject(state.headers);
   const bodyValue = state.body.trim();
+  const includeBody = bodyValue.length > 0 && supportsRequestBody(state.method);
   const commandLines = [
     `curl -X ${normalizeHttpMethod(state.method)} ${shellQuote(requestUrl || 'https://api.example.com')}`,
   ];
@@ -145,7 +150,7 @@ export function buildCurlCommand(state: ApiBuilderState) {
     commandLines.push(`-H ${shellQuote(`${key}: ${value}`)}`);
   }
 
-  if (bodyValue.length > 0) {
+  if (includeBody) {
     commandLines.push(`--data-raw ${shellQuote(bodyValue)}`);
   }
 
@@ -153,9 +158,13 @@ export function buildCurlCommand(state: ApiBuilderState) {
 }
 
 export function summarizeRequest(state: ApiBuilderState) {
+  const hasBodyInput = state.body.trim().length > 0;
+  const bodySupported = supportsRequestBody(state.method);
+
   return {
     requestUrl: buildRequestUrl(state.url, state.queryParams),
     headers: buildHeadersObject(state.headers),
-    hasBody: state.body.trim().length > 0,
+    hasBody: hasBodyInput && bodySupported,
+    isBodyOmitted: hasBodyInput && !bodySupported,
   };
 }
