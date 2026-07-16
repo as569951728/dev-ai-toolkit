@@ -29,6 +29,10 @@ commit.
 - Preserved in-session variable drafts while switching between Playground
   templates.
 - Limited saved-run source context to its matching Playground template.
+- Omitted saved JSON bodies from generated GET requests while keeping the draft
+  available when switching back to a body-capable method.
+- Kept generated query parameters before URL fragments in relative API Builder
+  request URLs.
 - Rolled back browser-storage values removed before a later recovery reset
   failure, while keeping every recovery entry available for download.
 
