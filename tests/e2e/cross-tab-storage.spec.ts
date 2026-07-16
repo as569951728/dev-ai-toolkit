@@ -24,7 +24,7 @@ test('refreshes prompt templates saved in another tab', async ({
 
   await expect(editorPage).toHaveURL(/\/prompts$/);
   await expect(
-    page.getByRole('heading', { level: 3, name: templateName }),
+    page.getByRole('heading', { level: 2, name: templateName }),
   ).toBeVisible();
 
   await editorPage.close();

@@ -18,7 +18,7 @@ test('exports and restores a local workspace backup', async ({ page }) => {
   await page.getByRole('button', { name: 'Create template' }).click();
 
   await expect(
-    page.getByRole('heading', { name: templateName, level: 3 }),
+    page.getByRole('heading', { name: templateName, level: 2 }),
   ).toBeVisible();
 
   await page.goto('/workspace');
@@ -50,6 +50,6 @@ test('exports and restores a local workspace backup', async ({ page }) => {
 
   await page.goto('/prompts');
   await expect(
-    page.getByRole('heading', { name: templateName, level: 3 }),
+    page.getByRole('heading', { name: templateName, level: 2 }),
   ).toBeVisible();
 });
