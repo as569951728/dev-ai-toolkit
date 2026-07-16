@@ -66,6 +66,19 @@ test('keeps the prompt playground inside a tablet viewport', async ({ page }) =>
   expect(documentWidth).toBeLessThanOrEqual(768);
 });
 
+test('wraps long prompt values without widening the page', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto('/playground');
+  await page.getByLabel('Repository Name').fill('a'.repeat(2000));
+
+  const documentWidth = await page.evaluate(
+    () => document.documentElement.scrollWidth,
+  );
+
+  expect(documentWidth).toBeLessThanOrEqual(375);
+  await expect(page.locator('.prompt-text-output')).toHaveCount(2);
+});
+
 test('keeps workflow feedback available inside a mobile viewport', async ({
   page,
 }) => {

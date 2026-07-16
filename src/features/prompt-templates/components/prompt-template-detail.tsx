@@ -182,14 +182,14 @@ export function PromptTemplateDetail({
           <div className="detail-card__header">
             <h2>System prompt</h2>
           </div>
-          <pre className="prompt-preview">{template.systemPrompt}</pre>
+          <pre className="prompt-preview prompt-text-output">{template.systemPrompt}</pre>
         </article>
 
         <article className="detail-card detail-card--full">
           <div className="detail-card__header">
             <h2>User prompt</h2>
           </div>
-          <pre className="prompt-preview">{template.userPrompt}</pre>
+          <pre className="prompt-preview prompt-text-output">{template.userPrompt}</pre>
         </article>
 
         <PromptTemplateRevisionHistory
