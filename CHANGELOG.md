@@ -33,6 +33,10 @@ commit.
   available when switching back to a body-capable method.
 - Kept generated query parameters before URL fragments in relative API Builder
   request URLs.
+- Kept generated fetch code executable for malformed JSON bodies and warned
+  when requests would send the entered text unchanged.
+- Escaped generated fetch URLs that contain apostrophes or other
+  JavaScript-sensitive characters.
 - Rolled back browser-storage values removed before a later recovery reset
   failure, while keeping every recovery entry available for download.
 
