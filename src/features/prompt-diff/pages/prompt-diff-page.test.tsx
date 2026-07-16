@@ -198,6 +198,27 @@ describe('PromptDiffPage', () => {
     );
   });
 
+  it('shows blank line changes in the diff summary', () => {
+    renderPromptDiff('/prompt-diff');
+
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'Original prompt' }),
+      {
+        target: { value: 'First instruction.\nSecond instruction.' },
+      },
+    );
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'Revised prompt' }),
+      {
+        target: { value: 'First instruction.\n\nSecond instruction.' },
+      },
+    );
+
+    expect(screen.getByText('2 lines')).toBeInTheDocument();
+    expect(screen.getByText('3 lines')).toBeInTheDocument();
+    expect(screen.getByText('(blank line)')).toBeInTheDocument();
+  });
+
   it('loads a saved run comparison from local data', () => {
     const historyPath = '/runs?templateId=review-template&q=generated';
 
