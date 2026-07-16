@@ -3,8 +3,10 @@ import { describe, expect, it } from 'vitest';
 import {
   countPromptCharacters,
   countPromptLines,
+  getAddedOccurrences,
   extractPromptVariables,
   getAddedValues,
+  getRemovedOccurrences,
   getRemovedValues,
   splitPromptLines,
 } from '@/features/prompt-diff/lib/prompt-diff-utils';
@@ -38,5 +40,16 @@ describe('prompt-diff-utils', () => {
   it('returns added and removed values while preserving source order', () => {
     expect(getAddedValues(['a', 'b'], ['b', 'c', 'd'])).toEqual(['c', 'd']);
     expect(getRemovedValues(['a', 'b', 'c'], ['b'])).toEqual(['a', 'c']);
+  });
+
+  it('counts repeated line occurrences while preserving source order', () => {
+    expect(getAddedOccurrences(['a', 'b'], ['a', 'b', 'a', 'c'])).toEqual([
+      'a',
+      'c',
+    ]);
+    expect(getRemovedOccurrences(['a', 'b', 'a', 'c'], ['a', 'b'])).toEqual([
+      'a',
+      'c',
+    ]);
   });
 });

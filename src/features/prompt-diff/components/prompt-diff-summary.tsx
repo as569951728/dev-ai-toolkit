@@ -2,7 +2,9 @@ import {
   countPromptCharacters,
   countPromptLines,
   extractPromptVariables,
+  getAddedOccurrences,
   getAddedValues,
+  getRemovedOccurrences,
   getRemovedValues,
   splitPromptLines,
 } from '@/features/prompt-diff/lib/prompt-diff-utils';
@@ -34,7 +36,7 @@ function VariableList({
     <article className="prompt-diff-card">
       <h3>{title}</h3>
       <div className="prompt-diff-chip-list">
-        {values.map((value) => (
+        {values.map((value, index) => (
           <span
             className={
               tone === 'added'
@@ -43,7 +45,7 @@ function VariableList({
                   ? 'prompt-diff-chip prompt-diff-chip--removed'
                   : 'prompt-diff-chip'
             }
-            key={value}
+            key={`${index}-${value}`}
           >
             {value}
           </span>
@@ -63,8 +65,10 @@ export function PromptDiffSummary({
   const removedVariables = getRemovedValues(leftVariables, rightVariables);
   const leftLines = splitPromptLines(leftValue);
   const rightLines = splitPromptLines(rightValue);
-  const addedLines = getAddedValues(leftLines, rightLines).filter(Boolean);
-  const removedLines = getRemovedValues(leftLines, rightLines).filter(Boolean);
+  const addedLines = getAddedOccurrences(leftLines, rightLines).filter(Boolean);
+  const removedLines = getRemovedOccurrences(leftLines, rightLines).filter(
+    Boolean,
+  );
 
   return (
     <section className="prompt-diff-summary">
