@@ -71,7 +71,13 @@ export function JsonResultPanel({
         </div>
       </div>
 
-      <pre className="prompt-preview json-output">{value || 'No output yet.'}</pre>
+      <pre
+        aria-label="JSON result"
+        className="prompt-preview json-output"
+        tabIndex={0}
+      >
+        {value || 'No output yet.'}
+      </pre>
     </section>
   );
 }
