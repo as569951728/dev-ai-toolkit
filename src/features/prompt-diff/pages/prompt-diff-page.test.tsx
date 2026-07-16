@@ -210,13 +210,13 @@ describe('PromptDiffPage', () => {
     fireEvent.change(
       screen.getByRole('textbox', { name: 'Revised prompt' }),
       {
-        target: { value: 'First instruction.\n\nSecond instruction.' },
+        target: { value: 'First instruction.\n\n   \nSecond instruction.' },
       },
     );
 
     expect(screen.getByText('2 lines')).toBeInTheDocument();
-    expect(screen.getByText('3 lines')).toBeInTheDocument();
-    expect(screen.getByText('(blank line)')).toBeInTheDocument();
+    expect(screen.getByText('4 lines')).toBeInTheDocument();
+    expect(screen.getAllByText('(blank line)')).toHaveLength(2);
   });
 
   it('loads a saved run comparison from local data', () => {
