@@ -55,6 +55,26 @@ describe('api-builder-utils', () => {
       requestUrl: '/api/prompts?workspace=dev-ai-toolkit&empty-value=',
       headers: { 'Content-Type': 'application/json' },
       hasBody: true,
+      isBodyOmitted: false,
+    });
+  });
+
+  it('omits request bodies from generated GET requests', () => {
+    const state: ApiBuilderState = {
+      method: 'GET',
+      url: '/api/prompts',
+      queryParams: [],
+      headers: [],
+      body: '{ "name": "Code Review Assistant" }',
+    };
+
+    expect(buildFetchSnippet(state)).not.toContain('body:');
+    expect(buildCurlCommand(state)).not.toContain('--data-raw');
+    expect(summarizeRequest(state)).toEqual({
+      requestUrl: '/api/prompts',
+      headers: {},
+      hasBody: false,
+      isBodyOmitted: true,
     });
   });
 

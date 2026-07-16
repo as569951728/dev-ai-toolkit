@@ -84,6 +84,26 @@ describe('ApiBuilderPage', () => {
     ).toBeInTheDocument();
   });
 
+  it('keeps but omits a JSON body when the method changes to GET', () => {
+    renderApiBuilderPage();
+
+    fireEvent.change(screen.getByLabelText('HTTP method'), {
+      target: { value: 'GET' },
+    });
+
+    expect(screen.getByLabelText('JSON body')).not.toHaveValue('');
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'GET requests cannot include a body in browser fetch.',
+    );
+    expect(screen.getByText('Request body omitted')).toBeInTheDocument();
+    expect(
+      screen.getByText((content) => content.includes("method: 'GET'")),
+    ).not.toHaveTextContent('body:');
+    expect(
+      screen.getByText((content) => content.includes('curl -X GET')),
+    ).not.toHaveTextContent('--data-raw');
+  });
+
   it('labels query and header pair controls for assistive technology', () => {
     renderApiBuilderPage();
 

@@ -23,7 +23,8 @@ export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
   const [fetchCopyLabel, setFetchCopyLabel] = useState('Copy fetch code');
   const [curlCopyLabel, setCurlCopyLabel] = useState('Copy cURL command');
   const [copyFeedback, setCopyFeedback] = useState<CopyFeedback | null>(null);
-  const { requestUrl, headers, hasBody } = summarizeRequest(state);
+  const { requestUrl, headers, hasBody, isBodyOmitted } =
+    summarizeRequest(state);
   const fetchSnippet = buildFetchSnippet(state);
   const curlCommand = buildCurlCommand(state);
   const fetchCodeViewerState = createCodeViewerNavigationState({
@@ -99,11 +100,25 @@ export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
         </p>
       ) : null}
 
+      {isBodyOmitted ? (
+        <p className="status-banner" role="status">
+          {state.method.toUpperCase()} requests cannot include a body in browser
+          fetch. The JSON draft is kept in the form but omitted from generated
+          output.
+        </p>
+      ) : null}
+
       <div className="api-preview-grid">
         <div className="metric-card metric-card--compact">
           <span className="metric-card__label">Method</span>
           <strong>{state.method}</strong>
-          <p>{hasBody ? 'Includes a request body' : 'No request body'}</p>
+          <p>
+            {isBodyOmitted
+              ? 'Request body omitted'
+              : hasBody
+                ? 'Includes a request body'
+                : 'No request body'}
+          </p>
         </div>
         <div className="metric-card metric-card--compact">
           <span className="metric-card__label">Headers</span>
