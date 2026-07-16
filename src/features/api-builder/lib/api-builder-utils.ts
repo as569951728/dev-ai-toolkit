@@ -55,6 +55,15 @@ function supportsRequestBody(method: string) {
   return !['GET', 'HEAD'].includes(normalizeHttpMethod(method));
 }
 
+function isValidJsonBody(body: string) {
+  try {
+    JSON.parse(body);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function buildRequestUrl(
   baseUrl: string,
   queryParams: ApiFieldPair[],
@@ -134,7 +143,7 @@ export function buildFetchSnippet(state: ApiBuilderState) {
   }
 
   if (includeBody) {
-    optionsLines.push(`body: JSON.stringify(${bodyValue})`);
+    optionsLines.push(`body: ${JSON.stringify(bodyValue)}`);
   }
 
   return `fetch('${requestUrl || 'https://api.example.com'}', {\n  ${optionsLines.join(',\n  ')}\n});`;
@@ -173,5 +182,7 @@ export function summarizeRequest(state: ApiBuilderState) {
     headers: buildHeadersObject(state.headers),
     hasBody: hasBodyInput && bodySupported,
     isBodyOmitted: hasBodyInput && !bodySupported,
+    isBodyInvalid:
+      hasBodyInput && bodySupported && !isValidJsonBody(state.body),
   };
 }
