@@ -3,10 +3,9 @@ import { describe, expect, it } from 'vitest';
 import {
   countPromptCharacters,
   countPromptLines,
-  getAddedOccurrences,
   extractPromptVariables,
   getAddedValues,
-  getRemovedOccurrences,
+  getLineChanges,
   getRemovedValues,
   splitPromptLines,
 } from '@/features/prompt-diff/lib/prompt-diff-utils';
@@ -43,13 +42,35 @@ describe('prompt-diff-utils', () => {
   });
 
   it('counts repeated line occurrences while preserving source order', () => {
-    expect(getAddedOccurrences(['a', 'b'], ['a', 'b', 'a', 'c'])).toEqual([
-      'a',
-      'c',
-    ]);
-    expect(getRemovedOccurrences(['a', 'b', 'a', 'c'], ['a', 'b'])).toEqual([
-      'a',
-      'c',
-    ]);
+    expect(getLineChanges(['a', 'b'], ['a', 'b', 'a', 'c'])).toEqual({
+      added: ['a', 'c'],
+      removed: [],
+    });
+    expect(getLineChanges(['a', 'b', 'a', 'c'], ['a', 'b'])).toEqual({
+      added: [],
+      removed: ['a', 'c'],
+    });
+  });
+
+  it('represents reordered lines as removals and additions', () => {
+    expect(getLineChanges(['a', 'b'], ['b', 'a'])).toEqual({
+      added: ['a'],
+      removed: ['a'],
+    });
+  });
+
+  it('handles empty and unchanged line collections', () => {
+    expect(getLineChanges([], ['a'])).toEqual({
+      added: ['a'],
+      removed: [],
+    });
+    expect(getLineChanges(['a'], [])).toEqual({
+      added: [],
+      removed: ['a'],
+    });
+    expect(getLineChanges(['a'], ['a'])).toEqual({
+      added: [],
+      removed: [],
+    });
   });
 });

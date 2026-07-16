@@ -45,3 +45,28 @@ test('counts repeated prompt lines as added occurrences', async ({ page }) => {
   await expect(addedLines.getByText('No changes detected.')).toHaveCount(0);
   await expect(removedLines.getByText('No changes detected.')).toBeVisible();
 });
+
+test('reports reordered prompt lines as removed and added', async ({ page }) => {
+  await page.goto('/prompt-diff');
+
+  await page
+    .getByLabel('Original prompt')
+    .fill('First instruction.\nSecond instruction.');
+  await page
+    .getByLabel('Revised prompt')
+    .fill('Second instruction.\nFirst instruction.');
+
+  const addedLines = page.locator('.prompt-diff-card').filter({
+    has: page.getByRole('heading', { name: 'Added lines' }),
+  });
+  const removedLines = page.locator('.prompt-diff-card').filter({
+    has: page.getByRole('heading', { name: 'Removed lines' }),
+  });
+
+  await expect(
+    addedLines.getByText('First instruction.', { exact: true }),
+  ).toBeVisible();
+  await expect(
+    removedLines.getByText('First instruction.', { exact: true }),
+  ).toBeVisible();
+});
