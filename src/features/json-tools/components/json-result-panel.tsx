@@ -1,7 +1,11 @@
+export type JsonValidationState = 'idle' | 'valid' | 'invalid';
+export type JsonMessageTone = 'status' | 'error';
+
 interface JsonResultPanelProps {
   value: string;
   message: string;
-  isValid: boolean;
+  validationState: JsonValidationState;
+  messageTone: JsonMessageTone;
   inputCharacters: number;
   inputLines: number;
   outputCharacters: number;
@@ -11,13 +15,27 @@ interface JsonResultPanelProps {
 export function JsonResultPanel({
   value,
   message,
-  isValid,
+  validationState,
+  messageTone,
   inputCharacters,
   inputLines,
   outputCharacters,
   outputLines,
 }: JsonResultPanelProps) {
-  const resultMessage = isValid ? message : `Invalid JSON: ${message}`;
+  const statusLabel =
+    validationState === 'valid'
+      ? 'Valid JSON'
+      : validationState === 'invalid'
+        ? 'Invalid JSON'
+        : 'Not validated';
+  const statusClassName =
+    validationState === 'valid'
+      ? 'json-status json-status--valid'
+      : validationState === 'invalid'
+        ? 'json-status json-status--invalid'
+        : 'json-status json-status--idle';
+  const resultMessage =
+    validationState === 'invalid' ? `Invalid JSON: ${message}` : message;
 
   return (
     <section className="panel json-panel">
@@ -26,16 +44,16 @@ export function JsonResultPanel({
           <p className="eyebrow">Output</p>
           <h2>Review the result</h2>
         </div>
-        <span
-          className={isValid ? 'json-status json-status--valid' : 'json-status json-status--invalid'}
-        >
-          {isValid ? 'Valid JSON' : 'Invalid JSON'}
-        </span>
+        <span className={statusClassName}>{statusLabel}</span>
       </div>
 
       <p
-        className={isValid ? 'status-banner' : 'status-banner status-banner--error'}
-        role={isValid ? 'status' : 'alert'}
+        className={
+          messageTone === 'error'
+            ? 'status-banner status-banner--error'
+            : 'status-banner'
+        }
+        role={messageTone === 'error' ? 'alert' : 'status'}
       >
         {resultMessage}
       </p>

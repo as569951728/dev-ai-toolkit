@@ -2,7 +2,11 @@ import { useState } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 
 import { JsonEditorPanel } from '@/features/json-tools/components/json-editor-panel';
-import { JsonResultPanel } from '@/features/json-tools/components/json-result-panel';
+import {
+  JsonResultPanel,
+  type JsonMessageTone,
+  type JsonValidationState,
+} from '@/features/json-tools/components/json-result-panel';
 import { JsonToolsToolbar } from '@/features/json-tools/components/json-tools-toolbar';
 import {
   buildJsonErrorMessage,
@@ -69,7 +73,10 @@ export function JsonToolsPage() {
   const [inputValue, setInputValue] = useState(initialWorkspace.inputValue);
   const [resultValue, setResultValue] = useState(initialWorkspace.resultValue);
   const [message, setMessage] = useState(initialWorkspace.message);
-  const [isValid, setIsValid] = useState(true);
+  const [validationState, setValidationState] =
+    useState<JsonValidationState>('valid');
+  const [messageTone, setMessageTone] =
+    useState<JsonMessageTone>('status');
   const historyPath = getPromptRunHistoryReturnPath(location.state);
 
   const runAction = (
@@ -79,12 +86,22 @@ export function JsonToolsPage() {
       const result = action(inputValue);
       setResultValue(result.content);
       setMessage(result.message);
-      setIsValid(result.isValid);
+      setValidationState(result.isValid ? 'valid' : 'invalid');
+      setMessageTone(result.isValid ? 'status' : 'error');
     } catch (error) {
       setResultValue('');
       setMessage(buildJsonErrorMessage(error));
-      setIsValid(false);
+      setValidationState('invalid');
+      setMessageTone('error');
     }
+  };
+
+  const handleInputChange = (value: string) => {
+    setInputValue(value);
+    setResultValue('');
+    setMessage('Input changed. Run an action to update the result.');
+    setValidationState('idle');
+    setMessageTone('status');
   };
 
   const handleCopy = async () => {
@@ -95,10 +112,10 @@ export function JsonToolsPage() {
     try {
       await writeClipboardText(resultValue);
       setMessage('Result copied to clipboard.');
-      setIsValid(true);
+      setMessageTone('status');
     } catch {
       setMessage('Failed to copy result.');
-      setIsValid(false);
+      setMessageTone('error');
     }
   };
 
@@ -147,23 +164,26 @@ export function JsonToolsPage() {
             setInputValue(sampleJson);
             setResultValue(sampleJson);
             setMessage('Loaded sample JSON.');
-            setIsValid(true);
+            setValidationState('valid');
+            setMessageTone('status');
           }}
           onReset={() => {
             setInputValue('');
             setResultValue('');
             setMessage('Cleared JSON input and output.');
-            setIsValid(true);
+            setValidationState('idle');
+            setMessageTone('status');
           }}
           isCopyDisabled={!resultValue}
         />
 
         <div className="json-grid">
-          <JsonEditorPanel value={inputValue} onChange={setInputValue} />
+          <JsonEditorPanel value={inputValue} onChange={handleInputChange} />
           <JsonResultPanel
             value={resultValue}
             message={message}
-            isValid={isValid}
+            validationState={validationState}
+            messageTone={messageTone}
             inputCharacters={countCharacters(inputValue)}
             inputLines={countLines(inputValue)}
             outputCharacters={countCharacters(resultValue)}

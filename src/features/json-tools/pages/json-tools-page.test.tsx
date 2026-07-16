@@ -88,6 +88,31 @@ describe('JsonToolsPage', () => {
     expect(
       screen.getByText('Cleared JSON input and output.'),
     ).toBeInTheDocument();
+    expect(screen.getByText('Not validated')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Copy result' })).toBeDisabled();
+  });
+
+  it('invalidates stale output when the input changes', () => {
+    renderJsonTools();
+
+    const input = screen.getByLabelText('JSON input');
+    fireEvent.change(input, {
+      target: { value: '{"value":"first"}' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Format' }));
+
+    expect(screen.getByText(/"value": "first"/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Copy result' })).toBeEnabled();
+
+    fireEvent.change(input, {
+      target: { value: '{"value":"second"}' },
+    });
+
+    expect(screen.getByText('No output yet.')).toBeInTheDocument();
+    expect(screen.getByText('Not validated')).toBeInTheDocument();
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Input changed. Run an action to update the result.',
+    );
     expect(screen.getByRole('button', { name: 'Copy result' })).toBeDisabled();
   });
 
@@ -189,6 +214,7 @@ describe('JsonToolsPage', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'Failed to copy result.',
     );
+    expect(screen.getByText('Valid JSON')).toBeInTheDocument();
   });
 
   it('keeps the sample workflow available when a requested run is missing', () => {
