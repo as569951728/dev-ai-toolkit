@@ -158,7 +158,7 @@ function PromptPlaygroundWorkspace({
         </p>
       ) : null}
 
-      {sourceRun ? (
+      {sourceRun && selectedTemplate?.id === sourceRun.templateId ? (
         <p className="status-banner" role="status">
           Loaded captured variables from a{' '}
           <Link to={buildPromptRunDetailPath(sourceRun.id)}>
