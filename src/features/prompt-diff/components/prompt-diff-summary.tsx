@@ -2,9 +2,8 @@ import {
   countPromptCharacters,
   countPromptLines,
   extractPromptVariables,
-  getAddedOccurrences,
   getAddedValues,
-  getRemovedOccurrences,
+  getLineChanges,
   getRemovedValues,
   splitPromptLines,
 } from '@/features/prompt-diff/lib/prompt-diff-utils';
@@ -65,10 +64,9 @@ export function PromptDiffSummary({
   const removedVariables = getRemovedValues(leftVariables, rightVariables);
   const leftLines = splitPromptLines(leftValue);
   const rightLines = splitPromptLines(rightValue);
-  const addedLines = getAddedOccurrences(leftLines, rightLines).filter(Boolean);
-  const removedLines = getRemovedOccurrences(leftLines, rightLines).filter(
-    Boolean,
-  );
+  const lineChanges = getLineChanges(leftLines, rightLines);
+  const addedLines = lineChanges.added.filter(Boolean);
+  const removedLines = lineChanges.removed.filter(Boolean);
 
   return (
     <section className="prompt-diff-summary">

@@ -55,34 +55,57 @@ export function getRemovedValues(left: string[], right: string[]) {
   return left.filter((value) => !rightSet.has(value));
 }
 
-function getUnmatchedOccurrences(values: string[], matchedValues: string[]) {
-  const remainingMatches = new Map<string, number>();
+export function getLineChanges(left: string[], right: string[]) {
+  const lcsLengths = Array.from(
+    { length: left.length + 1 },
+    () => new Uint32Array(right.length + 1),
+  );
 
-  matchedValues.forEach((value) => {
-    remainingMatches.set(value, (remainingMatches.get(value) ?? 0) + 1);
-  });
+  for (let leftIndex = left.length - 1; leftIndex >= 0; leftIndex -= 1) {
+    const currentRow = lcsLengths[leftIndex]!;
+    const nextRow = lcsLengths[leftIndex + 1]!;
 
-  return values.filter((value) => {
-    const matchCount = remainingMatches.get(value) ?? 0;
+    for (
+      let rightIndex = right.length - 1;
+      rightIndex >= 0;
+      rightIndex -= 1
+    ) {
+      currentRow[rightIndex] =
+        left[leftIndex] === right[rightIndex]
+          ? (nextRow[rightIndex + 1] ?? 0) + 1
+          : Math.max(
+              nextRow[rightIndex] ?? 0,
+              currentRow[rightIndex + 1] ?? 0,
+            );
+    }
+  }
 
-    if (matchCount === 0) {
-      return true;
+  const added: string[] = [];
+  const removed: string[] = [];
+  let leftIndex = 0;
+  let rightIndex = 0;
+
+  while (leftIndex < left.length && rightIndex < right.length) {
+    if (left[leftIndex] === right[rightIndex]) {
+      leftIndex += 1;
+      rightIndex += 1;
+      continue;
     }
 
-    if (matchCount === 1) {
-      remainingMatches.delete(value);
+    const removeScore = lcsLengths[leftIndex + 1]![rightIndex] ?? 0;
+    const addScore = lcsLengths[leftIndex]![rightIndex + 1] ?? 0;
+
+    if (removeScore >= addScore) {
+      removed.push(left[leftIndex]!);
+      leftIndex += 1;
     } else {
-      remainingMatches.set(value, matchCount - 1);
+      added.push(right[rightIndex]!);
+      rightIndex += 1;
     }
+  }
 
-    return false;
-  });
-}
+  removed.push(...left.slice(leftIndex));
+  added.push(...right.slice(rightIndex));
 
-export function getAddedOccurrences(left: string[], right: string[]) {
-  return getUnmatchedOccurrences(right, left);
-}
-
-export function getRemovedOccurrences(left: string[], right: string[]) {
-  return getUnmatchedOccurrences(left, right);
+  return { added, removed };
 }
