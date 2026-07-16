@@ -422,6 +422,13 @@ pre {
   color: #132238;
 }
 
+.app-footer__links {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .app-footer__link {
   flex: 0 0 auto;
   padding: 9px 14px;
@@ -431,6 +438,11 @@ pre {
   color: var(--primary-dark);
   font-weight: 700;
   text-decoration: none;
+}
+
+.app-footer__link--secondary {
+  border-color: rgba(19, 34, 56, 0.12);
+  color: var(--text-muted);
 }
 
 .app-footer__link:hover {
@@ -1456,7 +1468,7 @@ pre {
     align-items: stretch;
   }
 
-  .app-footer__link {
+  .app-footer__links {
     align-self: flex-start;
   }
 
