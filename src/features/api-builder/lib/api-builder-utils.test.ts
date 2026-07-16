@@ -65,6 +65,35 @@ describe('api-builder-utils', () => {
       headers: { 'Content-Type': 'application/json' },
       hasBody: true,
       isBodyOmitted: false,
+      isBodyInvalid: false,
+    });
+  });
+
+  it('keeps fetch snippets valid when the JSON body is malformed', () => {
+    const state: ApiBuilderState = {
+      method: 'POST',
+      url: '/api/prompts',
+      queryParams: [],
+      headers: [
+        {
+          id: 'header-1',
+          key: 'Content-Type',
+          value: 'application/json',
+        },
+      ],
+      body: '{bad-json',
+    };
+
+    const fetchSnippet = buildFetchSnippet(state);
+
+    expect(fetchSnippet).toContain('body: "{bad-json"');
+    expect(() => new Function(fetchSnippet)).not.toThrow();
+    expect(summarizeRequest(state)).toEqual({
+      requestUrl: '/api/prompts',
+      headers: { 'Content-Type': 'application/json' },
+      hasBody: true,
+      isBodyOmitted: false,
+      isBodyInvalid: true,
     });
   });
 
@@ -84,6 +113,7 @@ describe('api-builder-utils', () => {
       headers: {},
       hasBody: false,
       isBodyOmitted: true,
+      isBodyInvalid: false,
     });
   });
 

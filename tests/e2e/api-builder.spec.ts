@@ -50,3 +50,21 @@ test('keeps query parameters before relative URL fragments', async ({ page }) =>
     "fetch('/api/prompts?workspace=dev-ai-toolkit#debug'",
   );
 });
+
+test('warns while keeping malformed JSON fetch code executable', async ({
+  page,
+}) => {
+  await page.goto('/api-builder');
+
+  await page.getByLabel('JSON body').fill('{bad-json');
+
+  await expect(page.getByRole('alert')).toContainText(
+    'JSON body is not valid JSON.',
+  );
+  await expect(page.getByText(/fetch\('/)).toContainText(
+    'body: "{bad-json"',
+  );
+  await expect(page.getByText(/curl -X POST/)).toContainText(
+    "--data-raw '{bad-json'",
+  );
+});

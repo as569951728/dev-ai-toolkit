@@ -112,6 +112,24 @@ describe('ApiBuilderPage', () => {
     ).not.toHaveTextContent('--data-raw');
   });
 
+  it('warns without generating invalid JavaScript for malformed JSON', () => {
+    renderApiBuilderPage();
+
+    fireEvent.change(screen.getByLabelText('JSON body'), {
+      target: { value: '{bad-json' },
+    });
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'JSON body is not valid JSON.',
+    );
+    expect(
+      screen.getByText((content) => content.includes("body: \"{bad-json\"")),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText((content) => content.includes("--data-raw '{bad-json'")),
+    ).toBeInTheDocument();
+  });
+
   it('labels query and header pair controls for assistive technology', () => {
     renderApiBuilderPage();
 

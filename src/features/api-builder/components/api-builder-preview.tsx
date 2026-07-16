@@ -23,7 +23,7 @@ export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
   const [fetchCopyLabel, setFetchCopyLabel] = useState('Copy fetch code');
   const [curlCopyLabel, setCurlCopyLabel] = useState('Copy cURL command');
   const [copyFeedback, setCopyFeedback] = useState<CopyFeedback | null>(null);
-  const { requestUrl, headers, hasBody, isBodyOmitted } =
+  const { requestUrl, headers, hasBody, isBodyOmitted, isBodyInvalid } =
     summarizeRequest(state);
   const fetchSnippet = buildFetchSnippet(state);
   const curlCommand = buildCurlCommand(state);
@@ -105,6 +105,13 @@ export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
           {state.method.toUpperCase()} requests cannot include a body in browser
           fetch. The JSON draft is kept in the form but omitted from generated
           output.
+        </p>
+      ) : null}
+
+      {isBodyInvalid ? (
+        <p className="status-banner status-banner--error" role="alert">
+          JSON body is not valid JSON. Generated requests will send the text
+          exactly as entered.
         </p>
       ) : null}
 
