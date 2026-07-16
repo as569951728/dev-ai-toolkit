@@ -52,6 +52,8 @@ commit.
   when a preview has no content.
 - Wrapped long unbroken values in prompt previews without changing
   code-oriented output scrolling.
+- Kept long captured values inside Run Detail cards and made scrollable saved
+  prompt blocks keyboard-focusable.
 - Rolled back browser-storage values removed before a later recovery reset
   failure, while keeping every recovery entry available for download.
 
