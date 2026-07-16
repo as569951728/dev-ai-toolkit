@@ -161,14 +161,6 @@ export function usePromptPlayground(
       }
 
       setSelectedTemplateId(nextTemplateId);
-      setVariableValues((currentValues) => {
-        const nextEntries = extractVariables(nextTemplate).map((variable) => [
-          variable.key,
-          currentValues[variable.key] ?? '',
-        ]);
-
-        return Object.fromEntries(nextEntries);
-      });
       markTemplateAsRecent(nextTemplateId);
     },
     markTemplateAsRecent,
