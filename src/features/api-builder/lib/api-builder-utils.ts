@@ -94,14 +94,21 @@ export function buildRequestUrl(
       return trimmedUrl;
     }
 
+    const fragmentIndex = trimmedUrl.indexOf('#');
+    const urlWithoutFragment =
+      fragmentIndex === -1 ? trimmedUrl : trimmedUrl.slice(0, fragmentIndex);
+    const fragment =
+      fragmentIndex === -1 ? '' : trimmedUrl.slice(fragmentIndex);
     const separator =
-      trimmedUrl.includes('?') && !trimmedUrl.endsWith('?') && !trimmedUrl.endsWith('&')
+      urlWithoutFragment.includes('?') &&
+      !urlWithoutFragment.endsWith('?') &&
+      !urlWithoutFragment.endsWith('&')
         ? '&'
-        : trimmedUrl.includes('?')
+        : urlWithoutFragment.includes('?')
           ? ''
           : '?';
 
-    return `${trimmedUrl}${separator}${queryString}`;
+    return `${urlWithoutFragment}${separator}${queryString}${fragment}`;
   }
 }
 

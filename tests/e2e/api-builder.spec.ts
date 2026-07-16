@@ -35,3 +35,18 @@ test('omits a saved JSON body from generated GET requests', async ({ page }) => 
   await expect(page.getByText(/fetch\('/)).not.toContainText('body:');
   await expect(page.getByText(/curl -X GET/)).not.toContainText('--data-raw');
 });
+
+test('keeps query parameters before relative URL fragments', async ({ page }) => {
+  await page.goto('/api-builder');
+
+  await page.getByLabel('Base URL').fill('/api/prompts#debug');
+
+  await expect(
+    page.getByText('/api/prompts?workspace=dev-ai-toolkit#debug', {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(page.getByText(/fetch\('/)).toContainText(
+    "fetch('/api/prompts?workspace=dev-ai-toolkit#debug'",
+  );
+});
