@@ -66,6 +66,17 @@ Demo data remains in that browser profile; it is not synchronized to a server.
 
 See [Deployment](./docs/deployment.md) for deployment and verification details.
 
+## Workflow Feedback
+
+If you have tried the template-to-snapshot workflow for a real task, use the
+[workflow feedback form](https://github.com/as569951728/dev-ai-toolkit/issues/new?template=usage_feedback.yml)
+to describe the step that was unclear, repetitive, or missing context. Feedback
+from an incomplete attempt is useful when it includes the task and the point
+where progress stopped.
+
+Do not include private prompt text, credentials, secrets, or private project
+data in a public issue.
+
 ## Core Workflow
 
 1. Create or select a prompt in **Prompt Templates**.
