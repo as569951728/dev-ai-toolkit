@@ -80,3 +80,20 @@ test('escapes apostrophes in generated fetch URLs', async ({ page }) => {
     'fetch("https://api.example.com/users/O\'Reilly?workspace=dev-ai-toolkit"',
   );
 });
+
+test('focuses each scrollable request output from the keyboard', async ({
+  page,
+}) => {
+  await page.goto('/api-builder');
+
+  const outputs = [
+    page.getByLabel('Resolved request URL'),
+    page.getByLabel('Generated fetch snippet'),
+    page.getByLabel('Generated cURL command'),
+  ];
+
+  for (const output of outputs) {
+    await output.focus();
+    await expect(output).toBeFocused();
+  }
+});

@@ -138,7 +138,11 @@ export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
         <div className="detail-card__header">
           <h3>Resolved URL</h3>
         </div>
-        <pre className="prompt-preview api-output">
+        <pre
+          aria-label="Resolved request URL"
+          className="prompt-preview api-output"
+          tabIndex={0}
+        >
           {requestUrl || 'Add a base URL to preview the final request URL.'}
         </pre>
       </article>
@@ -154,7 +158,13 @@ export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
             Open fetch in Code Viewer
           </Link>
         </div>
-        <pre className="prompt-preview api-output">{fetchSnippet}</pre>
+        <pre
+          aria-label="Generated fetch snippet"
+          className="prompt-preview api-output"
+          tabIndex={0}
+        >
+          {fetchSnippet}
+        </pre>
       </article>
 
       <article className="detail-card">
@@ -184,7 +194,13 @@ export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
             </button>
           </div>
         </div>
-        <pre className="prompt-preview api-output">{curlCommand}</pre>
+        <pre
+          aria-label="Generated cURL command"
+          className="prompt-preview api-output"
+          tabIndex={0}
+        >
+          {curlCommand}
+        </pre>
       </article>
     </section>
   );
