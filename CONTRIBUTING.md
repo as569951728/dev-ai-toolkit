@@ -18,8 +18,11 @@ Please make sure your contribution is aligned with the project goals:
 1. Install dependencies:
 
 ```bash
-npm install
+npm ci
 ```
+
+Use `npm install` only when intentionally changing dependencies, and include
+the resulting `package-lock.json` update in the same pull request.
 
 2. Start the development server:
 
