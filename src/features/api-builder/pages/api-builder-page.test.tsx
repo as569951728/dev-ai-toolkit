@@ -60,6 +60,14 @@ describe('ApiBuilderPage', () => {
       screen.getByText('/api/prompts?limit=10&workspace=dev-ai-toolkit'),
     ).toBeInTheDocument();
 
+    fireEvent.change(screen.getByLabelText('Base URL'), {
+      target: { value: '/api/prompts#debug' },
+    });
+
+    expect(
+      screen.getByText('/api/prompts?workspace=dev-ai-toolkit#debug'),
+    ).toBeInTheDocument();
+
     fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
 
     expect(

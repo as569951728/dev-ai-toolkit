@@ -28,6 +28,15 @@ describe('api-builder-utils', () => {
     );
   });
 
+  it('inserts relative URL query parameters before fragments', () => {
+    expect(buildRequestUrl('/api/prompts#debug', queryParams)).toBe(
+      '/api/prompts?workspace=dev-ai-toolkit&empty-value=#debug',
+    );
+    expect(buildRequestUrl('/api/prompts?limit=10#debug', queryParams)).toBe(
+      '/api/prompts?limit=10&workspace=dev-ai-toolkit&empty-value=#debug',
+    );
+  });
+
   it('builds headers from filled key-value pairs', () => {
     expect(
       buildHeadersObject([
