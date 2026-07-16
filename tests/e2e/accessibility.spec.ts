@@ -1,23 +1,32 @@
 import { expect, test } from '@playwright/test';
 
 const pageRoutes = [
-  '/',
-  '/playground',
-  '/runs',
-  '/runs/missing-run',
-  '/prompts',
-  '/prompts/missing-template',
-  '/create-template',
-  '/prompts/missing-template/edit',
-  '/json-tools',
-  '/api-builder',
-  '/code-viewer',
-  '/prompt-diff',
-  '/workspace',
-  '/missing-page',
+  { path: '/', title: 'Overview | dev-ai-toolkit' },
+  { path: '/playground', title: 'Prompt Playground | dev-ai-toolkit' },
+  { path: '/runs', title: 'Run History | dev-ai-toolkit' },
+  { path: '/runs/missing-run', title: 'Prompt Run | dev-ai-toolkit' },
+  { path: '/prompts', title: 'Prompt Templates | dev-ai-toolkit' },
+  {
+    path: '/prompts/missing-template',
+    title: 'Prompt Template | dev-ai-toolkit',
+  },
+  {
+    path: '/create-template',
+    title: 'Create Prompt Template | dev-ai-toolkit',
+  },
+  {
+    path: '/prompts/missing-template/edit',
+    title: 'Edit Prompt Template | dev-ai-toolkit',
+  },
+  { path: '/json-tools', title: 'JSON Tools | dev-ai-toolkit' },
+  { path: '/api-builder', title: 'API Builder | dev-ai-toolkit' },
+  { path: '/code-viewer', title: 'Code Viewer | dev-ai-toolkit' },
+  { path: '/prompt-diff', title: 'Prompt Diff | dev-ai-toolkit' },
+  { path: '/workspace', title: 'Workspace Backup | dev-ai-toolkit' },
+  { path: '/missing-page', title: 'Page Not Found | dev-ai-toolkit' },
 ];
 
-test('skips navigation and exposes one page heading per route', async ({ page }) => {
+test('labels and skips each application route', async ({ page }) => {
   await page.goto('/');
 
   const skipLink = page.getByRole('link', { name: 'Skip to main content' });
@@ -30,7 +39,8 @@ test('skips navigation and exposes one page heading per route', async ({ page })
   await expect(page.locator('#main-content')).toBeFocused();
 
   for (const route of pageRoutes) {
-    await page.goto(route);
+    await page.goto(route.path);
+    await expect(page).toHaveTitle(route.title);
     await expect(page.locator('h1')).toHaveCount(1);
     await expect(
       page.getByRole('link', { name: 'Share workflow feedback' }),
