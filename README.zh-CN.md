@@ -63,6 +63,15 @@ Demo 验收记录绑定不可变的提交，而不把 README 中的 SHA 当作�
 
 部署和验证细节见 [部署说明](./docs/deployment.md)。
 
+## 工作流反馈
+
+如果你已在真实任务中尝试过从模板到快照的工作流，可以通过
+[工作流反馈表单](https://github.com/as569951728/dev-ai-toolkit/issues/new?template=usage_feedback.yml)
+说明哪个步骤不清楚、重复或缺少上下文。即使任务没有完成，只要说明原任务和停止推进
+的位置，这类反馈同样有帮助。
+
+请勿在公开 Issue 中提交私密 Prompt、账号凭据、密钥或私有项目数据。
+
 ## 核心工作流
 
 1. 在 **Prompt Templates** 中新建或选择模板。
