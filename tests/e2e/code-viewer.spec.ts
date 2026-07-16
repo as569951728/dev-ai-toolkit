@@ -78,3 +78,16 @@ test('keeps line numbers above the minimum text contrast ratio', async ({
     getContrastRatio(colors.foreground, colors.background),
   ).toBeGreaterThanOrEqual(4.5);
 });
+
+test('does not render phantom line numbers for empty previews', async ({
+  page,
+}) => {
+  await page.goto('/code-viewer');
+  await page.getByRole('button', { name: 'Reset' }).click();
+
+  await expect(page.locator('.code-block__line')).toHaveCount(0);
+  await expect(page.getByText('No content yet.')).toHaveCount(2);
+  await expect(
+    page.locator('.metric-card').filter({ hasText: 'Left pane' }),
+  ).toContainText('0 lines');
+});
