@@ -42,6 +42,12 @@ commit.
   contrast.
 - Cleared stale JSON Tools output after input edits and disabled copying until
   the current input is processed again.
+- Counted repeated Prompt Diff lines correctly and reported reordered lines as
+  a removal and addition instead of leaving both sides unchanged.
+- Preserved repeated query parameters when API Builder generates absolute or
+  relative request URLs.
+- Replaced Code Viewer's phantom numbered line with an explicit empty state
+  when a preview has no content.
 - Rolled back browser-storage values removed before a later recovery reset
   failure, while keeping every recovery entry available for download.
 
