@@ -13,7 +13,8 @@ release.
 | Version | Supported |
 | --- | --- |
 | `main` | Yes |
-| `0.1.x` | Best effort |
+| `0.2.x` | Yes |
+| `0.1.x` | No |
 
 ## Reporting A Security Issue
 
