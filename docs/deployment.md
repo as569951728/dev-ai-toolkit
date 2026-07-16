@@ -82,7 +82,7 @@ dist
 Run the local checks first:
 
 ```bash
-npm install
+npm ci
 npm run test
 npm run build
 ```
