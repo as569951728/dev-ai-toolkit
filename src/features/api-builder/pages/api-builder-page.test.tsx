@@ -92,6 +92,23 @@ describe('ApiBuilderPage', () => {
     ).toBeInTheDocument();
   });
 
+  it('makes generated output regions keyboard focusable', () => {
+    renderApiBuilderPage();
+
+    expect(screen.getByLabelText('Resolved request URL')).toHaveAttribute(
+      'tabindex',
+      '0',
+    );
+    expect(screen.getByLabelText('Generated fetch snippet')).toHaveAttribute(
+      'tabindex',
+      '0',
+    );
+    expect(screen.getByLabelText('Generated cURL command')).toHaveAttribute(
+      'tabindex',
+      '0',
+    );
+  });
+
   it('keeps but omits a JSON body when the method changes to GET', () => {
     renderApiBuilderPage();
 
