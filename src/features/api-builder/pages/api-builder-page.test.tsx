@@ -192,6 +192,39 @@ describe('ApiBuilderPage', () => {
     ).toBeInTheDocument();
   });
 
+  it('preserves repeated header rows in generated output', () => {
+    renderApiBuilderPage();
+
+    fireEvent.change(screen.getByLabelText('Headers key 1'), {
+      target: { value: 'X-Trace' },
+    });
+    fireEvent.change(screen.getByLabelText('Headers value 1'), {
+      target: { value: 'first' },
+    });
+    fireEvent.change(screen.getByLabelText('Headers key 2'), {
+      target: { value: 'x-trace' },
+    });
+    fireEvent.change(screen.getByLabelText('Headers value 2'), {
+      target: { value: 'second' },
+    });
+
+    expect(
+      screen.getByText('Configured header entries').closest('.metric-card'),
+    ).toHaveTextContent('2');
+    const fetchSnippet = screen.getByLabelText('Generated fetch snippet');
+
+    expect(fetchSnippet).toHaveTextContent('"X-Trace"');
+    expect(fetchSnippet).toHaveTextContent('"first"');
+    expect(fetchSnippet).toHaveTextContent('"x-trace"');
+    expect(fetchSnippet).toHaveTextContent('"second"');
+    expect(screen.getByLabelText('Generated cURL command')).toHaveTextContent(
+      "-H 'X-Trace: first'",
+    );
+    expect(screen.getByLabelText('Generated cURL command')).toHaveTextContent(
+      "-H 'x-trace: second'",
+    );
+  });
+
   it('copies the generated curl command and announces the result', async () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     Object.defineProperty(navigator, 'clipboard', {
