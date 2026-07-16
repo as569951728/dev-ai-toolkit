@@ -650,8 +650,12 @@ describe('Prompt playground workflow', () => {
 
   it('reopens a saved run with its captured variables', () => {
     const template = starterPromptTemplates[0]!;
+    const alternateTemplate = starterPromptTemplates[1]!;
     const currentTemplate = { ...template, version: template.version + 1 };
-    const templateRepository = createTemplateRepository([currentTemplate]);
+    const templateRepository = createTemplateRepository([
+      currentTemplate,
+      alternateTemplate,
+    ]);
     const runRepository = createRunRepository([
       {
         id: 'imported/run #1',
@@ -696,6 +700,22 @@ describe('Prompt playground workflow', () => {
     expect(
       screen.getByRole('button', { name: 'Save prompt snapshot' }),
     ).toBeEnabled();
+
+    fireEvent.change(screen.getByLabelText('Active template'), {
+      target: { value: alternateTemplate.id },
+    });
+
+    expect(
+      screen.queryByRole('link', { name: 'saved prompt snapshot' }),
+    ).not.toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText('Active template'), {
+      target: { value: template.id },
+    });
+
+    expect(
+      screen.getByRole('link', { name: 'saved prompt snapshot' }),
+    ).toBeInTheDocument();
   });
 
   it('recognizes an unchanged reopened run as already saved', () => {
