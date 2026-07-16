@@ -8,6 +8,7 @@ import {
 import { AppFooter } from '@/components/layout/app-footer';
 import { AppNavigation } from '@/components/layout/app-navigation';
 import { BrowserStorageNotice } from '@/components/layout/browser-storage-notice';
+import { DocumentTitle } from '@/components/layout/document-title';
 import { ScrollToTop } from '@/components/layout/scroll-to-top';
 import { ApiBuilderPage } from '@/features/api-builder/pages/api-builder-page';
 import { CodeViewerPage } from '@/features/code-viewer/pages/code-viewer-page';
@@ -32,6 +33,7 @@ function RootLayout() {
     <PromptTemplatesProvider>
       <PromptRunsProvider>
         <PromptRunNotesProvider>
+          <DocumentTitle />
           <ScrollToTop />
           <a className="skip-link" href="#main-content">
             Skip to main content
@@ -59,62 +61,77 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
+        handle: { documentTitle: 'Overview' },
         element: <HomePage />,
       },
       {
         path: 'playground',
+        handle: { documentTitle: 'Prompt Playground' },
         element: <PromptPlaygroundPage />,
       },
       {
         path: 'runs',
+        handle: { documentTitle: 'Run History' },
         element: <PromptRunHistoryPage />,
       },
       {
         path: 'runs/:runId',
+        handle: { documentTitle: 'Prompt Run' },
         element: <PromptRunDetailPage />,
       },
       {
         path: 'prompts',
+        handle: { documentTitle: 'Prompt Templates' },
         element: <PromptTemplateListPage />,
       },
       {
         path: 'prompts/:promptId',
+        handle: { documentTitle: 'Prompt Template' },
         element: <PromptTemplateDetailPage />,
       },
       {
         path: 'create-template',
+        handle: { documentTitle: 'Create Prompt Template' },
         element: <PromptTemplateCreatePage />,
       },
       {
         path: 'prompts/:promptId/edit',
+        handle: { documentTitle: 'Edit Prompt Template' },
         element: <PromptTemplateEditPage />,
       },
       {
         path: 'json-tools',
+        handle: { documentTitle: 'JSON Tools' },
         element: <JsonToolsPage />,
       },
       {
         path: 'api-builder',
+        handle: { documentTitle: 'API Builder' },
         element: <ApiBuilderPage />,
       },
       {
         path: 'code-viewer',
+        handle: { documentTitle: 'Code Viewer' },
         element: <CodeViewerPage />,
       },
       {
         path: 'prompt-diff',
+        handle: { documentTitle: 'Prompt Diff' },
         element: <PromptDiffPage />,
       },
       {
         path: 'workspace',
+        handle: { documentTitle: 'Workspace Backup' },
         element: <WorkspaceBackupPage />,
       },
       {
         path: 'workspace-backup',
+        handle: { documentTitle: 'Workspace Backup' },
         element: <Navigate replace to="/workspace" />,
       },
       {
         path: '*',
+        handle: { documentTitle: 'Page Not Found' },
         element: <NotFoundPage />,
       },
     ],

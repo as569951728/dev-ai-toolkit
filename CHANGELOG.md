@@ -19,6 +19,8 @@ commit.
 
 ### Fixed
 
+- Gave each application route a descriptive browser title after client-side
+  navigation without exposing local prompt or run content.
 - Linked the empty Prompt Playground directly to template creation and returned
   the new template to the Playground after it is saved.
 - Excluded archived templates from the Overview's active-template count.
