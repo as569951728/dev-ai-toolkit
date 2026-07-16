@@ -8,6 +8,31 @@ note, export, and workspace backup features.
 
 ![dev-ai-toolkit overview](./assets/app-overview.png)
 
+## Short Public Demo Trial
+
+This trial uses public example content so the same path can be repeated without
+sharing private prompt text or repository data.
+
+1. Open the [public Demo](https://dev-ai-toolkit.vercel.app) and choose
+   **Open Code Review Assistant**.
+2. Enter `dev-ai-toolkit` for **Repository Name**.
+3. Enter `API Builder request generation` for **Change Scope**.
+4. Confirm that both placeholders are replaced in the composed prompt, then
+   choose **Save prompt snapshot**.
+5. Open the saved run and add the note
+   `Check whether generated request snippets preserve input safely.`
+6. Return to **Run History** and search for `API Builder` to confirm that the
+   snapshot and note remain available in the current browser profile.
+
+The expected result is one local saved run linked to the Code Review Assistant
+template version, with the two captured variable values and the review note.
+The app does not send this prompt to a model or remote API.
+
+If a step is unclear, repetitive, or produces a different result, use the
+[workflow feedback form](https://github.com/as569951728/dev-ai-toolkit/issues/new?template=usage_feedback.yml)
+and mention the step where the result diverged. Do not include credentials,
+private prompts, or private project data.
+
 ## 1. Start With A Prompt Template
 
 Open **Prompt Templates** to choose an existing template or create a new one.
