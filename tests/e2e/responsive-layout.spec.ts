@@ -38,7 +38,8 @@ test('keeps every navigation destination available from the phone menu', async (
   await expect(navigation).toBeHidden();
   await expect(openButton).toHaveAttribute('aria-expanded', 'false');
 
-  await openButton.click();
+  await openButton.focus();
+  await page.keyboard.press('Enter');
 
   await expect(navigation).toBeVisible();
   await expect(
@@ -46,10 +47,12 @@ test('keeps every navigation destination available from the phone menu', async (
   ).toHaveAttribute('aria-expanded', 'true');
   await expect(navigation.getByRole('link')).toHaveCount(9);
 
-  await navigation.getByRole('link', { name: 'Prompt Templates' }).click();
+  await navigation.getByRole('link', { name: 'Prompt Templates' }).focus();
+  await page.keyboard.press('Enter');
 
   await expect(page).toHaveURL(/\/prompts$/);
   await expect(navigation).toBeHidden();
+  await expect(page.locator('#main-content')).toBeFocused();
   await expect(
     page.getByRole('button', { name: 'Open navigation' }),
   ).toHaveAttribute('aria-expanded', 'false');
