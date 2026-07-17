@@ -75,6 +75,22 @@ Please avoid:
 4. Run the local quality checks
 5. Open a pull request with a clear description
 
+## Pull Request Checks
+
+Every pull request must pass two GitHub Actions checks before it can be merged:
+
+- `quality` runs the dependency audit, lint, coverage, build, and browser tests.
+- `Analyze JavaScript and TypeScript` runs the repository's CodeQL analysis.
+
+CodeQL runs on GitHub and does not require a local installation. A completed
+scan is one security signal, not a guarantee that the change is free of
+security risks.
+
+Vercel may cancel a Preview when a pull request only changes documentation,
+tests, or repository maintenance files. This is expected because those files
+do not change the deployed application. Changes to application or build files
+continue to receive a Preview deployment.
+
 ## Pull Request Guidelines
 
 Please keep pull requests:
