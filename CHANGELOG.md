@@ -21,6 +21,8 @@ commit.
 
 ### Fixed
 
+- Served valid crawler directives from `/robots.txt` instead of returning the
+  SPA document through the fallback rewrite.
 - Gave each application route a descriptive browser title after client-side
   navigation without exposing local prompt or run content.
 - Linked the empty Prompt Playground directly to template creation and returned
