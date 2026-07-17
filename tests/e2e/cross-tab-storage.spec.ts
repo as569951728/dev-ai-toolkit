@@ -39,6 +39,7 @@ test('restores a run note draft after another tab deletes its snapshot', async (
   await page.getByLabel('Change Scope').fill('cross-tab run recovery');
   await page.getByRole('button', { name: 'Save prompt snapshot' }).click();
   await page.getByRole('link', { name: 'Open saved run' }).click();
+  await expect(page).toHaveURL(/\/runs\/[^/]+$/);
 
   const originalRunUrl = page.url();
   const noteEditor = page.getByRole('textbox', {
@@ -101,6 +102,7 @@ test('restores a template draft after another tab deletes its source', async ({
   });
 
   await templateCard.getByRole('button', { name: 'Edit' }).click();
+  await expect(page).toHaveURL(/\/prompts\/[^/]+\/edit$/);
 
   const originalEditUrl = page.url();
   const originalDetailUrl = originalEditUrl.replace(/\/edit$/, '');
