@@ -1,3 +1,4 @@
+import type { ComponentType } from 'react';
 import {
   createBrowserRouter,
   Navigate,
@@ -10,23 +11,14 @@ import { AppNavigation } from '@/components/layout/app-navigation';
 import { BrowserStorageNotice } from '@/components/layout/browser-storage-notice';
 import { DocumentTitle } from '@/components/layout/document-title';
 import { ScrollToTop } from '@/components/layout/scroll-to-top';
-import { ApiBuilderPage } from '@/features/api-builder/pages/api-builder-page';
-import { CodeViewerPage } from '@/features/code-viewer/pages/code-viewer-page';
 import { HomePage } from '@/features/home/pages/home-page';
-import { JsonToolsPage } from '@/features/json-tools/pages/json-tools-page';
-import { NotFoundPage } from '@/features/not-found/pages/not-found-page';
-import { PromptDiffPage } from '@/features/prompt-diff/pages/prompt-diff-page';
 import { PromptRunNotesProvider } from '@/features/prompt-run-notes/providers/prompt-run-notes-provider';
-import { PromptRunDetailPage } from '@/features/prompt-runs/pages/prompt-run-detail-page';
-import { PromptPlaygroundPage } from '@/features/prompt-playground/pages/prompt-playground-page';
-import { PromptRunHistoryPage } from '@/features/prompt-runs/pages/prompt-run-history-page';
 import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs-provider';
-import { PromptTemplateCreatePage } from '@/features/prompt-templates/pages/prompt-template-create-page';
-import { PromptTemplateDetailPage } from '@/features/prompt-templates/pages/prompt-template-detail-page';
-import { PromptTemplateEditPage } from '@/features/prompt-templates/pages/prompt-template-edit-page';
-import { PromptTemplateListPage } from '@/features/prompt-templates/pages/prompt-template-list-page';
 import { PromptTemplatesProvider } from '@/features/prompt-templates/providers/prompt-templates-provider';
-import { WorkspaceBackupPage } from '@/features/workspace-backup/pages/workspace-backup-page';
+
+function lazyPage(loadPage: () => Promise<ComponentType>) {
+  return async () => ({ Component: await loadPage() });
+}
 
 function RootLayout() {
   return (
@@ -67,62 +59,98 @@ const router = createBrowserRouter([
       {
         path: 'playground',
         handle: { documentTitle: 'Prompt Playground' },
-        element: <PromptPlaygroundPage />,
+        lazy: lazyPage(() =>
+          import('@/features/prompt-playground/pages/prompt-playground-page')
+            .then(({ PromptPlaygroundPage }) => PromptPlaygroundPage),
+        ),
       },
       {
         path: 'runs',
         handle: { documentTitle: 'Run History' },
-        element: <PromptRunHistoryPage />,
+        lazy: lazyPage(() =>
+          import('@/features/prompt-runs/pages/prompt-run-history-page')
+            .then(({ PromptRunHistoryPage }) => PromptRunHistoryPage),
+        ),
       },
       {
         path: 'runs/:runId',
         handle: { documentTitle: 'Prompt Run' },
-        element: <PromptRunDetailPage />,
+        lazy: lazyPage(() =>
+          import('@/features/prompt-runs/pages/prompt-run-detail-page')
+            .then(({ PromptRunDetailPage }) => PromptRunDetailPage),
+        ),
       },
       {
         path: 'prompts',
         handle: { documentTitle: 'Prompt Templates' },
-        element: <PromptTemplateListPage />,
+        lazy: lazyPage(() =>
+          import('@/features/prompt-templates/pages/prompt-template-list-page')
+            .then(({ PromptTemplateListPage }) => PromptTemplateListPage),
+        ),
       },
       {
         path: 'prompts/:promptId',
         handle: { documentTitle: 'Prompt Template' },
-        element: <PromptTemplateDetailPage />,
+        lazy: lazyPage(() =>
+          import('@/features/prompt-templates/pages/prompt-template-detail-page')
+            .then(({ PromptTemplateDetailPage }) => PromptTemplateDetailPage),
+        ),
       },
       {
         path: 'create-template',
         handle: { documentTitle: 'Create Prompt Template' },
-        element: <PromptTemplateCreatePage />,
+        lazy: lazyPage(() =>
+          import('@/features/prompt-templates/pages/prompt-template-create-page')
+            .then(({ PromptTemplateCreatePage }) => PromptTemplateCreatePage),
+        ),
       },
       {
         path: 'prompts/:promptId/edit',
         handle: { documentTitle: 'Edit Prompt Template' },
-        element: <PromptTemplateEditPage />,
+        lazy: lazyPage(() =>
+          import('@/features/prompt-templates/pages/prompt-template-edit-page')
+            .then(({ PromptTemplateEditPage }) => PromptTemplateEditPage),
+        ),
       },
       {
         path: 'json-tools',
         handle: { documentTitle: 'JSON Tools' },
-        element: <JsonToolsPage />,
+        lazy: lazyPage(() =>
+          import('@/features/json-tools/pages/json-tools-page')
+            .then(({ JsonToolsPage }) => JsonToolsPage),
+        ),
       },
       {
         path: 'api-builder',
         handle: { documentTitle: 'API Builder' },
-        element: <ApiBuilderPage />,
+        lazy: lazyPage(() =>
+          import('@/features/api-builder/pages/api-builder-page')
+            .then(({ ApiBuilderPage }) => ApiBuilderPage),
+        ),
       },
       {
         path: 'code-viewer',
         handle: { documentTitle: 'Code Viewer' },
-        element: <CodeViewerPage />,
+        lazy: lazyPage(() =>
+          import('@/features/code-viewer/pages/code-viewer-page')
+            .then(({ CodeViewerPage }) => CodeViewerPage),
+        ),
       },
       {
         path: 'prompt-diff',
         handle: { documentTitle: 'Prompt Diff' },
-        element: <PromptDiffPage />,
+        lazy: lazyPage(() =>
+          import('@/features/prompt-diff/pages/prompt-diff-page')
+            .then(({ PromptDiffPage }) => PromptDiffPage),
+        ),
       },
       {
         path: 'workspace',
         handle: { documentTitle: 'Workspace Backup' },
-        element: <WorkspaceBackupPage />,
+        lazy: lazyPage(() =>
+          import('@/features/workspace-backup/pages/workspace-backup-page')
+            .then(({ WorkspaceBackupPage }) => WorkspaceBackupPage),
+        ),
       },
       {
         path: 'workspace-backup',
@@ -132,7 +160,10 @@ const router = createBrowserRouter([
       {
         path: '*',
         handle: { documentTitle: 'Page Not Found' },
-        element: <NotFoundPage />,
+        lazy: lazyPage(() =>
+          import('@/features/not-found/pages/not-found-page')
+            .then(({ NotFoundPage }) => NotFoundPage),
+        ),
       },
     ],
   },

@@ -19,6 +19,11 @@ commit.
 - Added baseline browser security headers to Vercel responses without enabling
   cross-origin isolation.
 
+### Changed
+
+- Split secondary application pages into route-level chunks so the Overview
+  no longer downloads every tool page on its initial load.
+
 ### Fixed
 
 - Served valid crawler directives from `/robots.txt` instead of returning the
