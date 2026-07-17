@@ -28,6 +28,8 @@ commit.
 
 - Restored keyboard focus to the new page after choosing a destination from
   the responsive navigation menu.
+- Returned keyboard focus to the attempted navigation control after keeping an
+  unsaved template draft.
 - Added a visible initial loading state for direct visits to lazy-loaded routes
   instead of logging a React Router hydration warning.
 - Served valid crawler directives from `/robots.txt` instead of returning the

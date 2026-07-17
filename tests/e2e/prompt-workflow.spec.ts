@@ -430,7 +430,12 @@ test('resolves dotted template variables in the Playground', async ({
 test('protects unsaved prompt template changes', async ({ page }) => {
   await page.goto('/create-template');
   await page.getByLabel('Name').fill('Work in progress');
-  await page.getByRole('button', { name: 'Back to list' }).click();
+  const playgroundLink = page.getByRole('link', {
+    name: 'Prompt Playground',
+  });
+
+  await playgroundLink.focus();
+  await page.keyboard.press('Enter');
 
   await expect(
     page.getByRole('heading', { name: 'Discard unsaved changes?' }),
@@ -439,10 +444,11 @@ test('protects unsaved prompt template changes', async ({ page }) => {
     page.getByRole('button', { name: 'Continue editing' }),
   ).toBeFocused();
 
-  await page.getByRole('button', { name: 'Continue editing' }).click();
+  await page.keyboard.press('Enter');
 
   await expect(page).toHaveURL(/\/create-template$/);
   await expect(page.getByLabel('Name')).toHaveValue('Work in progress');
+  await expect(playgroundLink).toBeFocused();
 
   await page.getByRole('button', { name: 'Cancel' }).click();
   await page.getByRole('button', { name: 'Discard changes' }).click();

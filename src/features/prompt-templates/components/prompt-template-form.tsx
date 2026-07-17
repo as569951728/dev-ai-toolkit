@@ -76,6 +76,8 @@ export function PromptTemplateForm({
 }: PromptTemplateFormProps) {
   const allowNavigationRef = useRef(false);
   const continueEditingButtonRef = useRef<HTMLButtonElement | null>(null);
+  const nameInputRef = useRef<HTMLInputElement | null>(null);
+  const navigationTriggerRef = useRef<HTMLElement | null>(null);
   const [initialFormState, setInitialFormState] = useState<FormState>(() =>
     createInitialState(initialValue),
   );
@@ -106,9 +108,35 @@ export function PromptTemplateForm({
 
   useEffect(() => {
     if (navigationBlocker.state === 'blocked') {
+      const activeElement = document.activeElement;
+
+      navigationTriggerRef.current =
+        activeElement instanceof HTMLElement && activeElement !== document.body
+          ? activeElement
+          : null;
       continueEditingButtonRef.current?.focus();
     }
   }, [navigationBlocker.state]);
+
+  const continueEditing = () => {
+    if (navigationBlocker.state !== 'blocked') {
+      return;
+    }
+
+    const navigationTrigger = navigationTriggerRef.current;
+
+    navigationBlocker.reset();
+
+    window.requestAnimationFrame(() => {
+      if (navigationTrigger?.isConnected) {
+        navigationTrigger.focus();
+      } else {
+        nameInputRef.current?.focus();
+      }
+
+      navigationTriggerRef.current = null;
+    });
+  };
 
   useEffect(() => {
     onDirtyChange?.(isDirty);
@@ -227,7 +255,7 @@ export function PromptTemplateForm({
               ref={continueEditingButtonRef}
               className="secondary-button"
               type="button"
-              onClick={() => navigationBlocker.reset()}
+              onClick={continueEditing}
             >
               Continue editing
             </button>
@@ -249,6 +277,7 @@ export function PromptTemplateForm({
         <label className="field">
           <span>Name</span>
           <input
+            ref={nameInputRef}
             required
             value={formState.name}
             onChange={handleChange('name')}

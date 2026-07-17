@@ -1,5 +1,11 @@
 import { useState } from 'react';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 import {
   createMemoryRouter,
   RouterProvider,
@@ -241,7 +247,10 @@ describe('PromptTemplateForm', () => {
     fireEvent.change(screen.getByLabelText('Name'), {
       target: { value: 'Work in progress' },
     });
-    fireEvent.click(screen.getByRole('button', { name: 'Back to list' }));
+    const backButton = screen.getByRole('button', { name: 'Back to list' });
+
+    backButton.focus();
+    fireEvent.click(backButton);
 
     expect(await screen.findByRole('dialog')).toHaveTextContent(
       'Discard unsaved changes?',
@@ -254,6 +263,7 @@ describe('PromptTemplateForm', () => {
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(screen.getByLabelText('Name')).toHaveValue('Work in progress');
+    await waitFor(() => expect(backButton).toHaveFocus());
 
     fireEvent.click(screen.getByRole('button', { name: 'Back to list' }));
     fireEvent.click(
@@ -263,6 +273,20 @@ describe('PromptTemplateForm', () => {
     expect(
       await screen.findByRole('heading', { name: 'Prompt template list' }),
     ).toBeInTheDocument();
+  });
+
+  it('returns focus to the first field when no navigation trigger is available', async () => {
+    renderForm();
+
+    fireEvent.change(screen.getByLabelText('Name'), {
+      target: { value: 'Work in progress' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Back to list' }));
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Continue editing' }),
+    );
+
+    await waitFor(() => expect(screen.getByLabelText('Name')).toHaveFocus());
   });
 
   it('guards browser unload while the form has unsaved changes', () => {
