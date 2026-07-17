@@ -17,9 +17,20 @@ const expectedSecurityHeaders = {
   'x-frame-options': 'DENY',
 };
 
-test('serves the core demo routes and direct prompt workflow entry', async ({
+test('serves the core demo routes without runtime console failures', async ({
   page,
 }) => {
+  const runtimeFailures: string[] = [];
+
+  page.on('console', (message) => {
+    if (message.type() === 'warning' || message.type() === 'error') {
+      runtimeFailures.push(`${message.type()}: ${message.text()}`);
+    }
+  });
+  page.on('pageerror', (error) => {
+    runtimeFailures.push(`pageerror: ${error.message}`);
+  });
+
   for (const route of coreRoutes) {
     const response = await page.goto(route);
 
@@ -44,6 +55,7 @@ test('serves the core demo routes and direct prompt workflow entry', async ({
   await expect(page.getByLabel('Active template')).toHaveValue(
     'code-review-assistant',
   );
+  expect(runtimeFailures).toEqual([]);
 });
 
 test('serves baseline security headers from the public deployment', async (
