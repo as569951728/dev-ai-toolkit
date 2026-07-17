@@ -75,6 +75,18 @@ const navigationGroups: NavigationGroup[] = [
 export function AppNavigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  const closeMenu = () => {
+    const shouldRestoreFocus = isMenuOpen;
+
+    setIsMenuOpen(false);
+
+    if (shouldRestoreFocus) {
+      window.requestAnimationFrame(() => {
+        document.getElementById('main-content')?.focus();
+      });
+    }
+  };
+
   return (
     <header className="app-nav">
       <div className="app-nav__brand">
@@ -110,7 +122,7 @@ export function AppNavigation() {
                   key={item.to}
                   to={item.to}
                   end={item.end}
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={closeMenu}
                   className={({ isActive }) =>
                     isActive ? 'app-nav__link app-nav__link--active' : 'app-nav__link'
                   }
