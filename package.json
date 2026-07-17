@@ -33,7 +33,7 @@
     "url": "https://github.com/as569951728/dev-ai-toolkit.git"
   },
   "engines": {
-    "node": "^20.19.0 || >=22.12.0"
+    "node": "^20.19.0 || ^22.12.0 || ^24.0.0"
   },
   "dependencies": {
     "react": "^19.2.7",

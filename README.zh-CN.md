@@ -26,7 +26,7 @@ JSON Tools、API Builder、Prompt Diff 和 Code Viewer 用来处理相邻的开�
 
 环境要求：
 
-- Node.js 20.19+，或 Node.js 22.12+
+- Node.js 20.19+、22.12+ 或 24.x（仅支持这些 LTS 主版本）
 - 推荐 npm 10 或更高版本
 
 克隆仓库、安装锁定版本的依赖并启动 Vite：
