@@ -28,7 +28,7 @@ exported manually.
 
 Requirements:
 
-- Node.js 20.19+, or Node.js 22.12+
+- Node.js 20.19+, 22.12+, or 24.x (supported LTS major lines)
 - npm 10 or later recommended
 
 Clone the repository, install the locked dependencies, and start Vite:

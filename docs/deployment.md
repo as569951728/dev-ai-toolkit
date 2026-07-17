@@ -74,7 +74,8 @@ npm run build
 dist
 ```
 
-5. Use Node.js `20.19+` or `22.12+`.
+5. Use Node.js `20.19+`, `22.12+`, or `24.x`. These are the supported LTS
+   major lines; the canonical Vercel project currently builds with Node.js 24.
 6. Deploy.
 
 ## Before publishing
