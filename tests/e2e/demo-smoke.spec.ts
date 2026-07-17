@@ -6,6 +6,16 @@ const coreRoutes = [
   '/runs',
   '/workspace',
 ];
+const publicDemoUrl = 'https://dev-ai-toolkit.vercel.app';
+
+const expectedSecurityHeaders = {
+  'content-security-policy':
+    "default-src 'self'; base-uri 'self'; connect-src 'self'; font-src 'self'; form-action 'self'; frame-ancestors 'none'; img-src 'self'; object-src 'none'; script-src 'self'; style-src 'self'",
+  'permissions-policy': 'camera=(), geolocation=(), microphone=()',
+  'referrer-policy': 'strict-origin-when-cross-origin',
+  'x-content-type-options': 'nosniff',
+  'x-frame-options': 'DENY',
+};
 
 test('serves the core demo routes and direct prompt workflow entry', async ({
   page,
@@ -34,4 +44,27 @@ test('serves the core demo routes and direct prompt workflow entry', async ({
   await expect(page.getByLabel('Active template')).toHaveValue(
     'code-review-assistant',
   );
+});
+
+test('serves baseline security headers from the public deployment', async (
+  { page },
+  testInfo,
+) => {
+  test.skip(
+    testInfo.project.use.baseURL !== publicDemoUrl,
+    'Security response headers are applied by the public Vercel deployment.',
+  );
+
+  for (const route of coreRoutes) {
+    const response = await page.goto(route);
+
+    expect(response?.ok()).toBe(true);
+
+    for (const [name, value] of Object.entries(expectedSecurityHeaders)) {
+      expect(
+        response?.headers()[name],
+        `${route} should return the ${name} header`,
+      ).toBe(value);
+    }
+  }
 });
