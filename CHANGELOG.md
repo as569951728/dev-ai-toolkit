@@ -26,6 +26,8 @@ commit.
 
 ### Fixed
 
+- Added a visible initial loading state for direct visits to lazy-loaded routes
+  instead of logging a React Router hydration warning.
 - Served valid crawler directives from `/robots.txt` instead of returning the
   SPA document through the fallback rewrite.
 - Gave each application route a descriptive browser title after client-side

@@ -48,6 +48,29 @@ test('labels and skips each application route', async ({ page }) => {
   }
 });
 
+test('loads a lazy route directly without a hydration warning', async ({
+  page,
+}) => {
+  const hydrationWarnings: string[] = [];
+
+  page.on('console', (message) => {
+    if (
+      message.type() === 'warning' &&
+      message.text().includes('No `HydrateFallback` element provided')
+    ) {
+      hydrationWarnings.push(message.text());
+    }
+  });
+
+  await page.goto('/runs');
+
+  await expect(page).toHaveTitle('Run History | dev-ai-toolkit');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+    'Review saved prompt snapshots in a local activity history.',
+  );
+  expect(hydrationWarnings).toEqual([]);
+});
+
 test('keeps focus visible and reduces interface motion when requested', async ({
   page,
 }) => {

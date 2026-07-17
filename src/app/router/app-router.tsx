@@ -46,10 +46,23 @@ function RootLayout() {
   );
 }
 
+function InitialRouteFallback() {
+  return (
+    <div className="app-shell">
+      <div className="page-frame">
+        <main id="main-content" aria-busy="true">
+          <p role="status">Loading page...</p>
+        </main>
+      </div>
+    </div>
+  );
+}
+
 const router = createBrowserRouter([
   {
     path: '/',
     element: <RootLayout />,
+    HydrateFallback: InitialRouteFallback,
     children: [
       {
         index: true,
