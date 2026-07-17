@@ -1,6 +1,6 @@
 # Roadmap
 
-**Last reviewed:** 2026-07-15
+**Last reviewed:** 2026-07-17
 
 `dev-ai-toolkit` is being maintained as a local-first prompt workspace. The
 roadmap prioritizes the template-to-review workflow, local data safety, and
@@ -94,6 +94,6 @@ of the current milestone.
 1. Start from a scoped issue with acceptance criteria.
 2. Make one reviewable behavior or documentation change.
 3. Run the checks appropriate to that change.
-4. Merge through the protected branch and required `quality` check.
+4. Merge through the protected branch and required `quality` and CodeQL checks.
 5. Verify public behavior when runtime code changes.
 6. Record user-visible changes in the next release notes.
