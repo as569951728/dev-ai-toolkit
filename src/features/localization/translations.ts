@@ -1,3 +1,6 @@
+import { promptTemplateTranslations } from '@/features/localization/prompt-template-translations';
+import { promptPlaygroundTranslations } from '@/features/localization/prompt-playground-translations';
+
 export const translations = {
   en: {
     'app.tagline': 'Local-first prompt workspace',
@@ -185,6 +188,8 @@ export const translations = {
     'home.direction.connectionsTitle': 'Focused utility connections',
     'home.direction.connectionsSummary':
       'Connect supporting utilities only where they make the prompt workflow easier to complete.',
+    ...promptTemplateTranslations.en,
+    ...promptPlaygroundTranslations.en,
   },
   'zh-CN': {
     'app.tagline': '本地优先的 Prompt 工作台',
@@ -340,6 +345,8 @@ export const translations = {
     'home.direction.reliabilitySummary': '改进快照复盘、本地校验、备份安全和浏览器测试。',
     'home.direction.connectionsTitle': '聚焦的工具衔接',
     'home.direction.connectionsSummary': '只在确实有助于完成 Prompt 工作流时连接辅助工具。',
+    ...promptTemplateTranslations['zh-CN'],
+    ...promptPlaygroundTranslations['zh-CN'],
   },
 } as const;
 

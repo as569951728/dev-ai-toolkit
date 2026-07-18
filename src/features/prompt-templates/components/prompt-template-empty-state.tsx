@@ -7,21 +7,21 @@ export function PromptTemplateEmptyState({
   onCreate,
   onClearFilters,
 }: PromptTemplateEmptyStateProps) {
+  const { t } = useLocalization();
+
   return (
     <div className="empty-state">
-      <h2>No templates match the current filters</h2>
-      <p>
-        Try a different search, clear the tag filter, or create a new prompt
-        template.
-      </p>
+      <h2>{t('templates.empty.title')}</h2>
+      <p>{t('templates.empty.description')}</p>
       {onClearFilters ? (
         <button className="ghost-button" type="button" onClick={onClearFilters}>
-          Clear filters
+          {t('templates.empty.clear')}
         </button>
       ) : null}
       <button className="primary-button" type="button" onClick={onCreate}>
-        Create template
+        {t('templates.empty.create')}
       </button>
     </div>
   );
 }
+import { useLocalization } from '@/features/localization/localization-context';

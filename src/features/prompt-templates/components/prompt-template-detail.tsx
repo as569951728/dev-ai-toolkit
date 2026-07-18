@@ -1,12 +1,12 @@
 import { useState } from 'react';
 
+import { useLocalization } from '@/features/localization/localization-context';
 import { PromptTemplateRevisionHistory } from '@/features/prompt-templates/components/prompt-template-revision-history';
 import type {
   PromptTemplate,
   PromptTemplateRevision,
 } from '@/types/prompt-template';
 import type { PromptRunRecord } from '@/types/prompt-run';
-import { formatCapturedVariableCount } from '@/features/prompt-runs/lib/prompt-run-display';
 
 interface PromptTemplateDetailProps {
   actionErrorMessage: string | null;
@@ -28,8 +28,8 @@ interface PromptTemplateDetailProps {
   recentRuns: PromptRunRecord[];
 }
 
-function formatUpdatedAt(updatedAt: string) {
-  return new Intl.DateTimeFormat('en', {
+function formatUpdatedAt(updatedAt: string, locale: string) {
+  return new Intl.DateTimeFormat(locale, {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
@@ -54,19 +54,23 @@ export function PromptTemplateDetail({
   onRestoreRevision,
   recentRuns,
 }: PromptTemplateDetailProps) {
+  const { language, t } = useLocalization();
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
+  const locale = language === 'zh-CN' ? 'zh-CN' : 'en';
+  const formatLocalizedDate = (date: string) => formatUpdatedAt(date, locale);
+
   return (
     <section className="panel">
       <div className="panel__header">
         <div>
-          <p className="eyebrow">Prompt Template</p>
+          <p className="eyebrow">{t('templates.detail.eyebrow')}</p>
           <h1>{template.name}</h1>
           <p className="panel__summary">{template.description}</p>
         </div>
 
         <div className="detail-actions">
           <button className="ghost-button" type="button" onClick={onBack}>
-            Back to list
+            {t('templates.detail.back')}
           </button>
           {!template.archivedAt ? (
             <button
@@ -74,7 +78,7 @@ export function PromptTemplateDetail({
               type="button"
               onClick={() => onOpenInPlayground(template.id)}
             >
-              Open in Playground
+              {t('templates.detail.playground')}
             </button>
           ) : null}
           <button
@@ -82,21 +86,21 @@ export function PromptTemplateDetail({
             type="button"
             onClick={() => onOpenRunHistory(template.id)}
           >
-            View run history
+            {t('templates.detail.runs')}
           </button>
           <button
             className="secondary-button"
             type="button"
             onClick={() => onEdit(template.id)}
           >
-            Edit
+            {t('templates.detail.edit')}
           </button>
           <button
             className="secondary-button"
             type="button"
             onClick={() => onDuplicate(template.id)}
           >
-            Duplicate
+            {t('templates.detail.duplicate')}
           </button>
           {template.archivedAt ? (
             <button
@@ -104,7 +108,7 @@ export function PromptTemplateDetail({
               type="button"
               onClick={() => onRestoreArchive(template.id)}
             >
-              Restore
+              {t('templates.detail.restore')}
             </button>
           ) : (
             <button
@@ -112,21 +116,20 @@ export function PromptTemplateDetail({
               type="button"
               onClick={() => onArchive(template.id)}
             >
-              Archive
+              {t('templates.detail.archive')}
             </button>
           )}
           {isConfirmingDelete ? (
             <>
               <span className="run-history-note">
-                Deleting this template will not remove its saved run snapshots
-                from Run History.
+                {t('templates.detail.deleteWarning')}
               </span>
               <button
                 className="danger-button"
                 type="button"
                 onClick={() => onDelete(template.id)}
               >
-                Confirm delete
+                {t('templates.detail.confirmDelete')}
               </button>
               <button
                 autoFocus
@@ -134,7 +137,7 @@ export function PromptTemplateDetail({
                 type="button"
                 onClick={() => setIsConfirmingDelete(false)}
               >
-                Cancel
+                {t('templates.detail.cancel')}
               </button>
             </>
           ) : (
@@ -143,7 +146,7 @@ export function PromptTemplateDetail({
               type="button"
               onClick={() => setIsConfirmingDelete(true)}
             >
-              Delete
+              {t('templates.detail.delete')}
             </button>
           )}
         </div>
@@ -158,18 +161,28 @@ export function PromptTemplateDetail({
       <div className="detail-grid">
         <article className="detail-card">
           <div className="detail-card__header">
-            <h2>Template metadata</h2>
-            <span>Updated {formatUpdatedAt(template.updatedAt)}</span>
+            <h2>{t('templates.detail.metadata')}</h2>
+            <span>
+              {t('templates.detail.updated', {
+                date: formatLocalizedDate(template.updatedAt),
+              })}
+            </span>
           </div>
 
-          <p className="detail-card__version">Current version v{template.version}</p>
+          <p className="detail-card__version">
+            {t('templates.detail.currentVersion', {
+              version: template.version,
+            })}
+          </p>
           {template.archivedAt ? (
             <p className="detail-card__version">
-              Archived {formatUpdatedAt(template.archivedAt)}
+              {t('templates.detail.archived', {
+                date: formatLocalizedDate(template.archivedAt),
+              })}
             </p>
           ) : null}
 
-          <div className="tag-list" aria-label="Prompt tags">
+          <div className="tag-list" aria-label={t('templates.card.tags')}>
             {template.tags.map((tag) => (
               <span className="tag" key={tag}>
                 {tag}
@@ -180,20 +193,20 @@ export function PromptTemplateDetail({
 
         <article className="detail-card">
           <div className="detail-card__header">
-            <h2>System prompt</h2>
+            <h2>{t('templates.detail.system')}</h2>
           </div>
           <pre className="prompt-preview prompt-text-output">{template.systemPrompt}</pre>
         </article>
 
         <article className="detail-card detail-card--full">
           <div className="detail-card__header">
-            <h2>User prompt</h2>
+            <h2>{t('templates.detail.user')}</h2>
           </div>
           <pre className="prompt-preview prompt-text-output">{template.userPrompt}</pre>
         </article>
 
         <PromptTemplateRevisionHistory
-          formatUpdatedAt={formatUpdatedAt}
+          formatUpdatedAt={formatLocalizedDate}
           onCompareRevision={onCompareRevision}
           onRestoreRevision={onRestoreRevision}
           template={template}
@@ -201,8 +214,12 @@ export function PromptTemplateDetail({
 
         <article className="detail-card detail-card--full">
           <div className="detail-card__header">
-            <h2>Recent run history</h2>
-            <span>{recentRuns.length} recent runs</span>
+            <h2>{t('templates.detail.recentRuns')}</h2>
+            <span>
+              {t('templates.detail.recentRunCount', {
+                count: recentRuns.length,
+              })}
+            </span>
           </div>
 
           {recentRuns.length > 0 ? (
@@ -211,15 +228,24 @@ export function PromptTemplateDetail({
                 <article className="revision-card" key={run.id}>
                   <div className="revision-card__header">
                     <div>
-                      <h3>Run from v{run.templateVersion}</h3>
-                      <p>{formatUpdatedAt(run.createdAt)}</p>
+                      <h3>
+                        {t('templates.detail.runVersion', {
+                          version: run.templateVersion,
+                        })}
+                      </h3>
+                      <p>{formatLocalizedDate(run.createdAt)}</p>
                     </div>
-                    <span className="revision-badge">Prompt snapshot</span>
+                    <span className="revision-badge">
+                      {t('templates.detail.snapshot')}
+                    </span>
                   </div>
 
                   <p className="revision-card__description">
-                    {formatCapturedVariableCount(
-                      Object.keys(run.variables).length,
+                    {t(
+                      Object.keys(run.variables).length === 1
+                        ? 'templates.detail.variables.one'
+                        : 'templates.detail.variables.other',
+                      { count: Object.keys(run.variables).length },
                     )}
                   </p>
 
@@ -229,7 +255,7 @@ export function PromptTemplateDetail({
                       type="button"
                       onClick={() => onOpenRunDetail(run.id)}
                     >
-                      View run details
+                      {t('templates.detail.viewRun')}
                     </button>
                   </div>
                 </article>
@@ -237,8 +263,8 @@ export function PromptTemplateDetail({
             </div>
           ) : (
             <div className="empty-state empty-state--compact">
-              <h2>No saved runs yet</h2>
-              <p>Save a prompt run from the playground to build a reusable activity trail.</p>
+              <h2>{t('templates.detail.noRuns')}</h2>
+              <p>{t('templates.detail.noRunsDescription')}</p>
             </div>
           )}
         </article>

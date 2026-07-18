@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
+import { useLocalization } from '@/features/localization/localization-context';
 import { filterPromptTemplates } from '@/features/prompt-templates/lib/prompt-template-utils';
 import { normalizePromptTemplateListSearchParams } from '@/features/prompt-templates/lib/prompt-template-list-query';
 import {
@@ -28,6 +29,7 @@ interface PromptTemplateFeedback {
 }
 
 export function PromptTemplateListPage() {
+  const { language, t } = useLocalization();
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -103,12 +105,14 @@ export function PromptTemplateListPage() {
       link.click();
 
       setFeedback({
-        message: `Exported ${templates.length} templates to JSON.`,
+        message: t('templates.list.exportSuccess', {
+          count: templates.length,
+        }),
         tone: 'success',
       });
     } catch {
       setFeedback({
-        message: 'Failed to export prompt templates. Please try again.',
+        message: t('templates.list.exportError'),
         tone: 'error',
       });
     } finally {
@@ -135,23 +139,39 @@ export function PromptTemplateListPage() {
       );
       const result = importTemplates(importedTemplates, summary);
       const skippedMessage = result.skipped
-        ? ` ${result.skipped} skipped.`
+        ? t('templates.list.importSkipped', { count: result.skipped })
         : '';
       const duplicateMessage = result.duplicates
-        ? ` ${result.duplicates} duplicate ID${result.duplicates === 1 ? '' : 's'} resolved using the last valid record.`
+        ? t(
+            result.duplicates === 1
+              ? 'templates.list.importDuplicates.one'
+              : 'templates.list.importDuplicates.other',
+            { count: result.duplicates },
+          )
         : '';
-      const templateLabel = result.total === 1 ? 'template' : 'templates';
+      const templateLabel = t(
+        result.total === 1
+          ? 'templates.list.importTemplate.one'
+          : 'templates.list.importTemplate.other',
+      );
 
       setFeedback({
-        message: `Imported ${result.total} ${templateLabel}: ${result.created} created, ${result.updated} updated.${skippedMessage}${duplicateMessage}`,
+        message: t('templates.list.importSuccess', {
+          total: result.total,
+          label: templateLabel,
+          created: result.created,
+          updated: result.updated,
+          skipped: skippedMessage,
+          duplicates: duplicateMessage,
+        }),
         tone: 'success',
       });
     } catch (error) {
       setFeedback({
         message:
-          error instanceof Error
+          language === 'en' && error instanceof Error
             ? error.message
-            : 'Failed to import the selected JSON file.',
+            : t('templates.list.importError'),
         tone: 'error',
       });
     } finally {
@@ -163,7 +183,7 @@ export function PromptTemplateListPage() {
     <>
       <input
         ref={fileInputRef}
-        aria-label="Import prompt templates JSON"
+        aria-label={t('templates.list.importLabel')}
         hidden
         type="file"
         accept="application/json,.json"

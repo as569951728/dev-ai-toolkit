@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import { useLocalization } from '@/features/localization/localization-context';
 import type { PromptPlaygroundVariable } from '@/features/prompt-playground/lib/prompt-playground-utils';
 import { buildPromptRunDetailPath } from '@/features/prompt-runs/lib/prompt-run-links';
 import { writeClipboardText } from '@/lib/clipboard';
@@ -48,6 +49,7 @@ export function PromptPlaygroundPreview({
   saveStatusTone,
   unresolvedVariables,
 }: PromptPlaygroundPreviewProps) {
+  const { language, t } = useLocalization();
   const [copiedSection, setCopiedSection] = useState<CopiedSection | null>(null);
   const [copyFeedback, setCopyFeedback] = useState<CopyFeedback | null>(null);
   const copyContextKey = preview ? formatPromptSections(preview) : null;
@@ -62,17 +64,20 @@ export function PromptPlaygroundPreview({
     }
 
     const contextKey = copyContextKey;
-    const sectionLabel =
+    const sectionLabel = t(
       section === 'full'
-        ? 'Full prompt'
-        : `${section === 'system' ? 'System' : 'User'} prompt`;
+        ? 'playground.copy.full'
+        : section === 'system'
+          ? 'playground.copy.system'
+          : 'playground.copy.user',
+    );
 
     try {
       await writeClipboardText(value);
       setCopiedSection({ contextKey, section });
       setCopyFeedback({
         contextKey,
-        message: `${sectionLabel} copied.`,
+        message: t('playground.copy.success', { section: sectionLabel }),
         tone: 'success',
       });
 
@@ -88,7 +93,10 @@ export function PromptPlaygroundPreview({
       setCopiedSection(null);
       setCopyFeedback({
         contextKey,
-        message: `Failed to copy ${sectionLabel.toLowerCase()}.`,
+        message: t('playground.copy.error', {
+          section:
+            language === 'en' ? sectionLabel.toLowerCase() : sectionLabel,
+        }),
         tone: 'error',
       });
     }
@@ -98,23 +106,22 @@ export function PromptPlaygroundPreview({
     <section className="panel playground-panel">
       <div className="playground-panel__header">
         <div>
-          <p className="eyebrow">Preview</p>
-          <h2>Composed prompt preview</h2>
-          <p className="panel__summary">
-            Review the final composed prompt before you copy it into your AI
-            workflow.
-          </p>
+          <p className="eyebrow">{t('playground.preview.eyebrow')}</p>
+          <h2>{t('playground.preview.title')}</h2>
+          <p className="panel__summary">{t('playground.preview.summary')}</p>
           {unresolvedVariables.length > 0 ? (
             <p aria-live="polite" className="run-history-note">
-              {unresolvedVariables.length}{' '}
-              {unresolvedVariables.length === 1
-                ? 'template variable is unresolved. Its placeholder'
-                : 'template variables are unresolved. Their placeholders'}{' '}
-              will remain in copied and saved prompts. Missing:{' '}
-              {unresolvedVariables
-                .map((variable) => variable.label)
-                .join(', ')}
-              .
+              {t(
+                unresolvedVariables.length === 1
+                  ? 'playground.preview.unresolved.one'
+                  : 'playground.preview.unresolved.other',
+                {
+                  count: unresolvedVariables.length,
+                  labels: unresolvedVariables
+                    .map((variable) => variable.label)
+                    .join(', '),
+                },
+              )}
             </p>
           ) : null}
         </div>
@@ -127,7 +134,9 @@ export function PromptPlaygroundPreview({
               type="button"
               onClick={onSaveRun}
             >
-              {savedRunId ? 'Snapshot saved' : 'Save prompt snapshot'}
+              {savedRunId
+                ? t('playground.preview.saved')
+                : t('playground.preview.save')}
             </button>
             <button
               className="secondary-button"
@@ -135,22 +144,22 @@ export function PromptPlaygroundPreview({
               onClick={() => handleCopy('full', formatPromptSections(preview))}
             >
               {activeCopiedSection === 'full'
-                ? 'Copied full prompt'
-                : 'Copy full prompt'}
+                ? t('playground.preview.copiedFull')
+                : t('playground.preview.copyFull')}
             </button>
             <button
               className="secondary-button"
               type="button"
               onClick={onReviewInPromptDiff}
             >
-              Review in Prompt Diff
+              {t('playground.preview.diff')}
             </button>
             <button
               className="ghost-button"
               type="button"
               onClick={onOpenInCodeViewer}
             >
-              Open in Code Viewer
+              {t('playground.preview.code')}
             </button>
           </div>
         ) : null}
@@ -168,11 +177,11 @@ export function PromptPlaygroundPreview({
           <span>{saveStatusMessage}</span>
           {savedRunId ? (
             <span className="status-banner__actions">
-              <span>Next: review it, add a note, or browse history.</span>
+              <span>{t('playground.preview.next')}</span>
               <Link to={buildPromptRunDetailPath(savedRunId)}>
-                Open saved run
+                {t('playground.preview.openRun')}
               </Link>
-              <Link to="/runs">Browse run history</Link>
+              <Link to="/runs">{t('playground.preview.browseRuns')}</Link>
             </span>
           ) : null}
         </p>
@@ -195,13 +204,15 @@ export function PromptPlaygroundPreview({
         <div className="preview-stack">
           <article className="detail-card">
             <div className="detail-card__header">
-              <h3>System prompt</h3>
+              <h3>{t('playground.preview.system')}</h3>
               <button
                 className="ghost-button"
                 type="button"
                 onClick={() => handleCopy('system', preview.systemPrompt)}
               >
-                {activeCopiedSection === 'system' ? 'Copied' : 'Copy'}
+                {activeCopiedSection === 'system'
+                  ? t('playground.preview.copied')
+                  : t('playground.preview.copy')}
               </button>
             </div>
             <pre className="prompt-preview prompt-text-output">{preview.systemPrompt}</pre>
@@ -209,13 +220,15 @@ export function PromptPlaygroundPreview({
 
           <article className="detail-card">
             <div className="detail-card__header">
-              <h3>User prompt</h3>
+              <h3>{t('playground.preview.user')}</h3>
               <button
                 className="ghost-button"
                 type="button"
                 onClick={() => handleCopy('user', preview.userPrompt)}
               >
-                {activeCopiedSection === 'user' ? 'Copied' : 'Copy'}
+                {activeCopiedSection === 'user'
+                  ? t('playground.preview.copied')
+                  : t('playground.preview.copy')}
               </button>
             </div>
             <pre className="prompt-preview prompt-text-output">{preview.userPrompt}</pre>
@@ -223,8 +236,8 @@ export function PromptPlaygroundPreview({
         </div>
       ) : (
         <div className="empty-state">
-          <h2>Nothing to preview yet</h2>
-          <p>Select a template to preview the composed prompts.</p>
+          <h2>{t('playground.preview.emptyTitle')}</h2>
+          <p>{t('playground.preview.emptyDescription')}</p>
         </div>
       )}
     </section>

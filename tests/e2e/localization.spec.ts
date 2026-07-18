@@ -53,3 +53,37 @@ test('keeps the Chinese landing page inside a phone viewport', async ({
 
   await context.close();
 });
+
+test('completes the template-to-snapshot path in Chinese', async ({
+  browser,
+}) => {
+  const context = await browser.newContext({ locale: 'zh-CN' });
+  const page = await context.newPage();
+
+  await page.goto(
+    'http://127.0.0.1:4173/playground?templateId=code-review-assistant',
+  );
+
+  await expect(
+    page.getByRole('heading', {
+      level: 1,
+      name: '把可复用模板组合成可以直接使用的 Prompt',
+    }),
+  ).toBeVisible();
+  await page.getByLabel('Repository Name').fill('dev-ai-toolkit');
+  await page.getByLabel('Change Scope').fill('中文界面');
+  await page.getByRole('button', { name: '保存 Prompt 快照' }).click();
+
+  await expect(page.getByText(/已保存 Code Review Assistant v\d+ 的 Prompt 快照/)).toBeVisible();
+  await expect(
+    page.getByRole('link', { name: '打开已保存记录' }),
+  ).toBeVisible();
+
+  await page.goto('http://127.0.0.1:4173/prompts');
+  await expect(
+    page.getByRole('heading', { level: 1, name: '管理可复用的 AI Prompt' }),
+  ).toBeVisible();
+  await expect(page.getByRole('button', { name: '新建模板' })).toBeVisible();
+
+  await context.close();
+});
