@@ -1,5 +1,6 @@
 import { useState, useSyncExternalStore } from 'react';
 
+import { useLocalization } from '@/features/localization/localization-context';
 import {
   canUseBrowserStorage,
   resolveBrowserStorage,
@@ -21,6 +22,7 @@ export function BrowserStorageNotice({
   reloadPage = () => window.location.reload(),
   storage,
 }: BrowserStorageNoticeProps) {
+  const { t } = useLocalization();
   const issues = useSyncExternalStore(
     subscribeToLocalStorageReadIssues,
     getLocalStorageReadIssues,
@@ -47,7 +49,7 @@ export function BrowserStorageNotice({
         setActionError('');
       } catch {
         setActionError(
-          'The unreadable browser data could not be downloaded. It has not been removed.',
+          t('storage.recovery.downloadError'),
         );
       }
     };
@@ -59,7 +61,7 @@ export function BrowserStorageNotice({
         reloadPage();
       } catch {
         setActionError(
-          'The unreadable browser data could not be fully reset. It remains available for download in this session.',
+          t('storage.recovery.resetError'),
         );
         setIsResetConfirmationOpen(false);
       }
@@ -73,13 +75,9 @@ export function BrowserStorageNotice({
       >
         <div>
           <strong id="local-storage-recovery-title">
-            Some local workspace data could not be read.
+            {t('storage.recovery.title')}
           </strong>
-          <p>
-            The original browser values are unchanged, and writes to the
-            affected data are blocked. Download them before resetting if you
-            may need to inspect or repair them later.
-          </p>
+          <p>{t('storage.recovery.description')}</p>
           <ul>
             {issues.map((issue) => (
               <li key={issue.storageKey}>{issue.label}</li>
@@ -93,14 +91,14 @@ export function BrowserStorageNotice({
             type="button"
             onClick={handleDownload}
           >
-            Download unreadable data
+            {t('storage.recovery.download')}
           </button>
           <button
             className="danger-button"
             type="button"
             onClick={() => setIsResetConfirmationOpen(true)}
           >
-            Reset affected data
+            {t('storage.recovery.reset')}
           </button>
         </div>
 
@@ -114,12 +112,10 @@ export function BrowserStorageNotice({
             role="dialog"
           >
             <h2 id="local-storage-reset-title">
-              Reset unreadable local data?
+              {t('storage.recovery.dialogTitle')}
             </h2>
             <p id="local-storage-reset-description">
-              This permanently removes only the affected browser values and
-              reloads the app. Download them first if you may need the original
-              content.
+              {t('storage.recovery.dialogDescription')}
             </p>
             <div className="detail-actions detail-actions--inline">
               <button
@@ -128,14 +124,14 @@ export function BrowserStorageNotice({
                 type="button"
                 onClick={() => setIsResetConfirmationOpen(false)}
               >
-                Keep current data
+                {t('storage.recovery.keep')}
               </button>
               <button
                 className="danger-button"
                 type="button"
                 onClick={handleReset}
               >
-                Reset and reload
+                {t('storage.recovery.confirm')}
               </button>
             </div>
           </div>
@@ -146,8 +142,7 @@ export function BrowserStorageNotice({
 
   return (
     <p className="status-banner status-banner--error" role="alert">
-      Browser storage is unavailable. Templates, prompt snapshots, and notes
-      cannot be saved in this browser context.
+      {t('storage.unavailable')}
     </p>
   );
 }

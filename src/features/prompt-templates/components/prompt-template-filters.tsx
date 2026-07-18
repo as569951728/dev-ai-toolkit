@@ -1,3 +1,4 @@
+import { useLocalization } from '@/features/localization/localization-context';
 import type { PromptTemplateFilters } from '@/types/prompt-template';
 
 interface PromptTemplateFiltersProps {
@@ -11,10 +12,12 @@ export function PromptTemplateFilters({
   tags,
   onFiltersChange,
 }: PromptTemplateFiltersProps) {
+  const { t } = useLocalization();
+
   return (
     <div className="toolbar">
       <label className="toolbar__search">
-        <span className="sr-only">Search prompt templates</span>
+        <span className="sr-only">{t('templates.filters.searchLabel')}</span>
         <input
           value={filters.search}
           onChange={(event) =>
@@ -23,12 +26,12 @@ export function PromptTemplateFilters({
               search: event.target.value,
             })
           }
-          placeholder="Search by name, tag, or prompt content"
+          placeholder={t('templates.filters.searchPlaceholder')}
         />
       </label>
 
       <label className="toolbar__filter">
-        <span>Tag</span>
+        <span>{t('templates.filters.tag')}</span>
         <select
           value={filters.tag}
           onChange={(event) =>
@@ -38,7 +41,7 @@ export function PromptTemplateFilters({
             })
           }
         >
-          <option value="all">All tags</option>
+          <option value="all">{t('templates.filters.allTags')}</option>
           {tags.map((tag) => (
             <option key={tag} value={tag}>
               {tag}

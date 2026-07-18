@@ -1,5 +1,6 @@
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
+import { useLocalization } from '@/features/localization/localization-context';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { PromptTemplateForm } from '@/features/prompt-templates/components/prompt-template-form';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
@@ -7,27 +8,9 @@ import {
   buildPromptTemplatePlaygroundPath,
   getPromptTemplateCreateDestination,
 } from '@/features/prompt-templates/lib/prompt-template-links';
-import type { PromptTemplateInput } from '@/types/prompt-template';
-
-function createTemplateInputFromRun({
-  systemPrompt,
-  templateName,
-  userPrompt,
-}: {
-  systemPrompt: string;
-  templateName: string;
-  userPrompt: string;
-}): PromptTemplateInput {
-  return {
-    name: `${templateName} snapshot`,
-    description: 'Created from a saved prompt snapshot.',
-    systemPrompt,
-    userPrompt,
-    tags: [],
-  };
-}
 
 export function PromptTemplateCreatePage() {
+  const { t } = useLocalization();
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -36,19 +19,25 @@ export function PromptTemplateCreatePage() {
   const requestedRunId = searchParams.get('runId');
   const createDestination = getPromptTemplateCreateDestination(location.state);
   const sourceRun = requestedRunId ? getRunById(requestedRunId) : null;
-  const initialValue = sourceRun ? createTemplateInputFromRun(sourceRun) : null;
+  const initialValue = sourceRun
+    ? {
+        name: `${sourceRun.templateName} ${t('templates.create.snapshotSuffix')}`,
+        description: t('templates.create.snapshotDescription'),
+        systemPrompt: sourceRun.systemPrompt,
+        userPrompt: sourceRun.userPrompt,
+        tags: [],
+      }
+    : null;
 
   return (
     <>
       {sourceRun ? (
         <p className="status-banner" role="status">
-          Prefilled from a saved prompt snapshot. Review the resolved prompt
-          values and add any reusable placeholders before creating the template.
+          {t('templates.create.prefilled')}
         </p>
       ) : requestedRunId ? (
         <p className="status-banner status-banner--error" role="alert">
-          The requested saved run is no longer available. Start with a blank
-          template instead.
+          {t('templates.create.runMissing')}
         </p>
       ) : null}
 

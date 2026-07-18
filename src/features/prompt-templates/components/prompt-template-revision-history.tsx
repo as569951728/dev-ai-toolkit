@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { useLocalization } from '@/features/localization/localization-context';
 import type {
   PromptTemplate,
   PromptTemplateRevision,
@@ -21,6 +22,7 @@ export function PromptTemplateRevisionHistory({
   onRestoreRevision,
   template,
 }: PromptTemplateRevisionHistoryProps) {
+  const { t } = useLocalization();
   const [pendingRestoreVersion, setPendingRestoreVersion] = useState<
     PromptTemplateRevision['version'] | null
   >(null);
@@ -31,8 +33,10 @@ export function PromptTemplateRevisionHistory({
   return (
     <article className="detail-card detail-card--full">
       <div className="detail-card__header">
-        <h2>Version history</h2>
-        <span>{revisionHistory.length} stored revisions</span>
+        <h2>{t('templates.revisions.title')}</h2>
+        <span>
+          {t('templates.revisions.count', { count: revisionHistory.length })}
+        </span>
       </div>
 
       <div className="revision-list">
@@ -49,21 +53,29 @@ export function PromptTemplateRevisionHistory({
             <article className="revision-card" key={revision.version}>
               <div className="revision-card__header">
                 <div>
-                  <h3>Version v{revision.version}</h3>
+                  <h3>
+                    {t('templates.revisions.version', {
+                      version: revision.version,
+                    })}
+                  </h3>
                   <p>{formatUpdatedAt(revision.updatedAt)}</p>
                 </div>
 
                 {isCurrent ? (
-                  <span className="revision-badge">Current</span>
+                  <span className="revision-badge">
+                    {t('templates.revisions.current')}
+                  </span>
                 ) : (
                   <div className="detail-actions detail-actions--inline">
                     <button
-                      aria-label={`Compare version v${revision.version} with current`}
+                      aria-label={t('templates.revisions.compareLabel', {
+                        version: revision.version,
+                      })}
                       className="ghost-button"
                       type="button"
                       onClick={() => onCompareRevision(revision)}
                     >
-                      Compare with current
+                      {t('templates.revisions.compare')}
                     </button>
                     {!isConfirmingRestore ? (
                       <button
@@ -73,7 +85,7 @@ export function PromptTemplateRevisionHistory({
                           setPendingRestoreVersion(revision.version)
                         }
                       >
-                        Restore as current
+                        {t('templates.revisions.restore')}
                       </button>
                     ) : null}
                   </div>
@@ -88,14 +100,17 @@ export function PromptTemplateRevisionHistory({
                   role="dialog"
                 >
                   <span id={confirmationTitleId}>
-                    Restore version v{revision.version}?
+                    {t('templates.revisions.confirmTitle', {
+                      version: revision.version,
+                    })}
                   </span>
                   <p
                     className="run-history-note"
                     id={confirmationDescriptionId}
                   >
-                    Its content will be saved as the new current version v
-                    {template.version + 1}.
+                    {t('templates.revisions.confirmDescription', {
+                      version: template.version + 1,
+                    })}
                   </p>
                   <div className="status-banner__actions">
                     <button
@@ -104,7 +119,7 @@ export function PromptTemplateRevisionHistory({
                       type="button"
                       onClick={() => setPendingRestoreVersion(null)}
                     >
-                      Cancel
+                      {t('templates.revisions.cancel')}
                     </button>
                     <button
                       className="primary-button"
@@ -120,7 +135,9 @@ export function PromptTemplateRevisionHistory({
                         }
                       }}
                     >
-                      Restore version v{revision.version}
+                      {t('templates.revisions.confirm', {
+                        version: revision.version,
+                      })}
                     </button>
                   </div>
                 </div>

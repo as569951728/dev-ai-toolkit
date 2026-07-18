@@ -4,11 +4,13 @@ const sourceRepositoryUrl =
   'https://github.com/as569951728/dev-ai-toolkit';
 
 export function AppFooter() {
+  const { t } = useLocalization();
+
   return (
     <footer className="app-footer">
       <p className="app-footer__copy">
-        <strong>Used the prompt workflow for a real task?</strong>
-        Share what slowed you down without including private prompt content.
+        <strong>{t('footer.question')}</strong>
+        {t('footer.guidance')}
       </p>
       <div className="app-footer__links">
         <a
@@ -17,7 +19,7 @@ export function AppFooter() {
           rel="noopener noreferrer"
           target="_blank"
         >
-          View source
+          {t('footer.source')}
         </a>
         <a
           className="app-footer__link"
@@ -25,9 +27,10 @@ export function AppFooter() {
           rel="noopener noreferrer"
           target="_blank"
         >
-          Share workflow feedback
+          {t('footer.feedback')}
         </a>
       </div>
     </footer>
   );
 }
+import { useLocalization } from '@/features/localization/localization-context';

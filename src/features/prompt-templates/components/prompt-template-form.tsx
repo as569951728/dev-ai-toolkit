@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useBeforeUnload, useBlocker } from 'react-router-dom';
 
+import { useLocalization } from '@/features/localization/localization-context';
 import type { PromptTemplateInput } from '@/types/prompt-template';
 
 interface PromptTemplateFormProps {
@@ -54,17 +55,6 @@ function normalizeTags(value: string) {
   ];
 }
 
-function formatRequiredMessage(fields: string[]) {
-  if (fields.length === 1) {
-    return `${fields[0]} is required.`;
-  }
-
-  const lastField = fields[fields.length - 1];
-  const leadingFields = fields.slice(0, -1);
-
-  return `${leadingFields.join(', ')} and ${lastField} are required.`;
-}
-
 export function PromptTemplateForm({
   externalChangeMessage,
   mode,
@@ -74,6 +64,7 @@ export function PromptTemplateForm({
   onCancel,
   submitLabel,
 }: PromptTemplateFormProps) {
+  const { t } = useLocalization();
   const allowNavigationRef = useRef(false);
   const continueEditingButtonRef = useRef<HTMLButtonElement | null>(null);
   const nameInputRef = useRef<HTMLInputElement | null>(null);
@@ -178,14 +169,29 @@ export function PromptTemplateForm({
     };
 
     const missingFields = [
-      payload.name ? null : 'Name',
-      payload.description ? null : 'Description',
-      payload.systemPrompt ? null : 'system prompt',
-      payload.userPrompt ? null : 'user prompt',
+      payload.name ? null : t('templates.form.name'),
+      payload.description ? null : t('templates.form.description'),
+      payload.systemPrompt ? null : t('templates.form.systemRequired'),
+      payload.userPrompt ? null : t('templates.form.userRequired'),
     ].filter((field): field is string => field !== null);
 
     if (missingFields.length > 0) {
-      setErrorMessage(formatRequiredMessage(missingFields));
+      const fields =
+        missingFields.length === 1
+          ? missingFields[0]!
+          : t('templates.form.requiredJoin', {
+              leading: missingFields.slice(0, -1).join(', '),
+              last: missingFields.at(-1)!,
+            });
+
+      setErrorMessage(
+        t(
+          missingFields.length === 1
+            ? 'templates.form.required.one'
+            : 'templates.form.required.other',
+          { fields },
+        ),
+      );
       return;
     }
 
@@ -197,7 +203,7 @@ export function PromptTemplateForm({
     } catch {
       allowNavigationRef.current = false;
       setErrorMessage(
-        'Failed to save this template. Check that browser storage is available and try again.',
+        t('templates.form.saveError'),
       );
       return;
     }
@@ -212,17 +218,20 @@ export function PromptTemplateForm({
       <div className="panel__header panel__header--stacked">
         <div>
           <p className="eyebrow">
-            {mode === 'create' ? 'New Template' : 'Edit Template'}
+            {mode === 'create'
+              ? t('templates.form.newEyebrow')
+              : t('templates.form.editEyebrow')}
           </p>
-          <h1>{mode === 'create' ? 'Create a prompt template' : initialValue?.name}</h1>
-          <p className="panel__summary">
-            Capture a reusable prompt structure for common AI engineering
-            workflows.
-          </p>
+          <h1>
+            {mode === 'create'
+              ? t('templates.form.createTitle')
+              : initialValue?.name}
+          </h1>
+          <p className="panel__summary">{t('templates.form.summary')}</p>
         </div>
 
         <button className="ghost-button" type="button" onClick={onCancel}>
-          Back to list
+          {t('templates.form.back')}
         </button>
       </div>
 
@@ -235,7 +244,7 @@ export function PromptTemplateForm({
       {(externalChangeMessage || hasExternalUpdate) && isDirty ? (
         <p className="status-banner" role="status">
           {externalChangeMessage ??
-            'Saved template changed in another tab. Your local draft is still here; review it before saving.'}
+            t('templates.form.externalUpdate')}
         </p>
       ) : null}
 
@@ -246,9 +255,11 @@ export function PromptTemplateForm({
           className="status-banner status-banner--error"
           role="dialog"
         >
-          <h2 id="unsaved-template-changes-title">Discard unsaved changes?</h2>
+          <h2 id="unsaved-template-changes-title">
+            {t('templates.form.discardTitle')}
+          </h2>
           <p id="unsaved-template-changes-description">
-            This template has changes that have not been saved in this browser.
+            {t('templates.form.discardDescription')}
           </p>
           <div className="detail-actions detail-actions--inline">
             <button
@@ -257,7 +268,7 @@ export function PromptTemplateForm({
               type="button"
               onClick={continueEditing}
             >
-              Continue editing
+              {t('templates.form.continue')}
             </button>
             <button
               className="danger-button"
@@ -267,7 +278,7 @@ export function PromptTemplateForm({
                 navigationBlocker.proceed();
               }}
             >
-              Discard changes
+              {t('templates.form.discard')}
             </button>
           </div>
         </div>
@@ -275,64 +286,66 @@ export function PromptTemplateForm({
 
       <form className="prompt-form" onSubmit={handleSubmit}>
         <label className="field">
-          <span>Name</span>
+          <span>{t('templates.form.name')}</span>
           <input
             ref={nameInputRef}
             required
             value={formState.name}
             onChange={handleChange('name')}
-            placeholder="Prompt template name"
+            placeholder={t('templates.form.namePlaceholder')}
           />
         </label>
 
         <label className="field">
-          <span>Description</span>
+          <span>{t('templates.form.description')}</span>
           <input
             required
             value={formState.description}
             onChange={handleChange('description')}
-            placeholder="Short summary of when to use this template"
+            placeholder={t('templates.form.descriptionPlaceholder')}
           />
         </label>
 
         <label className="field field--full">
-          <span>System prompt</span>
+          <span>{t('templates.form.system')}</span>
           <textarea
             required
             rows={6}
             value={formState.systemPrompt}
             onChange={handleChange('systemPrompt')}
-            placeholder="Define the role, rules, and response style"
+            placeholder={t('templates.form.systemPlaceholder')}
           />
         </label>
 
         <label className="field field--full">
-          <span>User prompt</span>
+          <span>{t('templates.form.user')}</span>
           <textarea
             required
             rows={8}
             value={formState.userPrompt}
             onChange={handleChange('userPrompt')}
-            placeholder="Add the user-side instructions or request pattern"
+            placeholder={t('templates.form.userPlaceholder')}
           />
         </label>
 
         <label className="field field--full">
-          <span>Tags</span>
+          <span>{t('templates.form.tags')}</span>
           <input
             value={formState.tags}
             onChange={handleChange('tags')}
-            placeholder="debugging, api, review"
+            placeholder={t('templates.form.tagsPlaceholder')}
           />
         </label>
 
         <div className="form-actions">
           <button className="primary-button" type="submit">
             {submitLabel ??
-              (mode === 'create' ? 'Create template' : 'Save changes')}
+              (mode === 'create'
+                ? t('templates.form.create')
+                : t('templates.form.save'))}
           </button>
           <button className="secondary-button" type="button" onClick={onCancel}>
-            Cancel
+            {t('templates.form.cancel')}
           </button>
         </div>
       </form>

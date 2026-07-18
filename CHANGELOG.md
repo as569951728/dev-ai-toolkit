@@ -8,6 +8,10 @@ commit.
 
 ### Added
 
+- Added a browser-aware Simplified Chinese interface for the application shell
+  and Overview, with an explicit language switcher that remembers the choice.
+- Added Simplified Chinese controls and guidance for the prompt template and
+  Playground workflow through saving a local prompt snapshot.
 - Added a privacy-aware workflow feedback link from every application route to
   the dedicated GitHub feedback form.
 - Added a direct Overview action into the first available prompt template,

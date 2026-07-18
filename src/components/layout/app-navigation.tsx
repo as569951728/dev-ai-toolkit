@@ -1,72 +1,76 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 
+import { LanguageSwitcher } from '@/features/localization/components/language-switcher';
+import { useLocalization } from '@/features/localization/localization-context';
+import type { TranslationKey } from '@/features/localization/translations';
+
 type NavigationItem = {
   to: string;
-  label: string;
+  labelKey: TranslationKey;
   end?: boolean;
 };
 
 type NavigationGroup = {
-  label: string;
+  labelKey: TranslationKey;
   items: NavigationItem[];
 };
 
 const navigationGroups: NavigationGroup[] = [
   {
-    label: 'Start here',
+    labelKey: 'navigation.group.start',
     items: [
       {
         to: '/',
-        label: 'Overview',
+        labelKey: 'navigation.overview',
         end: true,
       },
     ],
   },
   {
-    label: 'Prompt Workflows',
+    labelKey: 'navigation.group.prompts',
     items: [
       {
         to: '/prompts',
-        label: 'Prompt Templates',
+        labelKey: 'navigation.templates',
       },
       {
         to: '/playground',
-        label: 'Prompt Playground',
+        labelKey: 'navigation.playground',
       },
       {
         to: '/runs',
-        label: 'Run History',
+        labelKey: 'navigation.runs',
       },
       {
         to: '/prompt-diff',
-        label: 'Prompt Diff',
+        labelKey: 'navigation.diff',
       },
     ],
   },
   {
-    label: 'Developer Utilities',
+    labelKey: 'navigation.group.utilities',
     items: [
       {
         to: '/json-tools',
-        label: 'JSON Tools',
+        labelKey: 'navigation.json',
       },
       {
         to: '/api-builder',
-        label: 'API Builder',
+        labelKey: 'navigation.api',
       },
       {
         to: '/code-viewer',
-        label: 'Code Viewer',
+        labelKey: 'navigation.code',
       },
     ],
   },
   {
-    label: 'Workspace',
+    labelKey: 'navigation.group.workspace',
     items: [
       {
         to: '/workspace',
-        label: 'Backup',
+        labelKey: 'navigation.backup',
       },
     ],
   },
@@ -74,6 +78,7 @@ const navigationGroups: NavigationGroup[] = [
 
 export function AppNavigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { t } = useLocalization();
 
   const closeMenu = () => {
     const shouldRestoreFocus = isMenuOpen;
@@ -91,7 +96,8 @@ export function AppNavigation() {
     <header className="app-nav">
       <div className="app-nav__brand">
         <p className="app-nav__eyebrow">dev-ai-toolkit</p>
-        <p className="app-nav__title">Local-first prompt workspace</p>
+        <p className="app-nav__title">{t('app.tagline')}</p>
+        <LanguageSwitcher />
       </div>
 
       <button
@@ -101,7 +107,7 @@ export function AppNavigation() {
         aria-expanded={isMenuOpen}
         onClick={() => setIsMenuOpen((isOpen) => !isOpen)}
       >
-        {isMenuOpen ? 'Close navigation' : 'Open navigation'}
+        {isMenuOpen ? t('navigation.close') : t('navigation.open')}
       </button>
 
       <nav
@@ -111,11 +117,11 @@ export function AppNavigation() {
             ? 'app-nav__groups app-nav__groups--open'
             : 'app-nav__groups'
         }
-        aria-label="Primary"
+        aria-label={t('navigation.primary')}
       >
         {navigationGroups.map((group) => (
-          <div className="app-nav__group" key={group.label}>
-            <p className="app-nav__group-label">{group.label}</p>
+          <div className="app-nav__group" key={group.labelKey}>
+            <p className="app-nav__group-label">{t(group.labelKey)}</p>
             <div className="app-nav__links">
               {group.items.map((item) => (
                 <NavLink
@@ -127,7 +133,7 @@ export function AppNavigation() {
                     isActive ? 'app-nav__link app-nav__link--active' : 'app-nav__link'
                   }
                 >
-                  {item.label}
+                  {t(item.labelKey)}
                 </NavLink>
               ))}
             </div>

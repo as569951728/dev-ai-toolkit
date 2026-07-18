@@ -1,5 +1,6 @@
 import type { PromptTemplate } from '@/types/prompt-template';
 
+import { useLocalization } from '@/features/localization/localization-context';
 import type { PromptPlaygroundVariable } from '@/features/prompt-playground/lib/prompt-playground-utils';
 
 interface PromptPlaygroundVariableFormProps {
@@ -15,15 +16,18 @@ export function PromptPlaygroundVariableForm({
   values,
   onValueChange,
 }: PromptPlaygroundVariableFormProps) {
+  const { language, t } = useLocalization();
+
   return (
     <section className="panel playground-panel">
       <div className="playground-panel__header">
         <div>
-          <p className="eyebrow">Variables</p>
-          <h2>Fill prompt inputs</h2>
+          <p className="eyebrow">{t('playground.variables.eyebrow')}</p>
+          <h2>{t('playground.variables.title')}</h2>
           <p className="panel__summary">
-            Variables are detected from <code>{'{{placeholder}}'}</code> tokens
-            inside the selected template.
+            {t('playground.variables.descriptionPrefix')}{' '}
+            <code>{'{{placeholder}}'}</code>{' '}
+            {t('playground.variables.descriptionSuffix')}
           </p>
         </div>
       </div>
@@ -40,24 +44,30 @@ export function PromptPlaygroundVariableForm({
                   onChange={(event) =>
                     onValueChange(variable.key, event.target.value)
                   }
-                  placeholder={`Enter ${variable.label.toLowerCase()}`}
+                  placeholder={t('playground.variables.placeholder', {
+                    label:
+                      language === 'en'
+                        ? variable.label.toLowerCase()
+                        : variable.label,
+                  })}
                 />
               </label>
             ))}
           </form>
         ) : (
           <div className="empty-state">
-            <h2>No template variables found</h2>
+            <h2>{t('playground.variables.emptyTitle')}</h2>
             <p>
-              This template can still be used, but it does not contain any
-              <code>{' {{variable}} '}</code> placeholders yet.
+              {t('playground.variables.emptyPrefix')}{' '}
+              <code>{'{{variable}}'}</code>{' '}
+              {t('playground.variables.emptySuffix')}
             </p>
           </div>
         )
       ) : (
         <div className="empty-state">
-          <h2>No template selected</h2>
-          <p>Choose a prompt template to start filling variables.</p>
+          <h2>{t('playground.variables.noTemplate')}</h2>
+          <p>{t('playground.variables.noTemplateDescription')}</p>
         </div>
       )}
     </section>

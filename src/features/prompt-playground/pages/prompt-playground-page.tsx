@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { createCodeViewerNavigationState } from '@/features/code-viewer/lib/code-viewer-navigation';
+import { useLocalization } from '@/features/localization/localization-context';
 import { createPromptDiffNavigationState } from '@/features/prompt-diff/lib/prompt-diff-navigation';
 import { PromptPlaygroundPreview } from '@/features/prompt-playground/components/prompt-playground-preview';
 import { PromptPlaygroundTemplatePicker } from '@/features/prompt-playground/components/prompt-playground-template-picker';
@@ -41,20 +42,13 @@ function buildPreviewContextKey(
   });
 }
 
-function describeFallback(message: string, fallbackTemplateName?: string) {
-  return `${message} ${
-    fallbackTemplateName
-      ? `Showing ${fallbackTemplateName} instead.`
-      : 'No active prompt template is available.'
-  }`;
-}
-
 function PromptPlaygroundWorkspace({
   initialTemplateId,
   initialVariableValues,
   loadNotice,
   sourceRun,
 }: PromptPlaygroundWorkspaceProps) {
+  const { t } = useLocalization();
   const navigate = useNavigate();
   const { createRun, runs } = usePromptRuns();
   const [saveStatus, setSaveStatus] = useState<SaveStatus | null>(null);
@@ -134,7 +128,7 @@ function PromptPlaygroundWorkspace({
     saveStatus && saveStatus.contextKey === currentPreviewContextKey
       ? saveStatus.message
       : matchingRunId && !sourceRunMatchesPreview
-        ? 'This prompt preview already has a saved snapshot.'
+        ? t('playground.saved.exists')
         : null;
   const saveStatusTone =
     saveStatus && saveStatus.contextKey === currentPreviewContextKey
@@ -144,12 +138,9 @@ function PromptPlaygroundWorkspace({
   return (
     <section className="playground-layout">
       <div className="playground-hero panel">
-        <p className="eyebrow">Prompt Playground</p>
-        <h1>Turn reusable templates into ready-to-run prompts</h1>
-        <p className="panel__summary">
-          Pick a template, fill in a few variables, and preview the final prompt
-          output before you take it into your coding or debugging workflow.
-        </p>
+        <p className="eyebrow">{t('playground.hero.eyebrow')}</p>
+        <h1>{t('playground.hero.title')}</h1>
+        <p className="panel__summary">{t('playground.hero.summary')}</p>
       </div>
 
       {loadNotice ? (
@@ -160,11 +151,12 @@ function PromptPlaygroundWorkspace({
 
       {sourceRun && selectedTemplate?.id === sourceRun.templateId ? (
         <p className="status-banner" role="status">
-          Loaded captured variables from a{' '}
+          {t('playground.loaded.prefix')}{' '}
           <Link to={buildPromptRunDetailPath(sourceRun.id)}>
-            saved prompt snapshot
-          </Link>. Changes
-          here will create a new snapshot and leave the original unchanged.
+            {t('playground.loaded.link')}
+          </Link>
+          {t('playground.loaded.separator')}
+          {t('playground.loaded.suffix')}
         </p>
       ) : null}
 
@@ -214,8 +206,7 @@ function PromptPlaygroundWorkspace({
             } catch {
               setSaveStatus({
                 contextKey,
-                message:
-                  'Failed to save this prompt snapshot. Check that browser storage is available and try again.',
+                message: t('playground.saved.error'),
                 runId: null,
                 tone: 'error',
               });
@@ -226,7 +217,10 @@ function PromptPlaygroundWorkspace({
 
             setSaveStatus({
               contextKey,
-              message: `Saved a prompt snapshot for ${selectedTemplate.name} v${selectedTemplate.version}.`,
+              message: t('playground.saved.success', {
+                name: selectedTemplate.name,
+                version: selectedTemplate.version,
+              }),
               runId: savedRun.id,
               tone: 'success',
             });
@@ -257,6 +251,7 @@ function PromptPlaygroundWorkspace({
 }
 
 export function PromptPlaygroundPage() {
+  const { t } = useLocalization();
   const [searchParams] = useSearchParams();
   const { getRunById } = usePromptRuns();
   const { getTemplateById, templates } = usePromptTemplates();
@@ -288,20 +283,29 @@ export function PromptPlaygroundPage() {
   const sourceRunId = canLoadRequestedRun ? requestedRun?.id : undefined;
   const workspaceKey = sourceRunId ?? initialTemplateId ?? 'default-playground';
   let loadNotice: string | undefined;
+  const describeFallback = (
+    message: string,
+    fallbackTemplateName?: string,
+  ) =>
+    `${message} ${
+      fallbackTemplateName
+        ? t('playground.fallback.named', { name: fallbackTemplateName })
+        : t('playground.fallback.empty')
+    }`;
 
   if (requestedRunId && !canLoadRequestedRun) {
     const message = !requestedRun
-      ? 'The requested prompt snapshot is not available in this browser.'
+      ? t('playground.load.runMissing')
       : !requestedRunTemplate
-        ? 'The requested prompt snapshot cannot be reopened because its source template is not available.'
-        : 'The requested prompt snapshot cannot be reopened because its source template is archived.';
+        ? t('playground.load.sourceMissing')
+        : t('playground.load.sourceArchived');
 
     loadNotice = describeFallback(message, fallbackTemplate?.name);
   } else if (requestedTemplateId && !canLoadRequestedTemplate) {
     loadNotice = describeFallback(
       requestedTemplate
-        ? 'The requested prompt template is archived.'
-        : 'The requested prompt template is not available in this browser.',
+        ? t('playground.load.templateArchived')
+        : t('playground.load.templateMissing'),
       fallbackTemplate?.name,
     );
   }

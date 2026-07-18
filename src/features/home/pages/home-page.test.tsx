@@ -3,6 +3,8 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 
 import { HomePage } from '@/features/home/pages/home-page';
+import { LocalizationProvider } from '@/features/localization/localization-provider';
+import type { AppLanguage } from '@/features/localization/translations';
 import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs-provider';
 import type { PromptRunRepository } from '@/features/prompt-runs/repositories/prompt-run-repository';
 import { PromptTemplatesProvider } from '@/features/prompt-templates/providers/prompt-templates-provider';
@@ -40,18 +42,22 @@ function createRunRepository(
 function renderHomePage({
   runs = [],
   templates = starterPromptTemplates,
+  language = 'en',
 }: {
   runs?: PromptRunRecord[];
   templates?: PromptTemplate[];
+  language?: AppLanguage;
 } = {}) {
   render(
-    <MemoryRouter>
-      <PromptTemplatesProvider repository={createTemplateRepository(templates)}>
-        <PromptRunsProvider repository={createRunRepository(runs)}>
-          <HomePage />
-        </PromptRunsProvider>
-      </PromptTemplatesProvider>
-    </MemoryRouter>,
+    <LocalizationProvider initialLanguage={language}>
+      <MemoryRouter>
+        <PromptTemplatesProvider repository={createTemplateRepository(templates)}>
+          <PromptRunsProvider repository={createRunRepository(runs)}>
+            <HomePage />
+          </PromptRunsProvider>
+        </PromptTemplatesProvider>
+      </MemoryRouter>
+    </LocalizationProvider>,
   );
 }
 
@@ -125,6 +131,20 @@ describe('HomePage', () => {
         'Compose request URLs, headers, query params, and payloads, then generate fetch snippets or cURL commands.',
       ),
     ).toBeInTheDocument();
+  });
+
+  it('presents the primary workflow in Simplified Chinese', () => {
+    renderHomePage({ language: 'zh-CN' });
+
+    expect(
+      screen.getByRole('heading', {
+        name: '先选择模板，再组合并复盘 Prompt 快照。',
+      }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('从模板到快照')).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: '打开Code Review Assistant' }),
+    ).toHaveAttribute('href', '/playground?templateId=code-review-assistant');
   });
 
   it('links recent activity cards to the saved run detail page', () => {

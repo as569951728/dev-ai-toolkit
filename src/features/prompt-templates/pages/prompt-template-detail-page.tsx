@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 
+import { useLocalization } from '@/features/localization/localization-context';
 import { PromptTemplateDetail } from '@/features/prompt-templates/components/prompt-template-detail';
 import { createPromptDiffNavigationState } from '@/features/prompt-diff/lib/prompt-diff-navigation';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
@@ -17,6 +18,7 @@ import {
 import { formatPromptSections } from '@/lib/prompt-sections';
 
 export function PromptTemplateDetailPage() {
+  const { t } = useLocalization();
   const location = useLocation();
   const navigate = useNavigate();
   const { promptId } = useParams();
@@ -40,10 +42,10 @@ export function PromptTemplateDetailPage() {
   if (!template) {
     return (
       <section className="panel empty-state">
-        <h1>Template not found</h1>
-        <p>The prompt template may have been removed from local storage.</p>
+        <h1>{t('templates.page.notFound')}</h1>
+        <p>{t('templates.page.notFoundDescription')}</p>
         <Link className="primary-button" to={listPath}>
-          Back to Prompt Templates
+          {t('templates.page.back')}
         </Link>
       </section>
     );
@@ -58,7 +60,7 @@ export function PromptTemplateDetailPage() {
       return action();
     } catch {
       setActionErrorMessage(
-        'Failed to update this template. Check that browser storage is available and try again.',
+        t('templates.page.updateError'),
       );
       return null;
     }

@@ -1,5 +1,6 @@
 import { PromptTemplateEmptyState } from '@/features/prompt-templates/components/prompt-template-empty-state';
 import { PromptTemplateFilters } from '@/features/prompt-templates/components/prompt-template-filters';
+import { useLocalization } from '@/features/localization/localization-context';
 import type { PromptTemplate } from '@/types/prompt-template';
 import type { PromptTemplateFilters as PromptTemplateFiltersValue } from '@/types/prompt-template';
 
@@ -44,6 +45,7 @@ export function PromptTemplateList({
   onExport,
   onImport,
 }: PromptTemplateListProps) {
+  const { t } = useLocalization();
   const normalizedSearchValue = filters.search.trim();
   const hasActiveFilters =
     normalizedSearchValue.length > 0 || filters.tag !== 'all' || showArchived;
@@ -52,24 +54,20 @@ export function PromptTemplateList({
     <section className="panel">
       <div className="panel__header">
         <div>
-          <p className="eyebrow">Prompt Templates</p>
-          <h1>Manage reusable AI prompts</h1>
-          <p className="panel__summary">
-            Keep reusable prompt templates in local storage, then open them in
-            the playground or review their saved run history. Imported
-            templates with matching IDs replace the local records.
-          </p>
+          <p className="eyebrow">{t('templates.list.eyebrow')}</p>
+          <h1>{t('templates.list.title')}</h1>
+          <p className="panel__summary">{t('templates.list.summary')}</p>
         </div>
 
         <div className="panel__actions">
           <button className="ghost-button" type="button" onClick={onImport}>
-            Import JSON
+            {t('templates.list.import')}
           </button>
           <button className="secondary-button" type="button" onClick={onExport}>
-            Export JSON
+            {t('templates.list.export')}
           </button>
           <button className="primary-button" type="button" onClick={onCreate}>
-            New template
+            {t('templates.list.create')}
           </button>
         </div>
       </div>
@@ -101,8 +99,8 @@ export function PromptTemplateList({
             onClick={onToggleArchived}
           >
             {showArchived
-              ? 'Hide archived templates'
-              : `Show archived templates (${archivedCount})`}
+              ? t('templates.list.hideArchived')
+              : t('templates.list.showArchived', { count: archivedCount })}
           </button>
         </div>
       ) : null}
@@ -111,14 +109,20 @@ export function PromptTemplateList({
         <div className="template-filter-list">
           {normalizedSearchValue ? (
             <span className="template-filter-chip">
-              Search: {normalizedSearchValue}
+              {t('templates.list.searchFilter', {
+                value: normalizedSearchValue,
+              })}
             </span>
           ) : null}
           {filters.tag !== 'all' ? (
-            <span className="template-filter-chip">Tag: {filters.tag}</span>
+            <span className="template-filter-chip">
+              {t('templates.list.tagFilter', { value: filters.tag })}
+            </span>
           ) : null}
           {showArchived ? (
-            <span className="template-filter-chip">Archived: visible</span>
+            <span className="template-filter-chip">
+              {t('templates.list.archivedFilter')}
+            </span>
           ) : null}
         </div>
       ) : null}
