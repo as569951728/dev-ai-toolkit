@@ -12,6 +12,7 @@ import { BrowserStorageNotice } from '@/components/layout/browser-storage-notice
 import { DocumentTitle } from '@/components/layout/document-title';
 import { ScrollToTop } from '@/components/layout/scroll-to-top';
 import { HomePage } from '@/features/home/pages/home-page';
+import { useLocalization } from '@/features/localization/localization-context';
 import { PromptRunNotesProvider } from '@/features/prompt-run-notes/providers/prompt-run-notes-provider';
 import { PromptRunsProvider } from '@/features/prompt-runs/providers/prompt-runs-provider';
 import { PromptTemplatesProvider } from '@/features/prompt-templates/providers/prompt-templates-provider';
@@ -21,6 +22,8 @@ function lazyPage(loadPage: () => Promise<ComponentType>) {
 }
 
 function RootLayout() {
+  const { t } = useLocalization();
+
   return (
     <PromptTemplatesProvider>
       <PromptRunsProvider>
@@ -28,7 +31,7 @@ function RootLayout() {
           <DocumentTitle />
           <ScrollToTop />
           <a className="skip-link" href="#main-content">
-            Skip to main content
+            {t('layout.skip')}
           </a>
           <div className="app-shell">
             <div className="page-frame">
@@ -47,11 +50,13 @@ function RootLayout() {
 }
 
 function InitialRouteFallback() {
+  const { t } = useLocalization();
+
   return (
     <div className="app-shell">
       <div className="page-frame">
         <main id="main-content" aria-busy="true">
-          <p role="status">Loading page...</p>
+          <p role="status">{t('layout.loading')}</p>
         </main>
       </div>
     </div>
@@ -66,12 +71,12 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        handle: { documentTitle: 'Overview' },
+        handle: { documentTitleKey: 'title.overview' },
         element: <HomePage />,
       },
       {
         path: 'playground',
-        handle: { documentTitle: 'Prompt Playground' },
+        handle: { documentTitleKey: 'title.playground' },
         lazy: lazyPage(() =>
           import('@/features/prompt-playground/pages/prompt-playground-page')
             .then(({ PromptPlaygroundPage }) => PromptPlaygroundPage),
@@ -79,7 +84,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'runs',
-        handle: { documentTitle: 'Run History' },
+        handle: { documentTitleKey: 'title.runs' },
         lazy: lazyPage(() =>
           import('@/features/prompt-runs/pages/prompt-run-history-page')
             .then(({ PromptRunHistoryPage }) => PromptRunHistoryPage),
@@ -87,7 +92,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'runs/:runId',
-        handle: { documentTitle: 'Prompt Run' },
+        handle: { documentTitleKey: 'title.run' },
         lazy: lazyPage(() =>
           import('@/features/prompt-runs/pages/prompt-run-detail-page')
             .then(({ PromptRunDetailPage }) => PromptRunDetailPage),
@@ -95,7 +100,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'prompts',
-        handle: { documentTitle: 'Prompt Templates' },
+        handle: { documentTitleKey: 'title.templates' },
         lazy: lazyPage(() =>
           import('@/features/prompt-templates/pages/prompt-template-list-page')
             .then(({ PromptTemplateListPage }) => PromptTemplateListPage),
@@ -103,7 +108,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'prompts/:promptId',
-        handle: { documentTitle: 'Prompt Template' },
+        handle: { documentTitleKey: 'title.template' },
         lazy: lazyPage(() =>
           import('@/features/prompt-templates/pages/prompt-template-detail-page')
             .then(({ PromptTemplateDetailPage }) => PromptTemplateDetailPage),
@@ -111,7 +116,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'create-template',
-        handle: { documentTitle: 'Create Prompt Template' },
+        handle: { documentTitleKey: 'title.createTemplate' },
         lazy: lazyPage(() =>
           import('@/features/prompt-templates/pages/prompt-template-create-page')
             .then(({ PromptTemplateCreatePage }) => PromptTemplateCreatePage),
@@ -119,7 +124,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'prompts/:promptId/edit',
-        handle: { documentTitle: 'Edit Prompt Template' },
+        handle: { documentTitleKey: 'title.editTemplate' },
         lazy: lazyPage(() =>
           import('@/features/prompt-templates/pages/prompt-template-edit-page')
             .then(({ PromptTemplateEditPage }) => PromptTemplateEditPage),
@@ -127,7 +132,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'json-tools',
-        handle: { documentTitle: 'JSON Tools' },
+        handle: { documentTitleKey: 'title.json' },
         lazy: lazyPage(() =>
           import('@/features/json-tools/pages/json-tools-page')
             .then(({ JsonToolsPage }) => JsonToolsPage),
@@ -135,7 +140,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'api-builder',
-        handle: { documentTitle: 'API Builder' },
+        handle: { documentTitleKey: 'title.api' },
         lazy: lazyPage(() =>
           import('@/features/api-builder/pages/api-builder-page')
             .then(({ ApiBuilderPage }) => ApiBuilderPage),
@@ -143,7 +148,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'code-viewer',
-        handle: { documentTitle: 'Code Viewer' },
+        handle: { documentTitleKey: 'title.code' },
         lazy: lazyPage(() =>
           import('@/features/code-viewer/pages/code-viewer-page')
             .then(({ CodeViewerPage }) => CodeViewerPage),
@@ -151,7 +156,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'prompt-diff',
-        handle: { documentTitle: 'Prompt Diff' },
+        handle: { documentTitleKey: 'title.diff' },
         lazy: lazyPage(() =>
           import('@/features/prompt-diff/pages/prompt-diff-page')
             .then(({ PromptDiffPage }) => PromptDiffPage),
@@ -159,7 +164,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'workspace',
-        handle: { documentTitle: 'Workspace Backup' },
+        handle: { documentTitleKey: 'title.workspace' },
         lazy: lazyPage(() =>
           import('@/features/workspace-backup/pages/workspace-backup-page')
             .then(({ WorkspaceBackupPage }) => WorkspaceBackupPage),
@@ -167,12 +172,12 @@ const router = createBrowserRouter([
       },
       {
         path: 'workspace-backup',
-        handle: { documentTitle: 'Workspace Backup' },
+        handle: { documentTitleKey: 'title.workspace' },
         element: <Navigate replace to="/workspace" />,
       },
       {
         path: '*',
-        handle: { documentTitle: 'Page Not Found' },
+        handle: { documentTitleKey: 'title.notFound' },
         lazy: lazyPage(() =>
           import('@/features/not-found/pages/not-found-page')
             .then(({ NotFoundPage }) => NotFoundPage),

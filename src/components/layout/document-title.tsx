@@ -1,24 +1,31 @@
 import { useEffect } from 'react';
 import { useMatches } from 'react-router-dom';
 
+import { useLocalization } from '@/features/localization/localization-context';
+import type { TranslationKey } from '@/features/localization/translations';
+
 const applicationTitle = 'dev-ai-toolkit';
 
-function getRouteTitle(handle: unknown) {
+function getRouteTitleKey(handle: unknown) {
   if (!handle || typeof handle !== 'object') {
     return undefined;
   }
 
-  const routeTitle = (handle as Record<string, unknown>).documentTitle;
+  const routeTitleKey = (handle as Record<string, unknown>).documentTitleKey;
 
-  return typeof routeTitle === 'string' ? routeTitle : undefined;
+  return typeof routeTitleKey === 'string'
+    ? (routeTitleKey as TranslationKey)
+    : undefined;
 }
 
 export function DocumentTitle() {
   const matches = useMatches();
-  const routeTitle = matches.reduce<string | undefined>(
-    (currentTitle, match) => getRouteTitle(match.handle) ?? currentTitle,
+  const { t } = useLocalization();
+  const routeTitleKey = matches.reduce<TranslationKey | undefined>(
+    (currentTitle, match) => getRouteTitleKey(match.handle) ?? currentTitle,
     undefined,
   );
+  const routeTitle = routeTitleKey ? t(routeTitleKey) : undefined;
 
   useEffect(() => {
     const previousTitle = document.title;

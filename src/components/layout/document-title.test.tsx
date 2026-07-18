@@ -27,12 +27,12 @@ describe('DocumentTitle', () => {
           children: [
             {
               index: true,
-              handle: { documentTitle: 'Overview' },
+              handle: { documentTitleKey: 'title.overview' },
               element: <p>Overview</p>,
             },
             {
               path: 'api-builder',
-              handle: { documentTitle: 'API Builder' },
+              handle: { documentTitleKey: 'title.api' },
               element: <p>API Builder</p>,
             },
           ],

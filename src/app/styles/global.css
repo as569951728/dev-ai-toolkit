@@ -326,6 +326,33 @@ pre {
   flex: 0 0 240px;
 }
 
+.language-switcher {
+  display: inline-flex;
+  gap: 4px;
+  margin-top: 14px;
+  padding: 4px;
+  border: 1px solid rgba(19, 34, 56, 0.1);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.language-switcher__option {
+  min-height: 36px;
+  padding: 7px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.language-switcher__option[aria-pressed='true'] {
+  background: rgba(31, 111, 235, 0.1);
+  color: var(--primary-dark);
+}
+
 .app-nav__toggle {
   display: none;
 }
@@ -1493,7 +1520,39 @@ pre {
   }
 
   .app-nav__brand {
+    display: grid;
     flex: none;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px 12px;
+    align-items: center;
+  }
+
+  .app-nav {
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 18px;
+  }
+
+  .app-nav__eyebrow {
+    grid-column: 1;
+    grid-row: 1;
+    margin: 0;
+  }
+
+  .app-nav__title {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .language-switcher {
+    grid-column: 2;
+    grid-row: 1;
+    margin-top: 0;
+  }
+
+  .language-switcher__option {
+    min-height: 32px;
+    padding: 5px 10px;
   }
 
   .app-nav__toggle {
