@@ -3,6 +3,7 @@ import {
   type CodeViewerLanguage,
   type CodeViewerMode,
 } from '@/features/code-viewer/lib/code-viewer-utils';
+import { useLocalization } from '@/features/localization/localization-context';
 
 interface CodeViewerToolbarProps {
   mode: CodeViewerMode;
@@ -25,6 +26,8 @@ export function CodeViewerToolbar({
   onLoadSample,
   onReset,
 }: CodeViewerToolbarProps) {
+  const { t } = useLocalization();
+
   return (
     <div className="code-toolbar">
       <div className="code-toolbar__group">
@@ -34,7 +37,7 @@ export function CodeViewerToolbar({
           type="button"
           onClick={() => onModeChange('single')}
         >
-          Single view
+          {t('code.toolbar.single')}
         </button>
         <button
           aria-pressed={mode === 'compare'}
@@ -42,12 +45,12 @@ export function CodeViewerToolbar({
           type="button"
           onClick={() => onModeChange('compare')}
         >
-          Compare view
+          {t('code.toolbar.compare')}
         </button>
       </div>
 
       <label className="field code-toolbar__language">
-        <span>Language</span>
+        <span>{t('code.toolbar.language')}</span>
         <select
           value={language}
           onChange={(event) =>
@@ -64,16 +67,16 @@ export function CodeViewerToolbar({
 
       <div className="code-toolbar__group">
         <button className="ghost-button" type="button" onClick={onCopyLeft}>
-          Copy left
+          {t('code.toolbar.copyLeft')}
         </button>
         <button className="ghost-button" type="button" onClick={onCopyRight}>
-          Copy right
+          {t('code.toolbar.copyRight')}
         </button>
         <button className="ghost-button" type="button" onClick={onLoadSample}>
-          Load sample
+          {t('code.toolbar.sample')}
         </button>
         <button className="ghost-button" type="button" onClick={onReset}>
-          Reset
+          {t('code.toolbar.reset')}
         </button>
       </div>
     </div>

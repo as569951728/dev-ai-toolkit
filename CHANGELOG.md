@@ -18,6 +18,8 @@ commit.
   the Prompt Diff workflow.
 - Added Simplified Chinese input, status, and generated-output controls to JSON
   Tools and API Builder.
+- Added Simplified Chinese review controls to Code Viewer and localized export,
+  import preview, and record counts in Workspace Backup.
 - Added a privacy-aware workflow feedback link from every application route to
   the dedicated GitHub feedback form.
 - Added a direct Overview action into the first available prompt template,

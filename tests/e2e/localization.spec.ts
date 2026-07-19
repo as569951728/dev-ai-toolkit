@@ -96,6 +96,36 @@ test('shows the JSON and API utilities in Chinese', async ({ browser }) => {
   await context.close();
 });
 
+test('shows the code viewer and workspace backup in Chinese', async ({
+  browser,
+}) => {
+  const context = await browser.newContext({ locale: 'zh-CN' });
+  const page = await context.newPage();
+
+  await page.goto('http://127.0.0.1:4173/code-viewer');
+  await expect(
+    page.getByRole('heading', {
+      level: 1,
+      name: '更清楚地阅读 AI 输出、代码片段和结构化文本',
+    }),
+  ).toBeVisible();
+  await expect(page.getByRole('button', { name: '对比查看' })).toBeVisible();
+  await expect(page.getByLabel('内容类型')).toBeVisible();
+
+  await page.goto('http://127.0.0.1:4173/workspace');
+  await expect(
+    page.getByRole('heading', { level: 1, name: '工作区备份' }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: '导出工作区 JSON' }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('heading', { level: 2, name: '导入工作区备份' }),
+  ).toBeVisible();
+
+  await context.close();
+});
+
 test('completes the template-to-snapshot path in Chinese', async ({
   browser,
 }) => {

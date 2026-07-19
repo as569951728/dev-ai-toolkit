@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 
+import { useLocalization } from '@/features/localization/localization-context';
 import { CodeEditorPanel } from '@/features/code-viewer/components/code-editor-panel';
 import { CodePreviewPanel } from '@/features/code-viewer/components/code-preview-panel';
 import { CodeViewerToolbar } from '@/features/code-viewer/components/code-viewer-toolbar';
@@ -50,6 +51,7 @@ function CodeViewerWorkspace({
   loadNotice,
   sourceRun,
 }: CodeViewerWorkspaceProps) {
+  const { language: appLanguage, t } = useLocalization();
   const [mode, setMode] = useState<CodeViewerMode>(initialMode);
   const [language, setLanguage] = useState(initialLanguage);
   const [leftValue, setLeftValue] = useState(initialLeftValue);
@@ -58,13 +60,21 @@ function CodeViewerWorkspace({
   const handleCopy = async (label: 'left' | 'right', value: string) => {
     try {
       await writeClipboardText(value);
+      const inputLabel = t(
+        label === 'left' ? 'code.copy.left' : 'code.copy.right',
+      );
       setCopyFeedback({
-        message: `${label === 'left' ? 'Left' : 'Right'} input copied.`,
+        message: t('code.copy.success', { label: inputLabel }),
         tone: 'success',
       });
     } catch {
+      const inputLabel = t(
+        label === 'left' ? 'code.copy.left' : 'code.copy.right',
+      );
       setCopyFeedback({
-        message: `Failed to copy ${label} input.`,
+        message: t('code.copy.error', {
+          label: appLanguage === 'en' ? inputLabel.toLowerCase() : inputLabel,
+        }),
         tone: 'error',
       });
     }
@@ -73,23 +83,19 @@ function CodeViewerWorkspace({
   return (
     <section className="code-viewer-layout">
       <div className="playground-hero panel">
-        <p className="eyebrow">Code Output Viewer</p>
-        <h1>Read AI output, code snippets, and structured text more clearly.</h1>
-        <p className="panel__summary">
-          Switch between single and compare views to review generated code,
-          response payloads, or rewritten text in a calmer, more inspectable
-          layout.
-        </p>
+        <p className="eyebrow">{t('code.hero.eyebrow')}</p>
+        <h1>{t('code.hero.title')}</h1>
+        <p className="panel__summary">{t('code.hero.summary')}</p>
       </div>
 
       {sourceRun ? (
         <p className="status-banner" role="status">
-          Loaded saved prompts from {sourceRun.templateName}.{' '}
+          {t('code.source.loaded', { name: sourceRun.templateName })}{' '}
           <Link
             state={createPromptRunDetailNavigationState(historyPath)}
             to={buildPromptRunDetailPath(sourceRun.id)}
           >
-            Back to saved run
+            {t('code.source.back')}
           </Link>
         </p>
       ) : loadNotice ? (
@@ -101,8 +107,8 @@ function CodeViewerWorkspace({
       <section className="panel code-viewer-shell">
         <div className="code-viewer-shell__header">
           <div>
-            <p className="eyebrow">Reading Workflow</p>
-            <h2>Compare or inspect output without leaving the workspace</h2>
+            <p className="eyebrow">{t('code.workflow.eyebrow')}</p>
+            <h2>{t('code.workflow.title')}</h2>
           </div>
         </div>
 
@@ -144,14 +150,14 @@ function CodeViewerWorkspace({
 
         <div className="code-viewer-grid">
           <CodeEditorPanel
-            title="Left input"
-            description="Use the left pane for the main output or original version."
+            title={t('code.editor.left')}
+            description={t('code.editor.leftDescription')}
             value={leftValue}
             onChange={setLeftValue}
           />
           <CodeEditorPanel
-            title="Right input"
-            description="Use the right pane for a revised version, AI output, or comparison target."
+            title={t('code.editor.right')}
+            description={t('code.editor.rightDescription')}
             value={rightValue}
             onChange={setRightValue}
           />
@@ -169,6 +175,7 @@ function CodeViewerWorkspace({
 }
 
 export function CodeViewerPage() {
+  const { t } = useLocalization();
   const location = useLocation();
   const historyPath = getPromptRunHistoryReturnPath(location.state);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -243,9 +250,8 @@ export function CodeViewerPage() {
         templateName: requestedRun.templateName,
       }
     : null;
-  const loadNotice = requestedRunId && !requestedRun
-    ? 'The requested saved run is no longer available. Loaded the sample workspace instead.'
-    : null;
+  const loadNotice =
+    requestedRunId && !requestedRun ? t('code.source.missing') : null;
 
   return (
     <CodeViewerWorkspace
