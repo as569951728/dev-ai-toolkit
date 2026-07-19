@@ -1,5 +1,6 @@
 import { promptTemplateTranslations } from '@/features/localization/prompt-template-translations';
 import { promptPlaygroundTranslations } from '@/features/localization/prompt-playground-translations';
+import { promptRunTranslations } from '@/features/localization/prompt-run-translations';
 
 export const translations = {
   en: {
@@ -190,6 +191,7 @@ export const translations = {
       'Connect supporting utilities only where they make the prompt workflow easier to complete.',
     ...promptTemplateTranslations.en,
     ...promptPlaygroundTranslations.en,
+    ...promptRunTranslations.en,
   },
   'zh-CN': {
     'app.tagline': '本地优先的 Prompt 工作台',
@@ -347,6 +349,7 @@ export const translations = {
     'home.direction.connectionsSummary': '只在确实有助于完成 Prompt 工作流时连接辅助工具。',
     ...promptTemplateTranslations['zh-CN'],
     ...promptPlaygroundTranslations['zh-CN'],
+    ...promptRunTranslations['zh-CN'],
   },
 } as const;
 

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { useLocalization } from '@/features/localization/localization-context';
 export interface PromptRunActionFeedback {
   message: string;
   tone: 'success' | 'error';
@@ -22,6 +23,7 @@ export function PromptRunSnapshotManagement({
   onConfirmDelete,
   onExport,
 }: PromptRunSnapshotManagementProps) {
+  const { t } = useLocalization();
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
 
   const handleCancelDelete = () => {
@@ -33,12 +35,9 @@ export function PromptRunSnapshotManagement({
     <section className="panel">
       <div className="panel__header">
         <div>
-          <p className="eyebrow">Local snapshot</p>
-          <h2>Snapshot management</h2>
-          <p className="panel__summary">
-            Export a portable JSON copy or remove this snapshot and its note
-            from the current browser.
-          </p>
+          <p className="eyebrow">{t('run.snapshot.eyebrow')}</p>
+          <h2>{t('run.snapshot.title')}</h2>
+          <p className="panel__summary">{t('run.snapshot.summary')}</p>
         </div>
       </div>
 
@@ -61,13 +60,13 @@ export function PromptRunSnapshotManagement({
 
       {isConfirmingDelete && isNoteDirty ? (
         <p className="status-banner" role="status">
-          The unsaved note draft will also be discarded.
+          {t('run.snapshot.unsavedNote')}
         </p>
       ) : null}
 
       <div className="detail-actions detail-actions--inline">
         <button className="ghost-button" type="button" onClick={onExport}>
-          Export run JSON
+          {t('run.snapshot.export')}
         </button>
         {isConfirmingDelete ? (
           <>
@@ -76,7 +75,7 @@ export function PromptRunSnapshotManagement({
               type="button"
               onClick={onConfirmDelete}
             >
-              Confirm delete
+              {t('run.snapshot.confirmDelete')}
             </button>
             <button
               autoFocus
@@ -84,7 +83,7 @@ export function PromptRunSnapshotManagement({
               type="button"
               onClick={handleCancelDelete}
             >
-              Cancel
+              {t('run.snapshot.cancel')}
             </button>
           </>
         ) : (
@@ -93,7 +92,7 @@ export function PromptRunSnapshotManagement({
             type="button"
             onClick={() => setIsConfirmingDelete(true)}
           >
-            Delete run
+            {t('run.snapshot.delete')}
           </button>
         )}
       </div>

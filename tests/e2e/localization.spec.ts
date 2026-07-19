@@ -78,6 +78,24 @@ test('completes the template-to-snapshot path in Chinese', async ({
   await expect(
     page.getByRole('link', { name: '打开已保存记录' }),
   ).toBeVisible();
+  await page.getByRole('link', { name: '打开已保存记录' }).click();
+
+  await expect(
+    page.getByRole('heading', { level: 2, name: '已保存的 Prompt' }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('heading', { level: 2, name: '复盘备注' }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('heading', { level: 2, name: '快照管理' }),
+  ).toBeVisible();
+  await page.getByRole('link', { name: '返回运行记录' }).click();
+  await expect(
+    page.getByRole('heading', {
+      level: 1,
+      name: '复盘保存在本地的 Prompt 快照',
+    }),
+  ).toBeVisible();
 
   await page.goto('http://127.0.0.1:4173/prompts');
   await expect(

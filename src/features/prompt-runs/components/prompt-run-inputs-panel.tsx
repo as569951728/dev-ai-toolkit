@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 
+import { useLocalization } from '@/features/localization/localization-context';
 import {
   buildPromptRunJsonToolsPath,
   createPromptRunDetailNavigationState,
@@ -15,14 +16,15 @@ export function PromptRunInputsPanel({
   historyPath,
   run,
 }: PromptRunInputsPanelProps) {
+  const { t } = useLocalization();
   const variableEntries = Object.entries(run.variables);
 
   return (
     <section className="panel">
       <div className="panel__header">
         <div>
-          <p className="eyebrow">Captured variables</p>
-          <h2>Run inputs</h2>
+          <p className="eyebrow">{t('run.inputs.eyebrow')}</p>
+          <h2>{t('run.inputs.title')}</h2>
         </div>
         {variableEntries.length > 0 ? (
           <div className="panel__actions">
@@ -31,7 +33,7 @@ export function PromptRunInputsPanel({
               state={createPromptRunDetailNavigationState(historyPath)}
               to={buildPromptRunJsonToolsPath(run.id)}
             >
-              Open variables in JSON Tools
+              {t('run.inputs.openJson')}
             </Link>
           </div>
         ) : null}
@@ -50,7 +52,7 @@ export function PromptRunInputsPanel({
         </div>
       ) : (
         <p className="panel__summary">
-          This run did not capture any template variables.
+          {t('run.inputs.empty')}
         </p>
       )}
     </section>

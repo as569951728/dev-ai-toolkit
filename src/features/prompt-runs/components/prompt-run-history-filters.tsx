@@ -1,3 +1,4 @@
+import { useLocalization } from '@/features/localization/localization-context';
 import type { PromptRunSortOrder } from '@/features/prompt-runs/lib/prompt-run-history-query';
 
 interface TemplateOption {
@@ -32,6 +33,7 @@ export function PromptRunHistoryFilters({
   sortOrder,
   totalRunCount,
 }: PromptRunHistoryFiltersProps) {
+  const { t } = useLocalization();
   const normalizedSearchValue = searchValue.trim();
   const hasActiveFilters =
     selectedTemplateId !== 'all' || normalizedSearchValue.length > 0;
@@ -40,22 +42,22 @@ export function PromptRunHistoryFilters({
     <>
       <div className="toolbar">
         <label className="toolbar__search">
-          <span>Search runs</span>
+          <span>{t('runs.filters.searchLabel')}</span>
           <input
             type="search"
             value={searchValue}
-            placeholder="Search by template, prompt text, variable, or note"
+            placeholder={t('runs.filters.searchPlaceholder')}
             onChange={(event) => onSearchChange(event.target.value)}
           />
         </label>
 
         <label className="toolbar__filter">
-          <span>Template</span>
+          <span>{t('runs.filters.templateLabel')}</span>
           <select
             value={selectedTemplateId}
             onChange={(event) => onTemplateChange(event.target.value)}
           >
-            <option value="all">All templates</option>
+            <option value="all">{t('runs.filters.allTemplates')}</option>
             {availableTemplates.map((template) => (
               <option key={template.id} value={template.id}>
                 {template.name}
@@ -65,41 +67,48 @@ export function PromptRunHistoryFilters({
         </label>
 
         <label className="toolbar__filter">
-          <span>Sort</span>
+          <span>{t('runs.filters.sortLabel')}</span>
           <select
             value={sortOrder}
             onChange={(event) =>
               onSortOrderChange(event.target.value as PromptRunSortOrder)
             }
           >
-            <option value="newest">Newest first</option>
-            <option value="oldest">Oldest first</option>
+            <option value="newest">{t('runs.filters.newest')}</option>
+            <option value="oldest">{t('runs.filters.oldest')}</option>
           </select>
         </label>
 
         {hasActiveFilters ? (
           <button className="ghost-button" type="button" onClick={onClear}>
-            Clear filters
+            {t('runs.filters.clear')}
           </button>
         ) : null}
       </div>
 
       <p className="panel__summary">
         {selectedTemplateName
-          ? `Showing ${filteredRunCount} of ${totalRunCount} saved runs for ${selectedTemplateName}.`
-          : `Showing ${filteredRunCount} of ${totalRunCount} saved runs.`}
+          ? t('runs.filters.resultFor', {
+              filtered: filteredRunCount,
+              name: selectedTemplateName,
+              total: totalRunCount,
+            })
+          : t('runs.filters.result', {
+              filtered: filteredRunCount,
+              total: totalRunCount,
+            })}
       </p>
 
       {hasActiveFilters ? (
         <div className="run-history-filter-list">
           {selectedTemplateName ? (
             <span className="run-history-filter-chip">
-              Template: {selectedTemplateName}
+              {t('runs.filters.activeTemplate', { name: selectedTemplateName })}
             </span>
           ) : null}
           {normalizedSearchValue ? (
             <span className="run-history-filter-chip">
-              Search: {normalizedSearchValue}
+              {t('runs.filters.activeSearch', { value: normalizedSearchValue })}
             </span>
           ) : null}
         </div>

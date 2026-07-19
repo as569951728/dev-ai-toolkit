@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 
+import { useLocalization } from '@/features/localization/localization-context';
 import { formatPromptRunCreatedAt } from '@/features/prompt-runs/lib/prompt-run-display';
 import {
   buildPromptRunCodeViewerPath,
@@ -25,20 +26,23 @@ export function PromptRunOverviewPanel({
   run,
   sourceTemplate,
 }: PromptRunOverviewPanelProps) {
+  const { language, t } = useLocalization();
   const promptDiffUrl = buildPromptRunSourceDiffUrl({ run, sourceTemplate });
 
   return (
     <div className="playground-hero panel">
-      <p className="eyebrow">Saved prompt snapshot</p>
+      <p className="eyebrow">{t('run.overview.eyebrow')}</p>
       <h1>{run.templateName}</h1>
       <p className="panel__summary">
-        Saved {formatPromptRunCreatedAt(run.createdAt)} from template v
-        {run.templateVersion}.
+        {t('run.overview.saved', {
+          date: formatPromptRunCreatedAt(run.createdAt, language),
+          version: run.templateVersion,
+        })}
       </p>
 
       <div className="detail-actions detail-actions--inline">
         <Link className="ghost-button" to={historyPath}>
-          Back to Run History
+          {t('run.back')}
         </Link>
         {sourceTemplate && !sourceTemplate.archivedAt ? (
           <Link
@@ -48,7 +52,7 @@ export function PromptRunOverviewPanel({
               templateId: run.templateId,
             })}
           >
-            Reopen in Playground
+            {t('run.overview.reopen')}
           </Link>
         ) : null}
         {promptDiffUrl ? (
@@ -57,12 +61,13 @@ export function PromptRunOverviewPanel({
             state={createPromptRunDetailNavigationState(historyPath)}
             to={promptDiffUrl}
           >
-            Compare with source
+            {t('run.overview.compare')}
           </Link>
         ) : sourceTemplate ? (
           <span className="run-history-note">
-            Template v{run.templateVersion} is no longer available in local
-            revision history, so source comparison is unavailable.
+            {t('run.overview.revisionMissing', {
+              version: run.templateVersion,
+            })}
           </span>
         ) : null}
         {sourceTemplate ? (
@@ -70,25 +75,25 @@ export function PromptRunOverviewPanel({
             className="ghost-button"
             to={buildPromptTemplateDetailPath(run.templateId)}
           >
-            View source template
+            {t('run.overview.source')}
           </Link>
         ) : (
           <span className="run-history-note">
-            Source template is no longer available.
+            {t('run.overview.sourceMissing')}
           </span>
         )}
         <Link
           className="ghost-button"
           to={buildPromptTemplateCreatePath(run.id)}
         >
-          Create template from snapshot
+          {t('run.overview.createTemplate')}
         </Link>
         <Link
           className="ghost-button"
           state={createPromptRunDetailNavigationState(historyPath)}
           to={buildPromptRunCodeViewerPath(run.id)}
         >
-          Open saved prompts in Code Viewer
+          {t('run.overview.codeViewer')}
         </Link>
       </div>
     </div>

@@ -10,6 +10,7 @@ import {
 
 import { PromptRunNotePanel } from '@/features/prompt-run-notes/components/prompt-run-note-panel';
 import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
+import { useLocalization } from '@/features/localization/localization-context';
 import { PromptRunInputsPanel } from '@/features/prompt-runs/components/prompt-run-inputs-panel';
 import { PromptRunOverviewPanel } from '@/features/prompt-runs/components/prompt-run-overview-panel';
 import {
@@ -36,6 +37,7 @@ import {
 import { writeClipboardText } from '@/lib/clipboard';
 
 export function PromptRunDetailPage() {
+  const { language, t } = useLocalization();
   const location = useLocation();
   const navigate = useNavigate();
   const { runId } = useParams();
@@ -82,10 +84,10 @@ export function PromptRunDetailPage() {
   if (!run) {
     return (
       <section className="panel empty-state">
-        <h1>Run not found</h1>
-        <p>The saved prompt run may have been removed from local storage.</p>
+        <h1>{t('run.notFound.title')}</h1>
+        <p>{t('run.notFound.description')}</p>
         <Link className="primary-button" to={historyPath}>
-          Back to Run History
+          {t('run.back')}
         </Link>
       </section>
     );
@@ -109,9 +111,9 @@ export function PromptRunDetailPage() {
       });
     } catch (error) {
       setRestoreErrorMessage(
-        error instanceof PromptRunRestoreRollbackError
+        language === 'en' && error instanceof PromptRunRestoreRollbackError
           ? error.message
-          : 'Failed to restore this snapshot and note. No replacement was kept. Check that browser storage is available and try again.',
+          : t('run.restore.error'),
       );
     }
   };
@@ -125,9 +127,9 @@ export function PromptRunDetailPage() {
     } catch (error) {
       allowNavigationRef.current = false;
       setDeleteErrorMessage(
-        error instanceof PromptRunNoteRollbackError
+        language === 'en' && error instanceof PromptRunNoteRollbackError
           ? error.message
-          : 'Failed to delete this prompt snapshot. Check that browser storage is available and try again.',
+          : t('run.delete.error'),
       );
     }
   };
@@ -143,12 +145,12 @@ export function PromptRunDetailPage() {
         sourceTemplateRevision: sourceRevision,
       });
       setExportFeedback({
-        message: 'Run exported as JSON.',
+        message: t('run.export.success'),
         tone: 'success',
       });
     } catch {
       setExportFeedback({
-        message: 'Failed to export this run as JSON. Please try again.',
+        message: t('run.export.error'),
         tone: 'error',
       });
     }
@@ -159,18 +161,24 @@ export function PromptRunDetailPage() {
   ) => {
     const promptLabel =
       label === 'full'
-        ? 'Full prompt'
-        : `${label === 'system' ? 'System' : 'User'} prompt`;
+        ? t('run.copy.fullLabel')
+        : t(
+            label === 'system'
+              ? 'run.copy.systemLabel'
+              : 'run.copy.userLabel',
+          );
 
     try {
       await writeClipboardText(value);
       setCopyFeedback({
-        message: `${promptLabel} copied.`,
+        message: t('run.copy.success', { label: promptLabel }),
         tone: 'success',
       });
     } catch {
       setCopyFeedback({
-        message: `Failed to copy ${promptLabel.toLowerCase()}.`,
+        message: t('run.copy.error', {
+          label: language === 'en' ? promptLabel.toLowerCase() : promptLabel,
+        }),
         tone: 'error',
       });
     }
@@ -186,18 +194,15 @@ export function PromptRunDetailPage() {
 
       {sourceWasDeleted ? (
         <div className="status-banner" role="status">
-          <h2>Snapshot deleted in another tab</h2>
-          <p>
-            Saved prompt snapshot was deleted in another tab. Your unsaved note
-            is still here. Restore both as a new snapshot to keep the draft.
-          </p>
+          <h2>{t('run.deleted.title')}</h2>
+          <p>{t('run.deleted.description')}</p>
           <div className="detail-actions detail-actions--inline">
             <button
               className="primary-button"
               type="button"
               onClick={handleRestoreRun}
             >
-              Restore snapshot and note
+              {t('run.deleted.restore')}
             </button>
           </div>
         </div>
@@ -216,10 +221,9 @@ export function PromptRunDetailPage() {
           className="status-banner status-banner--error"
           role="dialog"
         >
-          <h2 id="unsaved-run-note-title">Discard unsaved note changes?</h2>
+          <h2 id="unsaved-run-note-title">{t('run.unsaved.title')}</h2>
           <p id="unsaved-run-note-description">
-            This note draft has not been saved. You can keep editing or discard
-            it and continue to the requested page.
+            {t('run.unsaved.description')}
           </p>
           <div className="detail-actions detail-actions--inline">
             <button
@@ -228,14 +232,14 @@ export function PromptRunDetailPage() {
               type="button"
               onClick={() => navigationBlocker.reset()}
             >
-              Continue editing
+              {t('run.unsaved.keep')}
             </button>
             <button
               className="danger-button"
               type="button"
               onClick={() => navigationBlocker.proceed()}
             >
-              Discard draft
+              {t('run.unsaved.discard')}
             </button>
           </div>
         </div>

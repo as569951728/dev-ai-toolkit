@@ -1,3 +1,4 @@
+import { useLocalization } from '@/features/localization/localization-context';
 import { formatPromptSections } from '@/lib/prompt-sections';
 import type { PromptRunRecord } from '@/types/prompt-run';
 
@@ -17,12 +18,13 @@ export function PromptRunPromptsPanel({
   onCopyPrompt,
   run,
 }: PromptRunPromptsPanelProps) {
+  const { t } = useLocalization();
   return (
     <section className="panel">
       <div className="panel__header">
         <div>
-          <p className="eyebrow">Snapshot content</p>
-          <h2>Saved prompts</h2>
+          <p className="eyebrow">{t('run.prompts.eyebrow')}</p>
+          <h2>{t('run.prompts.title')}</h2>
         </div>
         <div className="panel__actions">
           <button
@@ -30,7 +32,7 @@ export function PromptRunPromptsPanel({
             type="button"
             onClick={() => onCopyPrompt('full', formatPromptSections(run))}
           >
-            Copy full prompt
+            {t('run.prompts.copyFull')}
           </button>
         </div>
       </div>
@@ -51,26 +53,26 @@ export function PromptRunPromptsPanel({
       <div className="code-compare-grid">
         <article>
           <div className="detail-card__header">
-            <h3>System prompt</h3>
+            <h3>{t('run.prompts.system')}</h3>
             <button
               className="ghost-button"
               type="button"
               onClick={() => onCopyPrompt('system', run.systemPrompt)}
             >
-              Copy system prompt
+              {t('run.prompts.copySystem')}
             </button>
           </div>
           <pre className="code-block" tabIndex={0}>{run.systemPrompt}</pre>
         </article>
         <article>
           <div className="detail-card__header">
-            <h3>User prompt</h3>
+            <h3>{t('run.prompts.user')}</h3>
             <button
               className="ghost-button"
               type="button"
               onClick={() => onCopyPrompt('user', run.userPrompt)}
             >
-              Copy user prompt
+              {t('run.prompts.copyUser')}
             </button>
           </div>
           <pre className="code-block" tabIndex={0}>{run.userPrompt}</pre>

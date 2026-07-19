@@ -1,5 +1,10 @@
-export function formatPromptRunCreatedAt(createdAt: string) {
-  return new Intl.DateTimeFormat('en', {
+import type { AppLanguage } from '@/features/localization/translations';
+
+export function formatPromptRunCreatedAt(
+  createdAt: string,
+  language: AppLanguage = 'en',
+) {
+  return new Intl.DateTimeFormat(language, {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
@@ -8,7 +13,16 @@ export function formatPromptRunCreatedAt(createdAt: string) {
   }).format(new Date(createdAt));
 }
 
-export function formatCapturedVariableCount(variableCount: number) {
+export function formatCapturedVariableCount(
+  variableCount: number,
+  language: AppLanguage = 'en',
+) {
+  if (language === 'zh-CN') {
+    return variableCount === 0
+      ? '这次运行没有记录模板变量。'
+      : `这次运行记录了 ${variableCount} 个模板变量。`;
+  }
+
   if (variableCount === 0) {
     return 'No template variables were captured in this run.';
   }

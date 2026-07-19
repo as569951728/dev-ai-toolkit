@@ -12,6 +12,8 @@ commit.
   and Overview, with an explicit language switcher that remembers the choice.
 - Added Simplified Chinese controls and guidance for the prompt template and
   Playground workflow through saving a local prompt snapshot.
+- Added Simplified Chinese review, filtering, notes, import, and snapshot
+  management across Prompt Run History and run detail pages.
 - Added a privacy-aware workflow feedback link from every application route to
   the dedicated GitHub feedback form.
 - Added a direct Overview action into the first available prompt template,
