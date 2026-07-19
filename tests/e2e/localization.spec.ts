@@ -72,6 +72,30 @@ test('shows the prompt comparison workflow in Chinese', async ({ browser }) => {
   await context.close();
 });
 
+test('shows the JSON and API utilities in Chinese', async ({ browser }) => {
+  const context = await browser.newContext({ locale: 'zh-CN' });
+  const page = await context.newPage();
+
+  await page.goto('http://127.0.0.1:4173/json-tools');
+  await expect(
+    page.getByRole('heading', {
+      level: 1,
+      name: '在工作区中完成 JSON 格式化、校验和检查',
+    }),
+  ).toBeVisible();
+  await expect(page.getByRole('button', { name: '格式化' })).toBeVisible();
+  await expect(page.getByText('JSON 有效', { exact: true })).toBeVisible();
+
+  await page.goto('http://127.0.0.1:4173/api-builder');
+  await expect(
+    page.getByRole('heading', { level: 1, name: '先整理 API 请求，再接入代码' }),
+  ).toBeVisible();
+  await expect(page.getByLabel('HTTP 方法')).toBeVisible();
+  await expect(page.getByRole('button', { name: '复制 fetch 代码' })).toBeVisible();
+
+  await context.close();
+});
+
 test('completes the template-to-snapshot path in Chinese', async ({
   browser,
 }) => {

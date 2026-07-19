@@ -22,12 +22,13 @@ export function JsonResultPanel({
   outputCharacters,
   outputLines,
 }: JsonResultPanelProps) {
+  const { t } = useLocalization();
   const statusLabel =
     validationState === 'valid'
-      ? 'Valid JSON'
+      ? t('json.output.valid')
       : validationState === 'invalid'
-        ? 'Invalid JSON'
-        : 'Not validated';
+        ? t('json.output.invalid')
+        : t('json.output.idle');
   const statusClassName =
     validationState === 'valid'
       ? 'json-status json-status--valid'
@@ -35,14 +36,16 @@ export function JsonResultPanel({
         ? 'json-status json-status--invalid'
         : 'json-status json-status--idle';
   const resultMessage =
-    validationState === 'invalid' ? `Invalid JSON: ${message}` : message;
+    validationState === 'invalid'
+      ? t('json.message.invalid', { message })
+      : message;
 
   return (
     <section className="panel json-panel">
       <div className="json-panel__header">
         <div>
-          <p className="eyebrow">Output</p>
-          <h2>Review the result</h2>
+          <p className="eyebrow">{t('json.output.eyebrow')}</p>
+          <h2>{t('json.output.title')}</h2>
         </div>
         <span className={statusClassName}>{statusLabel}</span>
       </div>
@@ -58,26 +61,27 @@ export function JsonResultPanel({
         {resultMessage}
       </p>
 
-      <div className="json-metrics" aria-label="JSON metrics">
+      <div className="json-metrics" aria-label={t('json.output.metrics')}>
         <div className="metric-card metric-card--compact">
-          <span className="metric-card__label">Input</span>
+          <span className="metric-card__label">{t('json.output.input')}</span>
           <strong>{inputCharacters}</strong>
-          <p>{inputLines} lines</p>
+          <p>{t('json.output.lines', { count: inputLines })}</p>
         </div>
         <div className="metric-card metric-card--compact">
-          <span className="metric-card__label">Output</span>
+          <span className="metric-card__label">{t('json.output.output')}</span>
           <strong>{outputCharacters}</strong>
-          <p>{outputLines} lines</p>
+          <p>{t('json.output.lines', { count: outputLines })}</p>
         </div>
       </div>
 
       <pre
-        aria-label="JSON result"
+        aria-label={t('json.output.label')}
         className="prompt-preview json-output"
         tabIndex={0}
       >
-        {value || 'No output yet.'}
+        {value || t('json.output.empty')}
       </pre>
     </section>
   );
 }
+import { useLocalization } from '@/features/localization/localization-context';

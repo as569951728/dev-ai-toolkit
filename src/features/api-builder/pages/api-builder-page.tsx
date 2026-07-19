@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { useLocalization } from '@/features/localization/localization-context';
 import { ApiBuilderForm } from '@/features/api-builder/components/api-builder-form';
 import { ApiBuilderPreview } from '@/features/api-builder/components/api-builder-preview';
 import {
@@ -16,17 +17,15 @@ const emptyApiBuilderState: ApiBuilderState = {
 };
 
 export function ApiBuilderPage() {
+  const { t } = useLocalization();
   const [state, setState] = useState<ApiBuilderState>(apiBuilderSampleState);
 
   return (
     <section className="api-builder-layout">
       <div className="playground-hero panel">
-        <p className="eyebrow">API Builder</p>
-        <h1>Shape API requests before you wire them into code.</h1>
-        <p className="panel__summary">
-          Build URLs, query params, headers, and request payloads in one place,
-          then review the generated fetch snippet or cURL command.
-        </p>
+        <p className="eyebrow">{t('api.hero.eyebrow')}</p>
+        <h1>{t('api.hero.title')}</h1>
+        <p className="panel__summary">{t('api.hero.summary')}</p>
       </div>
 
       <div className="api-grid">

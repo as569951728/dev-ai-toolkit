@@ -3,6 +3,7 @@ import type {
   ApiBuilderState,
   ApiFieldPair,
 } from '@/features/api-builder/lib/api-builder-utils';
+import { useLocalization } from '@/features/localization/localization-context';
 
 interface ApiBuilderFormProps {
   state: ApiBuilderState;
@@ -30,31 +31,29 @@ export function ApiBuilderForm({
   onLoadSample,
   onReset,
 }: ApiBuilderFormProps) {
+  const { t } = useLocalization();
   return (
     <section className="panel api-panel">
       <div className="api-panel__header">
         <div>
-          <p className="eyebrow">Request Builder</p>
-          <h2>Compose an API request</h2>
-          <p className="panel__summary">
-            Build the request shape locally first, then copy the generated
-            snippet into your app, docs, or debugging workflow.
-          </p>
+          <p className="eyebrow">{t('api.form.eyebrow')}</p>
+          <h2>{t('api.form.title')}</h2>
+          <p className="panel__summary">{t('api.form.summary')}</p>
         </div>
 
         <div className="panel__actions">
           <button className="ghost-button" type="button" onClick={onLoadSample}>
-            Load sample
+            {t('api.form.sample')}
           </button>
           <button className="ghost-button" type="button" onClick={onReset}>
-            Reset
+            {t('api.form.reset')}
           </button>
         </div>
       </div>
 
       <div className="api-form">
         <label className="field">
-          <span>HTTP method</span>
+          <span>{t('api.form.method')}</span>
           <select
             value={state.method}
             onChange={(event) =>
@@ -73,7 +72,7 @@ export function ApiBuilderForm({
         </label>
 
         <label className="field field--full">
-          <span>Base URL</span>
+          <span>{t('api.form.baseUrl')}</span>
           <input
             value={state.url}
             onChange={(event) =>
@@ -88,11 +87,11 @@ export function ApiBuilderForm({
 
         <div className="field field--full">
           <ApiBuilderPairsEditor
-            title="Query params"
-            description="Optional query string parameters that will be appended to the URL."
+            title={t('api.form.queryTitle')}
+            description={t('api.form.queryDescription')}
             pairs={state.queryParams}
-            keyPlaceholder="param"
-            valuePlaceholder="value"
+            keyPlaceholder={t('api.form.queryKey')}
+            valuePlaceholder={t('api.form.queryValue')}
             onChange={(pairs) =>
               onStateChange(updatePairs(state, 'queryParams', pairs))
             }
@@ -101,11 +100,11 @@ export function ApiBuilderForm({
 
         <div className="field field--full">
           <ApiBuilderPairsEditor
-            title="Headers"
-            description="Headers are represented as simple key-value pairs for now."
+            title={t('api.form.headersTitle')}
+            description={t('api.form.headersDescription')}
             pairs={state.headers}
-            keyPlaceholder="Header-Name"
-            valuePlaceholder="Header value"
+            keyPlaceholder={t('api.form.headerKey')}
+            valuePlaceholder={t('api.form.headerValue')}
             onChange={(pairs) =>
               onStateChange(updatePairs(state, 'headers', pairs))
             }
@@ -113,7 +112,7 @@ export function ApiBuilderForm({
         </div>
 
         <label className="field field--full">
-          <span>JSON body</span>
+          <span>{t('api.form.body')}</span>
           <textarea
             className="api-textarea"
             rows={14}

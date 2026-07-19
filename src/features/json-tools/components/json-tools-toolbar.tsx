@@ -17,16 +17,18 @@ export function JsonToolsToolbar({
   onReset,
   isCopyDisabled,
 }: JsonToolsToolbarProps) {
+  const { t } = useLocalization();
+
   return (
     <div className="json-toolbar">
       <button className="primary-button" type="button" onClick={onFormat}>
-        Format
+        {t('json.toolbar.format')}
       </button>
       <button className="secondary-button" type="button" onClick={onMinify}>
-        Minify
+        {t('json.toolbar.minify')}
       </button>
       <button className="secondary-button" type="button" onClick={onValidate}>
-        Validate
+        {t('json.toolbar.validate')}
       </button>
       <button
         className="ghost-button"
@@ -34,14 +36,15 @@ export function JsonToolsToolbar({
         onClick={onCopy}
         disabled={isCopyDisabled}
       >
-        Copy result
+        {t('json.toolbar.copy')}
       </button>
       <button className="ghost-button" type="button" onClick={onLoadSample}>
-        Load sample
+        {t('json.toolbar.sample')}
       </button>
       <button className="ghost-button" type="button" onClick={onReset}>
-        Reset
+        {t('json.toolbar.reset')}
       </button>
     </div>
   );
 }
+import { useLocalization } from '@/features/localization/localization-context';

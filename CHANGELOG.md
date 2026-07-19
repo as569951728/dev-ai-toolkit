@@ -16,6 +16,8 @@ commit.
   management across Prompt Run History and run detail pages.
 - Added Simplified Chinese editing controls and variable-aware summaries to
   the Prompt Diff workflow.
+- Added Simplified Chinese input, status, and generated-output controls to JSON
+  Tools and API Builder.
 - Added a privacy-aware workflow feedback link from every application route to
   the dedicated GitHub feedback form.
 - Added a direct Overview action into the first available prompt template,
