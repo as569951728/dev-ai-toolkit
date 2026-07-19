@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 
+import { useLocalization } from '@/features/localization/localization-context';
 import { PromptDiffEditorPanel } from '@/features/prompt-diff/components/prompt-diff-editor-panel';
 import { PromptDiffSummary } from '@/features/prompt-diff/components/prompt-diff-summary';
 import { PromptDiffToolbar } from '@/features/prompt-diff/components/prompt-diff-toolbar';
@@ -46,19 +47,28 @@ function PromptDiffWorkspace({
   loadNotice,
   sourceRun,
 }: PromptDiffWorkspaceProps) {
+  const { language, t } = useLocalization();
   const [leftValue, setLeftValue] = useState(initialLeftValue);
   const [rightValue, setRightValue] = useState(initialRightValue);
   const [copyFeedback, setCopyFeedback] = useState<CopyFeedback | null>(null);
   const handleCopy = async (label: 'left' | 'right', value: string) => {
     try {
       await writeClipboardText(value);
+      const promptLabel = t(
+        label === 'left' ? 'diff.copy.left' : 'diff.copy.right',
+      );
       setCopyFeedback({
-        message: `${label === 'left' ? 'Left' : 'Right'} prompt copied.`,
+        message: t('diff.copy.success', { label: promptLabel }),
         tone: 'success',
       });
     } catch {
+      const promptLabel = t(
+        label === 'left' ? 'diff.copy.left' : 'diff.copy.right',
+      );
       setCopyFeedback({
-        message: `Failed to copy ${label} prompt.`,
+        message: t('diff.copy.error', {
+          label: language === 'en' ? promptLabel.toLowerCase() : promptLabel,
+        }),
         tone: 'error',
       });
     }
@@ -67,12 +77,9 @@ function PromptDiffWorkspace({
   return (
     <section className="prompt-diff-layout">
       <div className="playground-hero panel">
-        <p className="eyebrow">Prompt Diff</p>
-        <h1>Compare prompt revisions before they turn into team habits.</h1>
-        <p className="panel__summary">
-          Review how structure, variables, and guidance changed between two
-          versions so prompt edits stay deliberate instead of accidental.
-        </p>
+        <p className="eyebrow">{t('diff.hero.eyebrow')}</p>
+        <h1>{t('diff.hero.title')}</h1>
+        <p className="panel__summary">{t('diff.hero.summary')}</p>
       </div>
 
       {loadNotice ? (
@@ -83,13 +90,15 @@ function PromptDiffWorkspace({
 
       {sourceRun ? (
         <p className="status-banner" role="status">
-          Loaded {sourceRun.templateName} v{sourceRun.templateVersion} from local
-          Run History.{' '}
+          {t('diff.source.loaded', {
+            name: sourceRun.templateName,
+            version: sourceRun.templateVersion,
+          })}{' '}
           <Link
             state={createPromptRunDetailNavigationState(historyPath)}
             to={buildPromptRunDetailPath(sourceRun.id)}
           >
-            Back to saved run
+            {t('diff.source.back')}
           </Link>
         </p>
       ) : null}
@@ -97,8 +106,8 @@ function PromptDiffWorkspace({
       <section className="panel prompt-diff-shell">
         <div className="code-viewer-shell__header">
           <div>
-            <p className="eyebrow">Comparison Workflow</p>
-            <h2>Inspect prompt changes with variable-aware summaries</h2>
+            <p className="eyebrow">{t('diff.workflow.eyebrow')}</p>
+            <h2>{t('diff.workflow.title')}</h2>
           </div>
         </div>
 
@@ -138,14 +147,14 @@ function PromptDiffWorkspace({
 
         <div className="prompt-diff-grid">
           <PromptDiffEditorPanel
-            title="Original prompt"
-            description="Use the left side as the baseline or previous template."
+            title={t('diff.editor.original')}
+            description={t('diff.editor.originalDescription')}
             value={leftValue}
             onChange={setLeftValue}
           />
           <PromptDiffEditorPanel
-            title="Revised prompt"
-            description="Use the right side for the updated prompt or proposed rewrite."
+            title={t('diff.editor.revised')}
+            description={t('diff.editor.revisedDescription')}
             value={rightValue}
             onChange={setRightValue}
           />
@@ -158,6 +167,7 @@ function PromptDiffWorkspace({
 }
 
 export function PromptDiffPage() {
+  const { t } = useLocalization();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const { getRunById } = usePromptRuns();
@@ -230,14 +240,11 @@ export function PromptDiffPage() {
   let loadNotice: string | null = null;
 
   if (requestedRunId && !requestedRun) {
-    loadNotice =
-      'The requested saved run is no longer available. Loaded the sample comparison instead.';
+    loadNotice = t('diff.load.runMissing');
   } else if (requestedRun && !sourceTemplate) {
-    loadNotice =
-      'The source template for this saved run is no longer available. Loaded the sample comparison instead.';
+    loadNotice = t('diff.load.templateMissing');
   } else if (requestedRun && !savedComparison) {
-    loadNotice =
-      'The saved source revision is no longer available. Loaded the sample comparison instead.';
+    loadNotice = t('diff.load.revisionMissing');
   }
 
   return (

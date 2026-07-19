@@ -54,6 +54,24 @@ test('keeps the Chinese landing page inside a phone viewport', async ({
   await context.close();
 });
 
+test('shows the prompt comparison workflow in Chinese', async ({ browser }) => {
+  const context = await browser.newContext({ locale: 'zh-CN' });
+  const page = await context.newPage();
+
+  await page.goto('http://127.0.0.1:4173/prompt-diff');
+
+  await expect(
+    page.getByRole('heading', {
+      level: 1,
+      name: '在复用之前，先看清两个 Prompt 版本的差异',
+    }),
+  ).toBeVisible();
+  await expect(page.getByRole('button', { name: '交换两侧' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '新增变量' })).toBeVisible();
+
+  await context.close();
+});
+
 test('completes the template-to-snapshot path in Chinese', async ({
   browser,
 }) => {

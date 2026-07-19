@@ -14,6 +14,8 @@ commit.
   Playground workflow through saving a local prompt snapshot.
 - Added Simplified Chinese review, filtering, notes, import, and snapshot
   management across Prompt Run History and run detail pages.
+- Added Simplified Chinese editing controls and variable-aware summaries to
+  the Prompt Diff workflow.
 - Added a privacy-aware workflow feedback link from every application route to
   the dedicated GitHub feedback form.
 - Added a direct Overview action into the first available prompt template,

@@ -1,6 +1,7 @@
 import { promptTemplateTranslations } from '@/features/localization/prompt-template-translations';
 import { promptPlaygroundTranslations } from '@/features/localization/prompt-playground-translations';
 import { promptRunTranslations } from '@/features/localization/prompt-run-translations';
+import { promptDiffTranslations } from '@/features/localization/prompt-diff-translations';
 
 export const translations = {
   en: {
@@ -192,6 +193,7 @@ export const translations = {
     ...promptTemplateTranslations.en,
     ...promptPlaygroundTranslations.en,
     ...promptRunTranslations.en,
+    ...promptDiffTranslations.en,
   },
   'zh-CN': {
     'app.tagline': '本地优先的 Prompt 工作台',
@@ -350,6 +352,7 @@ export const translations = {
     ...promptTemplateTranslations['zh-CN'],
     ...promptPlaygroundTranslations['zh-CN'],
     ...promptRunTranslations['zh-CN'],
+    ...promptDiffTranslations['zh-CN'],
   },
 } as const;
 
