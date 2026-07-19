@@ -33,6 +33,8 @@ commit.
 
 ### Changed
 
+- Focused the Overview on primary actions, getting started, current modules,
+  and recent activity instead of repeating roadmap and use-case content.
 - Split secondary application pages into route-level chunks so the Overview
   no longer downloads every tool page on its initial load.
 
