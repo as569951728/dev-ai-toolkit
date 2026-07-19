@@ -238,6 +238,10 @@ pre {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.workspace-metrics {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .value-card,
 .module-card,
 .roadmap-card,
@@ -813,6 +817,7 @@ pre {
 }
 
 .detail-card {
+  min-width: 0;
   border: 1px solid var(--border-color);
   border-radius: 20px;
   padding: 20px 22px;
@@ -956,6 +961,7 @@ pre {
 
 .api-builder-layout {
   display: grid;
+  min-width: 0;
   gap: 20px;
 }
 
@@ -1003,6 +1009,7 @@ pre {
 
 .api-grid {
   display: grid;
+  min-width: 0;
   grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
   gap: 20px;
   align-items: start;
@@ -1020,6 +1027,7 @@ pre {
 }
 
 .api-panel {
+  min-width: 0;
   padding: 28px;
 }
 
@@ -1192,6 +1200,8 @@ pre {
   grid-template-columns: auto 1fr;
   gap: 14px;
   align-items: start;
+  width: max-content;
+  min-width: 100%;
 }
 
 .code-block__line-number {
@@ -1202,8 +1212,7 @@ pre {
 }
 
 .code-block__line-content {
-  white-space: pre-wrap;
-  word-break: break-word;
+  white-space: pre;
   color: #1b2c40;
 }
 
@@ -1254,6 +1263,7 @@ pre {
 }
 
 .api-output {
+  max-width: 100%;
   overflow: auto;
   font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
 }
@@ -1403,6 +1413,10 @@ pre {
   gap: 18px;
 }
 
+.prompt-diff-summary .code-metrics {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .prompt-diff-summary__grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1492,6 +1506,10 @@ pre {
 @media (max-width: 960px) {
   .playground-grid {
     grid-template-columns: 1fr;
+  }
+
+  .workspace-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -1594,6 +1612,10 @@ pre {
   .code-compare-grid,
   .prompt-diff-grid,
   .prompt-diff-summary__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .prompt-diff-summary .code-metrics {
     grid-template-columns: 1fr;
   }
 

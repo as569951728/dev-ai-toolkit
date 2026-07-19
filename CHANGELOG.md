@@ -38,6 +38,10 @@ commit.
 
 ### Fixed
 
+- Prevented API Builder request previews from widening phone layouts.
+- Kept long Code Viewer lines readable inside their own horizontal scroller
+  instead of wrapping code one character at a time.
+- Arranged Prompt Diff and Workspace Backup metrics in complete desktop rows.
 - Restored keyboard focus to the new page after choosing a destination from
   the responsive navigation menu.
 - Returned keyboard focus to the attempted navigation control after keeping an

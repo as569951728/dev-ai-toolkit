@@ -209,7 +209,7 @@ export function WorkspaceBackupPage() {
           <h2>{t('workspace.data.title')}</h2>
         </div>
 
-        <div className="workflow-grid">
+        <div className="workflow-grid workspace-metrics">
           <article className="metric-card">
             <span className="metric-card__label">
               {t('workspace.data.templates')}

@@ -69,6 +69,55 @@ test('keeps the prompt playground inside a tablet viewport', async ({ page }) =>
   expect(documentWidth).toBeLessThanOrEqual(768);
 });
 
+test('keeps every secondary utility inside a phone viewport', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+
+  for (const route of [
+    '/prompt-diff',
+    '/json-tools',
+    '/api-builder',
+    '/code-viewer',
+    '/workspace',
+  ]) {
+    await page.goto(route);
+
+    const documentWidth = await page.evaluate(
+      () => document.documentElement.scrollWidth,
+    );
+
+    expect(documentWidth, `${route} widened the document`).toBeLessThanOrEqual(
+      375,
+    );
+  }
+
+  const codeBlock = page.locator('.code-block').first();
+  await page.goto('/code-viewer');
+  await expect(codeBlock).toBeVisible();
+  expect(
+    await codeBlock.evaluate((element) => element.scrollWidth > element.clientWidth),
+  ).toBe(true);
+});
+
+test('uses complete metric rows on desktop utility pages', async ({ page }) => {
+  await page.setViewportSize({ width: 1180, height: 900 });
+  await page.goto('/prompt-diff');
+
+  expect(
+    await page.locator('.prompt-diff-summary .code-metrics').evaluate(
+      (element) => getComputedStyle(element).gridTemplateColumns.split(' ').length,
+    ),
+  ).toBe(3);
+
+  await page.goto('/workspace');
+  expect(
+    await page.locator('.workspace-metrics').evaluate(
+      (element) => getComputedStyle(element).gridTemplateColumns.split(' ').length,
+    ),
+  ).toBe(4);
+});
+
 test('wraps long prompt values without widening the page', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto('/playground');
