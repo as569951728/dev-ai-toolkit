@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { ChangeEvent } from 'react';
 
+import { useLocalization } from '@/features/localization/localization-context';
 import type { PromptRunNotesContextValue } from '@/features/prompt-run-notes/providers/prompt-run-notes-context';
 import { parsePromptRunExportImport } from '@/features/prompt-runs/lib/prompt-run-export';
 import type { PromptRunsContextValue } from '@/features/prompt-runs/providers/prompt-runs-context';
@@ -49,6 +50,7 @@ export function usePromptRunImport({
   importNotes,
   importRuns,
 }: UsePromptRunImportOptions) {
+  const { language, t } = useLocalization();
   const [importError, setImportError] = useState('');
   const [importStatus, setImportStatus] = useState<ImportStatus | null>(null);
 
@@ -86,9 +88,12 @@ export function usePromptRunImport({
       }
 
       setImportStatus({
-        message: replacedExistingRun
-          ? `Replaced existing ${payload.run.templateName} with data from ${fileName}.`
-          : `Imported ${payload.run.templateName} from ${fileName}.`,
+        message: t(
+          replacedExistingRun
+            ? 'runs.import.replacedMessage'
+            : 'runs.import.importedMessage',
+          { file: fileName, name: payload.run.templateName },
+        ),
         replacedExistingRun,
         runId: payload.run.id,
       });
@@ -96,9 +101,17 @@ export function usePromptRunImport({
     } catch (error) {
       setImportStatus(null);
       setImportError(
-        error instanceof Error
-          ? error.message
-          : 'Unable to import the selected prompt run JSON.',
+        error instanceof PromptRunImportRollbackError
+          ? language === 'en'
+            ? error.message
+            : t(
+                replacedExistingRun
+                  ? 'runs.import.rollbackReplaced'
+                  : 'runs.import.rollbackAdded',
+              )
+          : language === 'en' && error instanceof Error
+            ? error.message
+            : t('runs.import.error'),
       );
     }
   };
@@ -126,9 +139,9 @@ export function usePromptRunImport({
     } catch (error) {
       setImportStatus(null);
       setImportError(
-        error instanceof Error
+        language === 'en' && error instanceof Error
           ? error.message
-          : 'Unable to import the selected prompt run JSON.',
+          : t('runs.import.error'),
       );
     } finally {
       event.target.value = '';

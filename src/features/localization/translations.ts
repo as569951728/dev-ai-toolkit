@@ -1,5 +1,8 @@
 import { promptTemplateTranslations } from '@/features/localization/prompt-template-translations';
 import { promptPlaygroundTranslations } from '@/features/localization/prompt-playground-translations';
+import { promptRunTranslations } from '@/features/localization/prompt-run-translations';
+import { promptDiffTranslations } from '@/features/localization/prompt-diff-translations';
+import { developerUtilityTranslations } from '@/features/localization/developer-utility-translations';
 
 export const translations = {
   en: {
@@ -98,15 +101,6 @@ export const translations = {
     'home.start.snapshotDescription':
       'Save the composed prompts, then return from history to review or reuse the captured variables.',
     'home.start.snapshotAction': 'Open Run History',
-    'home.value.eyebrow': 'Why this app exists',
-    'home.value.title':
-      'Built for repeated prompt work, not just one-off chat sessions.',
-    'home.value.one':
-      'Keep reusable prompt templates, captured variables, and review notes in one local workspace.',
-    'home.value.two':
-      'Turn repeated prompt work into snapshots you can compare, reuse, and back up.',
-    'home.value.three':
-      'Stay lightweight while the project is still browser-only and local-first.',
     'home.modules.eyebrow': 'Current modules',
     'home.modules.title':
       'The current app is split between prompt work and supporting utilities.',
@@ -139,30 +133,6 @@ export const translations = {
       'Inspect code or text output in single or compare mode.',
     'home.module.code.meta': 'Review generated output',
     'home.module.action': 'Explore module',
-    'home.pattern.eyebrow': 'Working pattern',
-    'home.pattern.title':
-      'The app stays simple: compose prompts, review snapshots, and keep useful context.',
-    'home.pattern.templateTitle': 'Start from a prompt template',
-    'home.pattern.templateDescription':
-      'Choose an existing template or create one for a repeated development task.',
-    'home.pattern.composeTitle': 'Compose the prompt',
-    'home.pattern.composeDescription':
-      'Fill the current template variables and review the composed system and user prompts.',
-    'home.pattern.reviewTitle': 'Review and reuse the snapshot',
-    'home.pattern.reviewDescription':
-      'Save a snapshot, add review context, or reopen its captured variables for the next iteration.',
-    'home.cases.eyebrow': 'Common use cases',
-    'home.cases.title':
-      'These are the kinds of small development tasks the current app already supports.',
-    'home.cases.label': 'Common use cases',
-    'home.case.codeReview': 'Code review preparation',
-    'home.case.apiDesign': 'API design assistance',
-    'home.case.bugTriage': 'Bug triage and debugging',
-    'home.case.standardization': 'Team prompt standardization',
-    'home.case.json': 'JSON payload validation',
-    'home.case.requests': 'Request scaffolding for frontend and backend work',
-    'home.case.output': 'Comparing generated code or rewritten output',
-    'home.case.revisions': 'Checking prompt revisions before sharing a template',
     'home.activity.eyebrow': 'Recent activity',
     'home.activity.title':
       'Recent prompt snapshots stay visible when you return to the workspace.',
@@ -175,21 +145,11 @@ export const translations = {
     'home.activity.emptyTitle': 'No activity yet',
     'home.activity.emptyDescription':
       'Save a prompt snapshot in the playground and it will appear here for later review.',
-    'home.direction.eyebrow': 'Current direction',
-    'home.direction.title':
-      'The focus is improving the local prompt workflow before adding broader platform features.',
-    'home.direction.stage': 'Stage {number}',
-    'home.direction.foundationTitle': 'Prompt workflow foundation',
-    'home.direction.foundationSummary':
-      'Keep the template, playground, snapshot, and run review path clear and reliable.',
-    'home.direction.reliabilityTitle': 'Review and data reliability',
-    'home.direction.reliabilitySummary':
-      'Improve snapshot review, local validation, backup safety, and browser-level coverage.',
-    'home.direction.connectionsTitle': 'Focused utility connections',
-    'home.direction.connectionsSummary':
-      'Connect supporting utilities only where they make the prompt workflow easier to complete.',
     ...promptTemplateTranslations.en,
     ...promptPlaygroundTranslations.en,
+    ...promptRunTranslations.en,
+    ...promptDiffTranslations.en,
+    ...developerUtilityTranslations.en,
   },
   'zh-CN': {
     'app.tagline': '本地优先的 Prompt 工作台',
@@ -277,11 +237,6 @@ export const translations = {
     'home.start.snapshotDescription':
       '保存组合后的 Prompt，之后可以从运行记录中复盘或复用变量。',
     'home.start.snapshotAction': '打开运行记录',
-    'home.value.eyebrow': '为什么做这个工具',
-    'home.value.title': '面向重复的 Prompt 工作，而不是一次性的聊天。',
-    'home.value.one': '在一个本地工作区中管理可复用模板、变量和复盘备注。',
-    'home.value.two': '把重复的 Prompt 工作保存成可比较、复用和备份的快照。',
-    'home.value.three': '保持浏览器本地运行，不引入不必要的平台复杂度。',
     'home.modules.eyebrow': '当前模块',
     'home.modules.title': '当前功能分为 Prompt 工作流和辅助开发工具。',
     'home.modules.prompts.title': 'Prompt 工作流',
@@ -309,25 +264,6 @@ export const translations = {
     'home.module.code.description': '使用单栏或对比模式检查代码和文本输出。',
     'home.module.code.meta': '审查生成结果',
     'home.module.action': '查看模块',
-    'home.pattern.eyebrow': '使用方式',
-    'home.pattern.title': '保持简单：组合 Prompt、复盘快照并保存有用上下文。',
-    'home.pattern.templateTitle': '从 Prompt 模板开始',
-    'home.pattern.templateDescription': '选择现有模板，或为重复开发任务创建一个模板。',
-    'home.pattern.composeTitle': '组合 Prompt',
-    'home.pattern.composeDescription': '填写模板变量并检查最终的 System Prompt 和 User Prompt。',
-    'home.pattern.reviewTitle': '复盘并复用快照',
-    'home.pattern.reviewDescription': '保存快照、补充复盘信息，或在下一轮重新使用变量。',
-    'home.cases.eyebrow': '常见使用场景',
-    'home.cases.title': '当前版本已经支持这些小型开发任务。',
-    'home.cases.label': '常见使用场景',
-    'home.case.codeReview': '准备代码审查',
-    'home.case.apiDesign': '辅助 API 设计',
-    'home.case.bugTriage': 'Bug 分类与调试',
-    'home.case.standardization': '团队 Prompt 标准化',
-    'home.case.json': '校验 JSON 数据',
-    'home.case.requests': '搭建前后端请求示例',
-    'home.case.output': '比较生成代码或改写结果',
-    'home.case.revisions': '分享模板前检查 Prompt 版本',
     'home.activity.eyebrow': '最近活动',
     'home.activity.title': '返回工作区时，最近的 Prompt 快照仍会保留。',
     'home.activity.runMeta': 'Prompt 运行记录',
@@ -336,17 +272,11 @@ export const translations = {
     'home.activity.open': '打开运行详情',
     'home.activity.emptyTitle': '还没有活动记录',
     'home.activity.emptyDescription': '在调试台中保存 Prompt 快照后，它会出现在这里供以后复盘。',
-    'home.direction.eyebrow': '当前方向',
-    'home.direction.title': '先完善本地 Prompt 工作流，再考虑更广泛的平台能力。',
-    'home.direction.stage': '阶段 {number}',
-    'home.direction.foundationTitle': 'Prompt 工作流基础',
-    'home.direction.foundationSummary': '保持模板、调试台、快照和运行复盘路径清晰可靠。',
-    'home.direction.reliabilityTitle': '复盘与数据可靠性',
-    'home.direction.reliabilitySummary': '改进快照复盘、本地校验、备份安全和浏览器测试。',
-    'home.direction.connectionsTitle': '聚焦的工具衔接',
-    'home.direction.connectionsSummary': '只在确实有助于完成 Prompt 工作流时连接辅助工具。',
     ...promptTemplateTranslations['zh-CN'],
     ...promptPlaygroundTranslations['zh-CN'],
+    ...promptRunTranslations['zh-CN'],
+    ...promptDiffTranslations['zh-CN'],
+    ...developerUtilityTranslations['zh-CN'],
   },
 } as const;
 

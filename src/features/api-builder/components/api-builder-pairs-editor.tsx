@@ -1,4 +1,5 @@
 import type { ApiFieldPair } from '@/features/api-builder/lib/api-builder-utils';
+import { useLocalization } from '@/features/localization/localization-context';
 
 interface ApiBuilderPairsEditorProps {
   title: string;
@@ -25,6 +26,7 @@ export function ApiBuilderPairsEditor({
   valuePlaceholder,
   onChange,
 }: ApiBuilderPairsEditorProps) {
+  const { t } = useLocalization();
   const nextPairs = pairs.length > 0 ? pairs : [createEmptyPair()];
 
   return (
@@ -35,12 +37,12 @@ export function ApiBuilderPairsEditor({
           <p>{description}</p>
         </div>
         <button
-          aria-label={`Add ${title} row`}
+          aria-label={t('api.pairs.addLabel', { title })}
           className="ghost-button"
           type="button"
           onClick={() => onChange([...nextPairs, createEmptyPair()])}
         >
-          Add row
+          {t('api.pairs.add')}
         </button>
       </div>
 
@@ -48,7 +50,10 @@ export function ApiBuilderPairsEditor({
         {nextPairs.map((pair, index) => (
           <div className="api-pairs-editor__row" key={pair.id}>
             <input
-              aria-label={`${title} key ${index + 1}`}
+              aria-label={t('api.pairs.keyLabel', {
+                index: index + 1,
+                title,
+              })}
               value={pair.key}
               onChange={(event) => {
                 const updatedPairs = [...nextPairs];
@@ -61,7 +66,10 @@ export function ApiBuilderPairsEditor({
               placeholder={keyPlaceholder}
             />
             <input
-              aria-label={`${title} value ${index + 1}`}
+              aria-label={t('api.pairs.valueLabel', {
+                index: index + 1,
+                title,
+              })}
               value={pair.value}
               onChange={(event) => {
                 const updatedPairs = [...nextPairs];
@@ -74,7 +82,10 @@ export function ApiBuilderPairsEditor({
               placeholder={valuePlaceholder}
             />
             <button
-              aria-label={`Remove ${title} row ${index + 1}`}
+              aria-label={t('api.pairs.removeLabel', {
+                index: index + 1,
+                title,
+              })}
               className="ghost-button"
               type="button"
               onClick={() =>
@@ -85,7 +96,7 @@ export function ApiBuilderPairsEditor({
                 )
               }
             >
-              Remove
+              {t('api.pairs.remove')}
             </button>
           </div>
         ))}

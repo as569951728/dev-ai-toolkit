@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 
+import { useLocalization } from '@/features/localization/localization-context';
 import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
 import { PromptRunHistoryCard } from '@/features/prompt-runs/components/prompt-run-history-card';
 import { PromptRunHistoryFilters } from '@/features/prompt-runs/components/prompt-run-history-filters';
@@ -21,6 +22,7 @@ import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt
 import { buildPromptTemplatePlaygroundPath } from '@/features/prompt-templates/lib/prompt-template-links';
 
 export function PromptRunHistoryPage() {
+  const { t } = useLocalization();
   const importInputRef = useRef<HTMLInputElement | null>(null);
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -163,23 +165,17 @@ export function PromptRunHistoryPage() {
   return (
     <section className="playground-layout">
       <div className="playground-hero panel">
-        <p className="eyebrow">Prompt Run History</p>
-        <h1>Review saved prompt snapshots in a local activity history.</h1>
-        <p className="panel__summary">
-          Browse saved runs, inspect which template version produced them, and
-          jump back to the source template when you want to refine the workflow.
-        </p>
+        <p className="eyebrow">{t('runs.history.eyebrow')}</p>
+        <h1>{t('runs.history.title')}</h1>
+        <p className="panel__summary">{t('runs.history.summary')}</p>
       </div>
 
       <section className="panel">
         <div className="panel__header">
           <div>
-            <p className="eyebrow">Saved runs</p>
-            <h2>Recent prompt runs</h2>
-            <p className="panel__summary">
-              Runs are stored locally and listed with their source template and
-              captured variables.
-            </p>
+            <p className="eyebrow">{t('runs.section.eyebrow')}</p>
+            <h2>{t('runs.section.title')}</h2>
+            <p className="panel__summary">{t('runs.section.summary')}</p>
           </div>
           <div className="detail-actions detail-actions--inline">
             <button
@@ -187,7 +183,7 @@ export function PromptRunHistoryPage() {
               type="button"
               onClick={() => importInputRef.current?.click()}
             >
-              Import run JSON
+              {t('runs.import.action')}
             </button>
             <input
               ref={importInputRef}
@@ -195,7 +191,7 @@ export function PromptRunHistoryPage() {
               id="prompt-run-import"
               type="file"
               accept="application/json,.json"
-              aria-label="Import run JSON"
+              aria-label={t('runs.import.action')}
               onChange={handleImportRun}
             />
           </div>
@@ -205,8 +201,8 @@ export function PromptRunHistoryPage() {
           <div className="empty-state empty-state--compact" role="status">
             <h2>
               {importStatus.replacedExistingRun
-                ? 'Prompt run replaced.'
-                : 'Prompt run imported.'}
+                ? t('runs.import.replacedTitle')
+                : t('runs.import.importedTitle')}
             </h2>
             <p>
               {importStatus.message}{' '}
@@ -214,7 +210,7 @@ export function PromptRunHistoryPage() {
                 state={createPromptRunDetailNavigationState(historyPath)}
                 to={buildPromptRunDetailPath(importStatus.runId)}
               >
-                Open imported run
+                {t('runs.import.open')}
               </Link>
             </p>
           </div>
@@ -222,7 +218,7 @@ export function PromptRunHistoryPage() {
 
         {importError ? (
           <div className="empty-state empty-state--compact" role="alert">
-            <h2>Import failed</h2>
+            <h2>{t('runs.import.errorTitle')}</h2>
             <p>{importError}</p>
           </div>
         ) : null}
@@ -235,14 +231,14 @@ export function PromptRunHistoryPage() {
             role="dialog"
           >
             <h2 id="prompt-run-import-conflict-title">
-              Replace this local prompt run?
+              {t('runs.import.conflictTitle')}
             </h2>
             <p id="prompt-run-import-conflict-description">
-              A local run already uses this ID. Replacing it will overwrite the
-              saved prompts and captured variables.
-              {pendingImport.payload.note
-                ? ' The imported note will replace any local note attached to this run.'
-                : ' This file has no note, so any local note will remain attached.'}
+              {t(
+                pendingImport.payload.note
+                  ? 'runs.import.conflictWithNote'
+                  : 'runs.import.conflictWithoutNote',
+              )}
             </p>
             <div className="detail-actions detail-actions--inline">
               <button
@@ -251,14 +247,14 @@ export function PromptRunHistoryPage() {
                 type="button"
                 onClick={cancelPendingImport}
               >
-                Keep local run
+                {t('runs.import.keep')}
               </button>
               <button
                 className="danger-button"
                 type="button"
                 onClick={confirmPendingImport}
               >
-                Replace local run
+                {t('runs.import.replace')}
               </button>
             </div>
           </div>
@@ -314,11 +310,11 @@ export function PromptRunHistoryPage() {
               </div>
             ) : (
               <div className="empty-state empty-state--compact">
-                <h2>No runs match the current filters</h2>
-                <p>Try a different search value or switch back to all templates.</p>
+                <h2>{t('runs.empty.filteredTitle')}</h2>
+                <p>{t('runs.empty.filteredDescription')}</p>
                 {canCreateFirstRun ? (
                   <Link className="primary-button" to={emptyHistoryPlaygroundUrl}>
-                    Create first run in Playground
+                    {t('runs.empty.create')}
                   </Link>
                 ) : null}
               </div>
@@ -326,15 +322,12 @@ export function PromptRunHistoryPage() {
           </>
         ) : (
           <div className="empty-state">
-            <h2>No saved runs yet</h2>
-            <p>
-              Save a prompt run from the playground to build a reusable local
-              activity trail.
-            </p>
+            <h2>{t('runs.empty.title')}</h2>
+            <p>{t('runs.empty.description')}</p>
             <Link className="primary-button" to={emptyHistoryPlaygroundUrl}>
               {canCreateFirstRun
-                ? 'Create first run in Playground'
-                : 'Open Prompt Playground'}
+                ? t('runs.empty.create')
+                : t('runs.empty.open')}
             </Link>
           </div>
         )}

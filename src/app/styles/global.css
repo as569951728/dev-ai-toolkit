@@ -100,9 +100,7 @@ pre {
 .home-hero__stats,
 .home-section,
 .metric-card,
-.value-card,
-.module-card,
-.roadmap-card {
+.module-card {
   border: 1px solid var(--border-color);
   border-radius: 28px;
   background: var(--surface);
@@ -162,8 +160,7 @@ pre {
 }
 
 .metric-card__label,
-.module-card__meta,
-.roadmap-card__phase {
+.module-card__meta {
   display: inline-flex;
   align-items: center;
   padding: 6px 10px;
@@ -178,12 +175,6 @@ pre {
   padding: 34px 36px;
 }
 
-.home-section--accent {
-  background:
-    radial-gradient(circle at top right, rgba(31, 111, 235, 0.12), transparent 28%),
-    rgba(255, 255, 255, 0.9);
-}
-
 .home-section__heading {
   margin-bottom: 20px;
 }
@@ -195,16 +186,10 @@ pre {
   max-width: 16ch;
 }
 
-.value-grid,
 .module-grid,
-.roadmap-grid,
 .workflow-grid {
   display: grid;
   gap: 16px;
-}
-
-.value-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .module-grid {
@@ -230,32 +215,27 @@ pre {
   max-width: 64ch;
 }
 
-.roadmap-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
 .workflow-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.value-card,
+.workspace-metrics {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .module-card,
-.roadmap-card,
 .workflow-card {
   padding: 24px;
   background: rgba(255, 255, 255, 0.86);
 }
 
-.value-card p,
 .module-card p,
-.roadmap-card p,
 .workflow-card p {
   margin: 14px 0 0;
   color: var(--text-muted);
 }
 
 .module-card h3,
-.roadmap-card h3,
 .workflow-card h3 {
   margin: 14px 0 0;
   font-size: 1.25rem;
@@ -276,21 +256,6 @@ pre {
   background: rgba(31, 111, 235, 0.1);
   color: var(--primary-dark);
   font-weight: 800;
-}
-
-.use-case-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.use-case-pill {
-  padding: 10px 14px;
-  border: 1px solid rgba(31, 111, 235, 0.12);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.8);
-  color: var(--primary-dark);
-  font-weight: 600;
 }
 
 .app-nav {
@@ -813,6 +778,7 @@ pre {
 }
 
 .detail-card {
+  min-width: 0;
   border: 1px solid var(--border-color);
   border-radius: 20px;
   padding: 20px 22px;
@@ -956,6 +922,7 @@ pre {
 
 .api-builder-layout {
   display: grid;
+  min-width: 0;
   gap: 20px;
 }
 
@@ -1003,6 +970,7 @@ pre {
 
 .api-grid {
   display: grid;
+  min-width: 0;
   grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
   gap: 20px;
   align-items: start;
@@ -1020,6 +988,7 @@ pre {
 }
 
 .api-panel {
+  min-width: 0;
   padding: 28px;
 }
 
@@ -1192,6 +1161,8 @@ pre {
   grid-template-columns: auto 1fr;
   gap: 14px;
   align-items: start;
+  width: max-content;
+  min-width: 100%;
 }
 
 .code-block__line-number {
@@ -1202,8 +1173,7 @@ pre {
 }
 
 .code-block__line-content {
-  white-space: pre-wrap;
-  word-break: break-word;
+  white-space: pre;
   color: #1b2c40;
 }
 
@@ -1254,6 +1224,7 @@ pre {
 }
 
 .api-output {
+  max-width: 100%;
   overflow: auto;
   font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
 }
@@ -1403,6 +1374,10 @@ pre {
   gap: 18px;
 }
 
+.prompt-diff-summary .code-metrics {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .prompt-diff-summary__grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1492,6 +1467,10 @@ pre {
 @media (max-width: 960px) {
   .playground-grid {
     grid-template-columns: 1fr;
+  }
+
+  .workspace-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -1597,10 +1576,12 @@ pre {
     grid-template-columns: 1fr;
   }
 
+  .prompt-diff-summary .code-metrics {
+    grid-template-columns: 1fr;
+  }
+
   .home-hero,
-  .value-grid,
   .module-grid,
-  .roadmap-grid,
   .workflow-grid {
     grid-template-columns: 1fr;
   }

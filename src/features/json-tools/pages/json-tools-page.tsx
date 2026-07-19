@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 
+import { useLocalization } from '@/features/localization/localization-context';
+import type { TranslationKey } from '@/features/localization/translations';
 import { JsonEditorPanel } from '@/features/json-tools/components/json-editor-panel';
 import {
   JsonResultPanel,
@@ -28,12 +30,13 @@ import { writeClipboardText } from '@/lib/clipboard';
 function createInitialWorkspace(
   requestedRunId: string | null,
   getRunById: ReturnType<typeof usePromptRuns>['getRunById'],
+  t: ReturnType<typeof useLocalization>['t'],
 ) {
   if (!requestedRunId) {
     return {
       inputValue: sampleJson,
       resultValue: sampleJson,
-      message: 'Load a sample or paste JSON to begin.',
+      message: t('json.message.idle'),
       loadNotice: null,
       sourceRunId: null,
     };
@@ -45,9 +48,8 @@ function createInitialWorkspace(
     return {
       inputValue: sampleJson,
       resultValue: sampleJson,
-      message: 'Load a sample or paste JSON to begin.',
-      loadNotice:
-        'The requested saved run is no longer available. Loaded the sample JSON instead.',
+      message: t('json.message.idle'),
+      loadNotice: t('json.message.runMissing'),
       sourceRunId: null,
     };
   }
@@ -57,18 +59,19 @@ function createInitialWorkspace(
   return {
     inputValue: variablesJson,
     resultValue: variablesJson,
-    message: `Loaded captured variables from ${sourceRun.templateName}.`,
+    message: t('json.message.runLoaded', { name: sourceRun.templateName }),
     loadNotice: null,
     sourceRunId: sourceRun.id,
   };
 }
 
 export function JsonToolsPage() {
+  const { t } = useLocalization();
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const { getRunById } = usePromptRuns();
   const [initialWorkspace] = useState(() =>
-    createInitialWorkspace(searchParams.get('runId'), getRunById),
+    createInitialWorkspace(searchParams.get('runId'), getRunById, t),
   );
   const [inputValue, setInputValue] = useState(initialWorkspace.inputValue);
   const [resultValue, setResultValue] = useState(initialWorkspace.resultValue);
@@ -81,11 +84,12 @@ export function JsonToolsPage() {
 
   const runAction = (
     action: (rawValue: string) => { content: string; isValid: boolean; message: string },
+    successMessageKey: TranslationKey,
   ) => {
     try {
       const result = action(inputValue);
       setResultValue(result.content);
-      setMessage(result.message);
+      setMessage(t(successMessageKey));
       setValidationState(result.isValid ? 'valid' : 'invalid');
       setMessageTone(result.isValid ? 'status' : 'error');
     } catch (error) {
@@ -99,7 +103,7 @@ export function JsonToolsPage() {
   const handleInputChange = (value: string) => {
     setInputValue(value);
     setResultValue('');
-    setMessage('Input changed. Run an action to update the result.');
+    setMessage(t('json.message.changed'));
     setValidationState('idle');
     setMessageTone('status');
   };
@@ -111,10 +115,10 @@ export function JsonToolsPage() {
 
     try {
       await writeClipboardText(resultValue);
-      setMessage('Result copied to clipboard.');
+      setMessage(t('json.message.copied'));
       setMessageTone('status');
     } catch {
-      setMessage('Failed to copy result.');
+      setMessage(t('json.message.copyError'));
       setMessageTone('error');
     }
   };
@@ -122,12 +126,9 @@ export function JsonToolsPage() {
   return (
     <section className="json-tools-layout">
       <div className="playground-hero panel">
-        <p className="eyebrow">JSON Tools</p>
-        <h1>Format, validate, and inspect JSON without leaving the workspace.</h1>
-        <p className="panel__summary">
-          A lightweight utility for AI-adjacent developer tasks like checking
-          payloads, cleaning copied responses, and preparing structured data.
-        </p>
+        <p className="eyebrow">{t('json.hero.eyebrow')}</p>
+        <h1>{t('json.hero.title')}</h1>
+        <p className="panel__summary">{t('json.hero.summary')}</p>
       </div>
 
       {initialWorkspace.loadNotice ? (
@@ -139,8 +140,8 @@ export function JsonToolsPage() {
       <section className="panel json-tools-shell">
         <div className="json-tools-shell__header">
           <div>
-            <p className="eyebrow">Workflow</p>
-            <h2>Operate on JSON with one focused toolset</h2>
+            <p className="eyebrow">{t('json.workflow.eyebrow')}</p>
+            <h2>{t('json.workflow.title')}</h2>
           </div>
           {initialWorkspace.sourceRunId ? (
             <div className="panel__actions">
@@ -149,28 +150,28 @@ export function JsonToolsPage() {
                 state={createPromptRunDetailNavigationState(historyPath)}
                 to={buildPromptRunDetailPath(initialWorkspace.sourceRunId)}
               >
-                Back to saved run
+                {t('json.workflow.back')}
               </Link>
             </div>
           ) : null}
         </div>
 
         <JsonToolsToolbar
-          onFormat={() => runAction(formatJson)}
-          onMinify={() => runAction(minifyJson)}
-          onValidate={() => runAction(validateJson)}
+          onFormat={() => runAction(formatJson, 'json.message.formatted')}
+          onMinify={() => runAction(minifyJson, 'json.message.minified')}
+          onValidate={() => runAction(validateJson, 'json.message.valid')}
           onCopy={handleCopy}
           onLoadSample={() => {
             setInputValue(sampleJson);
             setResultValue(sampleJson);
-            setMessage('Loaded sample JSON.');
+            setMessage(t('json.message.sample'));
             setValidationState('valid');
             setMessageTone('status');
           }}
           onReset={() => {
             setInputValue('');
             setResultValue('');
-            setMessage('Cleared JSON input and output.');
+            setMessage(t('json.message.reset'));
             setValidationState('idle');
             setMessageTone('status');
           }}

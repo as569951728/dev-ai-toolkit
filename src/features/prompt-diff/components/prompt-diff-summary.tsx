@@ -7,6 +7,7 @@ import {
   getRemovedValues,
   splitPromptLines,
 } from '@/features/prompt-diff/lib/prompt-diff-utils';
+import { useLocalization } from '@/features/localization/localization-context';
 
 type PromptDiffSummaryProps = {
   leftValue: string;
@@ -18,17 +19,19 @@ function VariableList({
   values,
   tone,
   emptyValueLabel,
+  noChangesLabel,
 }: {
   title: string;
   values: string[];
   tone?: 'added' | 'removed';
   emptyValueLabel?: string;
+  noChangesLabel: string;
 }) {
   if (values.length === 0) {
     return (
       <article className="prompt-diff-card">
         <h3>{title}</h3>
-        <p>No changes detected.</p>
+        <p>{noChangesLabel}</p>
       </article>
     );
   }
@@ -60,6 +63,7 @@ export function PromptDiffSummary({
   leftValue,
   rightValue,
 }: PromptDiffSummaryProps) {
+  const { t } = useLocalization();
   const leftVariables = extractPromptVariables(leftValue);
   const rightVariables = extractPromptVariables(rightValue);
   const addedVariables = getAddedValues(leftVariables, rightVariables);
@@ -72,46 +76,58 @@ export function PromptDiffSummary({
     <section className="prompt-diff-summary">
       <div className="code-metrics">
         <article className="metric-card">
-          <span className="metric-card__label">Left prompt</span>
-          <strong>{countPromptCharacters(leftValue)} chars</strong>
-          <p>{countPromptLines(leftValue)} lines</p>
+          <span className="metric-card__label">{t('diff.metric.left')}</span>
+          <strong>
+            {t('diff.metric.characters', {
+              count: countPromptCharacters(leftValue),
+            })}
+          </strong>
+          <p>{t('diff.metric.lines', { count: countPromptLines(leftValue) })}</p>
         </article>
         <article className="metric-card">
-          <span className="metric-card__label">Right prompt</span>
-          <strong>{countPromptCharacters(rightValue)} chars</strong>
-          <p>{countPromptLines(rightValue)} lines</p>
+          <span className="metric-card__label">{t('diff.metric.right')}</span>
+          <strong>
+            {t('diff.metric.characters', {
+              count: countPromptCharacters(rightValue),
+            })}
+          </strong>
+          <p>{t('diff.metric.lines', { count: countPromptLines(rightValue) })}</p>
         </article>
         <article className="metric-card">
-          <span className="metric-card__label">Variable drift</span>
+          <span className="metric-card__label">{t('diff.metric.drift')}</span>
           <strong>
             +{addedVariables.length} / -{removedVariables.length}
           </strong>
-          <p>Track placeholders before you reuse or share a prompt.</p>
+          <p>{t('diff.metric.driftDescription')}</p>
         </article>
       </div>
 
       <div className="prompt-diff-summary__grid">
         <VariableList
-          title="Added variables"
+          title={t('diff.summary.addedVariables')}
           values={addedVariables}
           tone="added"
+          noChangesLabel={t('diff.summary.noChanges')}
         />
         <VariableList
-          title="Removed variables"
+          title={t('diff.summary.removedVariables')}
           values={removedVariables}
           tone="removed"
+          noChangesLabel={t('diff.summary.noChanges')}
         />
         <VariableList
-          title="Added lines"
+          title={t('diff.summary.addedLines')}
           values={lineChanges.added}
           tone="added"
-          emptyValueLabel="(blank line)"
+          emptyValueLabel={t('diff.summary.blankLine')}
+          noChangesLabel={t('diff.summary.noChanges')}
         />
         <VariableList
-          title="Removed lines"
+          title={t('diff.summary.removedLines')}
           values={lineChanges.removed}
           tone="removed"
-          emptyValueLabel="(blank line)"
+          emptyValueLabel={t('diff.summary.blankLine')}
+          noChangesLabel={t('diff.summary.noChanges')}
         />
       </div>
     </section>

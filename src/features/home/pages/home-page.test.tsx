@@ -85,7 +85,10 @@ describe('HomePage', () => {
       }),
     ).toBeInTheDocument();
     expect(screen.getByText('Template to Snapshot')).toBeInTheDocument();
-    expect(screen.getByText('Prompt workflow foundation')).toBeInTheDocument();
+    expect(screen.getByText('Current modules')).toBeInTheDocument();
+    expect(screen.getByText('Recent activity')).toBeInTheDocument();
+    expect(screen.queryByText('Working pattern')).not.toBeInTheDocument();
+    expect(screen.queryByText('Current direction')).not.toBeInTheDocument();
   });
 
   it('opens the first active template from the primary action', () => {

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import { useLocalization } from '@/features/localization/localization-context';
 import {
   formatCapturedVariableCount,
   formatPromptRunCreatedAt,
@@ -33,6 +34,7 @@ export function PromptRunHistoryCard({
   run,
   sourceTemplate,
 }: PromptRunHistoryCardProps) {
+  const { language, t } = useLocalization();
   const [copyFeedback, setCopyFeedback] = useState<{
     message: string;
     tone: 'success' | 'error';
@@ -47,12 +49,12 @@ export function PromptRunHistoryCard({
     try {
       await writeClipboardText(formatPromptSections(run));
       setCopyFeedback({
-        message: 'Full prompt copied.',
+        message: t('runs.card.copySuccess'),
         tone: 'success',
       });
     } catch {
       setCopyFeedback({
-        message: 'Failed to copy full prompt.',
+        message: t('runs.card.copyError'),
         tone: 'error',
       });
     }
@@ -63,18 +65,23 @@ export function PromptRunHistoryCard({
       <div className="revision-card__header">
         <div>
           <h3>{run.templateName}</h3>
-          <p>{formatPromptRunCreatedAt(run.createdAt)}</p>
+          <p>{formatPromptRunCreatedAt(run.createdAt, language)}</p>
         </div>
 
-        <span className="revision-badge">Template v{run.templateVersion}</span>
+        <span className="revision-badge">
+          {t('runs.card.templateVersion', { version: run.templateVersion })}
+        </span>
       </div>
 
       <p className="revision-card__description">
-        {formatCapturedVariableCount(variableCount)}
+        {formatCapturedVariableCount(variableCount, language)}
       </p>
 
       {variablePreview.entries.length > 0 ? (
-        <div aria-label="Captured variables" className="run-history-filter-list">
+        <div
+          aria-label={t('runs.card.variablesLabel')}
+          className="run-history-filter-list"
+        >
           {variablePreview.entries.map(([name, value]) => (
             <span className="run-history-filter-chip" key={name}>
               {name}: {value}
@@ -82,8 +89,12 @@ export function PromptRunHistoryCard({
           ))}
           {variablePreview.remainingCount > 0 ? (
             <span className="run-history-filter-chip">
-              +{variablePreview.remainingCount} more{' '}
-              {variablePreview.remainingCount === 1 ? 'variable' : 'variables'}
+              {t(
+                variablePreview.remainingCount === 1
+                  ? 'runs.card.more.one'
+                  : 'runs.card.more.other',
+                { count: variablePreview.remainingCount },
+              )}
             </span>
           ) : null}
         </div>
@@ -91,7 +102,9 @@ export function PromptRunHistoryCard({
 
       {note ? (
         <div className="run-history-note-summary">
-          <span className="run-history-filter-chip">Note attached</span>
+          <span className="run-history-filter-chip">
+            {t('runs.card.noteAttached')}
+          </span>
           <p>{note.body}</p>
         </div>
       ) : null}
@@ -115,14 +128,14 @@ export function PromptRunHistoryCard({
           type="button"
           onClick={() => void handleCopyPrompt()}
         >
-          Copy full prompt
+          {t('runs.card.copy')}
         </button>
         <Link
           className="ghost-button"
           state={createPromptRunDetailNavigationState(historyPath)}
           to={buildPromptRunDetailPath(run.id)}
         >
-          View details
+          {t('runs.card.details')}
         </Link>
         {sourceTemplate && !sourceTemplate.archivedAt ? (
           <Link
@@ -132,7 +145,7 @@ export function PromptRunHistoryCard({
               templateId: run.templateId,
             })}
           >
-            Reopen in Playground
+            {t('runs.card.reopen')}
           </Link>
         ) : null}
         {sourceTemplate ? (
@@ -140,11 +153,11 @@ export function PromptRunHistoryCard({
             className="ghost-button"
             to={buildPromptTemplateDetailPath(run.templateId)}
           >
-            View source template
+            {t('runs.card.source')}
           </Link>
         ) : (
           <span className="run-history-note">
-            Source template is no longer available.
+            {t('runs.card.sourceMissing')}
           </span>
         )}
         <Link
@@ -152,7 +165,7 @@ export function PromptRunHistoryCard({
           state={createPromptRunDetailNavigationState(historyPath)}
           to={buildPromptRunCodeViewerPath(run.id)}
         >
-          Open saved prompts in Code Viewer
+          {t('runs.card.codeViewer')}
         </Link>
         {promptDiffUrl ? (
           <Link
@@ -160,12 +173,11 @@ export function PromptRunHistoryCard({
             state={createPromptRunDetailNavigationState(historyPath)}
             to={promptDiffUrl}
           >
-            Compare with source
+            {t('runs.card.compare')}
           </Link>
         ) : sourceTemplate ? (
           <span className="run-history-note">
-            Template v{run.templateVersion} is no longer available for
-            comparison.
+            {t('runs.card.revisionMissing', { version: run.templateVersion })}
           </span>
         ) : null}
       </div>

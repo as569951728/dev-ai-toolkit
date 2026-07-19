@@ -8,6 +8,7 @@ import {
   type ApiBuilderState,
 } from '@/features/api-builder/lib/api-builder-utils';
 import { createCodeViewerNavigationState } from '@/features/code-viewer/lib/code-viewer-navigation';
+import { useLocalization } from '@/features/localization/localization-context';
 import { writeClipboardText } from '@/lib/clipboard';
 
 interface ApiBuilderPreviewProps {
@@ -19,9 +20,12 @@ interface CopyFeedback {
   tone: 'success' | 'error';
 }
 
+type CopyStatus = 'idle' | 'copied' | 'failed';
+
 export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
-  const [fetchCopyLabel, setFetchCopyLabel] = useState('Copy fetch code');
-  const [curlCopyLabel, setCurlCopyLabel] = useState('Copy cURL command');
+  const { language, t } = useLocalization();
+  const [fetchCopyStatus, setFetchCopyStatus] = useState<CopyStatus>('idle');
+  const [curlCopyStatus, setCurlCopyStatus] = useState<CopyStatus>('idle');
   const [copyFeedback, setCopyFeedback] = useState<CopyFeedback | null>(null);
   const { requestUrl, headerCount, hasBody, isBodyOmitted, isBodyInvalid } =
     summarizeRequest(state);
@@ -42,25 +46,29 @@ export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
 
   const handleCopy = async (
     value: string,
-    setLabel: (label: string) => void,
-    resetLabel: string,
+    setStatus: (status: CopyStatus) => void,
     feedbackLabel: string,
   ) => {
     try {
       await writeClipboardText(value);
-      setLabel('Copied');
+      setStatus('copied');
       setCopyFeedback({
-        message: `${feedbackLabel} copied.`,
+        message: t('api.preview.copySuccess', { label: feedbackLabel }),
         tone: 'success',
       });
-      window.setTimeout(() => setLabel(resetLabel), 1600);
+      window.setTimeout(() => setStatus('idle'), 1600);
     } catch {
-      setLabel('Copy failed');
+      setStatus('failed');
       setCopyFeedback({
-        message: `Failed to copy ${feedbackLabel}.`,
+        message: t('api.preview.copyError', {
+          label:
+            language === 'en' && feedbackLabel !== t('api.preview.curlLabel')
+              ? feedbackLabel.toLowerCase()
+              : feedbackLabel,
+        }),
         tone: 'error',
       });
-      window.setTimeout(() => setLabel(resetLabel), 1600);
+      window.setTimeout(() => setStatus('idle'), 1600);
     }
   };
 
@@ -68,8 +76,8 @@ export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
     <section className="panel api-panel">
       <div className="api-panel__header">
         <div>
-          <p className="eyebrow">Preview</p>
-          <h2>Inspect the generated request</h2>
+          <p className="eyebrow">{t('api.preview.eyebrow')}</p>
+          <h2>{t('api.preview.title')}</h2>
         </div>
         <button
           className="secondary-button"
@@ -77,13 +85,16 @@ export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
           onClick={() =>
             handleCopy(
               fetchSnippet,
-              setFetchCopyLabel,
-              'Copy fetch code',
-              'Fetch snippet',
+              setFetchCopyStatus,
+              t('api.preview.fetchLabel'),
             )
           }
         >
-          {fetchCopyLabel}
+          {fetchCopyStatus === 'copied'
+            ? t('api.preview.copied')
+            : fetchCopyStatus === 'failed'
+              ? t('api.preview.copyFailed')
+              : t('api.preview.copyFetch')}
         </button>
       </div>
 
@@ -102,64 +113,63 @@ export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
 
       {isBodyOmitted ? (
         <p className="status-banner" role="status">
-          {state.method.toUpperCase()} requests cannot include a body in browser
-          fetch. The JSON draft is kept in the form but omitted from generated
-          output.
+          {t('api.preview.bodyOmitted', {
+            method: state.method.toUpperCase(),
+          })}
         </p>
       ) : null}
 
       {isBodyInvalid ? (
         <p className="status-banner status-banner--error" role="alert">
-          JSON body is not valid JSON. Generated requests will send the text
-          exactly as entered.
+          {t('api.preview.bodyInvalid')}
         </p>
       ) : null}
 
       <div className="api-preview-grid">
         <div className="metric-card metric-card--compact">
-          <span className="metric-card__label">Method</span>
+          <span className="metric-card__label">{t('api.preview.method')}</span>
           <strong>{state.method}</strong>
           <p>
             {isBodyOmitted
-              ? 'Request body omitted'
+              ? t('api.preview.bodyOmittedShort')
               : hasBody
-                ? 'Includes a request body'
-                : 'No request body'}
+                ? t('api.preview.hasBody')
+                : t('api.preview.noBody')}
           </p>
         </div>
         <div className="metric-card metric-card--compact">
-          <span className="metric-card__label">Headers</span>
+          <span className="metric-card__label">{t('api.preview.headers')}</span>
           <strong>{headerCount}</strong>
-          <p>Configured header entries</p>
+          <p>{t('api.preview.headersDescription')}</p>
         </div>
       </div>
 
       <article className="detail-card">
         <div className="detail-card__header">
-          <h3>Resolved URL</h3>
+          <h3>{t('api.preview.url')}</h3>
         </div>
         <pre
-          aria-label="Resolved request URL"
+          aria-label={t('api.preview.urlLabel')}
           className="prompt-preview api-output"
           tabIndex={0}
         >
-          {requestUrl || 'Add a base URL to preview the final request URL.'}
+          {requestUrl || t('api.preview.urlEmpty')}
         </pre>
       </article>
 
       <article className="detail-card">
         <div className="detail-card__header">
-          <h3>Fetch snippet</h3>
+          <h3>{t('api.preview.fetch')}</h3>
           <Link
             className="ghost-button"
             state={fetchCodeViewerState}
             to="/code-viewer"
           >
-            Open fetch in Code Viewer
+            {t('api.preview.fetchOpen')}
           </Link>
         </div>
         <pre
-          aria-label="Generated fetch snippet"
+          aria-label={t('api.preview.fetchLabelA11y')}
           className="prompt-preview api-output"
           tabIndex={0}
         >
@@ -169,14 +179,14 @@ export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
 
       <article className="detail-card">
         <div className="detail-card__header">
-          <h3>cURL command</h3>
+          <h3>{t('api.preview.curl')}</h3>
           <div className="detail-actions">
             <Link
               className="ghost-button"
               state={curlCodeViewerState}
               to="/code-viewer"
             >
-              Open cURL in Code Viewer
+              {t('api.preview.curlOpen')}
             </Link>
             <button
               className="ghost-button"
@@ -184,18 +194,21 @@ export function ApiBuilderPreview({ state }: ApiBuilderPreviewProps) {
               onClick={() =>
                 handleCopy(
                   curlCommand,
-                  setCurlCopyLabel,
-                  'Copy cURL command',
-                  'cURL command',
+                  setCurlCopyStatus,
+                  t('api.preview.curlLabel'),
                 )
               }
             >
-              {curlCopyLabel}
+              {curlCopyStatus === 'copied'
+                ? t('api.preview.copied')
+                : curlCopyStatus === 'failed'
+                  ? t('api.preview.copyFailed')
+                  : t('api.preview.copyCurl')}
             </button>
           </div>
         </div>
         <pre
-          aria-label="Generated cURL command"
+          aria-label={t('api.preview.curlLabelA11y')}
           className="prompt-preview api-output"
           tabIndex={0}
         >

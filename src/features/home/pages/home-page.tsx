@@ -81,67 +81,6 @@ const moduleGroups: HomeModuleGroup[] = [
   },
 ];
 
-const valuePointKeys: TranslationKey[] = [
-  'home.value.one',
-  'home.value.two',
-  'home.value.three',
-];
-
-const workflowSteps: Array<{
-  step: string;
-  titleKey: TranslationKey;
-  descriptionKey: TranslationKey;
-}> = [
-  {
-    step: '01',
-    titleKey: 'home.pattern.templateTitle',
-    descriptionKey: 'home.pattern.templateDescription',
-  },
-  {
-    step: '02',
-    titleKey: 'home.pattern.composeTitle',
-    descriptionKey: 'home.pattern.composeDescription',
-  },
-  {
-    step: '03',
-    titleKey: 'home.pattern.reviewTitle',
-    descriptionKey: 'home.pattern.reviewDescription',
-  },
-];
-
-const useCaseKeys: TranslationKey[] = [
-  'home.case.codeReview',
-  'home.case.apiDesign',
-  'home.case.bugTriage',
-  'home.case.standardization',
-  'home.case.json',
-  'home.case.requests',
-  'home.case.output',
-  'home.case.revisions',
-];
-
-const roadmapPhases: Array<{
-  number: string;
-  titleKey: TranslationKey;
-  summaryKey: TranslationKey;
-}> = [
-  {
-    number: '1',
-    titleKey: 'home.direction.foundationTitle',
-    summaryKey: 'home.direction.foundationSummary',
-  },
-  {
-    number: '2',
-    titleKey: 'home.direction.reliabilityTitle',
-    summaryKey: 'home.direction.reliabilitySummary',
-  },
-  {
-    number: '3',
-    titleKey: 'home.direction.connectionsTitle',
-    summaryKey: 'home.direction.connectionsSummary',
-  },
-];
-
 export function HomePage() {
   const { t } = useLocalization();
   const { templates } = usePromptTemplates();
@@ -238,21 +177,6 @@ export function HomePage() {
 
       <section className="home-section">
         <div className="home-section__heading">
-          <p className="eyebrow">{t('home.value.eyebrow')}</p>
-          <h2>{t('home.value.title')}</h2>
-        </div>
-
-        <div className="value-grid">
-          {valuePointKeys.map((key) => (
-            <article className="value-card" key={key}>
-              <p>{t(key)}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="home-section">
-        <div className="home-section__heading">
           <p className="eyebrow">{t('home.modules.eyebrow')}</p>
           <h2>{t('home.modules.title')}</h2>
         </div>
@@ -278,38 +202,6 @@ export function HomePage() {
             </div>
           </section>
         ))}
-      </section>
-
-      <section className="home-section">
-        <div className="home-section__heading">
-          <p className="eyebrow">{t('home.pattern.eyebrow')}</p>
-          <h2>{t('home.pattern.title')}</h2>
-        </div>
-
-        <div className="workflow-grid">
-          {workflowSteps.map((item) => (
-            <article className="workflow-card" key={item.step}>
-              <span className="workflow-card__step">{item.step}</span>
-              <h3>{t(item.titleKey)}</h3>
-              <p>{t(item.descriptionKey)}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="home-section home-section--accent">
-        <div className="home-section__heading">
-          <p className="eyebrow">{t('home.cases.eyebrow')}</p>
-          <h2>{t('home.cases.title')}</h2>
-        </div>
-
-        <div className="use-case-list" aria-label={t('home.cases.label')}>
-          {useCaseKeys.map((key) => (
-            <span className="use-case-pill" key={key}>
-              {t(key)}
-            </span>
-          ))}
-        </div>
       </section>
 
       <section className="home-section">
@@ -355,24 +247,6 @@ export function HomePage() {
         )}
       </section>
 
-      <section className="home-section">
-        <div className="home-section__heading">
-          <p className="eyebrow">{t('home.direction.eyebrow')}</p>
-          <h2>{t('home.direction.title')}</h2>
-        </div>
-
-        <div className="roadmap-grid">
-          {roadmapPhases.map((phase) => (
-            <article className="roadmap-card" key={phase.number}>
-              <span className="roadmap-card__phase">
-                {t('home.direction.stage', { number: phase.number })}
-              </span>
-              <h3>{t(phase.titleKey)}</h3>
-              <p>{t(phase.summaryKey)}</p>
-            </article>
-          ))}
-        </div>
-      </section>
     </section>
   );
 }

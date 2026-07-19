@@ -12,6 +12,14 @@ commit.
   and Overview, with an explicit language switcher that remembers the choice.
 - Added Simplified Chinese controls and guidance for the prompt template and
   Playground workflow through saving a local prompt snapshot.
+- Added Simplified Chinese review, filtering, notes, import, and snapshot
+  management across Prompt Run History and run detail pages.
+- Added Simplified Chinese editing controls and variable-aware summaries to
+  the Prompt Diff workflow.
+- Added Simplified Chinese input, status, and generated-output controls to JSON
+  Tools and API Builder.
+- Added Simplified Chinese review controls to Code Viewer and localized export,
+  import preview, and record counts in Workspace Backup.
 - Added a privacy-aware workflow feedback link from every application route to
   the dedicated GitHub feedback form.
 - Added a direct Overview action into the first available prompt template,
@@ -25,11 +33,17 @@ commit.
 
 ### Changed
 
+- Focused the Overview on primary actions, getting started, current modules,
+  and recent activity instead of repeating roadmap and use-case content.
 - Split secondary application pages into route-level chunks so the Overview
   no longer downloads every tool page on its initial load.
 
 ### Fixed
 
+- Prevented API Builder request previews from widening phone layouts.
+- Kept long Code Viewer lines readable inside their own horizontal scroller
+  instead of wrapping code one character at a time.
+- Arranged Prompt Diff and Workspace Backup metrics in complete desktop rows.
 - Restored keyboard focus to the new page after choosing a destination from
   the responsive navigation menu.
 - Returned keyboard focus to the attempted navigation control after keeping an

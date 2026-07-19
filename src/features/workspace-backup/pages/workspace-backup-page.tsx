@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ChangeEvent } from 'react';
 
+import { useLocalization } from '@/features/localization/localization-context';
 import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
 import { usePromptRuns } from '@/features/prompt-runs/hooks/use-prompt-runs';
 import { usePromptTemplates } from '@/features/prompt-templates/hooks/use-prompt-templates';
@@ -29,36 +30,45 @@ interface PendingWorkspaceImport {
   rawValue: string;
 }
 
-function formatCount(count: number, singularLabel: string) {
-  return `${count} ${singularLabel}${count === 1 ? '' : 's'}`;
-}
-
 function WorkspaceImportCounts({
   summary,
 }: {
   summary: WorkspaceBackupImportSummary;
 }) {
+  const { t } = useLocalization();
+
   return (
     <>
       <p>
-        Templates: {summary.templates.created} created,{' '}
-        {summary.templates.updated} updated.
+        {t('workspace.summary.templates', {
+          created: summary.templates.created,
+          updated: summary.templates.updated,
+        })}
       </p>
       <p>
-        Runs: {summary.runs.created} created, {summary.runs.updated} updated.
+        {t('workspace.summary.runs', {
+          created: summary.runs.created,
+          updated: summary.runs.updated,
+        })}
       </p>
       <p>
-        Notes: {summary.notes.created} created, {summary.notes.updated} updated.
+        {t('workspace.summary.notes', {
+          created: summary.notes.created,
+          updated: summary.notes.updated,
+        })}
       </p>
       <p>
-        Recent templates: {summary.recentTemplates.imported} imported,{' '}
-        {summary.recentTemplates.skipped} skipped.
+        {t('workspace.summary.recent', {
+          imported: summary.recentTemplates.imported,
+          skipped: summary.recentTemplates.skipped,
+        })}
       </p>
     </>
   );
 }
 
 export function WorkspaceBackupPage() {
+  const { language, t } = useLocalization();
   const importInputRef = useRef<HTMLInputElement | null>(null);
   const { notes } = usePromptRunNotes();
   const { runs } = usePromptRuns();
@@ -100,12 +110,12 @@ export function WorkspaceBackupPage() {
         recentTemplateIds: currentRecentTemplateIds,
       });
       setExportFeedback({
-        message: 'Workspace backup exported as JSON.',
+        message: t('workspace.export.success'),
         tone: 'success',
       });
     } catch {
       setExportFeedback({
-        message: 'Failed to export the workspace backup. Please try again.',
+        message: t('workspace.export.error'),
         tone: 'error',
       });
     }
@@ -132,9 +142,9 @@ export function WorkspaceBackupPage() {
     } catch (error) {
       setImportSummary(null);
       setImportError(
-        error instanceof Error
+        language === 'en' && error instanceof Error
           ? error.message
-          : 'Unable to import the selected workspace backup.',
+          : t('workspace.restore.error'),
       );
     } finally {
       event.target.value = '';
@@ -156,9 +166,9 @@ export function WorkspaceBackupPage() {
     } catch (error) {
       setImportSummary(null);
       setImportError(
-        error instanceof Error
+        language === 'en' && error instanceof Error
           ? error.message
-          : 'Unable to import the selected workspace backup.',
+          : t('workspace.restore.error'),
       );
       setPendingImport(null);
     }
@@ -167,12 +177,9 @@ export function WorkspaceBackupPage() {
   return (
     <section className="home-layout">
       <section className="panel">
-        <p className="eyebrow">Local-first maintenance</p>
-        <h1>Workspace backup</h1>
-        <p className="panel__summary">
-          Export the current local workspace as JSON, or import a previous
-          workspace backup into this browser profile.
-        </p>
+        <p className="eyebrow">{t('workspace.hero.eyebrow')}</p>
+        <h1>{t('workspace.hero.title')}</h1>
+        <p className="panel__summary">{t('workspace.hero.summary')}</p>
 
         <div className="detail-actions detail-actions--inline">
           <button
@@ -180,7 +187,7 @@ export function WorkspaceBackupPage() {
             type="button"
             onClick={handleExportWorkspace}
           >
-            Export workspace JSON
+            {t('workspace.export.action')}
           </button>
         </div>
 
@@ -198,50 +205,79 @@ export function WorkspaceBackupPage() {
 
       <section className="home-section">
         <div className="home-section__heading">
-          <p className="eyebrow">Included data</p>
-          <h2>The export includes data already stored locally by the app.</h2>
+          <p className="eyebrow">{t('workspace.data.eyebrow')}</p>
+          <h2>{t('workspace.data.title')}</h2>
         </div>
 
-        <div className="workflow-grid">
+        <div className="workflow-grid workspace-metrics">
           <article className="metric-card">
-            <span className="metric-card__label">Prompt templates</span>
-            <strong>{formatCount(templates.length, 'prompt template')}</strong>
-            <p>Template metadata, current prompt text, tags, and revisions.</p>
+            <span className="metric-card__label">
+              {t('workspace.data.templates')}
+            </span>
+            <strong>
+              {t(
+                templates.length === 1
+                  ? 'workspace.data.templatesCount.one'
+                  : 'workspace.data.templatesCount.other',
+                { count: templates.length },
+              )}
+            </strong>
+            <p>{t('workspace.data.templatesDescription')}</p>
           </article>
           <article className="metric-card">
-            <span className="metric-card__label">Saved runs</span>
-            <strong>{formatCount(runs.length, 'saved run')}</strong>
-            <p>
-              Prompt snapshots with source template references and captured
-              variables.
-            </p>
+            <span className="metric-card__label">{t('workspace.data.runs')}</span>
+            <strong>
+              {t(
+                runs.length === 1
+                  ? 'workspace.data.runsCount.one'
+                  : 'workspace.data.runsCount.other',
+                { count: runs.length },
+              )}
+            </strong>
+            <p>{t('workspace.data.runsDescription')}</p>
           </article>
           <article className="metric-card">
-            <span className="metric-card__label">Run notes</span>
-            <strong>{formatCount(exportableNotes.length, 'run note')}</strong>
+            <span className="metric-card__label">{t('workspace.data.notes')}</span>
+            <strong>
+              {t(
+                exportableNotes.length === 1
+                  ? 'workspace.data.notesCount.one'
+                  : 'workspace.data.notesCount.other',
+                { count: exportableNotes.length },
+              )}
+            </strong>
             <p>
               {skippedNoteCount > 0
-                ? `${formatCount(skippedNoteCount, 'unattached note')} excluded because no matching saved run exists.`
-                : 'Notes attached to saved prompt runs for later review.'}
+                ? t(
+                    skippedNoteCount === 1
+                      ? 'workspace.data.skippedNotes.one'
+                      : 'workspace.data.skippedNotes.other',
+                    { count: skippedNoteCount },
+                  )
+                : t('workspace.data.notesDescription')}
             </p>
           </article>
           <article className="metric-card">
-            <span className="metric-card__label">Recent templates</span>
+            <span className="metric-card__label">
+              {t('workspace.data.recent')}
+            </span>
             <strong>
-              {formatCount(currentRecentTemplateIds.length, 'recent template')}
+              {t(
+                currentRecentTemplateIds.length === 1
+                  ? 'workspace.data.recentCount.one'
+                  : 'workspace.data.recentCount.other',
+                { count: currentRecentTemplateIds.length },
+              )}
             </strong>
-            <p>Playground shortcuts for templates used most recently.</p>
+            <p>{t('workspace.data.recentDescription')}</p>
           </article>
         </div>
       </section>
 
       <section className="panel">
-        <p className="eyebrow">Restore</p>
-        <h2>Import a workspace backup</h2>
-        <p className="panel__summary">
-          Select a JSON backup exported by dev-ai-toolkit. Imported records are
-          merged by id, so matching records are updated and new records are added.
-        </p>
+        <p className="eyebrow">{t('workspace.restore.eyebrow')}</p>
+        <h2>{t('workspace.restore.title')}</h2>
+        <p className="panel__summary">{t('workspace.restore.summary')}</p>
 
         <div className="detail-actions detail-actions--inline">
           <button
@@ -249,7 +285,7 @@ export function WorkspaceBackupPage() {
             type="button"
             onClick={() => importInputRef.current?.click()}
           >
-            Import workspace JSON
+            {t('workspace.restore.action')}
           </button>
           <input
             ref={importInputRef}
@@ -257,21 +293,21 @@ export function WorkspaceBackupPage() {
             id="workspace-backup-import"
             type="file"
             accept="application/json,.json"
-            aria-label="Import workspace JSON"
+            aria-label={t('workspace.restore.action')}
             onChange={handleImportWorkspace}
           />
         </div>
 
         {importSummary ? (
           <div className="empty-state empty-state--compact" role="status">
-            <h2>Workspace backup imported.</h2>
+            <h2>{t('workspace.restore.success')}</h2>
             <WorkspaceImportCounts summary={importSummary} />
           </div>
         ) : null}
 
         {importError ? (
           <div className="empty-state empty-state--compact" role="alert">
-            <h2>Import failed</h2>
+            <h2>{t('workspace.restore.errorTitle')}</h2>
             <p>{importError}</p>
           </div>
         ) : null}
@@ -284,14 +320,15 @@ export function WorkspaceBackupPage() {
             role="dialog"
           >
             <h2 id="workspace-import-preview-title">
-              Import this workspace backup?
+              {t('workspace.restore.dialogTitle')}
             </h2>
             <p id="workspace-import-preview-description">
-              Review the changes from {pendingImport.fileName}. Matching local
-              records will be updated after you confirm.
-              {pendingImport.preview.includesRecentTemplates
-                ? ' The recent-template shortcut list will also be replaced.'
-                : ' Existing recent-template shortcuts will be kept.'}
+              {t(
+                pendingImport.preview.includesRecentTemplates
+                  ? 'workspace.restore.dialogRecent'
+                  : 'workspace.restore.dialogKeepRecent',
+                { file: pendingImport.fileName },
+              )}
             </p>
             <WorkspaceImportCounts summary={pendingImport.preview.summary} />
             <div className="detail-actions detail-actions--inline">
@@ -301,14 +338,14 @@ export function WorkspaceBackupPage() {
                 type="button"
                 onClick={() => setPendingImport(null)}
               >
-                Keep current workspace
+                {t('workspace.restore.keep')}
               </button>
               <button
                 className="danger-button"
                 type="button"
                 onClick={confirmImportWorkspace}
               >
-                Import backup
+                {t('workspace.restore.confirm')}
               </button>
             </div>
           </div>

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
+import { useLocalization } from '@/features/localization/localization-context';
 import { usePromptRunNotes } from '@/features/prompt-run-notes/hooks/use-prompt-run-notes';
 
 interface PromptRunNotePanelProps {
@@ -20,6 +21,7 @@ export function PromptRunNotePanel({
   onDirtyChange,
   runId,
 }: PromptRunNotePanelProps) {
+  const { t } = useLocalization();
   const { getNoteByRunId, saveNote } = usePromptRunNotes();
   const savedNote = getNoteByRunId(runId);
   const savedBody = savedNote?.body ?? '';
@@ -63,14 +65,13 @@ export function PromptRunNotePanel({
       previousSavedBody.current = nextSavedBody;
       setBody(nextSavedBody);
       setSaveFeedback({
-        message: note ? 'Note saved.' : 'Note cleared.',
+        message: note ? t('run.note.saved') : t('run.note.cleared'),
         tone: 'success',
       });
       setHasExternalUpdate(false);
     } catch {
       setSaveFeedback({
-        message:
-          'Failed to save this note. Check that browser storage is available and try again.',
+        message: t('run.note.error'),
         tone: 'error',
       });
     }
@@ -80,12 +81,9 @@ export function PromptRunNotePanel({
     <section className="panel">
       <div className="panel__header">
         <div>
-          <p className="eyebrow">Run notes</p>
-          <h2>Maintenance note</h2>
-          <p className="panel__summary">
-            Keep a short note about why this prompt snapshot was useful or what
-            to adjust next time.
-          </p>
+          <p className="eyebrow">{t('run.note.eyebrow')}</p>
+          <h2>{t('run.note.title')}</h2>
+          <p className="panel__summary">{t('run.note.summary')}</p>
         </div>
       </div>
 
@@ -104,16 +102,15 @@ export function PromptRunNotePanel({
 
       {hasExternalUpdate ? (
         <p className="status-banner" role="status">
-          Saved note changed in another tab. Your local draft is still here;
-          review it before saving.
+          {t('run.note.externalUpdate')}
         </p>
       ) : null}
 
       <label className="field">
-        <span>Note</span>
+        <span>{t('run.note.label')}</span>
         <textarea
           value={body}
-          placeholder="Add a note for this saved run"
+          placeholder={t('run.note.placeholder')}
           onChange={(event) => {
             const nextBody = event.target.value;
 
@@ -134,7 +131,7 @@ export function PromptRunNotePanel({
           disabled={isSaveDisabled}
           onClick={handleSave}
         >
-          Save note
+          {t('run.note.save')}
         </button>
       </div>
     </section>
