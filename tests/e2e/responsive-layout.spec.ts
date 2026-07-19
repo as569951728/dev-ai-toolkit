@@ -69,17 +69,25 @@ test('keeps the prompt playground inside a tablet viewport', async ({ page }) =>
   expect(documentWidth).toBeLessThanOrEqual(768);
 });
 
-test('keeps every secondary utility inside a phone viewport', async ({
+test('keeps every directly accessible page inside a phone viewport', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 375, height: 812 });
 
   for (const route of [
+    '/',
+    '/prompts',
+    '/create-template',
+    '/prompts/code-review-assistant',
+    '/prompts/code-review-assistant/edit',
+    '/playground',
+    '/runs',
     '/prompt-diff',
     '/json-tools',
     '/api-builder',
     '/code-viewer',
     '/workspace',
+    '/missing-page',
   ]) {
     await page.goto(route);
 
